@@ -1,0 +1,16 @@
+{
+  "mode": "preview-only",
+  "grouping_mode": "subfolder",
+  "original_root": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles",
+  "track_count": 0,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_move": true,
+    "preserve_existing_grouping": "append and dedupe, never overwrite"
+  },
+  "skipped": {
+    "destination no longer exists": 827
+  },
+  "items": []
+}

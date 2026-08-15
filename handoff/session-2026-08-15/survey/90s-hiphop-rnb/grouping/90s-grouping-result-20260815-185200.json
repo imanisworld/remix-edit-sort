@@ -1,0 +1,11 @@
+{
+  "mode": "90s-grouping-apply",
+  "plan": "handoff/session-2026-08-15/survey/90s-hiphop-rnb/grouping/grouping-plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/backups/90s-hiphop-rnb-grouping-2026-08-15/90S HIPHOP R&B CLEAN DIRTY",
+  "tracks_in_plan": 10,
+  "grouping_tags_changed": 10,
+  "skipped_serato_encoding_only": [],
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "undo_log": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/90s-hiphop-rnb/grouping/90s-grouping-undo-20260815-185200.jsonl"
+}

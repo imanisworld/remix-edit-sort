@@ -1,0 +1,35 @@
+{
+  "mode": "preview-only",
+  "grouping_mode": "flat",
+  "original_root": "/Users/djb.a.e/Music/DJ-Music/Music/Rave",
+  "track_count": 2,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_move": true,
+    "preserve_existing_grouping": "append and dedupe, never overwrite"
+  },
+  "skipped": {},
+  "items": [
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Rave/_NEEDS CHECK/Rave/Gaszia - CLIPSCAN.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/Rave/Gaszia - CLIPSCAN.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Rave",
+      "combined_grouping": "Source: Rave",
+      "id3_version": 3,
+      "evidence": "whole folder is one source collection: Rave"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Rave/_NEEDS CHECK/Rave/QECHUABOi - 2DrAnK!.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/Rave/QECHUABOi - 2DrAnK!.mp3",
+      "current_grouping": [
+        "edit"
+      ],
+      "proposed_grouping": "Source: Rave",
+      "combined_grouping": "edit; Source: Rave",
+      "id3_version": 3,
+      "evidence": "whole folder is one source collection: Rave"
+    }
+  ]
+}

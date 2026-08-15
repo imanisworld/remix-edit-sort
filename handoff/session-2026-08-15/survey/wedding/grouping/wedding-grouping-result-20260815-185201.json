@@ -1,0 +1,11 @@
+{
+  "mode": "wedding-grouping-apply",
+  "plan": "handoff/session-2026-08-15/survey/wedding/grouping/grouping-plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/backups/wedding-grouping-2026-08-15/Wedding",
+  "tracks_in_plan": 1,
+  "grouping_tags_changed": 1,
+  "skipped_serato_encoding_only": [],
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "undo_log": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/wedding/grouping/wedding-grouping-undo-20260815-185201.jsonl"
+}

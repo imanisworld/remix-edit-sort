@@ -1,0 +1,11 @@
+{
+  "mode": "metro-grouping-apply",
+  "plan": "handoff/session-2026-08-15/survey/metro/grouping/grouping-plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/backups/metro-grouping-2026-08-15/metro",
+  "tracks_in_plan": 1,
+  "grouping_tags_changed": 1,
+  "skipped_serato_encoding_only": [],
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "undo_log": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/metro/grouping/metro-grouping-undo-20260815-185201.jsonl"
+}

@@ -1,0 +1,24 @@
+{
+  "mode": "preview-only",
+  "grouping_mode": "flat",
+  "original_root": "/Users/djb.a.e/Music/DJ-Music/Music/metro",
+  "track_count": 1,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_move": true,
+    "preserve_existing_grouping": "append and dedupe, never overwrite"
+  },
+  "skipped": {},
+  "items": [
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/metro/REMIXES & EDITS/Jungle/Way 2 Sexy, Future, Young Thug, Sørensen Funky - Drake (Sørensen Funky Remix).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/metro/Way 2 Sexy, Future, Young Thug, Sørensen Funky - Drake (Sørensen Funky Remix).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: metro",
+      "combined_grouping": "Source: metro",
+      "id3_version": 3,
+      "evidence": "whole folder is one source collection: metro"
+    }
+  ]
+}

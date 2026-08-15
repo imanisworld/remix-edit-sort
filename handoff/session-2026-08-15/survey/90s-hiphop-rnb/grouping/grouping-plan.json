@@ -1,0 +1,105 @@
+{
+  "mode": "preview-only",
+  "grouping_mode": "flat",
+  "original_root": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY",
+  "track_count": 10,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_move": true,
+    "preserve_existing_grouping": "append and dedupe, never overwrite"
+  },
+  "skipped": {},
+  "items": [
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/CLEAN/Hip-Hop/B.G. - Cash Money Is An Army (Clean).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/B.G. - Cash Money Is An Army (Clean).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "combined_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "id3_version": 4,
+      "evidence": "whole folder is one source collection: 90S HIPHOP R&B CLEAN DIRTY"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/CLEAN/Hip-Hop/B.G. - Cash Money Is An Army (Intro Clean).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/B.G. - Cash Money Is An Army (Intro Clean).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "combined_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "id3_version": 4,
+      "evidence": "whole folder is one source collection: 90S HIPHOP R&B CLEAN DIRTY"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/CLEAN/Hip-Hop/B.G. ft Cash Money Millionaires - Bling Bling (Clean).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/B.G. ft Cash Money Millionaires - Bling Bling (Clean).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "combined_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "id3_version": 4,
+      "evidence": "whole folder is one source collection: 90S HIPHOP R&B CLEAN DIRTY"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/CLEAN/Hip-Hop/REMIXES & EDITS/Black Moon - I Got Cha Opin (Remix) (Clean).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/Black Moon - I Got Cha Opin (Remix) (Clean).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "combined_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "id3_version": 3,
+      "evidence": "whole folder is one source collection: 90S HIPHOP R&B CLEAN DIRTY"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/DIRTY/Hip-Hop/REMIXES & EDITS/Black Moon - I Got Cha Opin (Remix) (Dirty).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/Black Moon - I Got Cha Opin (Remix) (Dirty).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "combined_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "id3_version": 3,
+      "evidence": "whole folder is one source collection: 90S HIPHOP R&B CLEAN DIRTY"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/CLEAN/Hip-Hop/REMIXES & EDITS/Black Moon - I Got Cha Opin (Remix) (Intro Clean).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/Black Moon - I Got Cha Opin (Remix) (Intro Clean).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "combined_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "id3_version": 3,
+      "evidence": "whole folder is one source collection: 90S HIPHOP R&B CLEAN DIRTY"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/DIRTY/Hip-Hop/REMIXES & EDITS/Black Moon - I Got Cha Opin (Remix) (Intro Dirty).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/Black Moon - I Got Cha Opin (Remix) (Intro Dirty).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "combined_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "id3_version": 3,
+      "evidence": "whole folder is one source collection: 90S HIPHOP R&B CLEAN DIRTY"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/CLEAN/Hip-Hop/JT Money ft Sole - Who Dat (Clean).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/JT Money ft Sole - Who Dat (Clean).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "combined_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "id3_version": 3,
+      "evidence": "whole folder is one source collection: 90S HIPHOP R&B CLEAN DIRTY"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/DIRTY/Hip-Hop/JT Money ft Sole - Who Dat (Dirty).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/JT Money ft Sole - Who Dat (Dirty).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "combined_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "id3_version": 3,
+      "evidence": "whole folder is one source collection: 90S HIPHOP R&B CLEAN DIRTY"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/_NEEDS CHECK/_GENRE NEEDS CHECK/Jermaine Dupri & Jay-Z _ Money Ain't A Thang.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/Jermaine Dupri & Jay-Z _ Money Ain't A Thang.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "combined_grouping": "Source: 90S HIPHOP R&B CLEAN DIRTY",
+      "id3_version": 4,
+      "evidence": "whole folder is one source collection: 90S HIPHOP R&B CLEAN DIRTY"
+    }
+  ]
+}
