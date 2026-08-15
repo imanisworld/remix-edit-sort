@@ -19,10 +19,10 @@ venv/
 
 # DJ application data and local run artifacts.
 _Serato_/
-backups/
-survey/
-output/
-local/
+/backups/
+/survey/
+/output/
+/local/
 *.jsonl
 inventory.csv
 inventory.json

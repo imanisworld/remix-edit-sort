@@ -33,3 +33,9 @@ Safety-first tools and reference rules for organizing a DJ music library by vers
 ## Current local handoff
 
 The working-library handoff and run artifacts intentionally remain outside this repository under the Codex visualization workspace. They may contain absolute paths and library-specific filenames.
+
+## Continue with Claude Code
+
+Open this repository in Claude Code. It will automatically read `CLAUDE.md`, which points to the consolidated handoff and current pending work.
+
+The reusable standalone prompt is available at `prompts/music-sort-prompt.md`. Session-specific scripts and reports are retained under `handoff/session-2026-08-15/` for audit and continuation; they contain local paths and should be generalized before reuse on another library.
