@@ -20,6 +20,8 @@ from pathlib import Path
 
 from mutagen.id3 import ID3, ID3NoHeaderError, TIT1
 
+import lock_guard
+
 
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
@@ -257,9 +259,14 @@ def main() -> None:
     parser.add_argument("--label", help="prefix for undo/result files")
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--undo", type=Path)
+    parser.add_argument("--lock-folder", help="Top-level library folder locked via folder_lock.py (required with --apply/--undo)")
+    parser.add_argument("--session", help="Session id that holds the lock (required with --apply/--undo)")
     args = parser.parse_args()
 
     if args.undo:
+        if not args.lock_folder or not args.session:
+            raise SystemExit("--lock-folder and --session are required with --undo")
+        lock_guard.require_lock_or_exit(args.lock_folder, args.session)
         undo(args.undo.resolve())
         return
 
@@ -272,6 +279,9 @@ def main() -> None:
     if args.apply:
         if not args.backup:
             raise SystemExit("--backup is required with --apply")
+        if not args.lock_folder or not args.session:
+            raise SystemExit("--lock-folder and --session are required with --apply")
+        lock_guard.require_lock_or_exit(args.lock_folder, args.session)
         apply(args.plan, args.backup.resolve(), root, out_dir, label)
     else:
         plan, items = load_and_validate(args.plan, args.backup.resolve(), root) if args.backup else (

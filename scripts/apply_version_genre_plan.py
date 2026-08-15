@@ -24,6 +24,8 @@ from pathlib import Path
 from mutagen.flac import FLAC
 from mutagen.id3 import ID3, ID3NoHeaderError, TCON
 
+import lock_guard
+
 
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
@@ -391,6 +393,8 @@ def main() -> None:
     parser.add_argument("--label", help="Prefix for undo/result files, e.g. 'dub' (defaults to root folder name)")
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--undo", type=Path, help="Path to an undo .jsonl log to reverse")
+    parser.add_argument("--lock-folder", help="Top-level library folder locked via folder_lock.py (required with --apply/--undo)")
+    parser.add_argument("--session", help="Session id that holds the lock (required with --apply/--undo)")
     args = parser.parse_args()
 
     root = args.root.resolve()
@@ -398,10 +402,16 @@ def main() -> None:
     out_dir = args.out_dir or args.plan.resolve().parent
 
     if args.undo:
+        if not args.lock_folder or not args.session:
+            raise SystemExit("--lock-folder and --session are required with --undo")
+        lock_guard.require_lock_or_exit(args.lock_folder, args.session)
         undo(args.undo.resolve(), label)
     elif args.apply:
         if not args.backup:
             raise SystemExit("--backup is required with --apply")
+        if not args.lock_folder or not args.session:
+            raise SystemExit("--lock-folder and --session are required with --apply")
+        lock_guard.require_lock_or_exit(args.lock_folder, args.session)
         apply(root, args.plan, args.backup.resolve(), out_dir, label)
     else:
         plan = json.loads(args.plan.read_text(encoding="utf-8"))

@@ -12,8 +12,19 @@ Usage:
     python3 apply_plan.py --apply --copy       # leave originals in place
     python3 apply_plan.py --apply --tags-only  # tag where they sit, don't move
     python3 apply_plan.py --undo               # reverse the last apply
+
+DEPRECATED: this is the legacy Genre/Remixer apply engine for flat
+SoundCloud/DJ-pool downloads. Library-folder cleanup (the actual work this
+repo has been doing under handoff/) uses apply_version_genre_plan.py,
+apply_grouping_plan.py, and apply_artist_title_plan.py instead -- they have
+stronger per-item audio-payload/Serato-frame verification and mandatory
+locking. This script still works for its original narrow use case but
+requires --legacy-confirm to run --apply/--undo, so it can't be reached by
+accident.
 """
 import os, sys, json, shutil, argparse, collections
+
+import lock_guard
 
 try:
     from mutagen.id3 import (ID3, ID3NoHeaderError, TIT2, TPE1, TPE2, TPE4,
@@ -84,7 +95,24 @@ def main():
     ap.add_argument("--skip-review", action="store_true",
                     help="leave everything flagged needs_review where it is")
     ap.add_argument("--undo", action="store_true")
+    ap.add_argument("--legacy-confirm", action="store_true",
+                    help="required alongside --apply/--undo -- see DEPRECATED note above")
+    ap.add_argument("--lock-folder", help="Top-level library folder locked via folder_lock.py (required with --apply/--undo)")
+    ap.add_argument("--session", help="Session id that holds the lock (required with --apply/--undo)")
     args = ap.parse_args()
+
+    if args.apply or args.undo:
+        if not args.legacy_confirm:
+            raise SystemExit(
+                "apply_plan.py is deprecated for library-folder cleanup -- use "
+                "apply_version_genre_plan.py / apply_grouping_plan.py / "
+                "apply_artist_title_plan.py instead. If this narrow original use case "
+                "(flat SoundCloud/DJ-pool downloads) is genuinely what you need, pass "
+                "--legacy-confirm to proceed."
+            )
+        if not args.lock_folder or not args.session:
+            raise SystemExit("--lock-folder and --session are required with --apply/--undo")
+        lock_guard.require_lock_or_exit(args.lock_folder, args.session)
 
     if args.undo:
         return undo()
