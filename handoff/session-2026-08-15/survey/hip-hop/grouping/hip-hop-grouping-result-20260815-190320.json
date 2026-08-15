@@ -1,0 +1,60 @@
+{
+  "mode": "hip-hop-grouping-apply",
+  "plan": "handoff/session-2026-08-15/survey/hip-hop/grouping/grouping-plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/backups/hip-hop-grouping-2026-08-15/Hip Hop",
+  "tracks_in_plan": 3222,
+  "grouping_tags_changed": 3210,
+  "skipped_serato_encoding_only": [
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Bad Bunny - MONACO (Cesar Castilla Hype Intro) (Dirty Extended).mp3",
+      "reason": "Grouping write forced an ID3-version-compliance re-encoding of a Serato frame's encoding byte (payload verified byte-identical); write rolled back"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Chainz & Lil Wayne - Crazy Thick (DJ Nasa Remix) (Dirty Extended).mp3",
+      "reason": "Grouping write forced an ID3-version-compliance re-encoding of a Serato frame's encoding byte (payload verified byte-identical); write rolled back"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/City Girls - Work For It (Cesar Castilla Slam Intro) (Dirty Extended).mp3",
+      "reason": "Grouping write forced an ID3-version-compliance re-encoding of a Serato frame's encoding byte (payload verified byte-identical); write rolled back"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/ACAPELLAS/Hip-Hop/Common vs Tag Team - Universal Mind Control (UMC) (DJ Nasa Acapella Out) (Clean Extended).mp3",
+      "reason": "Grouping write forced an ID3-version-compliance re-encoding of a Serato frame's encoding byte (payload verified byte-identical); write rolled back"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/ACAPELLAS/Hip-Hop/Common vs Tag Team - Universal Mind Control (UMC) (DJ Nasa Acapella Out) (Dirty Extended).mp3",
+      "reason": "Grouping write forced an ID3-version-compliance re-encoding of a Serato frame's encoding byte (payload verified byte-identical); write rolled back"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Drake - What Would Pluto Do (Dennis Blaze ReFunk) (Dirty Extended).mp3",
+      "reason": "Grouping write forced an ID3-version-compliance re-encoding of a Serato frame's encoding byte (payload verified byte-identical); write rolled back"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Jack Harlow vs Vitamin THC & RXE - Lovin On Me (DJ Juan Cuba Transition 105-140 Slam Edit) (Dirty Extended).mp3",
+      "reason": "Grouping write forced an ID3-version-compliance re-encoding of a Serato frame's encoding byte (payload verified byte-identical); write rolled back"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Lil Uzi Vert - Just Wanna Rock (BPM Supreme Christmas Slam Edit) (Dirty Extended).mp3",
+      "reason": "Grouping write forced an ID3-version-compliance re-encoding of a Serato frame's encoding byte (payload verified byte-identical); write rolled back"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Lil Wayne ft Drake & Future vs VINNE - Bitches Love Me (DJ Nasa VIP Bootleg) (Dirty Extended).mp3",
+      "reason": "Grouping write forced an ID3-version-compliance re-encoding of a Serato frame's encoding byte (payload verified byte-identical); write rolled back"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Offset & Cardi B - FREAKY (Cesar Castilla Hype Intro) (Clean Extended).mp3",
+      "reason": "Grouping write forced an ID3-version-compliance re-encoding of a Serato frame's encoding byte (payload verified byte-identical); write rolled back"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Offset & Cardi B - FREAKY (Cesar Castilla Hype Intro) (Dirty Extended).mp3",
+      "reason": "Grouping write forced an ID3-version-compliance re-encoding of a Serato frame's encoding byte (payload verified byte-identical); write rolled back"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Snoop Dogg ft Pharrell vs City Girls - Drop It Like It's Hot vs Work For It (DJ Nasa Transition 92-104) (Dirty Extended).mp3",
+      "reason": "Grouping write forced an ID3-version-compliance re-encoding of a Serato frame's encoding byte (payload verified byte-identical); write rolled back"
+    }
+  ],
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "undo_log": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/hip-hop/grouping/hip-hop-grouping-undo-20260815-190320.jsonl"
+}
