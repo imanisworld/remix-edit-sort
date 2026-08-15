@@ -1,0 +1,33 @@
+name: safety-tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependency
+        run: python -m pip install mutagen
+      - name: Compile Python
+        run: python -m compileall -q scripts tests
+      - name: Run safety tests
+        run: python -m unittest discover -s tests -v
+      - name: Validate reusable evidence registry
+        run: python scripts/validate_year_evidence.py references/year-evidence.json
+      - name: Audit code must not write audio metadata
+        shell: bash
+        run: |
+          if grep -RInE '(^|[^A-Za-z])(delete|unlink|remove|rename|replace|move|rmtree|audio\.save|mutagen.*save)[[:space:]]*\(' scripts/audit_library.py scripts/run_verified_audit.py; then
+            echo 'Forbidden source-mutation primitive found in read-only audit scripts.' >&2
+            exit 1
+          fi
