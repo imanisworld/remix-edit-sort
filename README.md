@@ -17,15 +17,17 @@ Safety-first tools and reference rules for organizing a DJ music library by vers
 - Backups, undo payloads, and per-run reports
 - Local credentials or configuration
 
-## Whole-library audit: read-only first
+## Whole-library audit: verified read-only first
 
-Before another cleanup pass, establish the physical library inventory without changing source audio:
+Before another cleanup pass, establish the physical library inventory without changing source audio. The required entry point is the verified wrapper:
 
 ```bash
-python3 scripts/audit_library.py "/path/to/DJ-Music/Music"
+python3 scripts/run_verified_audit.py "/path/to/DJ-Music/Music" --repo-sha "$(git rev-parse HEAD)"
 ```
 
-The audit reads metadata and codec information, computes SHA-256 hashes, and writes local reports under `output/library-audit/`. That output is intentionally ignored by Git because it can contain absolute paths and library-specific filenames.
+The wrapper fingerprints every source audio file before and after the audit using path, size, nanosecond mtime, and SHA-256. It fails closed if any source file is added, removed, or changed while the audit is running. Each run receives a UTC run ID and writes a local run manifest containing the repository SHA, source counts/bytes, audit exit status, source-verification result, detected changes, and SHA-256 hashes of generated reports.
+
+The underlying `audit_library.py` reads metadata and codec information, computes SHA-256 hashes, and writes reports under the verified run directory. Generated output is intentionally ignored by Git because it can contain absolute paths and library-specific filenames.
 
 It produces:
 
@@ -33,20 +35,37 @@ It produces:
 - `summary.json` — file/storage/format/metadata-quality counts;
 - `exact_duplicates.csv` — byte-identical files only;
 - `metadata_review_candidates.csv` — same normalized Artist + Title, for human review only;
-- `errors.csv` — unreadable or unrecognized files that did not abort the scan.
+- `errors.csv` — unreadable or unrecognized files that did not abort the scan;
+- `source-before.json` / `source-after.json` — cryptographic source manifests;
+- `run-manifest.json` — immutable per-run evidence and report hashes.
 
 Exact SHA-256 matches prove byte identity, not that a copy should be deleted. Metadata-only matches are never deletion evidence. See `references/library-audit.md`.
+
+## External research and tag evidence
+
+Release-year, event, artist/title, genre, and similar research follows `references/research-evidence-policy.md`:
+
+- batch independent searches when possible;
+- make one reasonable attempt for obscure/local material, then record `unconfirmable` rather than forcing a guess;
+- separate primary/secondary confirmation, local evidence, inference, unknown, and unconfirmable states;
+- retain source URLs and evidence notes so later tracks can reuse prior research;
+- show the proposed label/value breakdown before any metadata write, including tags-only passes.
+
+Reusable release-year decisions live in `references/year-evidence.json` and are validated by `scripts/validate_year_evidence.py`.
 
 Run the safety tests with:
 
 ```bash
 python3 -m unittest discover -s tests -v
+python3 scripts/validate_year_evidence.py references/year-evidence.json
 ```
+
+GitHub Actions runs the same checks on pull requests and `main`, including a guard against source-mutation primitives in the read-only audit scripts.
 
 ## Required workflow
 
 1. Survey one source folder read-only.
-2. Produce and review a preview plan.
+2. Produce and review a preview plan and proposed label/value breakdown.
 3. Preserve meaningful variants such as Clean, Dirty, Intro, Remix, Edit, Acapella, and Instrumental.
 4. Never deduplicate from filenames alone.
 5. Make and verify scoped music and Serato backups.
@@ -70,9 +89,9 @@ The reusable standalone prompt is available at `music-sort-prompt.md`. Session-s
 
 - `SKILL.md` — core agent workflow and safety rules
 - `agents/openai.yaml` — Codex skill-list metadata
-- `scripts/` — reusable, parameterized sorting and audit tools
+- `scripts/` — reusable, parameterized sorting, audit, verification, and evidence-validation tools
 - `tests/` — source-preservation and audit safety tests
-- `references/` — genre, alias, casing, audit, and troubleshooting knowledge
+- `references/` — genre, alias, casing, audit, research-evidence, and troubleshooting knowledge
 - `music-sort-prompt.md` — standalone prompt when the skill cannot be installed
 - `CLAUDE.md` — automatic continuation instructions for Claude Code
 - `handoff/HANDOFF-DJ-MUSIC-SORT.md` — current library state and next actions
