@@ -20,6 +20,8 @@ venv/
 # DJ application data and local run artifacts.
 _Serato_/
 /backups/
+**/backups/
+**/*-tag-file-backups/
 /survey/
 /output/
 /local/

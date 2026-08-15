@@ -1,0 +1,18 @@
+{
+  "mode": "white-dance-party-apply",
+  "plan": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/white-dance-party/plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/backups/white-dance-party-pre-sort-2026-08-15",
+  "tracks_processed": 4,
+  "files_moved": 3,
+  "genre_tags_changed": 0,
+  "genre_tags_skipped": 0,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/white-dance-party/white-dance-party-undo-20260815-185611.jsonl",
+  "tag_backup_root": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/white-dance-party/white-dance-party-tag-file-backups/20260815-185611",
+  "genre_counts": {
+    "_GENRE NEEDS CHECK": 4
+  }
+}

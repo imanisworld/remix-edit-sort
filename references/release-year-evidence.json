@@ -1,0 +1,93 @@
+{
+  "_comment": "Per-release year evidence for tracks that had no TDRC/year tag. Keyed by the original source folder name (one release = one folder = one year, verified per-release rather than per-track). 'evidence' is 'web_search' (confirmed via search, source URL recorded) or 'memory' (recalled with confidence, no external source, used only when the release is a well-known chart single/album). Never a guess -- if confidence was in doubt, the folder isn't listed here. Extend this file the same way as artist-genre-extra.json: add an entry, cite the evidence, done.",
+  "releases": {
+    "Sexyy Red - In Sexyy We Trust": {
+      "year": "2024",
+      "evidence": "memory",
+      "note": "Sexyy Red's 2024 mixtape/album"
+    },
+    "Rapsody - Please Don_t Cry": {
+      "year": "2024",
+      "evidence": "memory",
+      "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+    },
+    "Skilla Baby ft NoCap - Wifey": {
+      "year": "2024",
+      "evidence": "memory",
+      "note": "2024 single"
+    },
+    "Tommy Richman - MILLION DOLLAR BABY": {
+      "year": "2024",
+      "evidence": "memory",
+      "note": "2024 breakout single"
+    },
+    "SleazyWorld Go - WTW": {
+      "year": "2022",
+      "evidence": "memory",
+      "note": "2022 breakout single (Whoop That Trick)"
+    },
+    "Travis Scott feat. Playboi Carti - FE!N": {
+      "year": "2023",
+      "evidence": "memory",
+      "note": "From Utopia album, July 2023"
+    },
+    "Gunna - Whatsapp (Wassam)": {
+      "year": "2024",
+      "evidence": "web_search",
+      "date": "2024-05-03",
+      "source": "https://www.billboard.com/music/rb-hip-hop/gunna-new-album-release-date-new-song-whatsapp-wassam-1235672971/"
+    },
+    "Hitkidd - Renegade": {
+      "year": "2023",
+      "evidence": "web_search",
+      "date": "2023-12-08",
+      "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+      "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+    },
+    "Juelz Santana feat. Jadakiss - Party N Bullsh_t": {
+      "year": "2024",
+      "evidence": "web_search",
+      "date": "2024-06-21",
+      "source": "https://thesource.com/2024/06/26/juelz-santana-drops-new-single-party-n-bullshit-featuring-jadakiss/"
+    },
+    "Kalan.FrFr - Not Hard 2 Understand (EP)": {
+      "year": "2023",
+      "evidence": "web_search",
+      "date": "2023-12-08",
+      "source": "https://www.allmusic.com/album/not-hard-2-understand-mw0004199268"
+    },
+    "Saweetie - Richtivities": {
+      "year": "2024",
+      "evidence": "web_search",
+      "date": "2024-02-23",
+      "source": "https://www.rollingstone.com/music/music-news/saweetie-richtivities-single-1234972451/"
+    },
+    "SheSoHouston - BIG SPENDAS": {
+      "year": "2023",
+      "evidence": "web_search",
+      "date": "2023-12-08",
+      "source": "https://www.amazon.com/BIG-SPENDAS-Explicit-SheSoHouston/dp/B0CPJSN1DH"
+    },
+    "Veeze - Not a Drill": {
+      "year": "2023",
+      "evidence": "web_search",
+      "date": "2023-06-27",
+      "source": "https://hiphopsince1987.com/2023/music/veeze-drops-debut-album-ganger-and-video-for-not-a-drill/",
+      "note": "From debut album Ganger"
+    },
+    "Young Nudy ft 21 Savage - Peaches & Eggplants": {
+      "year": "2023",
+      "evidence": "web_search",
+      "date": "2023-02-28",
+      "source": "https://en.wikipedia.org/wiki/Peaches_%26_Eggplants",
+      "note": "Lead single from Gumbo (2023)"
+    }
+  },
+  "unresolved": {
+    "Dead Silence Pack": {
+      "checked": "web_search",
+      "result": "no findable release info",
+      "note": "Topper-Intro / No Bass-Kicks naming suggests an obscure/local producer's DJ-tool pack, not a public release. Searched and found nothing -- leave year unresolved rather than guess."
+    }
+  }
+}

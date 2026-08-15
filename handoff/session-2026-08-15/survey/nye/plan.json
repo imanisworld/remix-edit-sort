@@ -1,0 +1,127 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/Events/NYE",
+  "inventory": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/nye/inventory.csv",
+  "track_count": 6,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 6
+    },
+    "genres": {
+      "_GENRE NEEDS CHECK": 6
+    },
+    "moves": 1,
+    "genre_tag_changes": 0
+  },
+  "tag_change_summary": {},
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/NYE/_NEEDS CHECK/House/PREMIERE Bress Underground - Radical Deep.mp3",
+      "source_relative": "_NEEDS CHECK/House/PREMIERE Bress Underground - Radical Deep.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/NYE/_NEEDS CHECK/_GENRE NEEDS CHECK/PREMIERE Bress Underground - Radical Deep.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/PREMIERE Bress Underground - Radical Deep.mp3",
+      "sha256": "571df9927c8f4c80abdb6ff08f1cfe2f01e97840cae046470cbee6280c301345",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "House",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: House",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/NYE/_NEEDS CHECK/_GENRE NEEDS CHECK/Casement - Moto.mp3",
+      "source_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Casement - Moto.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/NYE/_NEEDS CHECK/_GENRE NEEDS CHECK/Casement - Moto.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Casement - Moto.mp3",
+      "sha256": "56bc0b653ba2498921011215cb5db06fa70a5470527897a97352870ee0805512",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "",
+      "proposed_genre": null,
+      "genre_evidence": "no genre tag and no explicit genre evidence",
+      "genre_confidence": "review",
+      "move": false,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/NYE/_NEEDS CHECK/_GENRE NEEDS CHECK/JIALING - SIDELINE.mp3",
+      "source_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/JIALING - SIDELINE.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/NYE/_NEEDS CHECK/_GENRE NEEDS CHECK/JIALING - SIDELINE.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/JIALING - SIDELINE.mp3",
+      "sha256": "d5c96689a81561a270f66f99e1b47300ec432566a58fa0d75bbda0080be66629",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "",
+      "proposed_genre": null,
+      "genre_evidence": "no genre tag and no explicit genre evidence",
+      "genre_confidence": "review",
+      "move": false,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/NYE/_NEEDS CHECK/_GENRE NEEDS CHECK/Ouanounou - Matouka.mp3",
+      "source_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Ouanounou - Matouka.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/NYE/_NEEDS CHECK/_GENRE NEEDS CHECK/Ouanounou - Matouka.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Ouanounou - Matouka.mp3",
+      "sha256": "61b10f1b888e88fae376ea88aa8bc071e5af5eaa7abe27b2d914474673ae199d",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "",
+      "proposed_genre": null,
+      "genre_evidence": "no genre tag and no explicit genre evidence",
+      "genre_confidence": "review",
+      "move": false,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/NYE/_NEEDS CHECK/_GENRE NEEDS CHECK/Pink Siifu, Ss.Sylver, VonBeezy, HiTech - Iss On De Floe..'!!.mp3",
+      "source_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Pink Siifu, Ss.Sylver, VonBeezy, HiTech - Iss On De Floe..'!!.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/NYE/_NEEDS CHECK/_GENRE NEEDS CHECK/Pink Siifu, Ss.Sylver, VonBeezy, HiTech - Iss On De Floe..'!!.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Pink Siifu, Ss.Sylver, VonBeezy, HiTech - Iss On De Floe..'!!.mp3",
+      "sha256": "06143aa55e95428cf564f61a2209d0384ecaa7f7e4056b423acf8fea5ac471f3",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "",
+      "proposed_genre": null,
+      "genre_evidence": "no genre tag and no explicit genre evidence",
+      "genre_confidence": "review",
+      "move": false,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/NYE/_NEEDS CHECK/_GENRE NEEDS CHECK/black girl white girl, out now - stealth flow.mp3",
+      "source_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/black girl white girl, out now - stealth flow.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/NYE/_NEEDS CHECK/_GENRE NEEDS CHECK/black girl white girl, out now - stealth flow.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/black girl white girl, out now - stealth flow.mp3",
+      "sha256": "7680d3964b5aceb45bd5e556bd516f2f6280004bd756764d5f27a005e9e501f0",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "",
+      "proposed_genre": null,
+      "genre_evidence": "no genre tag and no explicit genre evidence",
+      "genre_confidence": "review",
+      "move": false,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}

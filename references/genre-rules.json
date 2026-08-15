@@ -5,7 +5,8 @@
     "Vogue", "Jersey Club", "Atlanta Bass", "Miami Bass", "Baile Funk", "Cumbia",
     "Juke", "Ghetto Tech", "Jungle", "Drum & Bass", "UKG", "Amapiano", "Afrobeats",
     "Bouyon", "Dancehall", "House", "Deep House", "Techno", "Hardgroove", "Electro",
-    "Disco", "Funk", "Soul", "R&B", "Hip-Hop", "Latin", "Dub", "Bass", "Club", "Drum"
+    "Disco", "Funk", "Soul", "R&B", "Hip-Hop", "Latin", "Dub", "Bass", "Club", "Drum",
+    "Country"
   ],
 
   "keyword_rules": [
@@ -38,7 +39,8 @@
     {"genre": "Soul",         "match": ["soul", "motown", "northern soul"]},
     {"genre": "Funk",         "match": ["funk", "boogie", "p-funk"]},
     {"genre": "Club",         "match": ["club edit", "club mix", "club remix", "bounce", "twerk", "club"]},
-    {"genre": "Bass",         "match": ["bassline", "bass"]}
+    {"genre": "Bass",         "match": ["bassline", "bass"]},
+    {"genre": "Country",      "match": ["country", "country trap", "country rap", "yeehaw"]}
   ],
 
   "_bpm_comment": "Used ONLY to resolve octave errors in tempo detection (a 160 BPM footwork track autocorrelates just as hard at 80). Never used to assign a genre.",

@@ -1,0 +1,95 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/Events/white dance party",
+  "inventory": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/white-dance-party/inventory.csv",
+  "track_count": 4,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 4
+    },
+    "genres": {
+      "_GENRE NEEDS CHECK": 4
+    },
+    "moves": 3,
+    "genre_tag_changes": 0
+  },
+  "tag_change_summary": {},
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/white dance party/_NEEDS CHECK/House/JIALING - PERCOLATE ON ACID.mp3",
+      "source_relative": "_NEEDS CHECK/House/JIALING - PERCOLATE ON ACID.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/white dance party/_NEEDS CHECK/_GENRE NEEDS CHECK/JIALING - PERCOLATE ON ACID.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/JIALING - PERCOLATE ON ACID.mp3",
+      "sha256": "b3a784377af6eff2ce0fcbc01d6c1a8c3f295ed2b062c35b1f7c0b8f0c34fd6d",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "House",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: House",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/white dance party/_NEEDS CHECK/House/Premiere B1 - Pagenty, DUR001 - What's Dat Called Again.mp3",
+      "source_relative": "_NEEDS CHECK/House/Premiere B1 - Pagenty, DUR001 - What's Dat Called Again.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/white dance party/_NEEDS CHECK/_GENRE NEEDS CHECK/Premiere B1 - Pagenty, DUR001 - What's Dat Called Again.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Premiere B1 - Pagenty, DUR001 - What's Dat Called Again.mp3",
+      "sha256": "26f9c303c00784c1257f0cf93bcafb478fe8b4d2114d2bfa3b68fe7cf7f3921b",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "House",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: House",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/white dance party/_NEEDS CHECK/House/black girl white girl, out now - hush baby.mp3",
+      "source_relative": "_NEEDS CHECK/House/black girl white girl, out now - hush baby.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/white dance party/_NEEDS CHECK/_GENRE NEEDS CHECK/black girl white girl, out now - hush baby.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/black girl white girl, out now - hush baby.mp3",
+      "sha256": "e6ab0d6b4772789386b82ec0c44e8eb0fe0494660e4c6d4ed0844a594328ee31",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "House",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: House",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/white dance party/_NEEDS CHECK/_GENRE NEEDS CHECK/PREMIERE SLACK 1NE - MOVE.mp3",
+      "source_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/PREMIERE SLACK 1NE - MOVE.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/white dance party/_NEEDS CHECK/_GENRE NEEDS CHECK/PREMIERE SLACK 1NE - MOVE.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/PREMIERE SLACK 1NE - MOVE.mp3",
+      "sha256": "41ad2aceecd16a86f86c0508c643ef29101158a7dfb8aa2bfc9a0cb8451758b8",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "house, jersey club",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: house, jersey club",
+      "genre_confidence": "review",
+      "move": false,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}

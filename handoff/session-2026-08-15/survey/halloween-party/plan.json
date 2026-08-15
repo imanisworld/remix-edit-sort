@@ -1,0 +1,143 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/Events/Halloween Party",
+  "inventory": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/halloween-party/inventory.csv",
+  "track_count": 7,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 7
+    },
+    "genres": {
+      "_GENRE NEEDS CHECK": 7
+    },
+    "moves": 7,
+    "genre_tag_changes": 0
+  },
+  "tag_change_summary": {},
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/Halloween Party/_NEEDS CHECK/Halloween/Disturbia.mp3",
+      "source_relative": "_NEEDS CHECK/Halloween/Disturbia.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/Halloween Party/_NEEDS CHECK/_GENRE NEEDS CHECK/Disturbia.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Disturbia.mp3",
+      "sha256": "8fe35026867de19b3bcde2e797ce14df43ae2c5895c8d7105015bcdcd5d869c5",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Halloween",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Halloween",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/Halloween Party/_NEEDS CHECK/Halloween/Ghostbusters.mp3",
+      "source_relative": "_NEEDS CHECK/Halloween/Ghostbusters.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/Halloween Party/_NEEDS CHECK/_GENRE NEEDS CHECK/Ghostbusters.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Ghostbusters.mp3",
+      "sha256": "1ced2b98815cc7c9460894e38e10836895f64a77f397496c0c102abbca02b648",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Halloween",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Halloween",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/Halloween Party/_NEEDS CHECK/Halloween/Mary On A Cross.mp3",
+      "source_relative": "_NEEDS CHECK/Halloween/Mary On A Cross.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/Halloween Party/_NEEDS CHECK/_GENRE NEEDS CHECK/Mary On A Cross.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Mary On A Cross.mp3",
+      "sha256": "0779b2e328b0def0c145158bc9649c92d69af12db4dfb96704247b938efd02bf",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Halloween",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Halloween",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/Halloween Party/_NEEDS CHECK/Halloween/Monster Mash.mp3",
+      "source_relative": "_NEEDS CHECK/Halloween/Monster Mash.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/Halloween Party/_NEEDS CHECK/_GENRE NEEDS CHECK/Monster Mash.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Monster Mash.mp3",
+      "sha256": "59ceef67e75aa10eb39cee4144f2ec52a1c929b8ea28926c60c9c902525159cd",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Halloween",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Halloween",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/Halloween Party/_NEEDS CHECK/Halloween/Somebody's Watching Me - Single Version.mp3",
+      "source_relative": "_NEEDS CHECK/Halloween/Somebody's Watching Me - Single Version.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/Halloween Party/_NEEDS CHECK/_GENRE NEEDS CHECK/Somebody's Watching Me - Single Version.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Somebody's Watching Me - Single Version.mp3",
+      "sha256": "71fb20afd6a4b5e99b9e16f5a9ace0c2fe5b58526506847864ea1f11000b0311",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Halloween",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Halloween",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/Halloween Party/_NEEDS CHECK/Halloween/This Is Halloween.mp3",
+      "source_relative": "_NEEDS CHECK/Halloween/This Is Halloween.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/Halloween Party/_NEEDS CHECK/_GENRE NEEDS CHECK/This Is Halloween.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/This Is Halloween.mp3",
+      "sha256": "cb1e683576f6d079c4fcafc6ddcc8cb0dc00c4baad9be1779eab417d9f753e39",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Halloween",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Halloween",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/Halloween Party/_NEEDS CHECK/Halloween/Thriller - Single Version.mp3",
+      "source_relative": "_NEEDS CHECK/Halloween/Thriller - Single Version.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/Halloween Party/_NEEDS CHECK/_GENRE NEEDS CHECK/Thriller - Single Version.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Thriller - Single Version.mp3",
+      "sha256": "980dca0877e316c227472e263007758ed1b69006382160340d5146d674434d56",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Halloween",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Halloween",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}

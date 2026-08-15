@@ -1,0 +1,20 @@
+{
+  "mode": "xmas-apply",
+  "plan": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/xmas/plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/backups/xmas-pre-sort-2026-08-15",
+  "tracks_processed": 49,
+  "files_moved": 29,
+  "genre_tags_changed": 5,
+  "genre_tags_skipped": 0,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/xmas/xmas-undo-20260815-185611.jsonl",
+  "tag_backup_root": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/xmas/xmas-tag-file-backups/20260815-185611",
+  "genre_counts": {
+    "Pop": 9,
+    "R&B": 16,
+    "_GENRE NEEDS CHECK": 24
+  }
+}

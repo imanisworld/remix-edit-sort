@@ -1,0 +1,112 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/Events/karaoke",
+  "inventory": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/karaoke/inventory.csv",
+  "track_count": 5,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 5
+    },
+    "genres": {
+      "R&B": 1,
+      "_GENRE NEEDS CHECK": 4
+    },
+    "moves": 4,
+    "genre_tag_changes": 0
+  },
+  "tag_change_summary": {},
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/karaoke/_NEEDS CHECK/Hip-Hop/dem_franchize_boyz-lean_wit_it_rock_wit_it_(feat_peanut_and_charlay).mp3",
+      "source_relative": "_NEEDS CHECK/Hip-Hop/dem_franchize_boyz-lean_wit_it_rock_wit_it_(feat_peanut_and_charlay).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/karaoke/_NEEDS CHECK/_GENRE NEEDS CHECK/dem_franchize_boyz-lean_wit_it_rock_wit_it_(feat_peanut_and_charlay).mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/dem_franchize_boyz-lean_wit_it_rock_wit_it_(feat_peanut_and_charlay).mp3",
+      "sha256": "d1eb507736a2c2ab5508b6eb8dc44cac84c771b156772d219027cd433d789297",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Hip-Hop",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Hip-Hop",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/karaoke/_NEEDS CHECK/R&B/The Fugees - Killing Me Softly (1996).mp3",
+      "source_relative": "_NEEDS CHECK/R&B/The Fugees - Killing Me Softly (1996).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/karaoke/_NEEDS CHECK/R&B/The Fugees - Killing Me Softly (1996).mp3",
+      "destination_relative": "_NEEDS CHECK/R&B/The Fugees - Killing Me Softly (1996).mp3",
+      "sha256": "0b6c1ed4b0483c084ae69cd84f5969f35009ab7e6b9ad3ef10d835273d1ac92a",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "R&B",
+      "proposed_genre": "R&B",
+      "genre_evidence": "existing genre tag: R&B",
+      "genre_confidence": "tag",
+      "move": false,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/karaoke/_NEEDS CHECK/Rock/10. Miami Sound Machine - Conga.mp3",
+      "source_relative": "_NEEDS CHECK/Rock/10. Miami Sound Machine - Conga.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/karaoke/_NEEDS CHECK/_GENRE NEEDS CHECK/10. Miami Sound Machine - Conga.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/10. Miami Sound Machine - Conga.mp3",
+      "sha256": "16614c876edfc0586526500e3a678acf53c1d2c9a3ad305881d85c19686425d3",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Rock",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Rock",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/karaoke/_NEEDS CHECK/Rock/12. Reo Speedwagon - Can't Fight The Feeling.mp3",
+      "source_relative": "_NEEDS CHECK/Rock/12. Reo Speedwagon - Can't Fight The Feeling.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/karaoke/_NEEDS CHECK/_GENRE NEEDS CHECK/12. Reo Speedwagon - Can't Fight The Feeling.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/12. Reo Speedwagon - Can't Fight The Feeling.mp3",
+      "sha256": "2c5ee37ab4664485efc65d30d0674610937fc98b68b8a10fb1828bff614bd042",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Rock",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Rock",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/karaoke/_NEEDS CHECK/Rock/13. Men At Work - Down Under.mp3",
+      "source_relative": "_NEEDS CHECK/Rock/13. Men At Work - Down Under.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/karaoke/_NEEDS CHECK/_GENRE NEEDS CHECK/13. Men At Work - Down Under.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/13. Men At Work - Down Under.mp3",
+      "sha256": "26586d0cc1cb37e9fc9c94b6eb5fdf84912698316bb69fa15a23524e7a51a801",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Rock",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Rock",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}

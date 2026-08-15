@@ -1,0 +1,143 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/Events/tpom ",
+  "inventory": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/tpom/inventory.csv",
+  "track_count": 7,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 7
+    },
+    "genres": {
+      "_GENRE NEEDS CHECK": 7
+    },
+    "moves": 0,
+    "genre_tag_changes": 0
+  },
+  "tag_change_summary": {},
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/tpom /_NEEDS CHECK/_GENRE NEEDS CHECK/Cruel.mp3",
+      "source_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Cruel.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/tpom /_NEEDS CHECK/_GENRE NEEDS CHECK/Cruel.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Cruel.mp3",
+      "sha256": "bc7eadbafcb74df887d0c30571784bad9c18a73e8c1b2f8e524cf0556e8367b7",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "",
+      "proposed_genre": null,
+      "genre_evidence": "no genre tag and no explicit genre evidence",
+      "genre_confidence": "review",
+      "move": false,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/tpom /_NEEDS CHECK/_GENRE NEEDS CHECK/Dream Girl.mp3",
+      "source_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Dream Girl.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/tpom /_NEEDS CHECK/_GENRE NEEDS CHECK/Dream Girl.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Dream Girl.mp3",
+      "sha256": "7e09c39308775b9469cc4b11f8e6c8f60fc39dfa5e9d5aa93946d5c4f1f6c4ec",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "",
+      "proposed_genre": null,
+      "genre_evidence": "no genre tag and no explicit genre evidence",
+      "genre_confidence": "review",
+      "move": false,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/tpom /_NEEDS CHECK/_GENRE NEEDS CHECK/Lay Low.mp3",
+      "source_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Lay Low.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/tpom /_NEEDS CHECK/_GENRE NEEDS CHECK/Lay Low.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Lay Low.mp3",
+      "sha256": "c9bfb7226a31909b0388d771ac3825e2cb0c2b0a4cdc8a51dbb853c9f2b06b18",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "",
+      "proposed_genre": null,
+      "genre_evidence": "no genre tag and no explicit genre evidence",
+      "genre_confidence": "review",
+      "move": false,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/tpom /_NEEDS CHECK/_GENRE NEEDS CHECK/MOROCCO.mp3",
+      "source_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/MOROCCO.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/tpom /_NEEDS CHECK/_GENRE NEEDS CHECK/MOROCCO.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/MOROCCO.mp3",
+      "sha256": "eb6aa1daf20c8a86cc5c3b90168ebd898f94651a39d9bb9d7c239b689119746c",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "",
+      "proposed_genre": null,
+      "genre_evidence": "no genre tag and no explicit genre evidence",
+      "genre_confidence": "review",
+      "move": false,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/tpom /_NEEDS CHECK/_GENRE NEEDS CHECK/NATURAL.mp3",
+      "source_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/NATURAL.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/tpom /_NEEDS CHECK/_GENRE NEEDS CHECK/NATURAL.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/NATURAL.mp3",
+      "sha256": "712a310dab6bfcfda5e8c4a0526fbbdc2849c15cd903bc8abc07ebb3707618c5",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "",
+      "proposed_genre": null,
+      "genre_evidence": "no genre tag and no explicit genre evidence",
+      "genre_confidence": "review",
+      "move": false,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/tpom /_NEEDS CHECK/_GENRE NEEDS CHECK/On the Way.mp3",
+      "source_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/On the Way.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/tpom /_NEEDS CHECK/_GENRE NEEDS CHECK/On the Way.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/On the Way.mp3",
+      "sha256": "e618f0de147d1a16883b8b09f1f435017c4abc6eb3e6f292a0ddc7ed525f5b01",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "",
+      "proposed_genre": null,
+      "genre_evidence": "no genre tag and no explicit genre evidence",
+      "genre_confidence": "review",
+      "move": false,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/tpom /_NEEDS CHECK/_GENRE NEEDS CHECK/low frequency.mp3",
+      "source_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/low frequency.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Events/tpom /_NEEDS CHECK/_GENRE NEEDS CHECK/low frequency.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/low frequency.mp3",
+      "sha256": "4b54a5908cd637362a023413a72383cd94958a3f29bef18dffb5743dfee11bc7",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "",
+      "proposed_genre": null,
+      "genre_evidence": "no genre tag and no explicit genre evidence",
+      "genre_confidence": "review",
+      "move": false,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}
