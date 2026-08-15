@@ -17,6 +17,32 @@ Safety-first tools and reference rules for organizing a DJ music library by vers
 - Backups, undo payloads, and per-run reports
 - Local credentials or configuration
 
+## Whole-library audit: read-only first
+
+Before another cleanup pass, establish the physical library inventory without changing source audio:
+
+```bash
+python3 scripts/audit_library.py "/path/to/DJ-Music/Music"
+```
+
+The audit reads metadata and codec information, computes SHA-256 hashes, and writes local reports under `output/library-audit/`. That output is intentionally ignored by Git because it can contain absolute paths and library-specific filenames.
+
+It produces:
+
+- `inventory.csv` — one row per physical audio file;
+- `summary.json` — file/storage/format/metadata-quality counts;
+- `exact_duplicates.csv` — byte-identical files only;
+- `metadata_review_candidates.csv` — same normalized Artist + Title, for human review only;
+- `errors.csv` — unreadable or unrecognized files that did not abort the scan.
+
+Exact SHA-256 matches prove byte identity, not that a copy should be deleted. Metadata-only matches are never deletion evidence. See `references/library-audit.md`.
+
+Run the safety tests with:
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
 ## Required workflow
 
 1. Survey one source folder read-only.
@@ -44,8 +70,9 @@ The reusable standalone prompt is available at `music-sort-prompt.md`. Session-s
 
 - `SKILL.md` — core agent workflow and safety rules
 - `agents/openai.yaml` — Codex skill-list metadata
-- `scripts/` — reusable, parameterized sorting tools
-- `references/` — genre, alias, casing, and troubleshooting knowledge
+- `scripts/` — reusable, parameterized sorting and audit tools
+- `tests/` — source-preservation and audit safety tests
+- `references/` — genre, alias, casing, audit, and troubleshooting knowledge
 - `music-sort-prompt.md` — standalone prompt when the skill cannot be installed
 - `CLAUDE.md` — automatic continuation instructions for Claude Code
 - `handoff/HANDOFF-DJ-MUSIC-SORT.md` — current library state and next actions
