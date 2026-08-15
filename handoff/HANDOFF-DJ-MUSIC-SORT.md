@@ -116,7 +116,7 @@ The exact 15 paths were printed during the audit and can be regenerated read-onl
 ## Safe continuation checklist for another folder
 
 1. Read the local skill completely:
-   `/Users/djb.a.e/Desktop/remix-edit-sort/SKILL.md`
+   `/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/SKILL.md`
 2. Do not rerun the full Events plan over the already-sorted destination paths.
 3. Select the next source folder, inventory it read-only, and create a new preview.
 4. Make and verify a new scoped backup before applying that folder's plan.
