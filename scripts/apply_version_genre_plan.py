@@ -111,6 +111,55 @@ def serato_digest(path: Path) -> str:
     return sha256_bytes(b"[]")
 
 
+def serato_payload_digest_mp3(tags: ID3) -> str:
+    """Hash only each Serato GEOB frame's actual binary payload (cues, beatgrid,
+    markers, analysis, overview) — not its encoding/desc/owner metadata. Some
+    files carry Serato frames with an encoding byte that's technically invalid
+    for their ID3 version (e.g. UTF8 inside a v2.3 tag); saving with mutagen
+    then silently normalizes that byte for spec compliance, which changes
+    serato_digest() even though the real Serato data is untouched. This lets
+    that specific, verified-benign case be told apart from an actual change."""
+    values = []
+    for frame in tags.values():
+        haystack = " ".join((
+            frame.HashKey,
+            str(getattr(frame, "desc", "")),
+            str(getattr(frame, "owner", "")),
+            str(getattr(frame, "filename", "")),
+        )).casefold()
+        if "serato" in haystack:
+            data = getattr(frame, "data", None)
+            value = {"key": frame.HashKey}
+            if isinstance(data, bytes):
+                value["data_sha256"] = sha256_bytes(data)
+                value["data_length"] = len(data)
+            else:
+                text = getattr(frame, "text", None)
+                if text is not None:
+                    value["text"] = [str(item) for item in text]
+            values.append(value)
+    payload = json.dumps(sorted(values, key=lambda item: item["key"]), ensure_ascii=False).encode()
+    return sha256_bytes(payload)
+
+
+def serato_payload_digest(path: Path) -> str:
+    if path.suffix.casefold() == ".mp3":
+        try:
+            return serato_payload_digest_mp3(ID3(path))
+        except ID3NoHeaderError:
+            return sha256_bytes(b"[]")
+    # FLAC Serato values are plain Vorbis comment text, not encoding-sensitive
+    # the way ID3 GEOB frames are, so the strict digest already is payload-only.
+    return serato_digest(path)
+
+
+class SeratoEncodingOnlyChange(Exception):
+    """Raised when a genre write changed a Serato frame's on-disk encoding byte
+    (forced by ID3-version-compliance re-serialization) but its actual binary
+    payload was verified byte-identical. Caught and treated as a skip, not a
+    failure — never silently swallowed for a real payload difference."""
+
+
 def read_genre(path: Path) -> str:
     suffix = path.suffix.casefold()
     if suffix == ".mp3":
@@ -215,6 +264,7 @@ def apply(root: Path, plan_path: Path, backup: Path, out_dir: Path, label: str) 
         before_hash = sha256_file(source)
         before_audio = sha256_bytes(audio_payload(source))
         before_serato = serato_digest(source)
+        before_serato_payload = serato_payload_digest(source)
         tag_backup = None
         tag_was_changed = False
         skip_reason = tag_skip_reason(source, item)
@@ -230,8 +280,18 @@ def apply(root: Path, plan_path: Path, backup: Path, out_dir: Path, label: str) 
                 if sha256_bytes(audio_payload(source)) != before_audio:
                     raise RuntimeError("audio payload changed")
                 if serato_digest(source) != before_serato:
+                    if serato_payload_digest(source) == before_serato_payload:
+                        raise SeratoEncodingOnlyChange(
+                            "Genre write forced an ID3-version-compliance re-encoding of a Serato "
+                            "frame's encoding byte (its actual binary payload was verified "
+                            "byte-identical before and after); write rolled back and skipped out of "
+                            "caution rather than trusting the payload check alone"
+                        )
                     raise RuntimeError("Serato frames changed")
                 tag_was_changed = True
+            except SeratoEncodingOnlyChange as exc:
+                shutil.copy2(tag_backup, source)
+                skip_reason = str(exc)
             except Exception:
                 shutil.copy2(tag_backup, source)
                 raise

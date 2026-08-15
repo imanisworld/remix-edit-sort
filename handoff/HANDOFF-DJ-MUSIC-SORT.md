@@ -247,6 +247,25 @@ One file (`Music/thepathforward/[2018-11-28] CHANCES/01 ''KKAAYYTTRRAA'' - CHANC
 
 Full run, in order (undo logs under `handoff/session-2026-08-15/survey/newfiles/`): `newfiles-undo-20260815-181211.jsonl` (337, then crashed on bug #1) → `newfiles-remainder-undo-20260815-181341.jsonl` (113, crashed again on bug #1 via a different file) → bugs fixed → `newfiles-remainder3-undo-20260815-181610.jsonl` (378, completed cleanly) → orphan recovery (1). 337+113+378+1+2(excluded) = 829.
 
+## Completed: `Hip Hop`
+
+Source: `/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop` — 5,888 tracks, 44GB. By far the largest folder yet (larger than Events + NewFiles combined). Unlike every prior folder, most of it was already curated: only 2,511 files sat loose at the top level; the rest lived inside subfolders that were real DJ crates — regional scenes (`chicago_drill`, `atl_trap`, `houston_rap`, `nyc_rap`, `bronx_drill`, `london_drill`, etc.), decade sets (`Hip Hop '80-'00`, `Hip Hop '00-'19`), a pre-existing `Clean` folder, and DJ energy-tier folders (`2026 BEGIN`/`MID`/`HIGH`). Brooke explicitly chose to flatten everything into the same CLEAN/DIRTY/genre scheme used elsewhere, accepting that the existing regional/decade/energy-tier organization would be erased. Genre assumed as `Hip-Hop` for the whole tree (the root folder's own name), matching how Dub/Rave/Metro/etc. were handled.
+
+- Version: 1,590 Clean, 1,752 Dirty, 134 Remix/Edit, 51 Instrumental, 19 Acapella, 2,342 `_NEEDS CHECK`.
+- Genre: `Hip-Hop` for all 5,888 tracks (assumed, per folder name).
+- 3,829 Genre tag writes attempted; 5,543 applied, 171 skipped for ID3v2.2 (preserved, not converted), 12 skipped for a verified-benign Serato encoding difference (see below).
+- 41 destination collisions from merging previously-separated crates (same track title, different bytes — different rips, confirmed by differing SHA-256, not exact duplicates). Both files in every pair were kept; the second file's destination filename got a ` (2)` suffix, following this project's existing terminal-`(N)` convention. Nothing was deleted, renamed at the source, or silently picked as a "winner."
+- Zero audio-payload changes, zero Serato-frame changes, zero deletions.
+- Post-apply inventory confirms all 5,888 tracks present, stable, zero new exact-duplicate groups; 41 terminal-`(N)` hints match the 41 resolved collisions exactly.
+- Backup: `backups/hip-hop-pre-sort-2026-08-15/Hip Hop` (repo-root, gitignored, 44GB, verified byte-identical with `diff -qr`).
+- Undo logs: `handoff/session-2026-08-15/survey/hip-hop/hip-hop-undo-20260815-183117.jsonl` (1,817 items, first run) + `hip-hop-remainder-undo-20260815-183812.jsonl` (4,071 items, after fixes below) = 5,888.
+
+**Three real bugs found and fixed live during this run, all now permanent fixes in `scripts/`:**
+
+1. `build_version_genre_plan.py` proposed a Genre tag write (`tag_change: true`) for `.m4a`/`.aif` files even though the writer only supports mp3/flac. Caught cleanly by pre-apply validation (zero files touched) but blocked the whole plan. Fixed: the builder now never proposes an unwritable tag change — those files still move, just keep their existing Genre tag, with the reason recorded in `genre_write_skipped_reason`.
+2. `apply_version_genre_plan.py`'s pre-apply validation appended an "unsupported tag target" error but then still called the mp3/flac-only `read_genre()` unconditionally on the same item, which would have crashed instead of failing cleanly. This bug was inherited unchanged from all nine original per-folder scripts and never previously exercised. Fixed: the read is now skipped once the format is already flagged unsupported.
+3. One file's Serato GEOB frames (cues, beatgrid, markers, analysis, overview) used an ID3 encoding byte that's technically invalid for its ID3v2.3 tag. Writing the Genre tag made mutagen silently normalize that byte for spec compliance, changing `serato_digest()` even though the real Serato data was untouched — confirmed by a byte-level payload comparison in isolation before touching any real file. Rather than weakening the safety check, added `serato_payload_digest()` (hashes only each Serato frame's actual binary payload, ignoring encoding/desc/owner) and a narrow `SeratoEncodingOnlyChange` skip path: if the strict digest changes but the payload digest doesn't, the write is rolled back and skipped — logged exactly like the ID3v2.2 case — instead of hard-aborting the entire run. If the payload digest had also differed, it still hard-aborts. 12 files hit this path in the real run; each was verified payload-identical before being classified as a skip, not assumed safe.
+
 ## Next pass: Grouping metadata backfill
 
 Do this as a tags-only, preview-first pass. Do not reorganize the completed folders again.

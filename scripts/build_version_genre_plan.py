@@ -21,6 +21,8 @@ from pathlib import Path
 
 NEEDS_VERSION = "_NEEDS CHECK"
 NEEDS_GENRE = "_GENRE NEEDS CHECK"
+# apply_version_genre_plan.py's Genre reader/writer only supports these formats.
+WRITABLE_GENRE_FORMATS = {".mp3", ".flac"}
 
 # Version labels must be syntactically explicit. A plain word match is not
 # enough: "Talking Dirty" is a title, not proof of a dirty DJ version.
@@ -98,6 +100,16 @@ def main() -> None:
         "<root>/<version>/<genre>/filename layout used for single-genre dumps.",
     )
     parser.add_argument("--genre-rules", type=Path, help="Override path to a version-genre-rules.json")
+    parser.add_argument(
+        "--on-collision",
+        choices=["report", "suffix"],
+        default="report",
+        help="'report' (default) leaves colliding items alone and lists them in validation for manual "
+        "resolution before apply. 'suffix' keeps every file — nothing is ever dropped or overwritten — "
+        "and appends ' (2)', ' (3)', ... to the destination filename for the 2nd+ item in each collision "
+        "group (ordered by source path), consistent with this project's existing terminal-(N) convention. "
+        "Sources are never modified by this, only the proposed destination.",
+    )
     args = parser.parse_args()
 
     root = args.root.resolve()
@@ -136,7 +148,8 @@ def main() -> None:
         dest = root / dest_rel
 
         current_genre = row["genre"]
-        tag_change = bool(genre and genre != current_genre)
+        genre_writable = source.suffix.casefold() in WRITABLE_GENRE_FORMATS
+        tag_change = bool(genre and genre != current_genre and genre_writable)
         move = source != dest
 
         version_counts[version_bucket] += 1
@@ -160,10 +173,39 @@ def main() -> None:
                 "genre_confidence": genre_confidence,
                 "move": move,
                 "tag_change": tag_change,
+                "genre_write_skipped_reason": (
+                    None if genre_writable or not genre or genre == current_genre
+                    else f"Genre write not supported for {source.suffix} files; existing tag preserved"
+                ),
             }
         )
 
     collisions = {k: v for k, v in destinations.items() if len(v) > 1}
+    collisions_resolved = []
+    if args.on_collision == "suffix" and collisions:
+        by_dest_key: collections.defaultdict[str, list[dict]] = collections.defaultdict(list)
+        for item in items:
+            by_dest_key[item["destination"].casefold()].append(item)
+        for dest_key, group in by_dest_key.items():
+            if len(group) <= 1:
+                continue
+            group.sort(key=lambda i: i["source"])
+            for order, item in enumerate(group[1:], start=2):
+                dest = Path(item["destination"])
+                new_dest = dest.with_name(f"{dest.stem} ({order}){dest.suffix}")
+                item["destination"] = str(new_dest)
+                item["destination_relative"] = str(Path(item["destination_relative"]).with_name(new_dest.name))
+                item["collision_suffix_applied"] = True
+                item["collision_evidence"] = (
+                    f"destination collided with {len(group) - 1} other file(s) of the same name "
+                    f"(different SHA-256 each time); kept both, never deduplicated by filename alone"
+                )
+            collisions_resolved.append({"original_destination": dest_key, "sources": [i["source"] for i in group]})
+        destinations = collections.defaultdict(list)
+        for item in items:
+            destinations[item["destination"].casefold()].append(item["source"])
+        collisions = {k: v for k, v in destinations.items() if len(v) > 1}
+
     source_set = {item["source"] for item in items}
     existing_conflicts = []
     for item in items:
@@ -186,6 +228,7 @@ def main() -> None:
             "missing_sources": source_missing,
             "destination_collisions": collisions,
             "existing_destination_conflicts": existing_conflicts,
+            "collisions_resolved_by_suffix": collisions_resolved,
         },
         "counts": {
             "version_categories": dict(sorted(version_counts.items())),
