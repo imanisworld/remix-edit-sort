@@ -1,0 +1,564 @@
+{
+  "scope": "/Users/djb.a.e/Music/DJ-Music/Music/edit",
+  "definition": "Exact byte-identical copies only. No files were changed and no removal decision was made.",
+  "groups": [
+    {
+      "sha256": "baa9d51dfe97b66de727e580d7dece649f6b1ccacdc04abce743b4172ca5cf35",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/AM (Prod. by @cheecru).mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '20-'22 /AM (Prod. by @cheecru).mp3"
+      ]
+    },
+    {
+      "sha256": "dd0a55bc6fa130cb39a2e6fcfd8c7caa777f2a9cc1a21c50c7c56f75900e4db5",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Andrew. - missy in the bottle.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Hip House/Andrew. - missy in the bottle.mp3"
+      ]
+    },
+    {
+      "sha256": "513ca220dc57a041415424c1858f423efcea7090a5cb4699451bda437f2b8162",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Arms (Lone Remix).mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/Arms (Lone Remix).mp3"
+      ]
+    },
+    {
+      "sha256": "df73dd2a3ac4c1d6c03342c940b7d7b189d7bea1128acac955770fa724bea70f",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Beyoncé & Terry Hunter - BREAK MY SOUL (Terry Hunter Remix) .mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/Beyoncé & Terry Hunter - BREAK MY SOUL (Terry Hunter Remix) .mp3"
+      ]
+    },
+    {
+      "sha256": "fe3257230df95e04e1b4216cbc8de054ab16e455c30cc5fe70cc5ba659fee011",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Beyoncé & will.i.am - BREAK MY SOUL (will.i.am Remix) .mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/Beyoncé & will.i.am - BREAK MY SOUL (will.i.am Remix) .mp3"
+      ]
+    },
+    {
+      "sha256": "77e09d84d06d807a79d88dc8ac3969d603c6f25e8bdf1989516ff1e30b7c84b5",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Beyoncé feat. Beam - ENERGY .mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/Beyoncé feat. Beam - ENERGY .mp3"
+      ]
+    },
+    {
+      "sha256": "53f4ae543c94ecb76618b4d2c8a2c01ee042dae4f3e5ed710852edcf0a3a54f2",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/BIG TROUBLE.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_plex/BIG TROUBLE.mp3"
+      ]
+    },
+    {
+      "sha256": "2e371494577fa9898149670ab158ca8d2222263c20bcaa9c0d7501ce911a13fb",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Byron the Aquarius - Make Me Feel.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Underground HOUSE : DANCE:MOVE/Byron the Aquarius - Make Me Feel.mp3"
+      ]
+    },
+    {
+      "sha256": "76223dae2ca4268ce4aabaeae58d8a80fcc3dc21ee0628af75b1b64c3f317bf8",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/CHE ECRU, DRAFTRAW - I MISS YOU GIRL.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/alternative/CHE ECRU, DRAFTRAW - I MISS YOU GIRL.mp3"
+      ]
+    },
+    {
+      "sha256": "29a1bc86e1c7268357d2dc58474588afbed184ef7a257919790499ee7f066b3a",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/CHE ECRU, Never Lose Me - KOALA FATHER (Never Lose Me Remix).mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/alternative/CHE ECRU, Never Lose Me - KOALA FATHER (Never Lose Me Remix).mp3"
+      ]
+    },
+    {
+      "sha256": "22f703ccb6179bb5838a98c7ec5c2c8ece053c6dcc602efa25eb4e95352c20fa",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/dvsn - Keep It Going.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Hip House/dvsn - Keep It Going.mp3"
+      ]
+    },
+    {
+      "sha256": "91e095c0e77e03581f0a135223fe0b60973899c316430419e158d509b8d50f9e",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Fred Again, Swedish House Mafia, Future, Remi Oz Bounce - Turn On The Lights Again.. (Remi Oz Bounce Remix).mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/New Orleans Bounce/Fred Again, Swedish House Mafia, Future, Remi Oz Bounce - Turn On The Lights Again.. (Remi Oz Bounce Remix).mp3"
+      ]
+    },
+    {
+      "sha256": "640c61abac250731cc255a61090da0e9b0b5a2618872c01815744b96ac619b5c",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Golden Livin'.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B Remixes/Golden Livin'.mp3"
+      ]
+    },
+    {
+      "sha256": "1cd2410af8533bbf7ffc29c643663fb6214497e6f8547732e80e28ab6e77cc2d",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/GOT EM (Sango Remix).mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/GOT EM (Sango Remix).mp3"
+      ]
+    },
+    {
+      "sha256": "e425535ebf6364a25ea7f62c102e26d2aff069c7d272acdaf7df537a285096dc",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Got Til It's Gone.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_plex/Got Til It's Gone.mp3"
+      ]
+    },
+    {
+      "sha256": "f7211e184322b06b4a3458d8abac0c74abed88093cbf892f435dc0ea383e2751",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Hotline.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '20-'22 /Hotline.mp3"
+      ]
+    },
+    {
+      "sha256": "098143f1a514729083ee3eac97d14374860ff4dbc1832f80654007a2ff26ee67",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/I Aint Mad At HER.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B Remixes/I Aint Mad At HER.mp3"
+      ]
+    },
+    {
+      "sha256": "fdec224502fa6b6485d3fd94287233058ffab8274df1f11cac66c5e7ee77a09b",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/I Do Everything.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '20-'22 /I Do Everything.mp3"
+      ]
+    },
+    {
+      "sha256": "1f3810812c138e81c4d78ad3d01d6cbbffe2e43527cfd2efbb183b0e74cee428",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/IAMNOBODI - Babygirl.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_plex/IAMNOBODI - Babygirl.mp3"
+      ]
+    },
+    {
+      "sha256": "72d81fccacc333d98e7b99cd659f0c63e55e360fe5b3b049c09b8104115a9a17",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Inertia.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_plex/Inertia.mp3"
+      ]
+    },
+    {
+      "sha256": "2fe28234513545b22cc231fc2c19163ef7649694095f82ffff1f0e14cd691ec4",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Inyembezi.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_plex/Inyembezi.mp3"
+      ]
+    },
+    {
+      "sha256": "c926f78c99660817e6281d624e4ebf008d215f5c6bfc60d169a73e66d5f32a35",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Is It True (Four Tet Remix).mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/Is It True (Four Tet Remix).mp3"
+      ]
+    },
+    {
+      "sha256": "88a856a0a4c8e493097a6f0594046e8db9fe3259e429d174f5751c5af488d577",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Kareem Ali (كريم علي) - Honest.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Underground HOUSE : DANCE:MOVE/Kareem Ali (كريم علي) - Honest.mp3"
+      ]
+    },
+    {
+      "sha256": "e921e7c355b36631946635e75033bc09830475cc0c0b701c9537fb35abec9dbf",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/KEMET (feat. Saba).mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '20-'22 /KEMET (feat. Saba).mp3"
+      ]
+    },
+    {
+      "sha256": "ba66e8ab888b6f68a1f81b41d745cbe3e8f12b1069a99f982e78b1a4aa54c91b",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Khlorine (feat. Smino).mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/alternative_r&b/Khlorine (feat. Smino).mp3"
+      ]
+    },
+    {
+      "sha256": "3cd8fcc869e6f3568782645dda240fef8e94a687f777472ce38127d24f55ae11",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Let's Go.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/Let's Go.mp3"
+      ]
+    },
+    {
+      "sha256": "6b5d2173ee195d58730ea29df582c8fe1bda0b679603abb30c1ba1cf044d9c3c",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Lotto (feat. ABRA).mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Hip Hop '00-'19/Lotto (feat. ABRA).mp3"
+      ]
+    },
+    {
+      "sha256": "24f25284d2dc01e81d6536d56817e41e1107d6cd3f62bb35ddcea2583f5119d7",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Love Me JeJe.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/afro_r&b/Love Me JeJe.mp3"
+      ]
+    },
+    {
+      "sha256": "e7e4e03b1eba3d2e50554ee1c880aab218a9139a5f62e50866967d8b72a7ce83",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Love on Wheels.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/Love on Wheels.mp3"
+      ]
+    },
+    {
+      "sha256": "260dc8ffd3d04e454757c1141e3770ae095b8200aff18a170f69d0956fce75d0",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Magic Drum Machine.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/Magic Drum Machine.mp3"
+      ]
+    },
+    {
+      "sha256": "1536d1e6349b8998bd8cef920f87097dc12d8d47f09087c36425e9ed441f6375",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Me & U.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/afro_r&b/Me & U.mp3"
+      ]
+    },
+    {
+      "sha256": "746dc61bae0babe754992207e6c0a77977f311f8f8340e0a37ff6b5a3ae0e8b2",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Mixmag, Friends' - Premiere Will DiMaggio 'Steppin.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Underground HOUSE : DANCE:MOVE/Mixmag, Friends' - Premiere Will DiMaggio 'Steppin.mp3"
+      ]
+    },
+    {
+      "sha256": "0b48dd989d0f85865cbb68b62e0960ca0df2ca32093cdb3cc53bc20609d3e47d",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Moodyman - Ulooklykicecreaminthesummertyme Jamsteady Edit.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Underground HOUSE : DANCE:MOVE/Moodyman - Ulooklykicecreaminthesummertyme Jamsteady Edit.mp3"
+      ]
+    },
+    {
+      "sha256": "a3d718689dbdc5befdea64c3735ccd8f348bb49c3e32d1558a067a8d094587e9",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/NÍDIA_BLUE LIGHT_123 BPM.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_latin/NÍDIA_BLUE LIGHT_123 BPM.mp3"
+      ]
+    },
+    {
+      "sha256": "b6652938fd70a141780410faaa26cdcb7d7397d01c75c079482856417de111b2",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/nobody.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/nobody.mp3"
+      ]
+    },
+    {
+      "sha256": "65443fafd3bff4d90d616fde3521e8e28162d1286fbf5f13843f0e496d098cae",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Octagon.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/Octagon.mp3"
+      ]
+    },
+    {
+      "sha256": "486df66352a82d1c009335b5dbae5e2f0eb3e799f04311deea1f53149bf7ec05",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/One Two Step.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_plex/One Two Step.mp3"
+      ]
+    },
+    {
+      "sha256": "74c89324e2f59f21d72d541e1832191e9756d0a2179a4d4222bed23d2269c4e6",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Oro.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/Oro.mp3"
+      ]
+    },
+    {
+      "sha256": "1d7c661c3007020166ca7f0e566f2ddddfa4ca0129df58bab0467d39904ff039",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Part Of Me Feat. Phoelix & Benjamin Earl Turner.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Hip Hop '00-'19/Part Of Me Feat. Phoelix & Benjamin Earl Turner.mp3"
+      ]
+    },
+    {
+      "sha256": "23f98abc74b70d629f25751b81e6d5726f90fc590b38ba6f12305b8e7e02981c",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Perfect.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_chill/Perfect.mp3"
+      ]
+    },
+    {
+      "sha256": "046453c68d2e4e5f9023f1be9d6bc1194bd987b8e5ea3db6ff00b083577bc3f7",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Personal.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_chill/Personal.mp3"
+      ]
+    },
+    {
+      "sha256": "1584ecb0482768619f647b7c9038e2bb4ccdc4fa5a61b31b72de6a917150cfa9",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Peru (FS Green & Dave Nunes Remix).mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_plex/Peru (FS Green & Dave Nunes Remix).mp3"
+      ]
+    },
+    {
+      "sha256": "8c68475a1488966d5409e06808e91da9289be82f95d4688a6765d80a22481936",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Phone Me (Prod. by Che Ecru).mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '20-'22 /Phone Me (Prod. by Che Ecru).mp3"
+      ]
+    },
+    {
+      "sha256": "9844f3792b47054e205c233711480c686443f1fad3859cd323eb32b6d9ae79a1",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/prada.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_plex/prada.mp3"
+      ]
+    },
+    {
+      "sha256": "43754b32b9e24fd99cf9e44cd811468d7862b4ceb937bf938d691317330b476c",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Quartz.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_edit/Quartz.mp3"
+      ]
+    },
+    {
+      "sha256": "216b9ba86e0af1a31cc9940a56ce915fa6e56260d59de7d061c07da6b913331a",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Reality Check (ft. Eryn Allen Kane & Akenya).mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Hip Hop '00-'19/Reality Check (ft. Eryn Allen Kane & Akenya).mp3"
+      ]
+    },
+    {
+      "sha256": "4de0acb20f709ab5c1d075321e882e9e831b0dc2fb2e91cfb3a32163cfc8ca03",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/SANTA MUERTE_BLUFF_94 BPM.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/neo_soul/SANTA MUERTE_BLUFF_94 BPM.mp3"
+      ]
+    },
+    {
+      "sha256": "17699fbe5ce3b73cd28653f13bc11fa37f3cb3941991870aea43cec4323ca584",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Scotti Dee - Lost In Abyss X Bitch Better Have My Money (Cupidon Flip.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Club RN/Mid Club type /Scotti Dee - Lost In Abyss X Bitch Better Have My Money (Cupidon Flip.mp3"
+      ]
+    },
+    {
+      "sha256": "964b590b371ccaa1f91e39882bc26ff8d4813fddbda8d7973d87ca162ef9f98a",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Silence & Secrets (Black Coffee Remix).mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/Silence & Secrets (Black Coffee Remix).mp3"
+      ]
+    },
+    {
+      "sha256": "3737babc45389effeaae771997150e42e2162511858af79edb607fde2beae4cd",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Sing My Blues - Album Mix.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/Sing My Blues - Album Mix.mp3"
+      ]
+    },
+    {
+      "sha256": "877c267f2a15d538b71b2f7a95866a739b96d2685a662cac7cda69601fd551df",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/slippery flip draft - omoidé.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B Remixes/slippery flip draft - omoidé.mp3"
+      ]
+    },
+    {
+      "sha256": "8b830a9246161ce091ce8137e6a09a79a96c3ebd6b5633ef06f3f4e4a42c74c4",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/still tippin in my house.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/dirty_south_rap/still tippin in my house.mp3"
+      ]
+    },
+    {
+      "sha256": "3b2c03f829aebead231fad70f31cf674434bea1e1f2f8ef461ecd4fad2ff563a",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/SUA - imbabyyy.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B Remixes/SUA - imbabyyy.mp3"
+      ]
+    },
+    {
+      "sha256": "0e3971c528c2e45c1e875b8830f53a7e790ea6eaa136bb8dbfdbfb09d3932529",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Sunny Duet (w  theMIND).mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Hip Hop '00-'19/Sunny Duet (w  theMIND).mp3"
+      ]
+    },
+    {
+      "sha256": "712c344d2faca2613f2715cda467932a2d96291f534ddfdd82bc7f9d35e1e283",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/TAKE A CHANCE.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/TAKE A CHANCE.mp3"
+      ]
+    },
+    {
+      "sha256": "bd25a34b1bdaa5fd5aa3e8337e9c51388daa6b9e3f0e3f0a620610b5967be18f",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/THATS MY BABY.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '20-'22 /THATS MY BABY.mp3"
+      ]
+    },
+    {
+      "sha256": "4e22195e2491ae61d3f2e92156485d10dedab9ce77082caf0ff0485636ab2354",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Tommy Richman - LAST NITE.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/alternative/Tommy Richman - LAST NITE.mp3"
+      ]
+    },
+    {
+      "sha256": "5580c18001eddf5c310fd9a8ef72c4c482147ada710092375e5f5baa14fa1f13",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Tommy Richman - MESSY.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/alternative/Tommy Richman - MESSY.mp3"
+      ]
+    },
+    {
+      "sha256": "ac9f26651353e95f6ffa14b6d8890da4eba42bb5e5641a5976e1cc9abc13b749",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Tommy Richman, Zachary Moon - GLOCK 25.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/alternative/Tommy Richman, Zachary Moon - GLOCK 25.mp3"
+      ]
+    },
+    {
+      "sha256": "bcc9b3eb03c4fac43fdd002475d2b793c22bb9245414f40450bdcdb927a0aedf",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Turn Me Up.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/afro_r&b/Turn Me Up.mp3"
+      ]
+    },
+    {
+      "sha256": "2c32bde4de9dd7223579cb6926910219d58c0032792eddc7abb8fd400f91447f",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Unknown.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B Remixes/Unknown.mp3"
+      ]
+    },
+    {
+      "sha256": "4e5763579eb6bebc2e1d0a436fbb3c8ecced2ef78611abe149b94fcc2230618e",
+      "inside_edit": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/VanJess - Through Enough (feat. Goldlink) Jarreau Vandal Remix.mp3"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/alternative_r&b/VanJess - Through Enough (feat. Goldlink) Jarreau Vandal Remix.mp3"
+      ]
+    }
+  ]
+}

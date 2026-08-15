@@ -1,0 +1,29 @@
+{
+  "mode": "genre-apply",
+  "plan": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/music-to-move/genre-plan.json",
+  "verified_backup": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/backups/music-to-move-pre-genre-2026-08-15",
+  "tracks_processed": 152,
+  "files_moved": 126,
+  "genre_tags_changed": 99,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/music-to-move/genre-undo-20260815-160858.jsonl",
+  "tag_backup_root": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/music-to-move/genre-tag-file-backups/20260815-160858",
+  "genre_counts": {
+    "Baltimore Club": 1,
+    "Bounce": 3,
+    "DJ Tools": 26,
+    "Dembow": 1,
+    "Electronic": 1,
+    "Funk & Soul": 1,
+    "Ghettotech": 1,
+    "Hip-Hop": 29,
+    "Juke & Footwork": 34,
+    "Miami Bass": 2,
+    "Pop": 3,
+    "R&B": 19,
+    "_GENRE NEEDS CHECK": 31
+  }
+}

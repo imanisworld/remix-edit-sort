@@ -1,0 +1,4 @@
+interface:
+  display_name: "Remix & Edit Sort"
+  short_description: "Safely organize and tag DJ remixes and edits"
+  default_prompt: "Use $remix-edit-sort to survey my DJ music folder and show a preview before changing anything."

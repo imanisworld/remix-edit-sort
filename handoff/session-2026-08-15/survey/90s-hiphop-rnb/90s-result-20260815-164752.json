@@ -1,0 +1,19 @@
+{
+  "mode": "90s-apply",
+  "plan": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/90s-hiphop-rnb/90s-plan.json",
+  "verified_backup": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/backups/90s-hiphop-rnb-pre-sort-2026-08-15",
+  "tracks_processed": 10,
+  "files_moved": 10,
+  "genre_tags_changed": 9,
+  "genre_tags_skipped": 0,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/90s-hiphop-rnb/90s-undo-20260815-164752.jsonl",
+  "tag_backup_root": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/90s-hiphop-rnb/90s-tag-file-backups/20260815-164752",
+  "genre_counts": {
+    "Hip-Hop": 9,
+    "_GENRE NEEDS CHECK": 1
+  }
+}

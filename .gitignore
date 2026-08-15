@@ -23,11 +23,11 @@ _Serato_/
 /survey/
 /output/
 /local/
-*.jsonl
-inventory.csv
-inventory.json
-*-result-*.json
-*-undo-*.jsonl
+/*.jsonl
+/inventory.csv
+/inventory.json
+/*-result-*.json
+/*-undo-*.jsonl
 
 # Secrets and machine-local configuration.
 .env

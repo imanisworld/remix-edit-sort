@@ -1,0 +1,30 @@
+{
+  "scope": "/Users/djb.a.e/Music/DJ-Music/Music/metro",
+  "read_only": true,
+  "stable_during_inventory": true,
+  "number_rule": "Only a terminal (N) immediately before the extension is flagged as a copy hint. Meaningful numbers are preserved. A suffix is not duplicate proof; SHA-256 is.",
+  "rows": [
+    {
+      "full_path": "/Users/djb.a.e/Music/DJ-Music/Music/metro/Way 2 Sexy, Future, Young Thug, Sørensen Funky - Drake (Sørensen Funky Remix).mp3",
+      "filename": "Way 2 Sexy, Future, Young Thug, Sørensen Funky - Drake (Sørensen Funky Remix).mp3",
+      "artist": "Way 2 Sexy, Future, Young Thug, Sørensen Funky",
+      "title": "Drake (Sørensen Funky Remix)",
+      "album": "Drake (Sørensen Funky Remix)",
+      "genre": "jungle",
+      "year": "2021",
+      "bpm": "133",
+      "key": "Em",
+      "file_type": "mp3",
+      "bitrate_kbps": 128,
+      "sample_rate_hz": 44100,
+      "file_size_bytes": 5716101,
+      "duration_seconds": 341.053,
+      "date_modified": "2024-01-16T13:40:02-05:00",
+      "sha256": "eddcf724ec61879e37dcf71db3cc54e2fc4f5436bd95949472c578b27c7cc130",
+      "version_words": "remix",
+      "trailing_copy_suffix": "no",
+      "copy_suffix_number": "",
+      "exact_duplicate_count_in_folder": 0
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY",
+  "track_count": 10,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true
+  },
+  "counts": {
+    "version_categories": {
+      "CLEAN": 6,
+      "DIRTY": 3,
+      "_NEEDS CHECK": 1
+    },
+    "genres": {
+      "Hip-Hop": 9,
+      "_GENRE NEEDS CHECK": 1
+    },
+    "moves": 10,
+    "genre_tag_changes": 9
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": []
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/B.G. - Cash Money Is An Army (Clean).mp3",
+      "source_relative": "B.G. - Cash Money Is An Army (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/CLEAN/Hip-Hop/B.G. - Cash Money Is An Army (Clean).mp3",
+      "destination_relative": "CLEAN/Hip-Hop/B.G. - Cash Money Is An Army (Clean).mp3",
+      "sha256": "9fc0fc5282ab3a682fda0666bcabbb722caa712c0c0b451ea7b0f1b34ad56d4c",
+      "version_category": "CLEAN",
+      "current_genre": "Hip Hop",
+      "proposed_genre": "Hip-Hop",
+      "move": true,
+      "tag_change": true
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/B.G. - Cash Money Is An Army (Intro Clean).mp3",
+      "source_relative": "B.G. - Cash Money Is An Army (Intro Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/CLEAN/Hip-Hop/B.G. - Cash Money Is An Army (Intro Clean).mp3",
+      "destination_relative": "CLEAN/Hip-Hop/B.G. - Cash Money Is An Army (Intro Clean).mp3",
+      "sha256": "73487ca0f8d723376907488f97204bb764eec2c420435a3b8ad4746efb1a1527",
+      "version_category": "CLEAN",
+      "current_genre": "Hip Hop",
+      "proposed_genre": "Hip-Hop",
+      "move": true,
+      "tag_change": true
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/B.G. ft Cash Money Millionaires - Bling Bling (Clean).mp3",
+      "source_relative": "B.G. ft Cash Money Millionaires - Bling Bling (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/CLEAN/Hip-Hop/B.G. ft Cash Money Millionaires - Bling Bling (Clean).mp3",
+      "destination_relative": "CLEAN/Hip-Hop/B.G. ft Cash Money Millionaires - Bling Bling (Clean).mp3",
+      "sha256": "d3e327760cbd9ea4e99f9030b5fbb26296575580b4f216deb39a26e6d5507a79",
+      "version_category": "CLEAN",
+      "current_genre": "Hip Hop",
+      "proposed_genre": "Hip-Hop",
+      "move": true,
+      "tag_change": true
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/Black Moon - I Got Cha Opin (Remix) (Clean).mp3",
+      "source_relative": "Black Moon - I Got Cha Opin (Remix) (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/CLEAN/Hip-Hop/REMIXES & EDITS/Black Moon - I Got Cha Opin (Remix) (Clean).mp3",
+      "destination_relative": "CLEAN/Hip-Hop/REMIXES & EDITS/Black Moon - I Got Cha Opin (Remix) (Clean).mp3",
+      "sha256": "fc8b31928b7d6004d30604fac2d9af24ceaa33012389dcf96f035da16d2e189b",
+      "version_category": "CLEAN",
+      "current_genre": "Hip Hop",
+      "proposed_genre": "Hip-Hop",
+      "move": true,
+      "tag_change": true
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/Black Moon - I Got Cha Opin (Remix) (Dirty).mp3",
+      "source_relative": "Black Moon - I Got Cha Opin (Remix) (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/DIRTY/Hip-Hop/REMIXES & EDITS/Black Moon - I Got Cha Opin (Remix) (Dirty).mp3",
+      "destination_relative": "DIRTY/Hip-Hop/REMIXES & EDITS/Black Moon - I Got Cha Opin (Remix) (Dirty).mp3",
+      "sha256": "e78e764452aed9273641871ab80ad4eb1bdcacb9b4dba49a3921e269cf225f28",
+      "version_category": "DIRTY",
+      "current_genre": "Hip Hop",
+      "proposed_genre": "Hip-Hop",
+      "move": true,
+      "tag_change": true
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/Black Moon - I Got Cha Opin (Remix) (Intro Clean).mp3",
+      "source_relative": "Black Moon - I Got Cha Opin (Remix) (Intro Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/CLEAN/Hip-Hop/REMIXES & EDITS/Black Moon - I Got Cha Opin (Remix) (Intro Clean).mp3",
+      "destination_relative": "CLEAN/Hip-Hop/REMIXES & EDITS/Black Moon - I Got Cha Opin (Remix) (Intro Clean).mp3",
+      "sha256": "07a5fb2a03cbca0db240db0ee9ca56b0daaaded2fb125dc6f6f43a82d65e3fd7",
+      "version_category": "CLEAN",
+      "current_genre": "Hip Hop",
+      "proposed_genre": "Hip-Hop",
+      "move": true,
+      "tag_change": true
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/Black Moon - I Got Cha Opin (Remix) (Intro Dirty).mp3",
+      "source_relative": "Black Moon - I Got Cha Opin (Remix) (Intro Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/DIRTY/Hip-Hop/REMIXES & EDITS/Black Moon - I Got Cha Opin (Remix) (Intro Dirty).mp3",
+      "destination_relative": "DIRTY/Hip-Hop/REMIXES & EDITS/Black Moon - I Got Cha Opin (Remix) (Intro Dirty).mp3",
+      "sha256": "2d7117a6e846a02cd905404f835704b8f2d1aabbd2824d4748af92bca29afb9b",
+      "version_category": "DIRTY",
+      "current_genre": "Hip Hop",
+      "proposed_genre": "Hip-Hop",
+      "move": true,
+      "tag_change": true
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/JT Money ft Sole - Who Dat (Clean).mp3",
+      "source_relative": "JT Money ft Sole - Who Dat (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/CLEAN/Hip-Hop/JT Money ft Sole - Who Dat (Clean).mp3",
+      "destination_relative": "CLEAN/Hip-Hop/JT Money ft Sole - Who Dat (Clean).mp3",
+      "sha256": "be6e763f5466d6ea6bbd33b95c9956d21d2bb0e09aa0d33ac0de595885238a16",
+      "version_category": "CLEAN",
+      "current_genre": "Hip Hop",
+      "proposed_genre": "Hip-Hop",
+      "move": true,
+      "tag_change": true
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/JT Money ft Sole - Who Dat (Dirty).mp3",
+      "source_relative": "JT Money ft Sole - Who Dat (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/DIRTY/Hip-Hop/JT Money ft Sole - Who Dat (Dirty).mp3",
+      "destination_relative": "DIRTY/Hip-Hop/JT Money ft Sole - Who Dat (Dirty).mp3",
+      "sha256": "bb1eaff918912d942699a261118256fdcc57bf4c7db189ca467a80986a0b94f1",
+      "version_category": "DIRTY",
+      "current_genre": "Hip Hop",
+      "proposed_genre": "Hip-Hop",
+      "move": true,
+      "tag_change": true
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/Jermaine Dupri & Jay-Z _ Money Ain't A Thang.mp3",
+      "source_relative": "Jermaine Dupri & Jay-Z _ Money Ain't A Thang.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/90S HIPHOP R&B CLEAN DIRTY/_NEEDS CHECK/_GENRE NEEDS CHECK/Jermaine Dupri & Jay-Z _ Money Ain't A Thang.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Jermaine Dupri & Jay-Z _ Money Ain't A Thang.mp3",
+      "sha256": "1ed8621576bd8dc47ca52a104e61900baf033a6a452472515c956a0937bff995",
+      "version_category": "_NEEDS CHECK",
+      "current_genre": "Other",
+      "proposed_genre": null,
+      "move": true,
+      "tag_change": false
+    }
+  ]
+}

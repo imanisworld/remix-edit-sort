@@ -1,0 +1,22 @@
+{
+  "classification": "REVIEW — identical compressed audio payload, different full files because metadata differs",
+  "action": "None. Preserve both until Serato path/cue/history dependencies are resolved.",
+  "items": [
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/01 - Spend Dat - Yung Miami (1).mp3",
+      "file_sha256": "523e62e014329bc27298b39e6fcd17d1b3573bfb3769b5a5af49408a00c13b9b",
+      "audio_payload_sha256": "81cb627b8a5d39da3d708936037409197c90b1f850675f6004326fa816936522",
+      "bytes": 12024219,
+      "audio_payload_bytes": 11874240,
+      "serato_playcount": "2"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Spend Dat/01 - Spend Dat - Yung Miami (1).mp3",
+      "file_sha256": "168f41d2f0d2c317bbaaa10db83bad735bf765cb556069c2938f74dc20001e78",
+      "audio_payload_sha256": "81cb627b8a5d39da3d708936037409197c90b1f850675f6004326fa816936522",
+      "bytes": 12024219,
+      "audio_payload_bytes": 11874240,
+      "serato_playcount": "1"
+    }
+  ]
+}

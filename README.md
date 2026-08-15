@@ -39,3 +39,17 @@ The working-library handoff and run artifacts intentionally remain outside this 
 Open this repository in Claude Code. It will automatically read `CLAUDE.md`, which points to the consolidated handoff and current pending work.
 
 The reusable standalone prompt is available at `music-sort-prompt.md`. Session-specific scripts and reports are retained under `handoff/session-2026-08-15/` for audit and continuation; they contain local paths and should be generalized before reuse on another library.
+
+## Repository map
+
+- `SKILL.md` — core agent workflow and safety rules
+- `agents/openai.yaml` — Codex skill-list metadata
+- `scripts/` — reusable, parameterized sorting tools
+- `references/` — genre, alias, casing, and troubleshooting knowledge
+- `music-sort-prompt.md` — standalone prompt when the skill cannot be installed
+- `CLAUDE.md` — automatic continuation instructions for Claude Code
+- `handoff/HANDOFF-DJ-MUSIC-SORT.md` — current library state and next actions
+- `handoff/ARTIFACTS.md` — what is and is not mirrored from `.codex`
+- `handoff/session-2026-08-15/survey/` — complete text-only plans, inventories, results, undo manifests, reports, and historical scripts
+
+The repository intentionally contains no DJ audio, video, Serato database, or media backup payloads.

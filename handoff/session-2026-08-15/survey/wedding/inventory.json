@@ -1,0 +1,30 @@
+{
+  "scope": "/Users/djb.a.e/Music/DJ-Music/Music/Wedding",
+  "read_only": true,
+  "stable_during_inventory": true,
+  "number_rule": "Only a terminal (N) immediately before the extension is flagged as a copy hint. Meaningful numbers are preserved. A suffix is not duplicate proof; SHA-256 is.",
+  "rows": [
+    {
+      "full_path": "/Users/djb.a.e/Music/DJ-Music/Music/Wedding/EKANY, EKANY LATIN ORCHESTRAL - POETIC JUSTICE (EKANY LATIN ORCHESTRAL Edit).mp3",
+      "filename": "EKANY, EKANY LATIN ORCHESTRAL - POETIC JUSTICE (EKANY LATIN ORCHESTRAL Edit).mp3",
+      "artist": "Kendrick Lamar feat Drake",
+      "title": "POETIC JUSTICE (EKANY LATIN ORCHESTRAL Edit)",
+      "album": "POETIC JUSTICE (EKANY LATIN ORCHESTRAL Edit)",
+      "genre": "",
+      "year": "2024",
+      "bpm": "68",
+      "key": "Fm",
+      "file_type": "mp3",
+      "bitrate_kbps": 128,
+      "sample_rate_hz": 44100,
+      "file_size_bytes": 2757101,
+      "duration_seconds": 160.63,
+      "date_modified": "2026-08-04T22:33:47-04:00",
+      "sha256": "9c85bfcd6dbe78fe0b09052572700b6d5c809e4e6d2616b0bd4fada27e3b5755",
+      "version_words": "edit",
+      "trailing_copy_suffix": "no",
+      "copy_suffix_number": "",
+      "exact_duplicate_count_in_folder": 0
+    }
+  ]
+}

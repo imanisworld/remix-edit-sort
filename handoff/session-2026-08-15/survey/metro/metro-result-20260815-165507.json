@@ -1,0 +1,18 @@
+{
+  "mode": "metro-apply",
+  "plan": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/metro/metro-plan.json",
+  "verified_backup": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/backups/metro-pre-sort-2026-08-15",
+  "tracks_processed": 1,
+  "files_moved": 1,
+  "genre_tags_changed": 1,
+  "genre_tags_skipped": 0,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/metro/metro-undo-20260815-165507.jsonl",
+  "tag_backup_root": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/metro/metro-tag-file-backups/20260815-165507",
+  "genre_counts": {
+    "Jungle": 1
+  }
+}

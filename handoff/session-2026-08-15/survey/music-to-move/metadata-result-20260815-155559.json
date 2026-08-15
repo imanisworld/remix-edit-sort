@@ -1,0 +1,122 @@
+{
+  "mode": "metadata-apply",
+  "files_changed": 10,
+  "fields_changed": 12,
+  "backup_root": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/music-to-move/tag-file-backups/20260815-155559",
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "items": [
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/A-Town Players - Wassup Wassup ( Bankhead Bounce ) Atlanta Classic 1995.mp3",
+      "backup": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/music-to-move/tag-file-backups/20260815-155559/_NEEDS CHECK/A-Town Players - Wassup Wassup ( Bankhead Bounce ) Atlanta Classic 1995.mp3",
+      "changed": {
+        "artist": "A-Town Players",
+        "year": "1995"
+      },
+      "before_sha256": "83b899d1d938151e540e0593364b900ce110f5c20117866212c88c6136427d1c",
+      "after_sha256": "617dcd6ca27c866be38f399e43119346e92d82777f1e93de94e2692027955a33",
+      "audio_payload_sha256": "373425909d385d51e3eff4b89ba507cdd461c35703c13e56e3d4391b0b7b4321",
+      "serato_frames_sha256": "88a6e9c968155c7072f8d04b149bc8bf7cd950c5ded57f474dbba796e2008b91"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/CUZZOS - MOESHA CYPHER.mp3",
+      "backup": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/music-to-move/tag-file-backups/20260815-155559/_NEEDS CHECK/CUZZOS - MOESHA CYPHER.mp3",
+      "changed": {
+        "artist": "CUZZOS"
+      },
+      "before_sha256": "058e83bac13c0c7b3274cccd9ef197d46d1e570651fd721b54426daf9068ebc8",
+      "after_sha256": "81a84877a9ead180497c9a1fff060e79103cb7c6f6479d95260c506a0f5d94fb",
+      "audio_payload_sha256": "2ee7dc24f43bf7461e59a40129762a3bd7951f4b2e922b5b559809afb2e9d79b",
+      "serato_frames_sha256": "f949974d3097157cc3178f4c00a96fc239344b967896724ebddae9252bd8cab9"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Don Toliver - No Pole [Official Visualizer].mp3",
+      "backup": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/music-to-move/tag-file-backups/20260815-155559/_NEEDS CHECK/Don Toliver - No Pole [Official Visualizer].mp3",
+      "changed": {
+        "artist": "Don Toliver"
+      },
+      "before_sha256": "d0cfb8ec82b4fc26b57e008561abd90b20c02dc617c37beb3d6556eed525a7e0",
+      "after_sha256": "4c49fb70a47ab1c9826675feedbbb877afc52652ea6feca944bf57bc60f0e366",
+      "audio_payload_sha256": "502eb6ea7c6b64202eb5413e5e2ed1d6eacc55b959bf4b5807566f6f5ebed391",
+      "serato_frames_sha256": "f13f3b2340d28cc0c1b0d74c3f0562bcc2f0ca76f0b3d8d2bdcd841370ef489e"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Monaleo - Everythang Pinka (feat. Teezo Touchdown).mp3",
+      "backup": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/music-to-move/tag-file-backups/20260815-155559/_NEEDS CHECK/Monaleo - Everythang Pinka (feat. Teezo Touchdown).mp3",
+      "changed": {
+        "artist": "Monaleo"
+      },
+      "before_sha256": "4ca36baaa8c300ea40093fd7139b5013304974411f4c505dc5adef3b3bac77a9",
+      "after_sha256": "494fddaefde85a9f6e167bd090584f767bd2c7c99671c849ced908f73a299d14",
+      "audio_payload_sha256": "d6fe45a4debe23589bf1e291ab44451174a764239fef3cd25232964602d77a67",
+      "serato_frames_sha256": "67ea95865236054f425fad6f33c8eb1bbe4a1056eeda59592bdb6514e639ec67"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/Saturday Sessions 2019 - Session 02 beat (95bpm).mp3",
+      "backup": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/music-to-move/tag-file-backups/20260815-155559/DJ TOOLS/Scratch Beats/Saturday Sessions 2019 - Session 02 beat (95bpm).mp3",
+      "changed": {
+        "year": "2019"
+      },
+      "before_sha256": "32c015e966ed8ce5001a9792be829d0cbc986c8c75466adafa3f33f4c7d9f686",
+      "after_sha256": "c304c53efb80ae58abb05d4e1b846b17f6b1d7a4300cdf40734774444d70324a",
+      "audio_payload_sha256": "7fba7d6e0121ffebf077608944b0d78ce046a39354ba6a829951c660546214e7",
+      "serato_frames_sha256": "5e6f6e4084e2a72625aa8cb9eaf97b12b1aeeeb927600a12bca605c4627a850c"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/Saturday Sessions 2019 - Session 04 Beat.mp3",
+      "backup": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/music-to-move/tag-file-backups/20260815-155559/DJ TOOLS/Scratch Beats/Saturday Sessions 2019 - Session 04 Beat.mp3",
+      "changed": {
+        "year": "2019"
+      },
+      "before_sha256": "b01d0d56eec9955d176b710657aca56b0c8212cd64d5559953e44705c26e579b",
+      "after_sha256": "cf18786774895922de98ad4c0af6812a533cecfbec7188440f758ad1a4bd5bed",
+      "audio_payload_sha256": "f56383fa3d7bc4928be9febd3fecb7724d28647e797fa8a9ad39cca17eb0f29c",
+      "serato_frames_sha256": "f7bfb7bbb48bf1273800596e4e6e64794bc8db309753e5c4224a49f72b97e798"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/Saturday Sessions 2019 - Session 05 beat (94 bpm).mp3",
+      "backup": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/music-to-move/tag-file-backups/20260815-155559/DJ TOOLS/Scratch Beats/Saturday Sessions 2019 - Session 05 beat (94 bpm).mp3",
+      "changed": {
+        "year": "2019"
+      },
+      "before_sha256": "f6501bd8a724dd70c393d83578300e712663bea1fdf4e8d4f00a6ff29e4d7ba1",
+      "after_sha256": "7e1c0fba7c927d65ef9f5d13502367f27d9718e627c29902d117566d442d7005",
+      "audio_payload_sha256": "bbe3c4d4ef2d1453c1bb32187e50911deab6223eada21bc3a454b86f1d3980fc",
+      "serato_frames_sha256": "375e60b699f192f82389e09192a23b6bf71132e26ec925766d53278f43af7499"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/djTLMtv Saturday Sessions 10 (X - Mas 2015) 91bpm.mp3",
+      "backup": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/music-to-move/tag-file-backups/20260815-155559/DJ TOOLS/Scratch Beats/djTLMtv Saturday Sessions 10 (X - Mas 2015) 91bpm.mp3",
+      "changed": {
+        "year": "2015"
+      },
+      "before_sha256": "328ec947eb7c5c267cf568296fb79ae782cf16124b9e1243b85631ff5997589b",
+      "after_sha256": "e81ea2ea17843789778dc6507e161116799be902f496007bbc67d816d0a3a127",
+      "audio_payload_sha256": "df402dccec620f837f15b7364137cb1946626bd783b225d33d5c24863da36efa",
+      "serato_frames_sha256": "32aa745adfd2cacf318f581f3de57c2d393cf361638bdd4ca8cd7eaf50389e71"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/djTLMtv Saturday Sessions Jan 7 2017 (95bpm).mp3",
+      "backup": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/music-to-move/tag-file-backups/20260815-155559/DJ TOOLS/Scratch Beats/djTLMtv Saturday Sessions Jan 7 2017 (95bpm).mp3",
+      "changed": {
+        "year": "2017"
+      },
+      "before_sha256": "a7fcc58a020e0449eac5790c1ec8843c3a079be354553f0ef6f4a5f3e6717fb7",
+      "after_sha256": "93500fd8bc8edc3bd44250141e5f3ea240196088a27237da763a1f2662bb42c2",
+      "audio_payload_sha256": "f3732fb86e5d3756cdb304b262f21dfac01a67c1d3a5e1fc5a969c24f99f1680",
+      "serato_frames_sha256": "6fd53bc5e350886b1ec499c106e1e9a28441344a861177afaa1796bdf93582f7"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/Belly Gang Kushington - Friend Do Remix ft. YKNIECE (Official Music Video).mp3",
+      "backup": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/music-to-move/tag-file-backups/20260815-155559/REMIXES & EDITS/Belly Gang Kushington - Friend Do Remix ft. YKNIECE (Official Music Video).mp3",
+      "changed": {
+        "artist": "Belly Gang Kushington",
+        "title": "Friend Do Remix ft. YKNIECE (Official Music Video)"
+      },
+      "before_sha256": "52b632e9ebb2a5377f414977e5f079f3ac930ef11edb2263e2d144bc025c4609",
+      "after_sha256": "8f9f1839cb3fa0752691222c8f933fc3f8400000c370a7794a6d1c3b53dd3a83",
+      "audio_payload_sha256": "38984913b38234c0e3e822152c976431bf881b41344efc1b25700ee3caaf75c7",
+      "serato_frames_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  ]
+}

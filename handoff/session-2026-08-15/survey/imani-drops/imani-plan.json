@@ -1,0 +1,38 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/Imani Drops",
+  "track_count": 1,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 1
+    },
+    "genres": {
+      "_GENRE NEEDS CHECK": 1
+    },
+    "moves": 1,
+    "genre_tag_changes": 0
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": []
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Imani Drops/HIDE N SEEK IN JERSEY.wav",
+      "source_relative": "HIDE N SEEK IN JERSEY.wav",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Imani Drops/_NEEDS CHECK/_GENRE NEEDS CHECK/HIDE N SEEK IN JERSEY.wav",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/HIDE N SEEK IN JERSEY.wav",
+      "sha256": "47997441fb80772ac2d3326b2997fcb8ef37f60efdda1ee119b1ee625bb4a3d9",
+      "version_category": "_NEEDS CHECK",
+      "current_genre": "",
+      "proposed_genre": null,
+      "move": true,
+      "tag_change": false
+    }
+  ]
+}

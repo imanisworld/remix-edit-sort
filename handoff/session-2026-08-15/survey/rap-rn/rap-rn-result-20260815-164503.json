@@ -1,0 +1,20 @@
+{
+  "mode": "rap-rn-apply",
+  "plan": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/rap-rn/rap-rn-plan.json",
+  "verified_backup": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/backups/rap-rn-pre-sort-2026-08-15",
+  "tracks_processed": 21,
+  "files_moved": 21,
+  "genre_tags_changed": 17,
+  "genre_tags_skipped": 0,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/rap-rn/rap-rn-undo-20260815-164503.jsonl",
+  "tag_backup_root": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/rap-rn/rap-rn-tag-file-backups/20260815-164503",
+  "genre_counts": {
+    "Hip-Hop": 16,
+    "R&B": 4,
+    "Afrobeats": 1
+  }
+}

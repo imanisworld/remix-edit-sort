@@ -1,0 +1,52 @@
+{
+  "scope": "/Users/djb.a.e/Music/DJ-Music/Music/Rave",
+  "read_only": true,
+  "stable_during_inventory": true,
+  "number_rule": "Only a terminal (N) immediately before the extension is flagged as a copy hint. Meaningful numbers are preserved. A suffix is not duplicate proof; SHA-256 is.",
+  "rows": [
+    {
+      "full_path": "/Users/djb.a.e/Music/DJ-Music/Music/Rave/Gaszia - CLIPSCAN.mp3",
+      "filename": "Gaszia - CLIPSCAN.mp3",
+      "artist": "Gaszia",
+      "title": "CLIPSCAN",
+      "album": "CLIPSCAN",
+      "genre": "",
+      "year": "2023",
+      "bpm": "132",
+      "key": "Ebm",
+      "file_type": "mp3",
+      "bitrate_kbps": 128,
+      "sample_rate_hz": 44100,
+      "file_size_bytes": 3842277,
+      "duration_seconds": 190.909,
+      "date_modified": "2024-12-29T18:25:50-05:00",
+      "sha256": "db6f25e23859b3b5a386fb250232aead188745d864edef32a8793143dc8de6f6",
+      "version_words": "",
+      "trailing_copy_suffix": "no",
+      "copy_suffix_number": "",
+      "exact_duplicate_count_in_folder": 0
+    },
+    {
+      "full_path": "/Users/djb.a.e/Music/DJ-Music/Music/Rave/QECHUABOi - 2DrAnK!.mp3",
+      "filename": "QECHUABOi - 2DrAnK!.mp3",
+      "artist": "QECHUABOi",
+      "title": "2DrAnK!",
+      "album": "2DrAnK!",
+      "genre": "white, edit",
+      "year": "2024",
+      "bpm": "84",
+      "key": "F#m",
+      "file_type": "mp3",
+      "bitrate_kbps": 128,
+      "sample_rate_hz": 44100,
+      "file_size_bytes": 2879984,
+      "duration_seconds": 166.75,
+      "date_modified": "2025-03-13T22:23:40-04:00",
+      "sha256": "e570fafbcc8e9de0a5063d72d4740235377a20b6fa00c49d21fb33f7bbf21c22",
+      "version_words": "",
+      "trailing_copy_suffix": "no",
+      "copy_suffix_number": "",
+      "exact_duplicate_count_in_folder": 0
+    }
+  ]
+}

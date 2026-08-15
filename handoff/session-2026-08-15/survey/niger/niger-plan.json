@@ -1,0 +1,55 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/NIGER",
+  "corrected_source_label": "Nigeria",
+  "proposed_grouping": "Source: Nigeria",
+  "track_count": 2,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 2
+    },
+    "genres": {
+      "_GENRE NEEDS CHECK": 2
+    },
+    "moves": 2,
+    "genre_tag_changes": 0,
+    "grouping_tag_changes": 2
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": []
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/NIGER/Ajebo Hustlers - In Love feat. Fave (Visualizer).mp3",
+      "source_relative": "Ajebo Hustlers - In Love feat. Fave (Visualizer).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/NIGER/_NEEDS CHECK/_GENRE NEEDS CHECK/Ajebo Hustlers - In Love feat. Fave (Visualizer).mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Ajebo Hustlers - In Love feat. Fave (Visualizer).mp3",
+      "sha256": "e20cef5347f9ee40964d904fa669360e567460d3c900331f5208e1ba7d881753",
+      "version_category": "_NEEDS CHECK",
+      "current_genre": "",
+      "proposed_genre": null,
+      "proposed_grouping": "Source: Nigeria",
+      "move": true,
+      "tag_change": false
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/NIGER/My Woman My Everything (feat. Wande Coal).mp3",
+      "source_relative": "My Woman My Everything (feat. Wande Coal).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/NIGER/_NEEDS CHECK/_GENRE NEEDS CHECK/My Woman My Everything (feat. Wande Coal).mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/My Woman My Everything (feat. Wande Coal).mp3",
+      "sha256": "de38ff61634a2e0b5b2f691905d5b51aeb877554fca1fcec6f8bca6713ed0e4d",
+      "version_category": "_NEEDS CHECK",
+      "current_genre": "",
+      "proposed_genre": null,
+      "proposed_grouping": "Source: Nigeria",
+      "move": true,
+      "tag_change": false
+    }
+  ]
+}

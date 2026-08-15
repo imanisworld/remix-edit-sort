@@ -1,0 +1,38 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/Wedding",
+  "track_count": 1,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true
+  },
+  "counts": {
+    "version_categories": {
+      "REMIXES & EDITS": 1
+    },
+    "genres": {
+      "Latin": 1
+    },
+    "moves": 1,
+    "genre_tag_changes": 1
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": []
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Wedding/EKANY, EKANY LATIN ORCHESTRAL - POETIC JUSTICE (EKANY LATIN ORCHESTRAL Edit).mp3",
+      "source_relative": "EKANY, EKANY LATIN ORCHESTRAL - POETIC JUSTICE (EKANY LATIN ORCHESTRAL Edit).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Wedding/REMIXES & EDITS/Latin/EKANY, EKANY LATIN ORCHESTRAL - POETIC JUSTICE (EKANY LATIN ORCHESTRAL Edit).mp3",
+      "destination_relative": "REMIXES & EDITS/Latin/EKANY, EKANY LATIN ORCHESTRAL - POETIC JUSTICE (EKANY LATIN ORCHESTRAL Edit).mp3",
+      "sha256": "9c85bfcd6dbe78fe0b09052572700b6d5c809e4e6d2616b0bd4fada27e3b5755",
+      "version_category": "REMIXES & EDITS",
+      "current_genre": "",
+      "proposed_genre": "Latin",
+      "move": true,
+      "tag_change": true
+    }
+  ]
+}

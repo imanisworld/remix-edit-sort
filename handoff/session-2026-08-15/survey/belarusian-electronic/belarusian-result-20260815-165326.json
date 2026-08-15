@@ -1,0 +1,18 @@
+{
+  "mode": "belarusian-apply",
+  "plan": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/belarusian-electronic/belarusian-plan.json",
+  "verified_backup": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/backups/belarusian-electronic-pre-sort-2026-08-15",
+  "tracks_processed": 1,
+  "files_moved": 1,
+  "genre_tags_changed": 0,
+  "genre_tags_skipped": 0,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/belarusian-electronic/belarusian-undo-20260815-165326.jsonl",
+  "tag_backup_root": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/belarusian-electronic/belarusian-tag-file-backups/20260815-165326",
+  "genre_counts": {
+    "_GENRE NEEDS CHECK": 1
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "scope": "/Users/djb.a.e/Music/DJ-Music/Music/music to move",
+  "definition": "Exact byte-identical copies only. No removal decision was made.",
+  "groups": [
+    {
+      "sha256": "05c88a69897cdeb904159d745ce42a51bc096a07853f19b7724813d3caf97dc5",
+      "inside_music_to_move": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/1-01. The Way.flac"
+      ],
+      "elsewhere": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/May 16 2026/Music/NewFiles/TMHoarder/DRAM - Shake Tape (EP) (2026)/1-01. The Way.flac"
+      ]
+    }
+  ]
+}

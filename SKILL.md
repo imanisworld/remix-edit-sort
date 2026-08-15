@@ -202,6 +202,17 @@ Chosen because Rekordbox, Serato, Apple Music, and Plex all read these frames. C
 
 Artist stays the *original* act on purpose: sorting by artist then answers "what have I got that touches Beyoncé", while the remixer is reachable four other ways. The hashtags exist so Rekordbox and Serato crates can filter on `#remix-by-mq` — that's layer 3 (curation), which Brooke builds inside each app.
 
+### Event and source Grouping
+
+Keep musical classification separate from working context:
+
+- Write musical style to `TCON` / Genre: `Hip-Hop`, `R&B`, `Rave`, and so on.
+- Write evidenced event, crate, or source context to `TIT1` / Grouping: `Event: IYG PROM` or `Source: Nigeria`.
+- Preserve existing Grouping text. Append new values once with `; ` and deduplicate case-insensitively; never overwrite blindly.
+- Use the exact source folder or an explicit user correction as evidence. Do not turn an ambiguous country, client, download batch, or acronym into a genre or event type.
+
+Treat Grouping backfill as a separate tags-only operation. Reconstruct context from the approved plan or undo log, generate a per-file preview, and require approval. Make a fresh verified folder plus `_Serato_` backup before writing. For every changed MP3, verify the audio payload and embedded Serato frames before recording the undo entry. Preserve ID3v2.2 files unless conversion is separately approved, and skip non-MP3 formats until a format-specific writer and payload verifier are tested.
+
 ## Common pitfalls
 
 - **Case-only renames need a temp step.** APFS is case-insensitive, so `Bt005.mp3` and `BT005.mp3` are the *same path*. `os.path.exists(dest)` returns True for a case-only rename, and a naive collision check appends ` (2)` to a file that was never colliding — this happened for real and had to be repaired across 18 files. Compare with `os.path.normcase` first, then rename via a temp name.

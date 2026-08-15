@@ -26,8 +26,10 @@ Current important state:
 - Events version/genre organization is complete for 3,046 tracks.
 - Events Grouping backfill is complete for 3,010 MP3s; 36 unsupported/old-tag files were safely skipped.
 - The folder label `NIGER` is a mistake and means **Nigeria**. Its two-track preview is not applied. Proposed Grouping is `Source: Nigeria`; Genre and Artist remain unknown. See `handoff/pending/nigeria-plan.json` and the Nigeria preview under the session handoff.
-- All detailed backups, inventories, undo logs, and result JSON files remain outside Git at the absolute paths recorded in the handoff.
+- Text-only `.codex` working artifacts are mirrored under `handoff/session-2026-08-15/survey/`: plans, inventories, CSV reviews, result JSON, and undo manifests. Audio/tag-file backups and `_Serato_` data remain outside Git.
 
 Useful session implementations and reports are under `handoff/session-2026-08-15/`. They contain local absolute paths and are historical/audit material; generalize paths before promoting code into `scripts/`.
+
+Read `handoff/ARTIFACTS.md` before syncing more `.codex` files. Never copy a directory named `backups`, `tag-file-backups`, or `*-tag-file-backups`, because those contain real audio payloads.
 
 This repository contains private local workflow information. Do not publish it or add a public remote without explicit approval.

@@ -1,0 +1,38 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/belarusian_electronic",
+  "track_count": 1,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 1
+    },
+    "genres": {
+      "_GENRE NEEDS CHECK": 1
+    },
+    "moves": 1,
+    "genre_tag_changes": 0
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": []
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/belarusian_electronic/Supergirl - Krystal Harris.mp3",
+      "source_relative": "Supergirl - Krystal Harris.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/belarusian_electronic/_NEEDS CHECK/_GENRE NEEDS CHECK/Supergirl - Krystal Harris.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Supergirl - Krystal Harris.mp3",
+      "sha256": "a754572f7072d62b1f2b0dcc572075798017e14c6ea5042818d8ec197dfae280",
+      "version_category": "_NEEDS CHECK",
+      "current_genre": "r&b, pop",
+      "proposed_genre": null,
+      "move": true,
+      "tag_change": false
+    }
+  ]
+}

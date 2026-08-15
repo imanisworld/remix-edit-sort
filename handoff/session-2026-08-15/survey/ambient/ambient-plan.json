@@ -1,0 +1,38 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/Ambient",
+  "track_count": 1,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 1
+    },
+    "genres": {
+      "Ambient": 1
+    },
+    "moves": 1,
+    "genre_tag_changes": 0
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": []
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Ambient/kahwa.mp3",
+      "source_relative": "kahwa.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Ambient/_NEEDS CHECK/Ambient/kahwa.mp3",
+      "destination_relative": "_NEEDS CHECK/Ambient/kahwa.mp3",
+      "sha256": "694968b826ef11ac0f8bd5695436981aa84225868287645d495d64e50b041e58",
+      "version_category": "_NEEDS CHECK",
+      "current_genre": "Ambient",
+      "proposed_genre": "Ambient",
+      "move": true,
+      "tag_change": false
+    }
+  ]
+}

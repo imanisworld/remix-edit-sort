@@ -1,0 +1,3111 @@
+{
+  "scope": "/Users/djb.a.e/Music/DJ-Music/Music/music to move",
+  "mode": "dry-run preview only",
+  "rules": {
+    "priority": [
+      "preserve existing album/project sets",
+      "preserve Scratch Beats as DJ tools",
+      "Instrumental",
+      "Acapella",
+      "Clean",
+      "Dirty/Explicit",
+      "Remix/Edit/Flip",
+      "_NEEDS CHECK"
+    ],
+    "unknowns": "Never guess. Route to `_NEEDS CHECK`.",
+    "numbers": "Preserve meaningful numbers. A terminal `(N)` is review-only and never duplicate proof.",
+    "metadata": "All proposed missing values are review-only; none are approved for writing."
+  },
+  "bucket_counts": {
+    "_NEEDS CHECK": 57,
+    "REMIXES & EDITS": 12,
+    "DIRTY": 6,
+    "ALBUMS & PROJECTS": 47,
+    "CLEAN": 4,
+    "DJ TOOLS": 26
+  },
+  "destination_collisions": [],
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/01 - Spend Dat - Unknown.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/01 - Spend Dat - Unknown.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Unknown",
+        "title": "Spend Dat",
+        "album": "Spend Dat",
+        "genre": "Hip-Hop/Rap",
+        "year": "2026",
+        "bpm": "89.990000",
+        "key": "Fm",
+        "sha256": "004c34ee2032c3d8c2820f913284eb8c23b983dbf78f636af210203808fff4ea"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/01 - Spend Dat - Yung Miami (1).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/01 - Spend Dat - Yung Miami (1).mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Yung Miami (1)",
+        "title": "Spend Dat",
+        "album": "Spend Dat",
+        "genre": "Hip-Hop/Rap",
+        "year": "2026",
+        "bpm": "89.990000",
+        "key": "Fm",
+        "sha256": "523e62e014329bc27298b39e6fcd17d1b3573bfb3769b5a5af49408a00c13b9b"
+      },
+      "flags": [
+        "unknown_version",
+        "terminal_number_suffix_review"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/01 - Spend Dat - Yung Miami.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/01 - Spend Dat - Yung Miami.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Yung Miami",
+        "title": "Spend Dat",
+        "album": "Spend Dat",
+        "genre": "Hip-Hop/Rap",
+        "year": "2026",
+        "bpm": "89.990000",
+        "key": "Fm",
+        "sha256": "5cda55d4708237424f8ead14e5380035d7e699744dc3c4b95c22fa48bbdceccc"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/01 Coco-Cutwater.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/01 Coco-Cutwater.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "",
+        "title": "Coco-Cutwater",
+        "album": "",
+        "genre": "Other",
+        "year": "2025",
+        "bpm": "80.000000",
+        "key": "Bm",
+        "sha256": "8245a8640f70a7ce529259eb8afc23a67e4d202b45acd3e4f75dfe0410c670cc"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:artist"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/01 Friend Do Remix (feat. YKNIECE) Belly Gang Kushington, YKNIECE Friend Do Remix (feat. YKNIECE) 2025.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/01 Friend Do Remix (feat. YKNIECE) Belly Gang Kushington, YKNIECE Friend Do Remix (feat. YKNIECE) 2025.mp3",
+      "bucket": "REMIXES & EDITS",
+      "bucket_evidence": "explicit remix/edit label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Belly Gang Kushington, YKNIECE",
+        "title": "Friend Do Remix (feat. YKNIECE)",
+        "album": "Friend Do Remix (feat. YKNIECE)",
+        "genre": "",
+        "year": "2025",
+        "bpm": "80.000000",
+        "key": "Ebm",
+        "sha256": "45b6118ae2f297963d766b996b828852ac6a231ebbdbdfff05f59c2a79cc3f7a"
+      },
+      "flags": [
+        "missing:genre"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/01-chloe_and_timbaland-talking_dirty-uvu.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/01-chloe_and_timbaland-talking_dirty-uvu.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Chloe & Timbaland",
+        "title": "Talking Dirty",
+        "album": "Resurrection",
+        "genre": "R&B",
+        "year": "2026",
+        "bpm": "120.000000",
+        "key": "Abm",
+        "sha256": "6bb9ff0faaa3253025d867993db3167cd904dea94bc53aee20b63393022d7817"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/01. Hoe Phase.flac",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/01. Hoe Phase.flac",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Drake",
+        "title": "Hoe Phase",
+        "album": "MAID OF HONOUR",
+        "genre": "",
+        "year": "2026",
+        "bpm": "129.960000",
+        "key": "Am",
+        "sha256": "9f2dd365ee69f3a72bb701d31b9b49609075c360e6abc6c292908cc71ab15a34"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:genre"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/03. Outside Tweaking.flac",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/03. Outside Tweaking.flac",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Drake & Stunna Sandy",
+        "title": "Outside Tweaking",
+        "album": "MAID OF HONOUR",
+        "genre": "",
+        "year": "2026",
+        "bpm": "71.310000",
+        "key": "Fm",
+        "sha256": "e8773e10a72a7ebdb6cc3cb33fc48d4ca91a89ab95d49825bb9b27a8825499dc"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:genre"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/04 - FACE DOWN.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/04 - FACE DOWN.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Key Glock",
+        "title": "FACE DOWN",
+        "album": "PROJECT X",
+        "genre": "Gangsta Rap, Hip Hop, Southern Hip Hop, Trap",
+        "year": "2026",
+        "bpm": "69.980000",
+        "key": "Gm",
+        "sha256": "cf3659e07c744f1ff7d443f36ce826a1c4f01eaa5505d876849ce2ccf1e7d6f2"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/04. Cheetah Print.flac",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/04. Cheetah Print.flac",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Drake & Sexyy Red",
+        "title": "Cheetah Print",
+        "album": "MAID OF HONOUR",
+        "genre": "",
+        "year": "2026",
+        "bpm": "130.160000",
+        "key": "Fm",
+        "sha256": "256f5b4819150e8fc55600f552c7789c7768620ca15f453dbc49b3282d931e5e"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:genre"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/04. Janice STFU.flac",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/04. Janice STFU.flac",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Drake",
+        "title": "Janice STFU",
+        "album": "ICEMAN",
+        "genre": "",
+        "year": "2026",
+        "bpm": "126.000000",
+        "key": "Abm",
+        "sha256": "efc1fb6098900fc19c2a5675ebe2cfa0c6911b475616e4309d805e4baed9e37d"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:genre"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/05 - Nasty.flac",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/05 - Nasty.flac",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Fetty Wap",
+        "title": "Nasty",
+        "album": "Zavier",
+        "genre": "Hip Hop",
+        "year": "2026",
+        "bpm": "129.000000",
+        "key": "C#m",
+        "sha256": "6ce7a0a884a3818bdbc3e4426b89bae645342df9ea4760555c28b93dab29271c"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/05. Ran To Atlanta.flac",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/05. Ran To Atlanta.flac",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Drake, Future & Molly Santana",
+        "title": "Ran To Atlanta",
+        "album": "ICEMAN",
+        "genre": "",
+        "year": "2026",
+        "bpm": "135.000000",
+        "key": "Cm",
+        "sha256": "b5d18b1bfe1a6194077677b30d8fcf5f674f9c849e660398c97411828f3c174b"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:genre"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/06. Amazing Shape.flac",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/06. Amazing Shape.flac",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Drake & Popcaan",
+        "title": "Amazing Shape",
+        "album": "MAID OF HONOUR",
+        "genre": "",
+        "year": "2026",
+        "bpm": "90.000000",
+        "key": "F#m",
+        "sha256": "1364664257c3f830129b43cb47acf3033aab4d7f2a13ae8dbefde660c06434d6"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:genre"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/07. Classic.flac",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/07. Classic.flac",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Drake",
+        "title": "Classic",
+        "album": "HABIBTI",
+        "genre": "",
+        "year": "2026",
+        "bpm": "137.920000",
+        "key": "Dm",
+        "sha256": "20d8c5206e236a445e76d0def4fbf3b3da1d2260874273a8e35f1209cf1cd3ff"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:genre"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/08. True Bestie.flac",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/08. True Bestie.flac",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Drake & Iconic Savvy",
+        "title": "True Bestie",
+        "album": "MAID OF HONOUR",
+        "genre": "",
+        "year": "2026",
+        "bpm": "77.490000",
+        "key": "Abm",
+        "sha256": "45da06469c22a26530aacfc786456a1defb940c68f25503464e4e7e4ac5d1bb8"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:genre"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/1-01. The Way.flac",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/1-01. The Way.flac",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DRAM",
+        "title": "The Way",
+        "album": "Shake Tape (EP)",
+        "genre": "Hip-Hop/Rap",
+        "year": "2026",
+        "bpm": "74.510000",
+        "key": "Gm",
+        "sha256": "05c88a69897cdeb904159d745ce42a51bc096a07853f19b7724813d3caf97dc5"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/1-02. Circular Motion! (feat. Ellis Quinn).flac",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/1-02. Circular Motion! (feat. Ellis Quinn).flac",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DRAM",
+        "title": "Circular Motion! (feat. Ellis Quinn)",
+        "album": "Shake Tape (EP)",
+        "genre": "Hip-Hop/Rap",
+        "year": "2026",
+        "bpm": "132.070000",
+        "key": "Dm",
+        "sha256": "410b0a5c335236040efd5f6a9638a3c8ec8730d21bd361cfc8f0344627c83671"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/1-03. Dream Shake.flac",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/1-03. Dream Shake.flac",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DRAM",
+        "title": "Dream Shake",
+        "album": "Shake Tape (EP)",
+        "genre": "Hip-Hop/Rap",
+        "year": "2026",
+        "bpm": "76.500000",
+        "key": "Dm",
+        "sha256": "a7fba349c03fa00f0b01652bcef4e9bc97995986dcfe56d4c10b010f1b70d3d2"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/109 - kwn - touch myself.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/109 - kwn - touch myself.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "kwn",
+        "title": "touch myself",
+        "album": "touch myself/idea of love",
+        "genre": "",
+        "year": "",
+        "bpm": "130.000000",
+        "key": "Ebm",
+        "sha256": "bfc688691b11d125180da6ee035f412b8a1030968c5beb9e0125384efd8935c3"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:genre,year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/11. Q&A.flac",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/11. Q&A.flac",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Drake",
+        "title": "Q&A",
+        "album": "MAID OF HONOUR",
+        "genre": "",
+        "year": "2026",
+        "bpm": "128.980000",
+        "key": "F#m",
+        "sha256": "fc79d245f508427234c7b9689de88c747b707dd93c493799ecdecb52395a8323"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:genre"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/12. Stuck.flac",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/12. Stuck.flac",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Drake",
+        "title": "Stuck",
+        "album": "MAID OF HONOUR",
+        "genre": "",
+        "year": "2026",
+        "bpm": "111.100000",
+        "key": "Cm",
+        "sha256": "15f3a49c7cc852257a8cb27641707d27c032354387592fdf43320a0048e2c168"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:genre"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/129 - Luh Tyler - No Trick (feat. Trim).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/129 - Luh Tyler - No Trick (feat. Trim).mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Luh Tyler, Trim",
+        "title": "No Trick (feat. Trim)",
+        "album": "No Trick (feat. Trim)",
+        "genre": "",
+        "year": "",
+        "bpm": "72.500000",
+        "key": "Fm",
+        "sha256": "e2447663f90043958271d98617939136f409feb819f253c61fa1396616845263"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:genre,year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/16. Sasha Keable - tell me what you want.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/16. Sasha Keable - tell me what you want.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Sasha Keable",
+        "title": "tell me what you want",
+        "album": "ACT II",
+        "genre": "R&B",
+        "year": "2026",
+        "bpm": "73.500000",
+        "key": "Cm",
+        "sha256": "ecccdb5e5a35046ece4e3fc90beba2d27917ca7250dde57a894ee5499d54531e"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/A-Town Players - Wassup Wassup ( Bankhead Bounce ) Atlanta Classic 1995.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/A-Town Players - Wassup Wassup ( Bankhead Bounce ) Atlanta Classic 1995.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {
+        "artist": {
+          "value": "A-Town Players",
+          "evidence": "strict `Artist - Title` filename split",
+          "confidence": "review"
+        },
+        "year": {
+          "value": "1995",
+          "evidence": "single explicit four-digit year in path/filename",
+          "confidence": "review"
+        }
+      },
+      "current": {
+        "artist": "",
+        "title": "A-Town Players - Wassup Wassup ( Bankhead Bounce ) Atlanta Classic 1995",
+        "album": "",
+        "genre": "",
+        "year": "",
+        "bpm": "131.260000",
+        "key": "Ebm",
+        "sha256": "83b899d1d938151e540e0593364b900ce110f5c20117866212c88c6136427d1c"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:artist,genre,year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ANTWIGADEE! - LOVE ME ANTWIGADEE! BOUNCE REMIX Bounce.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/ANTWIGADEE! - LOVE ME ANTWIGADEE! BOUNCE REMIX Bounce.mp3",
+      "bucket": "REMIXES & EDITS",
+      "bucket_evidence": "explicit remix/edit label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "ANTWIGADEE!",
+        "title": "LOVE ME ANTWIGADEE! BOUNCE REMIX",
+        "album": "",
+        "genre": "Bounce",
+        "year": "2025",
+        "bpm": "100.000000",
+        "key": "Ebm",
+        "sha256": "4add375eebd584dfc682fe9128f288998addca84c116ed40d5be38275fb39588"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Big Boogie - Take Her Down (Intro Dirty).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DIRTY/Big Boogie - Take Her Down (Intro Dirty).mp3",
+      "bucket": "DIRTY",
+      "bucket_evidence": "explicit dirty/explicit label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Big Boogie",
+        "title": "Take Her Down (Intro Dirty)",
+        "album": "",
+        "genre": "Hip Hop",
+        "year": "2025",
+        "bpm": "138",
+        "key": "Bm",
+        "sha256": "4210feb2c7bcd1e8d4cf0fde3ea9a37d20c9fc8390fd679b96c0003c8ac520f4"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Body.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Body.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Summer Walker",
+        "title": "Body",
+        "album": "Over It",
+        "genre": "r&b",
+        "year": "",
+        "bpm": "69",
+        "key": "Em",
+        "sha256": "63cc51a16041ee0d49791bae7fcb979f7ac354149626964503650f018255c53a"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/BossMan Dlow - Motion Party.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/BossMan Dlow - Motion Party.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "BossMan Dlow",
+        "title": "Motion Party",
+        "album": "",
+        "genre": "Rap",
+        "year": "2026",
+        "bpm": "111.010000",
+        "key": "C#m",
+        "sha256": "e86d0ed0fdc8daa80425a0725bbb080b6a709f2440859e697a3d630cd383c71f"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/01 DJ Rashad - Unknown.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/01 DJ Rashad - Unknown.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Rashad",
+        "title": "Unknown",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "4A",
+        "sha256": "184d625f743f067b9b991f94ef916ffb35c8c84f4c4db4903ac51fda131e0ca4"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/02 DJ ROYAL - THROWBACK DJ ROYAL.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/02 DJ ROYAL - THROWBACK DJ ROYAL.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Royal",
+        "title": "Throwback DJ Royal",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "1A",
+        "sha256": "de2ac1ad3b77ea60b78ad842c251a692b7783be5ce6e1cab54aa84eafaf16252"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/03 DJ Elmoe - Havoc In Dis Thang Let Dat Bitch Bang.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/03 DJ Elmoe - Havoc In Dis Thang Let Dat Bitch Bang.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Elmoe",
+        "title": "Havoc in Dis Thang Let Dat Bitch Bang",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "7A",
+        "sha256": "2f2605092b8baddf2e84a481cb88c1321407427993fc612c74cb3111cff6a790"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/04 DJ Nate - LOVE U IN SLOW MOTION.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/04 DJ Nate - LOVE U IN SLOW MOTION.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Nate",
+        "title": "Love U in Slow Motion",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "1A",
+        "sha256": "0d3b282dea5d640cde05c1b5ea0b7f3613ede77a3eddd66857592096f5247c07"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/05 D-JAY D~LO (TRACK KILLAHS) - LET ME SEE YO BASICS.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/05 D-JAY D~LO (TRACK KILLAHS) - LET ME SEE YO BASICS.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "D-Jay D~Lo (Track Killahs)",
+        "title": "Let Me See Yo Basics",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "4A",
+        "sha256": "f41f0ac91c0045240f335336850c8ef3bc1dbab9ec5b869c28259f32f7d06a07"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/06 D-JAY D~LO (TRACK KILLAHS) - SPORTS CENTER TRACK.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/06 D-JAY D~LO (TRACK KILLAHS) - SPORTS CENTER TRACK.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "D-Jay D~Lo (Track Killahs)",
+        "title": "Sports Center Track",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "4A",
+        "sha256": "8bf119b60f6458ddd13dc8be7d2d3ac3d3750e373ce4ec13d1a60e8f36d6dad3"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/07 DJ DNA - SouthsideStandup.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/07 DJ DNA - SouthsideStandup.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ DNA",
+        "title": "SouthsideStandup",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "3A",
+        "sha256": "e754f95def805ec7ec5903c298ad4878c48e69527dcc3978b3b26f8141f14cde"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/08 DJ Killa E - Burn Em All.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/08 DJ Killa E - Burn Em All.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Killa E",
+        "title": "Burn Em All",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "1A",
+        "sha256": "f9949c86267d15350992b798cd9fc87d3546d5e164e0ce8b080a8c3aded932ce"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/09 DJ Nate - Frostebite RIP.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/09 DJ Nate - Frostebite RIP.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Nate",
+        "title": "Frostebite RIP",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "4A",
+        "sha256": "b2974bed3d393b08abd11c5cb9adc913fbc551b9d14050eff53b47cfa1f4ec29"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/10 DJ Roc - I Cant Let Go.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/10 DJ Roc - I Cant Let Go.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Roc",
+        "title": "I Can't Let Go",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "12A",
+        "sha256": "cf23925cb13e6ca0a16014494aeaabd92319cb0bac095038440b8585cd8453f7"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/11 Unknown - BREAK THAT NIGGA.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/11 Unknown - BREAK THAT NIGGA.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "[unknown]",
+        "title": "Break That Nigga",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "1A",
+        "sha256": "49ddd09920ddc5da0639ff25e48bf55cde6b07d46aa3feee236830fe68009797"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/12 DJ Lil Jay - BURN THAT MOTHER FUCKER.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/12 DJ Lil Jay - BURN THAT MOTHER FUCKER.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Lil Jay",
+        "title": "Burn That Mothern Fucker",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "9A",
+        "sha256": "c507b7edcebf3adc9cd6483cf73898d3186176f4dc303479a332d7a3349c339d"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/13 DJ KMAN - NIGGA LOOKIN LIKE GURL.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/13 DJ KMAN - NIGGA LOOKIN LIKE GURL.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Kman",
+        "title": "Nigga Looking Like Gurl",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "11A",
+        "sha256": "42f728a85be9b9abd67ec5742e74079c49fe942738236528ced92286a0e7b59b"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/14 Unknown - Scarface Trak.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/14 Unknown - Scarface Trak.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "[unknown]",
+        "title": "Scarface Trak",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "6A",
+        "sha256": "56a14569cb58d5845d4e65c8dd90846f0dc74e8d2b8f12e93bafd026f2e61c04"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/15 DJ Speed - Crack 4 Da Circle Killahs.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/15 DJ Speed - Crack 4 Da Circle Killahs.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Speed",
+        "title": "Crack 4 da Circle Killahs",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "4A",
+        "sha256": "5385c9f0a08bfdd8b6d1cd716c09ea4e7b094db1d202aafa5db8737d9fc76c3e"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/16 RP Boo - Im Burnin' Em.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/16 RP Boo - Im Burnin' Em.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "RP Boo",
+        "title": "I'm Burnin' Em",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "11A",
+        "sha256": "91123e7d4f0fb16235fc350f7097c4c1c9d233f2b69d228df9e05bd7e4fbcece"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/17 DJ Shawn - Burn.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/17 DJ Shawn - Burn.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Shawn",
+        "title": "Burn",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "6A",
+        "sha256": "4eff3b53a7cff1095b4fb073834585f622041aeef16270d0fc7837d2c978d019"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/18 DJ Elmoe - BURNIN SEASON.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/18 DJ Elmoe - BURNIN SEASON.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Elmoe",
+        "title": "Burnin Season",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "8A",
+        "sha256": "d03b206b72b4fd48db1e6f8899c52f58d7815e89d4b1da971dfa310dd29d5a04"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/21 DJ Killa - You Aint Really On Shit.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/21 DJ Killa - You Aint Really On Shit.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Killa",
+        "title": "You Ain't Really on Shit",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "9A",
+        "sha256": "7d0aeeb0d10fe4c8c54110df731f4330ae9dab416d47d361d8bf9f8ff4ff094f"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/22 DJ Rashad - We Tryna Fuk.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/22 DJ Rashad - We Tryna Fuk.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Rashad",
+        "title": "We Tryna Fuk",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "5A",
+        "sha256": "b5138b842e35df082ffeaba4f3584575b478b860f539d32edb979689586c060b"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/23 Unknown - Battle In The Circle Juke Track.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/23 Unknown - Battle In The Circle Juke Track.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "[unknown]",
+        "title": "Battle in the Circle Juke Track",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "4A",
+        "sha256": "8f028ca17749cfe260c6d400f7cbc2339fcb18c0ca9b1a63f576dee33e0986f3"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/24 DJCH0PPA - X-Files.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/24 DJCH0PPA - X-Files.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJCH0PPA",
+        "title": "X-Files",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "8A",
+        "sha256": "f95a7e4ad0cf784aee4625b03130be6d47b485cb2b5905812f8e5e696bceb677"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/25 DJ Spaldin - Unknown.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/25 DJ Spaldin - Unknown.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Spaldin",
+        "title": "Unknown",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "4A",
+        "sha256": "eca8a518060eb5e6bb591a29516eafa9af6648d4ea13e7a695bd9316942ee5a7"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/26 DJ Trouble - I AM FOOTWORK.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/26 DJ Trouble - I AM FOOTWORK.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Trouble",
+        "title": "I Am Footwork",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "5A",
+        "sha256": "8b86f1d568e5fd82e7385c454364b3c7b7d138532f22b038e9f5f129e3ea12c0"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/27 DJ Ro - WALACAM.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/27 DJ Ro - WALACAM.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Ro",
+        "title": "Walacam",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "1A",
+        "sha256": "bb0621f662d2035c109bae483cbb8b992d2125981f507688a53301b3d4fb85da"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/28 DJ Thadz - What U Workin Wit.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/28 DJ Thadz - What U Workin Wit.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Thadz",
+        "title": "What U Workin Wit",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "5A",
+        "sha256": "a0ebae3e8a92250bd7f171cc939720114324b60772d098f67b899c729942ec1d"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/29 DJ Trouble - Freak Um.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/29 DJ Trouble - Freak Um.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Trouble",
+        "title": "Freak Um",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "9A",
+        "sha256": "20102930cca269c71bdf9dfce409cf2896fd5fb08a86cce9e672285b37a695c3"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/30 RP Boo - Freez or Burn (WALACAM).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/30 RP Boo - Freez or Burn (WALACAM).mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "RP Boo",
+        "title": "Freez or Burn (Walacam)",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "11A",
+        "sha256": "8fd3b2e4ec07857acb63233ee49adaf62f2571191253dce64c539135399a7387"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/31 DJ Weezy - Sex Therapy Juke Mix.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/31 DJ Weezy - Sex Therapy Juke Mix.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Weezy",
+        "title": "Sex Therapy (Juke Mix)",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "5A",
+        "sha256": "2028e0b49da983a4521a3026320d017cb041a3773bd557fcd8ff272a48e06124"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/32 DJ Twan - Free Twan.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/32 DJ Twan - Free Twan.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Twan",
+        "title": "Free Twan",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "1A",
+        "sha256": "57b06aefe346c3a1adc62d4c9c01aea66f40e7ff5659ebb7515d148a63a1d00c"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/33 DJ TJ - WALACAM.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/33 DJ TJ - WALACAM.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ TJ",
+        "title": "Walacam",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "3A",
+        "sha256": "e6f8c25970081ccbe8f678e33b3d4aacf90c1ee1f7b43573640e831ba2204f80"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/34 L.A. The Track Assassin - I'm Burnin.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/34 L.A. The Track Assassin - I'm Burnin.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "L.A. the Track Assassin",
+        "title": "I'm Burnin",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "7A",
+        "sha256": "2a2b3d0d7e91c2ae5125d0d1e175eaa1d82e7bd5555c5fd1131eb896ac777129"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CRACK - A Lost Juke-Footwork Compilation/35 DJ Elmoe - Elmoe Signin Off Request For Stay.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation/35 DJ Elmoe - Elmoe Signin Off Request For Stay.mp3",
+      "bucket": "ALBUMS & PROJECTS/CRACK - A Lost Juke-Footwork Compilation",
+      "bucket_evidence": "preserve project folder `CRACK - A Lost Juke-Footwork Compilation`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Elmoe",
+        "title": "Elmoe Signin Off Request for Stay",
+        "album": "CRACK: A Lost Juke/Footwork Compilation",
+        "genre": "",
+        "year": "2013",
+        "bpm": "",
+        "key": "5A",
+        "sha256": "d2eac1ca0f5c85b9bb4a6934c0664c3f8009d4b9913f7030ddcef75930d8a004"
+      },
+      "flags": [
+        "missing:genre,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CUZZOS - MOESHA CYPHER.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/CUZZOS - MOESHA CYPHER.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {
+        "artist": {
+          "value": "CUZZOS",
+          "evidence": "strict `Artist - Title` filename split",
+          "confidence": "review"
+        }
+      },
+      "current": {
+        "artist": "",
+        "title": "CUZZOS - MOESHA CYPHER",
+        "album": "",
+        "genre": "",
+        "year": "",
+        "bpm": "104.000000",
+        "key": "Abm",
+        "sha256": "058e83bac13c0c7b3274cccd9ef197d46d1e570651fd721b54426daf9068ebc8"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:artist,genre,year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Come On, Let's Go (Intro Dirty).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DIRTY/Come On, Let's Go (Intro Dirty).mp3",
+      "bucket": "DIRTY",
+      "bucket_evidence": "explicit dirty/explicit label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Tyler, The Creator & Nigo",
+        "title": "Come On, Let's Go (Intro Dirty)",
+        "album": "",
+        "genre": "Hip Hop",
+        "year": "2022",
+        "bpm": "73",
+        "key": "Ebm",
+        "sha256": "b9e8feeebe5830c56d1c885739078c8c9b778d76a83f5a179522d0e42754f736"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ 809 - HEADS HIGH (809 DEMBOW MIX).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/DJ 809 - HEADS HIGH (809 DEMBOW MIX).mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ 809",
+        "title": "HEADS HIGH (809 DEMBOW MIX)",
+        "album": "",
+        "genre": "DEMBOW",
+        "year": "2026",
+        "bpm": "130.000000",
+        "key": "Abm",
+        "sha256": "93f606d96d2d8264991b2a12ccd7dfca25001c753c46feca97e92634e358d504"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DOGTOOTH (Dirty).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DIRTY/DOGTOOTH (Dirty).mp3",
+      "bucket": "DIRTY",
+      "bucket_evidence": "explicit dirty/explicit label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Tyler, The Creator",
+        "title": "DOGTOOTH (Dirty)",
+        "album": "",
+        "genre": "Hip Hop",
+        "year": "2023",
+        "bpm": "78",
+        "key": "G#m",
+        "sha256": "4a62b495800de2cbdcbb49f1a79be86ca114d4c4454015ec76cf61126da5c215"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/01-destin_conrad_keyon_harrold-whip-a5abab17.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/01-destin_conrad_keyon_harrold-whip-a5abab17.mp3",
+      "bucket": "ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH",
+      "bucket_evidence": "preserve project folder `Destin_Conrad-wHIMSY-WEB-2025-ENRiCH`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Destin Conrad, Keyon Harrold",
+        "title": "wHIP",
+        "album": "wHIMSY",
+        "genre": "R&B",
+        "year": "2025",
+        "bpm": "",
+        "key": "",
+        "sha256": "3ff32ede092e34664e1b91bb2a416847cdb4cfa3ff9f8cafa60626a74fbaab3f"
+      },
+      "flags": [
+        "missing:bpm,key"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/02-destin_conrad-glory_a_poem_by_bay_davis-985bed7a.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/02-destin_conrad-glory_a_poem_by_bay_davis-985bed7a.mp3",
+      "bucket": "ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH",
+      "bucket_evidence": "preserve project folder `Destin_Conrad-wHIMSY-WEB-2025-ENRiCH`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Destin Conrad",
+        "title": "GLORY a poem by Bay Davis",
+        "album": "wHIMSY",
+        "genre": "R&B",
+        "year": "2025",
+        "bpm": "",
+        "key": "",
+        "sha256": "a91d1c6e7a09acd18767472b35868777eac3e150c38666aeae1e0dd09e43d780"
+      },
+      "flags": [
+        "missing:bpm,key"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/03-destin_conrad_terrace_martin-wash_u_away-2e620cd9.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/03-destin_conrad_terrace_martin-wash_u_away-2e620cd9.mp3",
+      "bucket": "ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH",
+      "bucket_evidence": "preserve project folder `Destin_Conrad-wHIMSY-WEB-2025-ENRiCH`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Destin Conrad, Terrace Martin",
+        "title": "wASH U AWAY",
+        "album": "wHIMSY",
+        "genre": "R&B",
+        "year": "2025",
+        "bpm": "",
+        "key": "",
+        "sha256": "c80b2d68fe93d2abc494ac83cba5ded7ca89a4eb329a3533a14ad70b29d405fe"
+      },
+      "flags": [
+        "missing:bpm,key"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/04-destin_conrad-love-1fc86d07.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/04-destin_conrad-love-1fc86d07.mp3",
+      "bucket": "ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH",
+      "bucket_evidence": "preserve project folder `Destin_Conrad-wHIMSY-WEB-2025-ENRiCH`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Destin Conrad",
+        "title": "LOVE!",
+        "album": "wHIMSY",
+        "genre": "R&B",
+        "year": "2025",
+        "bpm": "",
+        "key": "",
+        "sha256": "ae266c55dbb2fd7892d02560d89e6097f16dbdb9c7a61ae4220f37fe84a1eb2f"
+      },
+      "flags": [
+        "missing:bpm,key"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/05-destin_conrad-bed_stuy-95e36f37.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/05-destin_conrad-bed_stuy-95e36f37.mp3",
+      "bucket": "ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH",
+      "bucket_evidence": "preserve project folder `Destin_Conrad-wHIMSY-WEB-2025-ENRiCH`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Destin Conrad",
+        "title": "BED STUY",
+        "album": "wHIMSY",
+        "genre": "R&B",
+        "year": "2025",
+        "bpm": "",
+        "key": "",
+        "sha256": "11edaf5b4db915495e742d60c2d34f42239abf96583faeac93e70db17db2c928"
+      },
+      "flags": [
+        "missing:bpm,key"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/06-destin_conrad_vanisha_gould-a_lonely_detective-b9be2bf9.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/06-destin_conrad_vanisha_gould-a_lonely_detective-b9be2bf9.mp3",
+      "bucket": "ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH",
+      "bucket_evidence": "preserve project folder `Destin_Conrad-wHIMSY-WEB-2025-ENRiCH`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Destin Conrad, Vanisha Gould",
+        "title": "A Lonely Detective",
+        "album": "wHIMSY",
+        "genre": "R&B",
+        "year": "2025",
+        "bpm": "",
+        "key": "",
+        "sha256": "8e730493db1c0069ab98c5c222635ab14b0de2c51b64ef453ef50cb9906231fc"
+      },
+      "flags": [
+        "missing:bpm,key"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/07-destin_conrad_vanisha_gould-boredom-07e7b590.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/07-destin_conrad_vanisha_gould-boredom-07e7b590.mp3",
+      "bucket": "ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH",
+      "bucket_evidence": "preserve project folder `Destin_Conrad-wHIMSY-WEB-2025-ENRiCH`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Destin Conrad, Vanisha Gould",
+        "title": "BOREDOM",
+        "album": "wHIMSY",
+        "genre": "R&B",
+        "year": "2025",
+        "bpm": "",
+        "key": "",
+        "sha256": "74cf6d7629293219a4c5b022e27d405d52539ca71f1bd2152a6cd41c29fed815"
+      },
+      "flags": [
+        "missing:bpm,key"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/08-destin_conrad_ambre-ambres_interlude_but_jazz-a8d518eb.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/08-destin_conrad_ambre-ambres_interlude_but_jazz-a8d518eb.mp3",
+      "bucket": "ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH",
+      "bucket_evidence": "preserve project folder `Destin_Conrad-wHIMSY-WEB-2025-ENRiCH`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Destin Conrad, Ambré",
+        "title": "AMBRÈ'S INTERLUDE BUT JAZZ",
+        "album": "wHIMSY",
+        "genre": "R&B",
+        "year": "2025",
+        "bpm": "",
+        "key": "",
+        "sha256": "cc227aa18826e2ea370ed352a0a678755985f4e9b54eff804bfea151eb0c8e5e"
+      },
+      "flags": [
+        "missing:bpm,key"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/09-destin_conrad_keyon_harrold-drifting-499e1d43.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/09-destin_conrad_keyon_harrold-drifting-499e1d43.mp3",
+      "bucket": "ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH",
+      "bucket_evidence": "preserve project folder `Destin_Conrad-wHIMSY-WEB-2025-ENRiCH`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Destin Conrad, Keyon Harrold",
+        "title": "drifting",
+        "album": "wHIMSY",
+        "genre": "R&B",
+        "year": "2025",
+        "bpm": "",
+        "key": "",
+        "sha256": "666a81c228993ba7138283504aa909d0d912c5ec1239da3974aa6a82f628cd95"
+      },
+      "flags": [
+        "missing:bpm,key"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/10-destin_conrad_james_fauntleroy_astyn_turr-the_w-51d3ec8f.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/10-destin_conrad_james_fauntleroy_astyn_turr-the_w-51d3ec8f.mp3",
+      "bucket": "ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH",
+      "bucket_evidence": "preserve project folder `Destin_Conrad-wHIMSY-WEB-2025-ENRiCH`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Destin Conrad, James Fauntleroy, Astyn Turr",
+        "title": "The W",
+        "album": "wHIMSY",
+        "genre": "R&B",
+        "year": "2025",
+        "bpm": "",
+        "key": "",
+        "sha256": "e429dd3db9be19c9558dc678a210e85925d77f589c4d17927405b2636c829a38"
+      },
+      "flags": [
+        "missing:bpm,key"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/11-destin_conrad-hard-283d2440.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH/11-destin_conrad-hard-283d2440.mp3",
+      "bucket": "ALBUMS & PROJECTS/Destin_Conrad-wHIMSY-WEB-2025-ENRiCH",
+      "bucket_evidence": "preserve project folder `Destin_Conrad-wHIMSY-WEB-2025-ENRiCH`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Destin Conrad",
+        "title": "HARD!",
+        "album": "wHIMSY",
+        "genre": "R&B",
+        "year": "2025",
+        "bpm": "",
+        "key": "",
+        "sha256": "2b99ff0f9d524d785f7b8212898ec7ab836c2bca12527166ad1c757f187b9dda"
+      },
+      "flags": [
+        "missing:bpm,key"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Dezzy Andretti - Leon Thomas - Vibes Don't Lie Ghettotech RMX Dance & EDM.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/Dezzy Andretti - Leon Thomas - Vibes Don't Lie Ghettotech RMX Dance & EDM.mp3",
+      "bucket": "REMIXES & EDITS",
+      "bucket_evidence": "explicit remix/edit label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Dezzy Andretti",
+        "title": "Leon Thomas - Vibes Don't Lie Ghettotech RMX",
+        "album": "",
+        "genre": "Dance & EDM",
+        "year": "2026",
+        "bpm": "81.500000",
+        "key": "Ebm",
+        "sha256": "8f6b64ea53b41621afcbe83f1cc837350398a5a0c821e38ab22d90db7d644157"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Don Toliver - ATM.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Don Toliver - ATM.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Don Toliver",
+        "title": "ATM",
+        "album": "",
+        "genre": "Rap/Hip Hop",
+        "year": "2026",
+        "bpm": "85.000000",
+        "key": "Am",
+        "sha256": "2cc6e0d0f34c0a769b203c5c17366c39f634be446e3d38b88e11219b9db2770f"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Don Toliver - No Pole [Official Visualizer].mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Don Toliver - No Pole [Official Visualizer].mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {
+        "artist": {
+          "value": "Don Toliver",
+          "evidence": "strict `Artist - Title` filename split",
+          "confidence": "review"
+        }
+      },
+      "current": {
+        "artist": "",
+        "title": "Don Toliver - No Pole [Official Visualizer]",
+        "album": "",
+        "genre": "",
+        "year": "",
+        "bpm": "128.000000",
+        "key": "Cm",
+        "sha256": "d0cfb8ec82b4fc26b57e008561abd90b20c02dc617c37beb3d6556eed525a7e0"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:artist,genre,year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Got Me (Intro Clean).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CLEAN/Got Me (Intro Clean).mp3",
+      "bucket": "CLEAN",
+      "bucket_evidence": "explicit clean label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Dreamville ft Ari Lennox, Omen, Ty Dolla Sign & Dreezy",
+        "title": "Got Me (Intro Clean)",
+        "album": "",
+        "genre": "Hip Hop",
+        "year": "2019",
+        "bpm": "76",
+        "key": "Gm",
+        "sha256": "f445e1ed3972c6ed08c021363be9c4ab1628bcfcb177a19cede315354e4e261d"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Icewear Vezzo; Mello Buckzz - I Like.flac",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Icewear Vezzo; Mello Buckzz - I Like.flac",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Icewear Vezzo",
+        "title": "I Like",
+        "album": "I Like",
+        "genre": "",
+        "year": "2026",
+        "bpm": "76.000000",
+        "key": "C#m",
+        "sha256": "521194b49691e0c9c6e7a7842cce9fdb6069c6d92df814e61ee33b02d0a49ade"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:genre"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Kehlani - Folded (Intro Dirty).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DIRTY/Kehlani - Folded (Intro Dirty).mp3",
+      "bucket": "DIRTY",
+      "bucket_evidence": "explicit dirty/explicit label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Kehlani",
+        "title": "Folded (Intro Dirty)",
+        "album": "",
+        "genre": "R&B",
+        "year": "2025",
+        "bpm": "136",
+        "key": "Ebm",
+        "sha256": "8c9aff8d3a5947f8afd13c4eb76194aebe1f036f84da17396853ef7ca6bf9f69"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/LOVE IS A DRUG.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/LOVE IS A DRUG.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "",
+        "title": "",
+        "album": "",
+        "genre": "",
+        "year": "",
+        "bpm": "71.500000",
+        "key": "F#m",
+        "sha256": "9e4857b15ec9aec9adae6720aa31c6b3e1032588aa84ffd6c4748c218173f49f"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:artist,title,genre,year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/LYRIC LE'SON (CHEF) - FALSETTO ARCHES (BMORE) Electronic.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/LYRIC LE'SON (CHEF) - FALSETTO ARCHES (BMORE) Electronic.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "LYRIC LE'SON (CHEF)",
+        "title": "FALSETTO ARCHES (BMORE)",
+        "album": "",
+        "genre": "Electronic",
+        "year": "2026",
+        "bpm": "130.000000",
+        "key": "Am",
+        "sha256": "1588ac726f2b7bd79678078bef9fafd3d186925b2b640975c5ed46e26db6ae2d"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Leonce - Refixes Vol 4 - 03 Victoria Monét - Touch Me (Leonce Refix).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/Leonce - Refixes Vol 4 - 03 Victoria Monét - Touch Me (Leonce Refix).mp3",
+      "bucket": "REMIXES & EDITS",
+      "bucket_evidence": "explicit remix/edit label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Leonce",
+        "title": "Victoria Monét - Touch Me (Leonce Refix)",
+        "album": "Refixes Vol 4",
+        "genre": "",
+        "year": "2021",
+        "bpm": "126",
+        "key": "G#m",
+        "sha256": "e16840455d8920cf2e343091ea5706f901dab69a90e40d540fc9511b2e888a5d"
+      },
+      "flags": [
+        "missing:genre"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Let's Groove.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Let's Groove.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Earth, Wind & Fire",
+        "title": "Let's Groove",
+        "album": "The Eternal Dance, Vol. 3 (1978 - 1989)",
+        "genre": "Urban, Hip Hop, old head party",
+        "year": "1992",
+        "bpm": "126",
+        "key": "Bm",
+        "sha256": "4144aab075d3247505ed0867d18d4f8a64740e3b637cf7913caf897e081beb69"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Loe Shimmy, Don Toliver - 3am.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Loe Shimmy, Don Toliver - 3am.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Loe Shimmy, Don Toliver",
+        "title": "3am",
+        "album": "",
+        "genre": "Rap/Hip-Hop",
+        "year": "2025",
+        "bpm": "127.000000",
+        "key": "Ebm",
+        "sha256": "7a490ffac05bcf59117cc53b7e51737453ddbe4e6a165fd621f77618b9b4e1d1"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Monaleo - Everythang Pinka (feat. Teezo Touchdown).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Monaleo - Everythang Pinka (feat. Teezo Touchdown).mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {
+        "artist": {
+          "value": "Monaleo",
+          "evidence": "strict `Artist - Title` filename split",
+          "confidence": "review"
+        }
+      },
+      "current": {
+        "artist": "",
+        "title": "Monaleo - Everythang Pinka (feat. Teezo Touchdown)",
+        "album": "",
+        "genre": "",
+        "year": "",
+        "bpm": "89.980000",
+        "key": "A",
+        "sha256": "4ca36baaa8c300ea40093fd7139b5013304974411f4c505dc5adef3b3bac77a9"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:artist,genre,year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Novacane.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Novacane.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Frank Ocean",
+        "title": "Novacane",
+        "album": "Novacane",
+        "genre": "lgbtq+ hip hop;neo soul",
+        "year": "2011",
+        "bpm": "94",
+        "key": "Bbm",
+        "sha256": "f25bc8c39b5b626635a7f6bccd03946962f2cfe48e110841f547e81b8569acf1"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Ophelia.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Ophelia.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "pinkpantheress",
+        "title": "Ophelia",
+        "album": "Heaven knows",
+        "genre": "rock, r&b edit, alternative r&b, alternative hip hop",
+        "year": "2023",
+        "bpm": "88",
+        "key": "G#m",
+        "sha256": "1cbb9da10b2a7117a169f07754ccd55c18cc3588b92a3462bc9d7911ae6deb07"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/PinkPantheress - Illegal (Intro Clean).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CLEAN/PinkPantheress - Illegal (Intro Clean).mp3",
+      "bucket": "CLEAN",
+      "bucket_evidence": "explicit clean label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "PinkPantheress",
+        "title": "Illegal (Intro Clean)",
+        "album": "",
+        "genre": "Pop",
+        "year": "2025",
+        "bpm": "71",
+        "key": "Cm",
+        "sha256": "95c56c7c9126cb49da5035aa35843c852f77d2c62903037c004863f7308ad7b4"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/PinkPantheress - Tonight (Intro Clean).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CLEAN/PinkPantheress - Tonight (Intro Clean).mp3",
+      "bucket": "CLEAN",
+      "bucket_evidence": "explicit clean label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "PinkPantheress",
+        "title": "Tonight (Intro Clean)",
+        "album": "",
+        "genre": "Pop",
+        "year": "2025",
+        "bpm": "141",
+        "key": "5A",
+        "sha256": "311aad43b8ed23b8a938ec9b99610d57f05886d5f668600db1dabae23f0a45fb"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Rufus & Chaka Khan - Aint Nobody [DJ Re-Grid].mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/Rufus & Chaka Khan - Aint Nobody [DJ Re-Grid].mp3",
+      "bucket": "REMIXES & EDITS",
+      "bucket_evidence": "explicit remix/edit label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Rufus & Chaka Khan",
+        "title": "Aint Nobody [DJ Re-Grid] - Energy 6",
+        "album": "",
+        "genre": "Classic Funk-Soul, old head party",
+        "year": "1980",
+        "bpm": "104",
+        "key": "Ebm",
+        "sha256": "b698b787b0a56ef4717278e6cec676ff16f65e9c492ab4abf763d3eca568887a"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/01 Voice & Bits 21.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/01 Voice & Bits 21.mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Tools",
+        "title": "Voice & Bits 21",
+        "album": "",
+        "genre": "DJ Tools, Scratch Beats, break beats",
+        "year": "2017",
+        "bpm": "0",
+        "key": "Cm",
+        "sha256": "41a5dda09aeb18dbb76dcbdf68652502b82477fce5413968a5661fb88d32aef7"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/01 Voice & Bits 22.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/01 Voice & Bits 22.mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ Tools",
+        "title": "Voice & Bits 22",
+        "album": "",
+        "genre": "DJ Tools, Scratch Beats, break beats",
+        "year": "2017",
+        "bpm": "92",
+        "key": "G#m",
+        "sha256": "9cb44d9162adc1a6af9e116e6ac1a10b019c32da2902e2e7c65f36090269e115"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/07 Yo Mom Is In My (Break).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/07 Yo Mom Is In My (Break).mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Babu (The Turntablist)",
+        "title": "Yo Mom Is In My (Break)",
+        "album": "Super Duck Breaks",
+        "genre": "DJ Tools, Scratch Beats, break beats",
+        "year": "1997",
+        "bpm": "99.020000",
+        "key": "Ebm",
+        "sha256": "d16fa966f46cbfc376d659ca2f1a89860744647cc0961cde7668c48e484898ea"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/Bang This.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/Bang This.mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ TLM",
+        "title": "Bang This",
+        "album": "Scratch Tutorial Beats",
+        "genre": "Hip Hop",
+        "year": "",
+        "bpm": "91",
+        "key": "G#m",
+        "sha256": "562feb4a4193c7e126735eb55e1dfecdbcb650312c2ffd720ffa93af41e0f2cc"
+      },
+      "flags": [
+        "missing:year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/Cypher (Scratch Beats).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/Cypher (Scratch Beats).mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Dj Odilon",
+        "title": "Cypher (Scratch Beats)",
+        "album": "",
+        "genre": "DJ Tools, Scratch Beats, break beats",
+        "year": "2019",
+        "bpm": "103",
+        "key": "Fm",
+        "sha256": "985b4721cba703c3a1c357385e0b44eee845f36103736c56596c7da537c28afa"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/Fab 5 Freddy, Beside, Greg Wilson, PREVIEW - Change The Beat (Greg Wilson Edit).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/Fab 5 Freddy, Beside, Greg Wilson, PREVIEW - Change The Beat (Greg Wilson Edit).mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Fab 5 Freddy, Beside, Greg Wilson, PREVIEW",
+        "title": "Change The Beat (Greg Wilson Edit)",
+        "album": "Change The Beat (Greg Wilson Edit)",
+        "genre": "",
+        "year": "2018",
+        "bpm": "97",
+        "key": "Fm",
+        "sha256": "6157fddc3daf685d62f168fdd43946f46a6b0bab00b155d3de79bd702f57965b"
+      },
+      "flags": [
+        "missing:genre"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/Fireworks (Scratch Beats).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/Fireworks (Scratch Beats).mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Dj Odilon",
+        "title": "Fireworks (Scratch Beats)",
+        "album": "",
+        "genre": "DJ Tools, Scratch Beats, break beats",
+        "year": "2019",
+        "bpm": "87",
+        "key": "Fm",
+        "sha256": "b5a98ead07bcf0f7d6237d3b328f3710c2a34f9e668194e579467388cd338b93"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/Haunted (Scratch Beats).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/Haunted (Scratch Beats).mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Dj Odilon",
+        "title": "Haunted (Scratch Beats)",
+        "album": "",
+        "genre": "DJ Tools, Scratch Beats, break beats",
+        "year": "2019",
+        "bpm": "71",
+        "key": "Gm",
+        "sha256": "832c5aaf27dc9e6d4f7618003d9f98c6a3635772db4b246a95b676d78dccd866"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/MR. FORTUNA (Scratch Beats).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/MR. FORTUNA (Scratch Beats).mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Skratchy Seal",
+        "title": "MR. FORTUNA (Scratch Beats)",
+        "album": "",
+        "genre": "DJ Tools, Scratch Beats, break beats",
+        "year": "2022",
+        "bpm": "113",
+        "key": "Em",
+        "sha256": "2c302033ee6b5623849ffc31e5926c0820f639917de5ada1ca1f4e02b8e4c0dc"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/Moon Invasion (Scratch Beats).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/Moon Invasion (Scratch Beats).mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Dj Odilon",
+        "title": "Moon Invasion (Scratch Beats)",
+        "album": "",
+        "genre": "DJ Tools, Scratch Beats, break beats",
+        "year": "2019",
+        "bpm": "91",
+        "key": "Am",
+        "sha256": "ddc5ebe5e95faa969214e1ed985544cf794637a533e7338d0c243e05f4079ce4"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/SS 04 Beat (poof) 90bpm copy.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/SS 04 Beat (poof) 90bpm copy.mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ TLM",
+        "title": "SS 04 Beat (poof) 90bpm",
+        "album": "",
+        "genre": "DJ Tools, Scratch Beats, break beats",
+        "year": "",
+        "bpm": "90",
+        "key": "G#m",
+        "sha256": "fff0cb00371c04d8605f684698e6fc0a5f2f5ffb94f88c6473667ff1530e5925"
+      },
+      "flags": [
+        "missing:year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/SS 04 Beat (poof) 90bpm.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/SS 04 Beat (poof) 90bpm.mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ TLM",
+        "title": "SS 04 Beat (poof) 90bpm",
+        "album": "",
+        "genre": "DJ Tools, Scratch Beats, break beats",
+        "year": "",
+        "bpm": "90.000000",
+        "key": "Abm",
+        "sha256": "0668adb5886517f3346e91f839e2af2217382f1f8257870e92d21309f5a4a765"
+      },
+      "flags": [
+        "missing:year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/SS 10 Beat (take my heart) 89 bpm.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/SS 10 Beat (take my heart) 89 bpm.mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ TLM",
+        "title": "SS 10 Beat (take my heart) 89 bpm",
+        "album": "",
+        "genre": "DJ Tools, Scratch Beats, break beats",
+        "year": "",
+        "bpm": "89.400000",
+        "key": "Bm",
+        "sha256": "d60e10c67c4393a20eeea06cc34460b48a96c5a2fab0bf10445df40f7ce56a87"
+      },
+      "flags": [
+        "missing:year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/SSS 3 Beat (recording Version w 4 bar intro) 99 Bpm.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/SSS 3 Beat (recording Version w 4 bar intro) 99 Bpm.mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ TLM",
+        "title": "SSS 3 Beat (recording Version w 4 bar intro) 99 Bpm",
+        "album": "",
+        "genre": "DJ Tools, Scratch Beats, break beats",
+        "year": "",
+        "bpm": "99",
+        "key": "F#m",
+        "sha256": "92b97e61db950c1eb5c3d0341cc7603efb7c9c5e4d43d52c49f897e9e5b32ab9"
+      },
+      "flags": [
+        "missing:year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/Saturday Sessions 2019 - Session 02 beat (95bpm).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/Saturday Sessions 2019 - Session 02 beat (95bpm).mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {
+        "year": {
+          "value": "2019",
+          "evidence": "single explicit four-digit year in path/filename",
+          "confidence": "review"
+        }
+      },
+      "current": {
+        "artist": "DJ TLM",
+        "title": "Saturday Sessions 2019 - Session 02 beat (95bpm)",
+        "album": "",
+        "genre": "Other",
+        "year": "",
+        "bpm": "95",
+        "key": "Gm",
+        "sha256": "32c015e966ed8ce5001a9792be829d0cbc986c8c75466adafa3f33f4c7d9f686"
+      },
+      "flags": [
+        "missing:year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/Saturday Sessions 2019 - Session 04 Beat.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/Saturday Sessions 2019 - Session 04 Beat.mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {
+        "year": {
+          "value": "2019",
+          "evidence": "single explicit four-digit year in path/filename",
+          "confidence": "review"
+        }
+      },
+      "current": {
+        "artist": "DJ TLM",
+        "title": "Saturday Sessions 2019 - Session 04 Beat",
+        "album": "",
+        "genre": "Blues",
+        "year": "",
+        "bpm": "90",
+        "key": "Cm",
+        "sha256": "b01d0d56eec9955d176b710657aca56b0c8212cd64d5559953e44705c26e579b"
+      },
+      "flags": [
+        "missing:year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/Saturday Sessions 2019 - Session 05 beat (94 bpm).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/Saturday Sessions 2019 - Session 05 beat (94 bpm).mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {
+        "year": {
+          "value": "2019",
+          "evidence": "single explicit four-digit year in path/filename",
+          "confidence": "review"
+        }
+      },
+      "current": {
+        "artist": "DJ TLM",
+        "title": "Saturday Sessions 2019 - Session 05 beat (94 bpm)",
+        "album": "",
+        "genre": "DJ Tools, Scratch Beats, break beats",
+        "year": "",
+        "bpm": "94",
+        "key": "Am",
+        "sha256": "f6501bd8a724dd70c393d83578300e712663bea1fdf4e8d4f00a6ff29e4d7ba1"
+      },
+      "flags": [
+        "missing:year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/Saturday Super Session 4 beat.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/Saturday Super Session 4 beat.mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ TLM",
+        "title": "Saturday Super Session 4 beat",
+        "album": "",
+        "genre": "DJ Tools, Scratch Beats, break beats",
+        "year": "",
+        "bpm": "97",
+        "key": "Am",
+        "sha256": "11696b2e0f44889832b41bb9191bf8d4e81de6df24e2f89759d5617416b6089c"
+      },
+      "flags": [
+        "missing:year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/Scratch Vocals (Once Again - Scratch It).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/Scratch Vocals (Once Again - Scratch It).mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ TLM",
+        "title": "Scratch Vocals (Once Again - Scratch It)",
+        "album": "",
+        "genre": "DJ Tools, Scratch Beats, break beats",
+        "year": "2013",
+        "bpm": "114",
+        "key": "Em",
+        "sha256": "245a29f3386dd1d437dc15010fc57d662485077d8d1223611b5e1d14e24c51c6"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/Summer Breeze.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/Summer Breeze.mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Uncas Huges",
+        "title": "Summer Breeze",
+        "album": "",
+        "genre": "Hip-hop & Rap",
+        "year": "",
+        "bpm": "94",
+        "key": "Gm",
+        "sha256": "4e4b0e2643b2b533a3cd5ff5bc64e08a6ae194af2f375d55243a459c7a6f76ba"
+      },
+      "flags": [
+        "missing:year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/The Subway.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/The Subway.mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ TLM",
+        "title": "The Subway",
+        "album": "",
+        "genre": "DJ Tools, Scratch Beats, break beats",
+        "year": "",
+        "bpm": "90",
+        "key": "G#m",
+        "sha256": "0c4ecb51a8f475e63f9e9a705c3c99dce8871363d6f198e466c35269e2b0e1de"
+      },
+      "flags": [
+        "missing:year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/YO scratch sample.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/YO scratch sample.mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Uncas Huges",
+        "title": "YO scratch sample",
+        "album": "",
+        "genre": "DJ Tools, Scratch Beats, break beats",
+        "year": "",
+        "bpm": "",
+        "key": "Em",
+        "sha256": "6e8cba6c6d6bbf12683038eeb19857c8157cc71dd42b1de38c90e550e573cd91"
+      },
+      "flags": [
+        "missing:year,bpm"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/djTLMtv Freestyle Scratching Beat.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/djTLMtv Freestyle Scratching Beat.mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ TLM",
+        "title": "djTLMtv Freestyle Scratching Beat",
+        "album": "",
+        "genre": "Blues",
+        "year": "",
+        "bpm": "95",
+        "key": "Cm",
+        "sha256": "07815ad2b4637a560c14c03e0dd77e3298b35664f75dad659fd36277a37e551d"
+      },
+      "flags": [
+        "missing:year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/djTLMtv SS 02 Beat (u8) 97bpm.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/djTLMtv SS 02 Beat (u8) 97bpm.mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "DJ TLM",
+        "title": "djTLMtv SS 02 Beat (u8) 97bpm",
+        "album": "",
+        "genre": "DJ Tools, Scratch Beats, break beats",
+        "year": "",
+        "bpm": "97",
+        "key": "D",
+        "sha256": "035b4de68ea7fde0bd22e03f09208fd5335834fd616aa7d54dcfd4ca25fd5123"
+      },
+      "flags": [
+        "missing:year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/djTLMtv Saturday Sessions 10 (X - Mas 2015) 91bpm.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/djTLMtv Saturday Sessions 10 (X - Mas 2015) 91bpm.mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {
+        "year": {
+          "value": "2015",
+          "evidence": "single explicit four-digit year in path/filename",
+          "confidence": "review"
+        }
+      },
+      "current": {
+        "artist": "Uncas Huges",
+        "title": "djTLMtv Saturday Sessions 10 (X - Mas 2015) 91bpm",
+        "album": "",
+        "genre": "HipHop",
+        "year": "",
+        "bpm": "91",
+        "key": "F#m",
+        "sha256": "328ec947eb7c5c267cf568296fb79ae782cf16124b9e1243b85631ff5997589b"
+      },
+      "flags": [
+        "missing:year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Scratch Beats/djTLMtv Saturday Sessions Jan 7 2017 (95bpm).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DJ TOOLS/Scratch Beats/djTLMtv Saturday Sessions Jan 7 2017 (95bpm).mp3",
+      "bucket": "DJ TOOLS/Scratch Beats",
+      "bucket_evidence": "existing Scratch Beats folder",
+      "proposed_metadata": {
+        "year": {
+          "value": "2017",
+          "evidence": "single explicit four-digit year in path/filename",
+          "confidence": "review"
+        }
+      },
+      "current": {
+        "artist": "Uncas Huges",
+        "title": "djTLMtv Saturday Sessions Jan 7 2017 (95bpm)",
+        "album": "",
+        "genre": "Hip-hop & Rap",
+        "year": "",
+        "bpm": "95",
+        "key": "Dm",
+        "sha256": "a7fcc58a020e0449eac5790c1ec8843c3a079be354553f0ef6f4a5f3e6717fb7"
+      },
+      "flags": [
+        "missing:year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Shoulda Never (feat. Usher).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Shoulda Never (feat. Usher).mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Kehlani",
+        "title": "Shoulda Never (feat. Usher)",
+        "album": "Kehlani",
+        "genre": "R&B",
+        "year": "2026",
+        "bpm": "137.000000",
+        "key": "Am",
+        "sha256": "45068416c84728f9d8c509fd1b60b28307f2d5091a9d1760a551b181ade44d48"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Sir Sharles - TAKE IT OFF “LIGHTS OFF” [KINGMIX] Hip-hop & Rap.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/Sir Sharles - TAKE IT OFF “LIGHTS OFF” [KINGMIX] Hip-hop & Rap.mp3",
+      "bucket": "REMIXES & EDITS",
+      "bucket_evidence": "explicit remix/edit label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Sir Sharles",
+        "title": "TAKE IT OFF “LIGHTS OFF” [KINGMIX]",
+        "album": "",
+        "genre": "Hip-hop & Rap",
+        "year": "2026",
+        "bpm": "107.740000",
+        "key": "Fm",
+        "sha256": "af4f6a7a31d229d01cb92e495080f6e02ab297dd317440e0d699d26a63ef4da2"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/SoundCloud/Belly Gang Kushington - Friend Do Remix ft. YKNIECE (Official Music Video).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/Belly Gang Kushington - Friend Do Remix ft. YKNIECE (Official Music Video).mp3",
+      "bucket": "REMIXES & EDITS",
+      "bucket_evidence": "explicit remix/edit label",
+      "proposed_metadata": {
+        "artist": {
+          "value": "Belly Gang Kushington",
+          "evidence": "strict `Artist - Title` filename split",
+          "confidence": "review"
+        },
+        "title": {
+          "value": "Friend Do Remix ft. YKNIECE (Official Music Video)",
+          "evidence": "strict `Artist - Title` filename split",
+          "confidence": "review"
+        }
+      },
+      "current": {
+        "artist": "",
+        "title": "",
+        "album": "",
+        "genre": "",
+        "year": "",
+        "bpm": "",
+        "key": "",
+        "sha256": "52b632e9ebb2a5377f414977e5f079f3ac930ef11edb2263e2d144bc025c4609"
+      },
+      "flags": [
+        "missing:artist,title,genre,year,bpm,key"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/SoundCloud/How many of us (Friends) - DJ-SUN x Matthew Law.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/How many of us (Friends) - DJ-SUN x Matthew Law.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "How many of us (Friends)",
+        "title": "DJ-SUN x Matthew Law",
+        "album": "DJ-SUN x Matthew Law",
+        "genre": "",
+        "year": "2026",
+        "bpm": "",
+        "key": "",
+        "sha256": "5ddbf268dc09fb5081dcf56858fea567e51b216977f87d74e1238dcf5655f7d1"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:genre,bpm,key"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Spend Dat/01 - Spend Dat - Unknown.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/Spend Dat/01 - Spend Dat - Unknown.mp3",
+      "bucket": "ALBUMS & PROJECTS/Spend Dat",
+      "bucket_evidence": "preserve project folder `Spend Dat`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Unknown",
+        "title": "Spend Dat",
+        "album": "Spend Dat",
+        "genre": "Hip-Hop/Rap",
+        "year": "2026",
+        "bpm": "89.990000",
+        "key": "Fm",
+        "sha256": "0b9218cf7373ab2fc940d8cdce6b8c70aefb42bd02323dc9f7664212b5eb566b"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Spend Dat/01 - Spend Dat - Yung Miami (1).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/Spend Dat/01 - Spend Dat - Yung Miami (1).mp3",
+      "bucket": "ALBUMS & PROJECTS/Spend Dat",
+      "bucket_evidence": "preserve project folder `Spend Dat`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Yung Miami (1)",
+        "title": "Spend Dat",
+        "album": "Spend Dat",
+        "genre": "Hip-Hop/Rap",
+        "year": "2026",
+        "bpm": "89.990000",
+        "key": "Fm",
+        "sha256": "168f41d2f0d2c317bbaaa10db83bad735bf765cb556069c2938f74dc20001e78"
+      },
+      "flags": [
+        "terminal_number_suffix_review"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Spend Dat/01 - Spend Dat - Yung Miami.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ALBUMS & PROJECTS/Spend Dat/01 - Spend Dat - Yung Miami.mp3",
+      "bucket": "ALBUMS & PROJECTS/Spend Dat",
+      "bucket_evidence": "preserve project folder `Spend Dat`",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Yung Miami",
+        "title": "Spend Dat",
+        "album": "Spend Dat",
+        "genre": "Hip-Hop/Rap",
+        "year": "2026",
+        "bpm": "89.990000",
+        "key": "Fm",
+        "sha256": "bd38c267b4f685bb10a0aa25aa85dfa25fdd0f9df571c04b9d6b6873d7507e67"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/St. Saudade - TAKEMETHRUTHERE! (Saint's ATL Bass Rmx) Miami Bass.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/St. Saudade - TAKEMETHRUTHERE! (Saint's ATL Bass Rmx) Miami Bass.mp3",
+      "bucket": "REMIXES & EDITS",
+      "bucket_evidence": "explicit remix/edit label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "St. Saudade",
+        "title": "TAKEMETHRUTHERE! (Saint's ATL Bass Rmx)",
+        "album": "",
+        "genre": "Miami Bass",
+        "year": "2025",
+        "bpm": "75.000000",
+        "key": "Am",
+        "sha256": "a33747737bd58794a263cdae3e038a891d04f294380a400c40b564dc0d91b619"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Too Many Women (feat. kwn).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Too Many Women (feat. kwn).mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Jordan Adetunji,kwn",
+        "title": "Too Many Women (feat. kwn)",
+        "album": "A Jaguar's Dream",
+        "genre": "",
+        "year": "2025",
+        "bpm": "101",
+        "key": "Gm",
+        "sha256": "fc1f4fc05f90a613b225af48bb46afcdc6bb34465a4583e0ff5097422070a9ef"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:genre"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Trim - Coconut Water (Clean) 90.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CLEAN/Trim - Coconut Water (Clean) 90.mp3",
+      "bucket": "CLEAN",
+      "bucket_evidence": "explicit clean label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Trim",
+        "title": "Coconut Water (Clean) 90",
+        "album": "",
+        "genre": "",
+        "year": "2026",
+        "bpm": "90",
+        "key": "Dm",
+        "sha256": "45c658bd8c7436b7179379e21938a07a891eff42735c46aa38e516bd7f2dda80"
+      },
+      "flags": [
+        "missing:genre"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Trim - Coconut Water (Dirty) 90.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DIRTY/Trim - Coconut Water (Dirty) 90.mp3",
+      "bucket": "DIRTY",
+      "bucket_evidence": "explicit dirty/explicit label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Trim",
+        "title": "Coconut Water (Dirty) 90",
+        "album": "",
+        "genre": "",
+        "year": "2026",
+        "bpm": "90",
+        "key": "Dm",
+        "sha256": "0aa90ec3e29167ecc26c4252eff9dd05e63f070faba7010e03be7c0fe2b44790"
+      },
+      "flags": [
+        "missing:genre"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Trina- Told Y'all- Explicit Edit Ft. Rick Ross.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DIRTY/Trina- Told Y'all- Explicit Edit Ft. Rick Ross.mp3",
+      "bucket": "DIRTY",
+      "bucket_evidence": "explicit dirty/explicit label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "",
+        "title": "Trina- Told Y'all- Explicit Edit Ft. Rick Ross",
+        "album": "",
+        "genre": "",
+        "year": "",
+        "bpm": "124.070000",
+        "key": "Gm",
+        "sha256": "9a36d7b46e69be29f648383a49e024c0292d4ee80eb4c7aa01f54a04ba26fb28"
+      },
+      "flags": [
+        "missing:artist,genre,year"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Two1Five - Love Me (NOLA Bounce).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Two1Five - Love Me (NOLA Bounce).mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Two1Five",
+        "title": "Love Me (NOLA Bounce)",
+        "album": "",
+        "genre": "R&B & Soul",
+        "year": "2026",
+        "bpm": "100.000000",
+        "key": "Fm",
+        "sha256": "1844732678c4e5ddac86720872f9019e4712a9d6958ae0eae08caa081bc7d6ea"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/audio-unknown/Alton Pain Mix4Mast_1.wav",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Alton Pain Mix4Mast_1.wav",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "",
+        "title": "",
+        "album": "",
+        "genre": "",
+        "year": "",
+        "bpm": "",
+        "key": "",
+        "sha256": "27d4a30e8431282d4abc48606f173358b3972320ef1612d411becfc8570caed8"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:artist,title,genre,year,bpm,key"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/audio-unknown/Track 1.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Track 1.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Kobe Banks",
+        "title": "No Service",
+        "album": "",
+        "genre": "Hip-hop & Rap",
+        "year": "2024",
+        "bpm": "82.000000",
+        "key": "Bbm",
+        "sha256": "816cf2f6868e5256ae86a9006ff7d286dd45bf4c6a802cc6f9cd4d22b8df1558"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/audio-unknown/Track 2.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Track 2.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Terrace Martin",
+        "title": "Circuitry (feat. Hit-Boy)",
+        "album": "",
+        "genre": "R&B/Soul",
+        "year": "2026",
+        "bpm": "100.000000",
+        "key": "Dbm",
+        "sha256": "95e3bc6db781d842e4bf25adae3a0351e148b5c8e606dbf96065cb0698e8b4b4"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/audio-unknown/Track 3.m4a",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Track 3.m4a",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "",
+        "title": "Track 3",
+        "album": "",
+        "genre": "",
+        "year": "",
+        "bpm": "84",
+        "key": "",
+        "sha256": "f34f6b4e2e08f1c6b8c1490e5364d4aa73d4583740c7612d6591bff2459d8d2d"
+      },
+      "flags": [
+        "unknown_version",
+        "missing:artist,genre,year,key"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/audio-unknown/Track 4.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Track 4.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Shepard, Trox",
+        "title": "In Dire Need",
+        "album": "",
+        "genre": "Electronic",
+        "year": "2025",
+        "bpm": "80.000000",
+        "key": "Abm",
+        "sha256": "03231191edfb0958e5c51d6d5a78fd176c97e3d62387f9a8a90a11a2d8407092"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/ave4., SKEEYEE - Tryna See Wassup (SKEEYEE Flip).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/ave4., SKEEYEE - Tryna See Wassup (SKEEYEE Flip).mp3",
+      "bucket": "REMIXES & EDITS",
+      "bucket_evidence": "explicit remix/edit label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "ave4., SKEEYEE",
+        "title": "Tryna See Wassup (SKEEYEE Flip)",
+        "album": "Tryna See Wassup (SKEEYEE Flip)",
+        "genre": "Hip Hop",
+        "year": "2023",
+        "bpm": "92",
+        "key": "Cm",
+        "sha256": "14233d0585f35e4fbcd283e7fb54ddad7665aacc94dee666da0790803f869499"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/dev.n & GrantThaSpecialist - Moments in SkeeYee (Juke Edit) Juke.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/dev.n & GrantThaSpecialist - Moments in SkeeYee (Juke Edit) Juke.mp3",
+      "bucket": "REMIXES & EDITS",
+      "bucket_evidence": "explicit remix/edit label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "dev.n & GrantThaSpecialist",
+        "title": "Moments in SkeeYee (Juke Edit)",
+        "album": "",
+        "genre": "Juke",
+        "year": "2024",
+        "bpm": "83.000000",
+        "key": "C#m",
+        "sha256": "ba6088ceffe4fb1fd0b282a725f0b9734e2568a5a11617f142fe49613ae0476a"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/don toliver - body.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/don toliver - body.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Don Toliver",
+        "title": "Body",
+        "album": "",
+        "genre": "Rap/Hip Hop",
+        "year": "2026",
+        "bpm": "73.000000",
+        "key": "Cm",
+        "sha256": "5318e72dc463aa34222d7f80ea0004d9f7ec86675865e0192e80ecdb285923e5"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/don toliver - tiramisu.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/don toliver - tiramisu.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Don Toliver",
+        "title": "Tiramisu",
+        "album": "",
+        "genre": "Rap/Hip Hop",
+        "year": "2025",
+        "bpm": "133.000000",
+        "key": "Em",
+        "sha256": "b630ee7b111ae87cf02e9630d2d15ab630c0cc2504f3747e3977b41a6a3be373"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/don toliver - tmu.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/don toliver - tmu.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Don Toliver",
+        "title": "TMU",
+        "album": "",
+        "genre": "Rap/Hip Hop",
+        "year": "2026",
+        "bpm": "139.000000",
+        "key": "Ebm",
+        "sha256": "a3e6da9d2a727df698903ee41ac7ebe9f36d136bfb69bd990d7ce51f756d183a"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/don toliver - tuition.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/don toliver - tuition.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Don Toliver",
+        "title": "Tuition",
+        "album": "",
+        "genre": "Rap/Hip Hop",
+        "year": "2026",
+        "bpm": "131.990000",
+        "key": "Gm",
+        "sha256": "e7e52413f97a6f3ef8371e32ce3ff8da18bbc7324d6dfabd93651652bf5d5f96"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/peterpeterpeter - Kehlani - Distraction (Peter Edit) miamibass.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/peterpeterpeter - Kehlani - Distraction (Peter Edit) miamibass.mp3",
+      "bucket": "REMIXES & EDITS",
+      "bucket_evidence": "explicit remix/edit label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "peterpeterpeter",
+        "title": "Kehlani - Distraction (Peter Edit)",
+        "album": "",
+        "genre": "miamibass",
+        "year": "2025",
+        "bpm": "130.000000",
+        "key": "Cm",
+        "sha256": "7a0ab7eb89900baa89d909caf41deec81127f16551322361c4e28a644d7cb5fb"
+      },
+      "flags": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/pinkpantheress - noises + jt.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/pinkpantheress - noises + jt.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "PinkPantheress",
+        "title": "Noises + JT",
+        "album": "",
+        "genre": "Pop",
+        "year": "2025",
+        "bpm": "84",
+        "key": "Ebm",
+        "sha256": "3fa817e3696caae5622bcf5e4ef5375bb3b9f25f57cee74580cb4dc49110b49a"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/sailorr, eem triplin - coconut (feat. eem triplin).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/sailorr, eem triplin - coconut (feat. eem triplin).mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "SAILORR, Eem Triplin",
+        "title": "COCONUT (feat. Eem Triplin)",
+        "album": "",
+        "genre": "R&B",
+        "year": "2025",
+        "bpm": "88.010000",
+        "key": "Cm",
+        "sha256": "aa8bc6377be6ebea5c3c9940873e99cc831b81657cb506ebc49eb27037825dc4"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/tyler, the creator - don't tap that glass _ tweakin'.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/tyler, the creator - don't tap that glass _ tweakin'.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Tyler, The Creator",
+        "title": "Don't Tap That Glass / Tweakin'",
+        "album": "",
+        "genre": "Rap",
+        "year": "2025",
+        "bpm": "134",
+        "key": "Am",
+        "sha256": "b5a60aeb51f713ef946609e212b3aba085ffdc3761de863e6138cb6ed74a399e"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/tyler, the creator - don't you worry baby (feat. madison mcferrin).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/tyler, the creator - don't you worry baby (feat. madison mcferrin).mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Tyler, The Creator",
+        "title": "Don't You Worry Baby (feat. Madison McFerrin)",
+        "album": "",
+        "genre": "Rap",
+        "year": "2025",
+        "bpm": "119",
+        "key": "Bm",
+        "sha256": "43cddc90923cba3df526aa65533702fcaf8de510d8caf20bec21dd51f92313a9"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/tyler, the creator - ring ring ring.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/tyler, the creator - ring ring ring.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Tyler, The Creator",
+        "title": "Ring Ring Ring",
+        "album": "",
+        "genre": "Rap",
+        "year": "2025",
+        "bpm": "119",
+        "key": "Ebm",
+        "sha256": "35c2e17d97451730b8c756f40afb52743ac63cf816ec5a01f0e03b88e452d4c8"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/wale, leon thomas - watching us.mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/wale, leon thomas - watching us.mp3",
+      "bucket": "_NEEDS CHECK",
+      "bucket_evidence": "no proven version label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Wale, Leon Thomas",
+        "title": "Watching Us",
+        "album": "",
+        "genre": "Hip Hop",
+        "year": "2025",
+        "bpm": "98.530000",
+        "key": "Cm",
+        "sha256": "f2fab5478052e46167037548e943fc1c255ade74b2ec853064bbd85584423ad0"
+      },
+      "flags": [
+        "unknown_version"
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/wellsent - tyler, the creator - darling, i (feat. teezo touchdown) (wellsent remix).mp3",
+      "proposed_destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/wellsent - tyler, the creator - darling, i (feat. teezo touchdown) (wellsent remix).mp3",
+      "bucket": "REMIXES & EDITS",
+      "bucket_evidence": "explicit remix/edit label",
+      "proposed_metadata": {},
+      "current": {
+        "artist": "Wellsent",
+        "title": "Tyler, The Creator - Darling, I (feat. Teezo Touchdown) (Wellsent Remix)",
+        "album": "",
+        "genre": "R&B & Soul",
+        "year": "2025",
+        "bpm": "115.000000",
+        "key": "Abm",
+        "sha256": "b099f246662c2d3625836b072d336ea0581ab52b0c0a5b194f9a46f776a39a9b"
+      },
+      "flags": []
+    }
+  ]
+}

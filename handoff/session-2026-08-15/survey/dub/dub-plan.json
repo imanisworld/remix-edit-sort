@@ -1,0 +1,38 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/Dub",
+  "track_count": 1,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 1
+    },
+    "genres": {
+      "Dub": 1
+    },
+    "moves": 1,
+    "genre_tag_changes": 0
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": []
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Dub/Spooky Dub.mp3",
+      "source_relative": "Spooky Dub.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Dub/_NEEDS CHECK/Dub/Spooky Dub.mp3",
+      "destination_relative": "_NEEDS CHECK/Dub/Spooky Dub.mp3",
+      "sha256": "7c9f03e53694a8c4ad3ebdb4ca5c9ee473a1f6656ab16edb151b75b82cdac655",
+      "version_category": "_NEEDS CHECK",
+      "current_genre": "Dub",
+      "proposed_genre": "Dub",
+      "move": true,
+      "tag_change": false
+    }
+  ]
+}

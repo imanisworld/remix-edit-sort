@@ -1,0 +1,50 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/Rave",
+  "track_count": 2,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 2
+    },
+    "genres": {
+      "Rave": 2
+    },
+    "moves": 2,
+    "genre_tag_changes": 2
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": []
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Rave/Gaszia - CLIPSCAN.mp3",
+      "source_relative": "Gaszia - CLIPSCAN.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Rave/_NEEDS CHECK/Rave/Gaszia - CLIPSCAN.mp3",
+      "destination_relative": "_NEEDS CHECK/Rave/Gaszia - CLIPSCAN.mp3",
+      "sha256": "db6f25e23859b3b5a386fb250232aead188745d864edef32a8793143dc8de6f6",
+      "version_category": "_NEEDS CHECK",
+      "current_genre": "",
+      "proposed_genre": "Rave",
+      "move": true,
+      "tag_change": true
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Rave/QECHUABOi - 2DrAnK!.mp3",
+      "source_relative": "QECHUABOi - 2DrAnK!.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Rave/_NEEDS CHECK/Rave/QECHUABOi - 2DrAnK!.mp3",
+      "destination_relative": "_NEEDS CHECK/Rave/QECHUABOi - 2DrAnK!.mp3",
+      "sha256": "e570fafbcc8e9de0a5063d72d4740235377a20b6fa00c49d21fb33f7bbf21c22",
+      "version_category": "_NEEDS CHECK",
+      "current_genre": "white, edit",
+      "proposed_genre": "Rave",
+      "move": true,
+      "tag_change": true
+    }
+  ]
+}

@@ -1,0 +1,160 @@
+{
+  "mode": "events-grouping-apply",
+  "preview": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/events/events-grouping-preview.json",
+  "verified_backup": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/backups/events-pre-grouping-2026-08-15",
+  "tracks_in_preview": 3046,
+  "grouping_tags_changed": 3010,
+  "tags_skipped": 36,
+  "skipped": [
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/IYG PROM/_NEEDS CHECK/Rock/. Def Leppard - Rock Of Ages.flac",
+      "reason": "tag read error in preview"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/IYG PROM/_NEEDS CHECK/Rock/. Girls On Film.flac",
+      "reason": "tag read error in preview"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/IYG PROM/_NEEDS CHECK/Pop Rock/. Oxygen.flac",
+      "reason": "tag read error in preview"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/IYG PROM/_NEEDS CHECK/_GENRE NEEDS CHECK/. Welcome To Heaven.flac",
+      "reason": "tag read error in preview"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/IYG PROM/_NEEDS CHECK/Pop Rock/Daft Punk - One More Time.flac",
+      "reason": "tag read error in preview"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/IYG PROM/_NEEDS CHECK/Rock/Judas Priest - 04 - Hell Bent For Leather.flac",
+      "reason": "tag read error in preview"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/IYG PROM/_NEEDS CHECK/Rock/Succexy.flac",
+      "reason": "tag read error in preview"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/IYG PROM/_NEEDS CHECK/Pop/Will.i.am - #thatpower (Feat. Justin Bieber).flac",
+      "reason": "tag read error in preview"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/IYG PROM/_NEEDS CHECK/_GENRE NEEDS CHECK/no tears left to cry.flac",
+      "reason": "tag read error in preview"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/R&B/Baby (Clean).mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/R&B/Baby (Intro Clean).mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Pop/Control (12 Inch Version) (Clean Extended).mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Pop/REMIXES & EDITS/Control (12 Inch Version) (Clean Radio Edit).mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Pop/ACAPELLAS/Control (Clean Acapella).mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Pop/Control (Clean).mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/_GENRE NEEDS CHECK/DJBewser, BEWSER Club Tool) (CLEAN - I Gotta Cut.m4a",
+      "reason": "unsupported safe Grouping writer: .m4a"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/LL Cool J ft Marc Dorsey & Pharrell - Luv U Better (Clean).mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/LL Cool J ft Marc Dorsey & Pharrell - Luv U Better (Intro Clean).mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Dance & Electronic/REMIXES & EDITS/Rihanna - Kiss It Better (Kaytranada Remix) (Clean) (Extended).mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/R&B/The-Dream ft Mariah Carey - My Love (Clean).mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/R&B/The-Dream ft Mariah Carey - My Love (Intro Clean).mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/FUNK (CLEAN)/Funk & Soul/The Gap Band - Humpin' (Clean).mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/FUNK (CLEAN)/Funk & Soul/The Gap Band - Humpin' (Intro Clean).mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/FUNK (CLEAN)/Funk & Soul/Zapp - Dance Floor (Clean).mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/FUNK (CLEAN)/Funk & Soul/Zapp - Dance Floor (Intro Clean).mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/NEEDS CLEAN CHECK/_GENRE NEEDS CHECK/neworealbounce.aif",
+      "reason": "unsupported safe Grouping writer: .aif"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/NEEDS CLEAN CHECK/_GENRE NEEDS CHECK/westcoast.aif",
+      "reason": "unsupported safe Grouping writer: .aif"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/Lari Download Sep 20th/DIRTY/Hip-Hop/Do Or Die ft Johnny P & Twista - Po Pimp (Dirty).mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/Dead Silence Pack/_NEEDS CHECK/Hip-Hop & R&B/Been Thru Hell (Topper-Intro) Demo-1 (2).mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/Dead Silence Pack/_NEEDS CHECK/Hip-Hop & R&B/Pearly Gates (Topper-Intro) Final.mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/Dead Silence Pack/CLEAN/Hip-Hop & R&B/Reply Back (Topper-Intro) Clean.mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/Dead Silence Pack/_NEEDS CHECK/Hip-Hop & R&B/Rich Forever (Topper-Intro)-2 No Bass-Kicks.mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/Dead Silence Pack/CLEAN/Hip-Hop & R&B/There You Go  (Topper-Intro) Clean.mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/Dead Silence Pack/CLEAN/Hip-Hop & R&B/Vanilla Bean-2 (Topper-Intro) Clean.mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/Dead Silence Pack/_NEEDS CHECK/Hip-Hop & R&B/Vent Session Part-2 (Topper-Intro) Final.mp3",
+      "reason": "ID3v2.2 preserved"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/women/_NEEDS CHECK/_GENRE NEEDS CHECK/01 Iwouksane.flac",
+      "reason": "tag read error in preview"
+    }
+  ],
+  "files_moved": 0,
+  "files_deleted": 0,
+  "genre_tags_changed": 0,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "undo_log": "/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/events/events-grouping-undo-20260815-171044.jsonl"
+}
