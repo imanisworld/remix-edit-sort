@@ -2,7 +2,7 @@
   "mode": "preview-only",
   "grouping_mode": "subfolder",
   "original_root": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles",
-  "track_count": 0,
+  "track_count": 268,
   "rules": {
     "approval_required": true,
     "no_delete": true,
@@ -10,7 +10,2437 @@
     "preserve_existing_grouping": "append and dedupe, never overwrite"
   },
   "skipped": {
-    "destination no longer exists": 827
+    "non-mp3 (Grouping writer only supports mp3)": 242,
+    "sat loose at the generic root; no subfolder evidence": 317
   },
-  "items": []
+  "items": [
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/som som, glorilla - eugh eugh.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Michael/som som, glorilla - eugh eugh.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Michael",
+      "combined_grouping": "Source: Michael",
+      "id3_version": 3,
+      "evidence": "original subfolder: Michael"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/victoria monét, ayeeitsbryce & jjoziah - victoria monét - alright (an ayeeitsbryce bounce flip) [jjoziah version].mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Michael/victoria monét, ayeeitsbryce & jjoziah - victoria monét - alright (an ayeeitsbryce bounce flip) [jjoziah version].mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Michael",
+      "combined_grouping": "Source: Michael",
+      "id3_version": 3,
+      "evidence": "original subfolder: Michael"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/wolfkage - 2 pac - how do you want it (jersey club remix).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Michael/wolfkage - 2 pac - how do you want it (jersey club remix).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Michael",
+      "combined_grouping": "Source: Michael",
+      "id3_version": 3,
+      "evidence": "original subfolder: Michael"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/01. Rexx Life Raj, Reecebeats - Risk It All.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/ChefRaekwon/Rexx Life Raj x Reese Beats - 4 The Love/01. Rexx Life Raj, Reecebeats - Risk It All.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/02. Rexx Life Raj, Reecebeats - BBASDD.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/ChefRaekwon/Rexx Life Raj x Reese Beats - 4 The Love/02. Rexx Life Raj, Reecebeats - BBASDD.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/03. Rexx Life Raj, Reecebeats, Seddy Hendrinx - My Lil Baby.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/ChefRaekwon/Rexx Life Raj x Reese Beats - 4 The Love/03. Rexx Life Raj, Reecebeats, Seddy Hendrinx - My Lil Baby.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/04. Rexx Life Raj, Reecebeats - Take It Easy.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/ChefRaekwon/Rexx Life Raj x Reese Beats - 4 The Love/04. Rexx Life Raj, Reecebeats - Take It Easy.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/05. Rexx Life Raj, Reecebeats - Passion.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/ChefRaekwon/Rexx Life Raj x Reese Beats - 4 The Love/05. Rexx Life Raj, Reecebeats - Passion.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/06. Rexx Life Raj, Reecebeats - Temporary Pain.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/ChefRaekwon/Rexx Life Raj x Reese Beats - 4 The Love/06. Rexx Life Raj, Reecebeats - Temporary Pain.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/07. Rexx Life Raj, Reecebeats - Mercy.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/ChefRaekwon/Rexx Life Raj x Reese Beats - 4 The Love/07. Rexx Life Raj, Reecebeats - Mercy.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/08. Rexx Life Raj, Reecebeats - No One Left.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/ChefRaekwon/Rexx Life Raj x Reese Beats - 4 The Love/08. Rexx Life Raj, Reecebeats - No One Left.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/09. Rexx Life Raj, Reecebeats - Pray Anyway.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/ChefRaekwon/Rexx Life Raj x Reese Beats - 4 The Love/09. Rexx Life Raj, Reecebeats - Pray Anyway.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/01 - Villuminati.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/HSSLNG/(2013) Born Sinner/01 - Villuminati.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/03 - Is She Gon Pop.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/HSSLNG/(2013) Born Sinner/03 - Is She Gon Pop.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/03 - Land Of The Snakes.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/HSSLNG/(2013) Born Sinner/03 - Land Of The Snakes.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/04 - Niggaz Know.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/HSSLNG/(2013) Born Sinner/04 - Niggaz Know.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/09. Stealth Mode.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/HSSLNG/(2024) Might Delete Later/09. Stealth Mode.mp3",
+      "current_grouping": [
+        "PMEDIA"
+      ],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "PMEDIA; Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DIRTY/_GENRE NEEDS CHECK/J. Cole - Fever (Intro Dirty) - 3A - 100.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/KrateDigga/Beatfreakz - 3107-24/J. Cole - Fever (Intro Dirty) - 3A - 100.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DIRTY/_GENRE NEEDS CHECK/J. Cole & Bas - H.Y.B. (Intro)[DIRTY].mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/KrateDigga/Crack 4 DJs - 0904-24/J. Cole & Bas - H.Y.B. (Intro)[DIRTY].mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DIRTY/_GENRE NEEDS CHECK/Plies - Put It On Ya (Intro) (Dirty) 151.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/Musicmaster2023/Back To The Future [2008] Part. 6/Plies - Put It On Ya (Intro) (Dirty) 151.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/06 - J. Cole - Fire Squad.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/PoopLoop/J. Cole - 2014 Forest Hills Drive [2014]/06 - J. Cole - Fire Squad.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/08 - J. Cole - G.O.M.D..mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/PoopLoop/J. Cole - 2014 Forest Hills Drive [2014]/08 - J. Cole - G.O.M.D..mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/21. It's Impossible.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/Reemerge6193/Kanye's Soul Mixshow/21. It's Impossible.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 4,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/Tone Stith - Fly.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/Snorth8554/Tone Stith - Fly.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/01-durand_bernarr-river-be4eb3af.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/beatrice.songbird2/Durand_Bernarr-BERNARR.-WEB-2026-ENRiCH/01-durand_bernarr-river-be4eb3af.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/02-durand_bernarr-hello-3fb55457.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/beatrice.songbird2/Durand_Bernarr-BERNARR.-WEB-2026-ENRiCH/02-durand_bernarr-hello-3fb55457.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/03-durand_bernarr-undivided-0167c5ee.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/beatrice.songbird2/Durand_Bernarr-BERNARR.-WEB-2026-ENRiCH/03-durand_bernarr-undivided-0167c5ee.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/04-durand_bernarr-sleep-b74ebddd.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/beatrice.songbird2/Durand_Bernarr-BERNARR.-WEB-2026-ENRiCH/04-durand_bernarr-sleep-b74ebddd.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/05-durand_bernarr-am_i_okay-b2df55eb.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/beatrice.songbird2/Durand_Bernarr-BERNARR.-WEB-2026-ENRiCH/05-durand_bernarr-am_i_okay-b2df55eb.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/06-durand_bernarr_vic_mensa-homesick-fe82f3c5.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/beatrice.songbird2/Durand_Bernarr-BERNARR.-WEB-2026-ENRiCH/06-durand_bernarr_vic_mensa-homesick-fe82f3c5.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/07-durand_bernarr-sugar_family-314fcee5.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/beatrice.songbird2/Durand_Bernarr-BERNARR.-WEB-2026-ENRiCH/07-durand_bernarr-sugar_family-314fcee5.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/08-durand_bernarr_bj_the_chicago_kid-ayo-00e7f3ed.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/beatrice.songbird2/Durand_Bernarr-BERNARR.-WEB-2026-ENRiCH/08-durand_bernarr_bj_the_chicago_kid-ayo-00e7f3ed.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/09-durand_bernarr-sharp-356376ea.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/beatrice.songbird2/Durand_Bernarr-BERNARR.-WEB-2026-ENRiCH/09-durand_bernarr-sharp-356376ea.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/10-durand_bernarr-effort-d33b10f8.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/beatrice.songbird2/Durand_Bernarr-BERNARR.-WEB-2026-ENRiCH/10-durand_bernarr-effort-d33b10f8.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/11-durand_bernarr_big_sean-waiting-5a02d79e.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/beatrice.songbird2/Durand_Bernarr-BERNARR.-WEB-2026-ENRiCH/11-durand_bernarr_big_sean-waiting-5a02d79e.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/12-durand_bernarr_james_fauntleroy-wild_ride-0059af47.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/beatrice.songbird2/Durand_Bernarr-BERNARR.-WEB-2026-ENRiCH/12-durand_bernarr_james_fauntleroy-wild_ride-0059af47.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/13-durand_bernarr-bloom-0cd3da88.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/beatrice.songbird2/Durand_Bernarr-BERNARR.-WEB-2026-ENRiCH/13-durand_bernarr-bloom-0cd3da88.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/14-durand_bernarr_khalid-soft-1aafb1c0.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/beatrice.songbird2/Durand_Bernarr-BERNARR.-WEB-2026-ENRiCH/14-durand_bernarr_khalid-soft-1aafb1c0.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/15-durand_bernarr-my_life-044665ba.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/beatrice.songbird2/Durand_Bernarr-BERNARR.-WEB-2026-ENRiCH/15-durand_bernarr-my_life-044665ba.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/16-durand_bernarr-i_found_myself-cf9a9a05.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/beatrice.songbird2/Durand_Bernarr-BERNARR.-WEB-2026-ENRiCH/16-durand_bernarr-i_found_myself-cf9a9a05.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/17-durand_bernarr_sevyn_streeter-10000_lifetimes-e0882543.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/beatrice.songbird2/Durand_Bernarr-BERNARR.-WEB-2026-ENRiCH/17-durand_bernarr_sevyn_streeter-10000_lifetimes-e0882543.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/Anotha Luva (feat. Lil Wayne).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/blueshadez/Kehlani - Kehlani - (2026)/Anotha Luva (feat. Lil Wayne).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/Back and Forth (feat. Missy Elliott).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/blueshadez/Kehlani - Kehlani - (2026)/Back and Forth (feat. Missy Elliott).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/Call Me Back (feat. T-Pain & Lil Jon).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/blueshadez/Kehlani - Kehlani - (2026)/Call Me Back (feat. T-Pain & Lil Jon).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/Cruise Control.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/blueshadez/Kehlani - Kehlani - (2026)/Cruise Control.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/Folded.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/blueshadez/Kehlani - Kehlani - (2026)/Folded.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/I Need You (feat. Brandy).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/blueshadez/Kehlani - Kehlani - (2026)/I Need You (feat. Brandy).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/Intro.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/blueshadez/Kehlani - Kehlani - (2026)/Intro.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/Lights On (feat. Big Sean).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/blueshadez/Kehlani - Kehlani - (2026)/Lights On (feat. Big Sean).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/No Such Thing (feat. Clipse).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/blueshadez/Kehlani - Kehlani - (2026)/No Such Thing (feat. Clipse).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/Oooh.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/blueshadez/Kehlani - Kehlani - (2026)/Oooh.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/Out The Window.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/blueshadez/Kehlani - Kehlani - (2026)/Out The Window.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/Pocket (feat. Cardi B).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/blueshadez/Kehlani - Kehlani - (2026)/Pocket (feat. Cardi B).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/Still.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/blueshadez/Kehlani - Kehlani - (2026)/Still.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/Sweet Nuthins (feat. Leon Thomas).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/blueshadez/Kehlani - Kehlani - (2026)/Sweet Nuthins (feat. Leon Thomas).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/Unlearn.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/blueshadez/Kehlani - Kehlani - (2026)/Unlearn.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/02 amari.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/captainwunderful/the off-season/02 amari.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 4,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/Ashin the Blunt (feat. 6LACK).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/dvd_vhs/Ashin the Blunt (feat. 6LACK).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/CLEAN/_GENRE NEEDS CHECK/Tone Stith - Fly (Clean) 80.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/gold167/Tone Stith - Fly (Clean) 80.mp3",
+      "current_grouping": [
+        "www.iptorrents.com - www.torrentday.com"
+      ],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "www.iptorrents.com - www.torrentday.com; Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/DIRTY/_GENRE NEEDS CHECK/Tone Stith - Fly (Dirty) 80.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/gold167/Tone Stith - Fly (Dirty) 80.mp3",
+      "current_grouping": [
+        "www.iptorrents.com - www.torrentday.com"
+      ],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "www.iptorrents.com - www.torrentday.com; Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/INSTRUMENTALS/_GENRE NEEDS CHECK/Tone Stith - Fly (Instrumental) 80.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/gold167/Tone Stith - Fly (Instrumental) 80.mp3",
+      "current_grouping": [
+        "www.iptorrents.com - www.torrentday.com"
+      ],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "www.iptorrents.com - www.torrentday.com; Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/01 - bite me INTRO.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/philosophie/with all due respect/01 - bite me INTRO.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 4,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/02 - stand on it.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/philosophie/with all due respect/02 - stand on it.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 4,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/06 - talk you through it (feat. FLO).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/philosophie/with all due respect/06 - talk you through it (feat. FLO).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 4,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/08 - do what i say.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/philosophie/with all due respect/08 - do what i say.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 4,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/1-02 M.O.M..mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/unseen26/1-02 M.O.M..mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/1-04 BOY IN RED (feat. SZA).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/unseen26/1-04 BOY IN RED (feat. SZA).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/1-06 SCARED 2 LOOK DOWN.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/unseen26/1-06 SCARED 2 LOOK DOWN.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/1-09 AIN'T GIVIN' UP.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/unseen26/1-09 AIN'T GIVIN' UP.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/1-10 GTKY.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/unseen26/1-10 GTKY.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 3,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/j._cole_-_amari.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Music/vargtimmen/06.CURRENT_HITS_(MAY_2021)_LDS228/j._cole_-_amari.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Music",
+      "combined_grouping": "Source: Music",
+      "id3_version": 4,
+      "evidence": "original subfolder: Music"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/01-doja_cat-cards.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/01-doja_cat-cards.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/019dexter, born threat - juke ya boy (atlanta bass remix).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/019dexter, born threat - juke ya boy (atlanta bass remix).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/019dexter, crank missez - get in, get out (atlanta bass remix).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/019dexter, crank missez - get in, get out (atlanta bass remix).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/019dexter, do or die - do u (atlanta bass remix).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/019dexter, do or die - do u (atlanta bass remix).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/019dexter, faith evans - soon as i get home (atlanta bass remix).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/019dexter, faith evans - soon as i get home (atlanta bass remix).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/019dexter, lloyd - players prayer (atlanta bass remix).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/019dexter, lloyd - players prayer (atlanta bass remix).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/019dexter, solange - locked in closets (atlanta bass remix).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/019dexter, solange - locked in closets (atlanta bass remix).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/02-doja_cat-jealous_type.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/02-doja_cat-jealous_type.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/03-doja_cat-aaahh_men.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/03-doja_cat-aaahh_men.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/04-doja_cat-couples_therapy.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/04-doja_cat-couples_therapy.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/05-doja_cat-gorgeous.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/05-doja_cat-gorgeous.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/06-doja_cat-stranger.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/06-doja_cat-stranger.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/07-doja_cat-all_mine.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/07-doja_cat-all_mine.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/08-doja_cat-take_me_dancing 2.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/08-doja_cat-take_me_dancing 2.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/08-doja_cat-take_me_dancing.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/08-doja_cat-take_me_dancing.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/09-doja_cat-lipstain.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/09-doja_cat-lipstain.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/10-doja_cat-silly_fun.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/10-doja_cat-silly_fun.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/11-doja_cat-acts_of_service.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/11-doja_cat-acts_of_service.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/12-doja_cat-make_it_up.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/12-doja_cat-make_it_up.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/13-doja_cat-happy.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/13-doja_cat-happy.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/14-doja_cat-one_more_time.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/14-doja_cat-one_more_time.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/15-doja_cat-come_back.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/15-doja_cat-come_back.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/Amerie, Devereaux - Talkin' To Me (Devereaux Remix).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/Amerie, Devereaux - Talkin' To Me (Devereaux Remix).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/afrikano, drake - baile in houston.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/afrikano, drake - baile in houston.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/Electronic/arma edits - riri (arma edit) (free download - arma edits vol. 1).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/arma edits - riri (arma edit) (free download - arma edits vol. 1).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/arma edits - sensual (edit).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/arma edits - sensual (edit).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Electronic/bambii - in my mind again (feat. lamsi & £monzo).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/bambii - in my mind again (feat. lamsi & £monzo).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Electronic/bambii - island criminal (feat. aluna).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/bambii - island criminal (feat. aluna).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Electronic/bambii - remember (feat. ravyn lenae & scrufizzer).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/bambii - remember (feat. ravyn lenae & scrufizzer).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Electronic/bambii - thunder (feat. jeleel!).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/bambii - thunder (feat. jeleel!).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/dj j-ball - jump (atl club remix).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/dj j-ball - jump (atl club remix).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Juke & Footwork/dj redtail - fine shit (@djredtail juke mix).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/dj redtail - fine shit (@djredtail juke mix).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/eric bellinger - soul tie.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/eric bellinger - soul tie.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/eric bellinger - without you.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/eric bellinger - without you.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/eric bellinger, projexx, kheilstone - rush.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/eric bellinger, projexx, kheilstone - rush.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/gurafiku, tdesu, amaarae - angels in bouyon (gurafiku x tdesu edit) buy = free dl.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/gurafiku, tdesu, amaarae - angels in bouyon (gurafiku x tdesu edit) buy = free dl.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/R&B/icee red - miami summers (hustle flip) [icee red & lyric le'son remix].mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/icee red - miami summers (hustle flip) [icee red & lyric le'son remix].mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/juanso - premiere_ juanso - flip that [tete vide].mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/juanso - premiere_ juanso - flip that [tete vide].mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/jun tanaka - girl with the tattoo (jun tanaka edit).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/jun tanaka - girl with the tattoo (jun tanaka edit).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/k camp - simon says.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/k camp - simon says.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/Hip-Hop/kibs - u sed break yo back (dj kibs remix).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/kibs - u sed break yo back (dj kibs remix).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/luh tyler - bp.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/luh tyler - bp.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/luh tyler - young player (feat. larry june).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/luh tyler - young player (feat. larry june).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/lyric le'son - lets go kitty (jersey).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/lyric le'son - lets go kitty (jersey).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/lyric le'son - no comments (miami bass).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/lyric le'son - no comments (miami bass).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Ghettotech/lyric le'son, future - freak huzz (juke-ghettotech).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/lyric le'son, future - freak huzz (juke-ghettotech).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/lyric le'son, tamae - back break (detroit juke-tech).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/lyric le'son, tamae - back break (detroit juke-tech).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/lyric le'son, tamae - right now (dnb_jungle-ish).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/lyric le'son, tamae - right now (dnb_jungle-ish).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Bounce/lyric le'son, tamae - river dance bounce (future miami bass).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/lyric le'son, tamae - river dance bounce (future miami bass).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Juke & Footwork/lyric le'son, tamae, fullbody durag - diced pineaplles (juke) w_fullbodydurag.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/lyric le'son, tamae, fullbody durag - diced pineaplles (juke) w_fullbodydurag.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/monaleo - bigger than big.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/monaleo - bigger than big.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/monaleo - diary of an og.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/monaleo - diary of an og.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/monaleo - dignified.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/monaleo - dignified.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/monaleo - life after death.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/monaleo - life after death.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/monaleo - locked in.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/monaleo - locked in.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/monaleo - open the gates.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/monaleo - open the gates.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/monaleo - sexy soulaan.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/monaleo - sexy soulaan.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/monaleo - spare change.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/monaleo - spare change.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/monaleo - tamron hall.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/monaleo - tamron hall.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/monaleo - we on dat (og mix) [feat. bun b, paul wall & lil' keke].mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/monaleo - we on dat (og mix) [feat. bun b, paul wall & lil' keke].mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/másquenada - summer (313 remix).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/másquenada - summer (313 remix).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/omoidé - tv on.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/omoidé - tv on.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - girl like me + kaytranada.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - girl like me + kaytranada.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - girl like me + oklou.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - girl like me + oklou.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - illegal + anitta.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - illegal + anitta.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - illegal + nia archives.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - illegal + nia archives.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - illegal + seventeen.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - illegal + seventeen.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - nice to know you + loukeman + leod.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - nice to know you + loukeman + leod.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - nice to know you + sega bodega.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - nice to know you + sega bodega.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - nice to know you + sugababes.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - nice to know you + sugababes.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - noises + mochakk.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - noises + mochakk.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - romeo + kilimanjaro.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - romeo + kilimanjaro.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - romeo + rachel chinouriri.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - romeo + rachel chinouriri.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - romeo + ravyn lenae.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - romeo + ravyn lenae.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - stars + dj caio prince + adame dj.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - stars + dj caio prince + adame dj.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - stars + yves.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - stars + yves.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - stateside + bladee.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - stateside + bladee.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - stateside + groove armada.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - stateside + groove armada.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - stateside + kylie minogue.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - stateside + kylie minogue.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - stateside + zara larsson.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - stateside + zara larsson.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - tonight + basement jaxx.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - tonight + basement jaxx.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - tonight + jade.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - tonight + jade.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/pinkpantheress - tonight + joe goddard.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/pinkpantheress - tonight + joe goddard.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/rochelle jordan - around.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/rochelle jordan - around.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/rochelle jordan - bite the bait.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/rochelle jordan - bite the bait.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/rochelle jordan - close 2 me.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/rochelle jordan - close 2 me.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/rochelle jordan - crave.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/rochelle jordan - crave.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/rochelle jordan - doing it too.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/rochelle jordan - doing it too.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/rochelle jordan - eyes shut.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/rochelle jordan - eyes shut.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/rochelle jordan - get it off.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/rochelle jordan - get it off.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/rochelle jordan - grace.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/rochelle jordan - grace.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/rochelle jordan - i'm your muse.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/rochelle jordan - i'm your muse.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/rochelle jordan - ladida.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/rochelle jordan - ladida.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/rochelle jordan - never enough.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/rochelle jordan - never enough.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/rochelle jordan - on 2 something.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/rochelle jordan - on 2 something.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/rochelle jordan - sum.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/rochelle jordan - sum.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/rochelle jordan - sweet sensation.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/rochelle jordan - sweet sensation.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/rochelle jordan - the boy.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/rochelle jordan - the boy.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/rochelle jordan - ttw.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/rochelle jordan - ttw.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/rochelle jordan - words 2 say.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/rochelle jordan - words 2 say.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/tamae,lyric le'son - bownce (ghetto tech).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/tamae,lyric le'son - bownce (ghetto tech).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/tango., buugee - monkey (ft. buugee) [rouuuugh].mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/tango., buugee - monkey (ft. buugee) [rouuuugh].mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/tiacorine - crush.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/tiacorine - crush.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/tiacorine - la la la.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/tiacorine - la la la.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/tiacorine, flo milli - lotion.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/tiacorine, flo milli - lotion.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/tiacorine, smino - high demand.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/tiacorine, smino - high demand.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/tiacorine, wiz khalifa - was hannin.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/tiacorine, wiz khalifa - was hannin.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/tinashe - thirsty.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/tinashe - thirsty.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/triico - sade - kiss of life (triico jersey edit).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/triico - sade - kiss of life (triico jersey edit).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/ty dolla $ign - say it.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/ty dolla $ign - say it.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/ty dolla $ign - what i want (feat. lil wayne).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/ty dolla $ign - what i want (feat. lil wayne).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/★jaymorrg ★ - dude (zess) (feat. mvnnymusik & mvntana) [remix].mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/★jaymorrg ★ - dude (zess) (feat. mvnnymusik & mvntana) [remix].mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/✰ fullbodyyyyy✰ - thang so fye.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/NEW downloads/✰ fullbodyyyyy✰ - thang so fye.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: NEW downloads",
+      "combined_grouping": "Source: NEW downloads",
+      "id3_version": 3,
+      "evidence": "original subfolder: NEW downloads"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/Anita Baker - Anita Baker Lately.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/SoundCloud/Anita Baker - Anita Baker Lately.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: SoundCloud",
+      "combined_grouping": "Source: SoundCloud",
+      "id3_version": 3,
+      "evidence": "original subfolder: SoundCloud"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/Badd - EXTRA.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/SoundCloud/Badd - EXTRA.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: SoundCloud",
+      "combined_grouping": "Source: SoundCloud",
+      "id3_version": 3,
+      "evidence": "original subfolder: SoundCloud"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/Brent Faiyaz, SOUTHEAST HAYES DUB - Best Time.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/SoundCloud/Brent Faiyaz, SOUTHEAST HAYES DUB - Best Time.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: SoundCloud",
+      "combined_grouping": "Source: SoundCloud",
+      "id3_version": 3,
+      "evidence": "original subfolder: SoundCloud"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/CWXD010 - CHIMALE, CHIWAX - JACK TOOLS.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/SoundCloud/CWXD010 - CHIMALE, CHIWAX - JACK TOOLS.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: SoundCloud",
+      "combined_grouping": "Source: SoundCloud",
+      "id3_version": 3,
+      "evidence": "original subfolder: SoundCloud"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/Cari - Look At Me.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/SoundCloud/Cari - Look At Me.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: SoundCloud",
+      "combined_grouping": "Source: SoundCloud",
+      "id3_version": 3,
+      "evidence": "original subfolder: SoundCloud"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/Chicken P - Mode Again.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/SoundCloud/Chicken P - Mode Again.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: SoundCloud",
+      "combined_grouping": "Source: SoundCloud",
+      "id3_version": 3,
+      "evidence": "original subfolder: SoundCloud"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/DJ B.a.e - After Dark Chopped and Screwed.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/SoundCloud/DJ B.a.e - After Dark Chopped and Screwed.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: SoundCloud",
+      "combined_grouping": "Source: SoundCloud",
+      "id3_version": 3,
+      "evidence": "original subfolder: SoundCloud"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/DJLILMAN973, Ms Porsh - SEXY WALK 2K12.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/SoundCloud/DJLILMAN973, Ms Porsh - SEXY WALK 2K12.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: SoundCloud",
+      "combined_grouping": "Source: SoundCloud",
+      "id3_version": 3,
+      "evidence": "original subfolder: SoundCloud"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/Dave - Starlight.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/SoundCloud/Dave - Starlight.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: SoundCloud",
+      "combined_grouping": "Source: SoundCloud",
+      "id3_version": 3,
+      "evidence": "original subfolder: SoundCloud"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/Destin Laurel, ziahfyah, cpkshawn, me, Film in description) ( - rmb da time'.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/SoundCloud/Destin Laurel, ziahfyah, cpkshawn, me, Film in description) ( - rmb da time'.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: SoundCloud",
+      "combined_grouping": "Source: SoundCloud",
+      "id3_version": 3,
+      "evidence": "original subfolder: SoundCloud"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/Diamond K - Put Ya Leg Up.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/SoundCloud/Diamond K - Put Ya Leg Up.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: SoundCloud",
+      "combined_grouping": "Source: SoundCloud",
+      "id3_version": 3,
+      "evidence": "original subfolder: SoundCloud"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/X10DRILLA - Man I Might.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/SoundCloud/X10DRILLA - Man I Might.mp3",
+      "current_grouping": [
+        "lodon"
+      ],
+      "proposed_grouping": "Source: SoundCloud",
+      "combined_grouping": "lodon; Source: SoundCloud",
+      "id3_version": 3,
+      "evidence": "original subfolder: SoundCloud"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/berhana, The Cavemen. - I Know.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/SoundCloud/berhana, The Cavemen. - I Know.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: SoundCloud",
+      "combined_grouping": "Source: SoundCloud",
+      "id3_version": 3,
+      "evidence": "original subfolder: SoundCloud"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/Angela Davis on Freedom of Speech (1974).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Spoken Word/Angela Davis on Freedom of Speech (1974).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Spoken Word",
+      "combined_grouping": "Source: Spoken Word",
+      "id3_version": 4,
+      "evidence": "original subfolder: Spoken Word"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/Angela Davis on Violence and Revolution.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Spoken Word/Angela Davis on Violence and Revolution.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Spoken Word",
+      "combined_grouping": "Source: Spoken Word",
+      "id3_version": 3,
+      "evidence": "original subfolder: Spoken Word"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/martin luther king jr. - martin luther king's i have a dream speech.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/Spoken Word/martin luther king jr. - martin luther king's i have a dream speech.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: Spoken Word",
+      "combined_grouping": "Source: Spoken Word",
+      "id3_version": 3,
+      "evidence": "original subfolder: Spoken Word"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/Love You Down.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/Love You Down.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 4,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/bia - bad guy.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/bia - bad guy.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/cassidy star ☆ - 1028.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/cassidy star ☆ - 1028.mp3",
+      "current_grouping": [
+        "mix"
+      ],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "mix; Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/cassidy star ☆, [nogum] hundo - have some fun (dance!) p. cassidy star x hundo.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/cassidy star ☆, [nogum] hundo - have some fun (dance!) p. cassidy star x hundo.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/cassidy star ☆, [nogum] hundo - lola (p. cassidy star x hundo).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/cassidy star ☆, [nogum] hundo - lola (p. cassidy star x hundo).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/concrete boys, karrahbooo - where yo daddy_.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/concrete boys, karrahbooo - where yo daddy_.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/cozz - so what.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/cozz - so what.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/danny brown, 8485 - flowers.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/danny brown, 8485 - flowers.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/danny brown, nnamdi - right from wrong.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/danny brown, nnamdi - right from wrong.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/danny brown, underscores - baby.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/danny brown, underscores - baby.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/denise renée - twerking shorts.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/denise renée - twerking shorts.mp3",
+      "current_grouping": [
+        "mix"
+      ],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "mix; Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/dess dior, bjrnck - idc.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/dess dior, bjrnck - idc.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/dev.n - ex-factor sample (unfinished but lowkey a vibe tho).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/dev.n - ex-factor sample (unfinished but lowkey a vibe tho).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/Juke & Footwork/dev.n - lady juke me tonight (dev.n edit).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/dev.n - lady juke me tonight (dev.n edit).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/R&B/djchoppalot - spend the night _ like that (remix).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/djchoppalot - spend the night _ like that (remix).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/double vision - double vision - flex juke.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/double vision - double vision - flex juke.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/duke deuce - crunkstar girl.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/duke deuce - crunkstar girl.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/eem triplin - coming undone.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/eem triplin - coming undone.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/eric bellinger - money.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/eric bellinger - money.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/Electronic/fake uzumi, trim - trim - boat [uzumi edit].mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/fake uzumi, trim - trim - boat [uzumi edit].mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/hamdi - hamdi - skanka.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/hamdi - hamdi - skanka.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/ice spice - baddie baddie.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/ice spice - baddie baddie.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/isaiah falls - a florida luv story.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/isaiah falls - a florida luv story.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/isaiah falls - for lvrs only.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/isaiah falls - for lvrs only.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/isaiah falls - get ya money.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/isaiah falls - get ya money.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/isaiah falls - god is real.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/isaiah falls - god is real.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/isaiah falls - heaven2me.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/isaiah falls - heaven2me.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/isaiah falls - take a hit.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/isaiah falls - take a hit.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/isaiah falls - trick daddy teaser.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/isaiah falls - trick daddy teaser.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/isaiah falls - trick daddy.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/isaiah falls - trick daddy.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/isaiah falls, alex isley - just a dream.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/isaiah falls, alex isley - just a dream.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/isaiah falls, ambré - desires.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/isaiah falls, ambré - desires.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/isaiah falls, chase shakur - enticing.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/isaiah falls, chase shakur - enticing.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/R&B/isaiah falls, sir - brown sugah.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/isaiah falls, sir - brown sugah.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Pop/jae stephens - freakie.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/jae stephens - freakie.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/jid - wrk.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/jid - wrk.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/jid, ciara, earthgang - sk8.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/jid, ciara, earthgang - sk8.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/joseline hernandez - joseline hernandez - damelo.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/joseline hernandez - joseline hernandez - damelo.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/kembe x - death & taxxxes.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/kembe x - death & taxxxes.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/kentheman - parties & beaches.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/kentheman - parties & beaches.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/lil uzi vert - regular.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/lil uzi vert - regular.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/lizzo - idgas.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/lizzo - idgas.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/luh tyler - on my own.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/luh tyler - on my own.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/lute - changes (feat. bj the chicago kid).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/lute - changes (feat. bj the chicago kid).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/lute - ged (gettin every dolla).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/lute - ged (gettin every dolla).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/masego - unhinged.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/masego - unhinged.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/megan thee stallion - lover girl.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/megan thee stallion - lover girl.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/Miami Bass/másquenada - gucci mane - freaky gurl (mas edit).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/másquenada - gucci mane - freaky gurl (mas edit).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/másquenada - gucci mane - i might be (mas edit).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/másquenada - gucci mane - i might be (mas edit).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/másquenada - gucci mane - i think i love her (mas edit).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/másquenada - gucci mane - i think i love her (mas edit).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/pivot gang - who at the door_ (feat. joseph chilliams, saba, frsh waters, daedaepivot & mfnmelo).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/pivot gang - who at the door_ (feat. joseph chilliams, saba, frsh waters, daedaepivot & mfnmelo).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/pluto, nanaski - motion (feat. sexyy red).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/pluto, nanaski - motion (feat. sexyy red).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/ragz originale - i choose violence.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/ragz originale - i choose violence.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/reason - fleece.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/reason - fleece.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/reason - new york crash.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/reason - new york crash.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/reason - thass my word_blue.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/reason - thass my word_blue.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/reason, bas - not what you think.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/reason, bas - not what you think.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/rexx life raj - say you are.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/rexx life raj - say you are.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/sahbabii - viking.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/sahbabii - viking.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/saint lamaar, tafia - nasty dancer.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/saint lamaar, tafia - nasty dancer.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/saucy santana - can’t stand me (feat. monaleo).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/saucy santana - can’t stand me (feat. monaleo).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/sean dream - light body [hosted by bastian bell] (ft. kmb, ave4., chriz javey, remi oz, de'leon, love ave., bastian bell).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/sean dream - light body [hosted by bastian bell] (ft. kmb, ave4., chriz javey, remi oz, de'leon, love ave., bastian bell).mp3",
+      "current_grouping": [
+        "mix"
+      ],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "mix; Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/sean dream - wash u away redux.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/sean dream - wash u away redux.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/spillage village, earthgang, 6lack - oshun (with earthgang & 6lack feat. jurdan bryant).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/spillage village, earthgang, 6lack - oshun (with earthgang & 6lack feat. jurdan bryant).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/spillage village, mereba - psalmsing (with mereba).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/spillage village, mereba - psalmsing (with mereba).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/youngboy never broke again - priorities.mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/youngboy never broke again - priorities.mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/_GENRE NEEDS CHECK/zeemuffin - estelle, kayne west - american boy (zeemuffin & refilled remix) [copyright filtered].mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/zeemuffin - estelle, kayne west - american boy (zeemuffin & refilled remix) [copyright filtered].mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/REMIXES & EDITS/Hip-Hop/пакетbeatz - salt-n-pepa - my mic sounds nice (remix racatou).mp3",
+      "original_source": "/Users/djb.a.e/Music/DJ-Music/Music/NewFiles/sort/пакетbeatz - salt-n-pepa - my mic sounds nice (remix racatou).mp3",
+      "current_grouping": [],
+      "proposed_grouping": "Source: sort",
+      "combined_grouping": "Source: sort",
+      "id3_version": 3,
+      "evidence": "original subfolder: sort"
+    }
+  ]
 }

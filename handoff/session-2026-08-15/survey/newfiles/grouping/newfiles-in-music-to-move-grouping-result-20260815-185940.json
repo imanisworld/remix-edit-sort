@@ -1,0 +1,11 @@
+{
+  "mode": "newfiles-in-music-to-move-grouping-apply",
+  "plan": "handoff/session-2026-08-15/survey/newfiles/grouping/grouping-plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/backups/newfiles-grouping-in-music-to-move-2026-08-15/music to move",
+  "tracks_in_plan": 268,
+  "grouping_tags_changed": 268,
+  "skipped_serato_encoding_only": [],
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "undo_log": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/newfiles/grouping/newfiles-in-music-to-move-grouping-undo-20260815-185940.jsonl"
+}
