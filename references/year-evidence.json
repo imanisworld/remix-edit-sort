@@ -1,0 +1,5 @@
+{
+  "schema_version": 1,
+  "description": "Reusable evidence for release-year decisions. Do not store unsupported guesses as confirmed values.",
+  "entries": []
+}
