@@ -1,0 +1,12 @@
+{
+  "mode": "nigeria-apply",
+  "plan": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/pending/nigeria-plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/backups/niger-pre-sort-2026-08-15/NIGER",
+  "tracks_processed": 2,
+  "files_moved": 2,
+  "grouping_tags_changed": 2,
+  "genre_tags_changed": 0,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "undo_log": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/pending/nigeria-undo-20260815-180809.jsonl"
+}

@@ -25,7 +25,8 @@ Current important state:
 
 - Events version/genre organization is complete for 3,046 tracks.
 - Events Grouping backfill is complete for 3,010 MP3s; 36 unsupported/old-tag files were safely skipped.
-- The folder label `NIGER` is a mistake and means **Nigeria**. Its two-track preview is not applied. Proposed Grouping is `Source: Nigeria`; Genre and Artist remain unknown. See `handoff/pending/nigeria-plan.json` and the Nigeria preview under the session handoff.
+- The folder label `NIGER` is a mistake and means **Nigeria**. Its two-track plan is applied: Grouping is `Source: Nigeria` on both; Genre and Artist remain unknown (not guessed). See `handoff/pending/nigeria-plan.json`, the applied result, and undo log in `handoff/pending/`.
+- The nine one-off per-folder apply scripts are superseded by a reusable pipeline: `scripts/inventory_library.py`, `scripts/build_version_genre_plan.py`, `scripts/apply_version_genre_plan.py`. Use it for the next source folder instead of writing a new one-off script.
 - Text-only `.codex` working artifacts are mirrored under `handoff/session-2026-08-15/survey/`: plans, inventories, CSV reviews, result JSON, and undo manifests. Audio/tag-file backups and `_Serato_` data remain outside Git.
 
 Useful session implementations and reports are under `handoff/session-2026-08-15/`. They contain local absolute paths and are historical/audit material; generalize paths before promoting code into `scripts/`.

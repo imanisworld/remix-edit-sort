@@ -213,6 +213,16 @@ The user said this folder is something different. It remains completely untouche
 - Backup: `/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/backups/rave-pre-sort-2026-08-15`
 - Undo log: `/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/rave/rave-undo-20260815-165945.jsonl`
 
+## Completed: `NIGER` (Nigeria)
+
+- Two tracks moved to `_NEEDS CHECK/_GENRE NEEDS CHECK/`; Grouping set to `Source: Nigeria` on both.
+- Genre and Artist metadata left unchanged (unknown, not guessed).
+- Three unrelated `.mp4` files in the same folder were out of scope and left untouched.
+- Zero audio-payload changes, zero Serato-frame changes, zero deletions.
+- Backup: `backups/niger-pre-sort-2026-08-15/NIGER` (repo-root, gitignored).
+- Undo log: `handoff/pending/nigeria-undo-20260815-180809.jsonl`
+- Applied via `handoff/pending/apply_nigeria_plan.py` (a small dedicated script — this plan's shape, move + Grouping write with no Genre change, hasn't recurred elsewhere yet, so it wasn't folded into either generalized pipeline).
+
 ## Next pass: Grouping metadata backfill
 
 Do this as a tags-only, preview-first pass. Do not reorganize the completed folders again.
