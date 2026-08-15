@@ -25,6 +25,7 @@ explicit.
 from __future__ import annotations
 
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -63,3 +64,38 @@ def require_lock_or_exit(folder: str, session: str, stale_hours: float = 6.0) ->
     existing["last_renewed_at"] = datetime.now().astimezone().isoformat(timespec="seconds")
     folder_lock.write_lock(folder, existing)
     return existing
+
+
+class LockHeartbeat:
+    """Call .beat() at the top of every iteration of a long mutation loop.
+
+    A single require_lock_or_exit() call before the loop starts isn't
+    enough: a run long enough to cross the stale window could keep mutating
+    files after another session has reclaimed the lock, believing it's
+    still exclusive. .beat() re-verifies ownership and renews the lock at
+    most once per `interval_seconds` (so it's cheap to call every
+    iteration), and calls SystemExit -- via require_lock_or_exit, the same
+    gate used before the loop starts -- the moment ownership is lost or
+    replaced, so the caller stops BEFORE its next filesystem mutation
+    instead of continuing blindly.
+
+    One shared class so every apply script gets this by calling .beat()
+    once per item, rather than each reimplementing its own renewal timer.
+    """
+
+    def __init__(self, folder: str, session: str, stale_hours: float = 6.0, interval_seconds: float = 30.0):
+        self.folder = folder
+        self.session = session
+        self.stale_hours = stale_hours
+        self.interval_seconds = interval_seconds
+        self._last_beat = 0.0
+
+    def beat(self, force: bool = False) -> None:
+        now = time.monotonic()
+        if not force and (now - self._last_beat) < self.interval_seconds:
+            return
+        self._last_beat = now
+        # Raises SystemExit (via require_lock_or_exit) if the lock is gone,
+        # stale, or held by someone else -- exactly the fail-closed behavior
+        # a mid-loop ownership check needs.
+        require_lock_or_exit(self.folder, self.session, self.stale_hours)

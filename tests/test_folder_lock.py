@@ -18,7 +18,7 @@ SPEC.loader.exec_module(folder_lock)
 def run(func, **kwargs):
     """Call a cmd_* function with sane argparse-Namespace-like defaults and
     capture its printed JSON, mirroring how main() dispatches subcommands."""
-    defaults = {"stale_hours": 6.0, "agent": None, "note": None, "run_id": None, "repo_sha": "testsha"}
+    defaults = {"stale_hours": 6.0, "agent": None, "note": None, "run_id": None, "repo_sha": "testsha", "reason": None}
     defaults.update(kwargs)
     args = SimpleNamespace(**defaults)
     buf = io.StringIO()
@@ -126,10 +126,111 @@ class FolderLockTests(unittest.TestCase):
 
     def test_release_with_force_allows_takeover_cleanup(self):
         run(folder_lock.cmd_acquire, folder="Hip Hop", session="s1")
-        code, out = run(folder_lock.cmd_release, folder="Hip Hop", session="s2", force=True)
+        code, out = run(folder_lock.cmd_release, folder="Hip Hop", session="s2", force=True,
+                         reason="verified s1's process is dead")
         self.assertEqual(code, 0)
         self.assertTrue(out["released"])
         self.assertIsNone(folder_lock.read_lock("Hip Hop"))
+
+    def test_force_release_requires_non_blank_reason(self):
+        run(folder_lock.cmd_acquire, folder="Hip Hop", session="s1")
+        code, out = run(folder_lock.cmd_release, folder="Hip Hop", session="s2", force=True, reason=None)
+        self.assertEqual(code, 1)
+        self.assertFalse(out["released"])
+        self.assertIsNotNone(folder_lock.read_lock("Hip Hop"))  # untouched
+
+        code, out = run(folder_lock.cmd_release, folder="Hip Hop", session="s2", force=True, reason="   ")
+        self.assertEqual(code, 1)
+        self.assertFalse(out["released"])
+        self.assertIsNotNone(folder_lock.read_lock("Hip Hop"))
+
+    def test_force_release_writes_audit_record_before_deleting_lock(self):
+        run(folder_lock.cmd_acquire, folder="Hip Hop", session="s1", agent="claude")
+        code, out = run(folder_lock.cmd_release, folder="Hip Hop", session="s2", force=True,
+                         reason="verified s1's process is dead", agent="codex")
+        self.assertEqual(code, 0)
+
+        audit_path = folder_lock._audit_log_path()
+        self.assertTrue(audit_path.is_file())
+        records = [json.loads(line) for line in audit_path.read_text(encoding="utf-8").splitlines()]
+        self.assertEqual(len(records), 1)
+        record = records[0]
+        self.assertEqual(record["type"], "force_release")
+        self.assertEqual(record["folder"], "Hip Hop")
+        self.assertEqual(record["forcing_session"], "s2")
+        self.assertEqual(record["forcing_agent"], "codex")
+        self.assertEqual(record["reason"], "verified s1's process is dead")
+        self.assertEqual(record["prior_lock"]["session"], "s1")
+        self.assertIn("timestamp", record)
+        self.assertIn("repo_sha", record)
+
+    def test_force_release_refused_if_audit_write_fails(self):
+        run(folder_lock.cmd_acquire, folder="Hip Hop", session="s1")
+
+        original = folder_lock._append_audit_record
+        folder_lock._append_audit_record = lambda record: False
+        try:
+            code, out = run(folder_lock.cmd_release, folder="Hip Hop", session="s2", force=True,
+                             reason="verified s1's process is dead")
+        finally:
+            folder_lock._append_audit_record = original
+
+        self.assertEqual(code, 1)
+        self.assertFalse(out["released"])
+        # Lock must survive -- refusing to force-release means refusing, not
+        # deleting the lock and hoping the audit trail catches up later.
+        self.assertIsNotNone(folder_lock.read_lock("Hip Hop"))
+
+    def test_same_session_release_does_not_require_reason(self):
+        run(folder_lock.cmd_acquire, folder="Hip Hop", session="s1")
+        code, out = run(folder_lock.cmd_release, folder="Hip Hop", session="s1", force=False, reason=None)
+        self.assertEqual(code, 0)
+        self.assertTrue(out["released"])
+
+    def test_malformed_lock_file_fails_closed_on_acquire(self):
+        folder_lock.LOCKS_DIR.mkdir(parents=True, exist_ok=True)
+        folder_lock.lock_path("Hip Hop").write_text("{not valid json", encoding="utf-8")
+
+        code, out = run(folder_lock.cmd_acquire, folder="Hip Hop", session="s1")
+        self.assertEqual(code, 1)
+        self.assertFalse(out["acquired"])
+        # The corrupt file must survive untouched -- refusing means refusing.
+        self.assertEqual(folder_lock.lock_path("Hip Hop").read_text(encoding="utf-8"), "{not valid json")
+
+    def test_malformed_lock_file_fails_closed_on_check_and_require(self):
+        folder_lock.LOCKS_DIR.mkdir(parents=True, exist_ok=True)
+        folder_lock.lock_path("Hip Hop").write_text("{not valid json", encoding="utf-8")
+
+        code, out = run(folder_lock.cmd_check, folder="Hip Hop", session="s1")
+        self.assertEqual(code, 1)
+        self.assertTrue(out["locked"])  # fails closed: corrupt => treated as locked, not free
+
+        code, out = run(folder_lock.cmd_require, folder="Hip Hop", session="s1")
+        self.assertEqual(code, 1)
+        self.assertFalse(out["held"])
+
+    def test_malformed_lock_file_surfaced_not_hidden_in_status(self):
+        folder_lock.LOCKS_DIR.mkdir(parents=True, exist_ok=True)
+        folder_lock.lock_path("Hip Hop").write_text("{not valid json", encoding="utf-8")
+
+        code, out = run(folder_lock.cmd_status)
+        self.assertEqual(code, 0)
+        self.assertEqual(len(out["locks"]), 1)
+        self.assertTrue(out["locks"][0]["corrupt"])
+
+    def test_corrupt_lock_can_be_removed_with_force_and_reason(self):
+        folder_lock.LOCKS_DIR.mkdir(parents=True, exist_ok=True)
+        folder_lock.lock_path("Hip Hop").write_text("{not valid json", encoding="utf-8")
+
+        code, out = run(folder_lock.cmd_release, folder="Hip Hop", session="s1", force=False, reason=None)
+        self.assertEqual(code, 1)
+        self.assertFalse(out["released"])
+
+        code, out = run(folder_lock.cmd_release, folder="Hip Hop", session="s1", force=True,
+                         reason="manually inspected, corrupted by a hand edit")
+        self.assertEqual(code, 0)
+        self.assertTrue(out["released"])
+        self.assertFalse(folder_lock.lock_path("Hip Hop").exists())
 
     def test_lock_left_behind_after_interruption_is_still_stale_checkable(self):
         # Simulate a session that acquired and then never released (crash,

@@ -252,7 +252,7 @@ def load_and_validate(root: Path, plan_path: Path, backup: Path) -> tuple[dict, 
     return plan, items
 
 
-def apply(root: Path, plan_path: Path, backup: Path, out_dir: Path, label: str) -> None:
+def apply(root: Path, plan_path: Path, backup: Path, out_dir: Path, label: str, heartbeat: lock_guard.LockHeartbeat) -> None:
     plan, items = load_and_validate(root, plan_path, backup)
     stamp = datetime.now().astimezone().strftime("%Y%m%d-%H%M%S")
     tag_backup_root = out_dir / f"{label}-tag-file-backups" / stamp
@@ -261,6 +261,11 @@ def apply(root: Path, plan_path: Path, backup: Path, out_dir: Path, label: str) 
     completed = []
 
     for index, item in enumerate(items, start=1):
+        # Re-verifies lock ownership and renews it (rate-limited) before
+        # every item -- a run long enough to cross the stale window stops
+        # here, before its next write, rather than mutating past the point
+        # another session may have reclaimed this folder.
+        heartbeat.beat()
         source = Path(item["source"])
         destination = Path(item["destination"])
         before_hash = sha256_file(source)
@@ -412,7 +417,8 @@ def main() -> None:
         if not args.lock_folder or not args.session:
             raise SystemExit("--lock-folder and --session are required with --apply")
         lock_guard.require_lock_or_exit(args.lock_folder, args.session)
-        apply(root, args.plan, args.backup.resolve(), out_dir, label)
+        heartbeat = lock_guard.LockHeartbeat(args.lock_folder, args.session)
+        apply(root, args.plan, args.backup.resolve(), out_dir, label, heartbeat)
     else:
         plan = json.loads(args.plan.read_text(encoding="utf-8"))
         items = plan["items"]

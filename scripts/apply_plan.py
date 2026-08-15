@@ -120,12 +120,15 @@ def main():
     plan = json.load(open(args.plan))
     items = plan["items"]
     live = args.apply
+    heartbeat = lock_guard.LockHeartbeat(args.lock_folder, args.session) if live else None
 
     if args.skip_review:
         items = [i for i in items if not i["needs_review"]]
 
     moved, tagged, errors, skipped = [], 0, [], 0
     for i in items:
+        if heartbeat:
+            heartbeat.beat()
         src, dest = i["path"], i["dest"]
         if not os.path.exists(src):
             errors.append((src, "source missing"))

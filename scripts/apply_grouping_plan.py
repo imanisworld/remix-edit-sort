@@ -158,7 +158,7 @@ def load_and_validate(plan_path: Path, backup: Path, root: Path) -> tuple[dict, 
     return plan, items
 
 
-def apply(plan_path: Path, backup: Path, root: Path, out_dir: Path, label: str) -> None:
+def apply(plan_path: Path, backup: Path, root: Path, out_dir: Path, label: str, heartbeat: lock_guard.LockHeartbeat) -> None:
     plan, items = load_and_validate(plan_path, backup, root)
     stamp = datetime.now().astimezone().strftime("%Y%m%d-%H%M%S")
     undo_path = out_dir / f"{label}-grouping-undo-{stamp}.jsonl"
@@ -167,6 +167,7 @@ def apply(plan_path: Path, backup: Path, root: Path, out_dir: Path, label: str) 
     skipped_encoding_only = []
 
     for index, item in enumerate(items, start=1):
+        heartbeat.beat()
         path = Path(item["path"])
         relative = path.relative_to(root) if root in path.parents else path.name
         backup_copy = backup / relative
@@ -282,7 +283,8 @@ def main() -> None:
         if not args.lock_folder or not args.session:
             raise SystemExit("--lock-folder and --session are required with --apply")
         lock_guard.require_lock_or_exit(args.lock_folder, args.session)
-        apply(args.plan, args.backup.resolve(), root, out_dir, label)
+        heartbeat = lock_guard.LockHeartbeat(args.lock_folder, args.session)
+        apply(args.plan, args.backup.resolve(), root, out_dir, label, heartbeat)
     else:
         plan, items = load_and_validate(args.plan, args.backup.resolve(), root) if args.backup else (
             json.loads(args.plan.read_text(encoding="utf-8")), None
