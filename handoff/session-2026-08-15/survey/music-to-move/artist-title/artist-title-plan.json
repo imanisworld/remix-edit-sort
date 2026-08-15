@@ -1,0 +1,13 @@
+{
+  "mode": "preview-only",
+  "inventory": "handoff/session-2026-08-15/survey/music-to-move/artist-title/inventory.csv",
+  "track_count": 0,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_move": true,
+    "only_when_both_blank": true,
+    "unknowns": "Never guess. Only a strict, unambiguous `Artist - Title` filename split qualifies."
+  },
+  "items": []
+}

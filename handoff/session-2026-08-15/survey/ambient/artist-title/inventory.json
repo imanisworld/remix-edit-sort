@@ -1,0 +1,30 @@
+{
+  "scope": "/Users/djb.a.e/Music/DJ-Music/Music/Ambient",
+  "read_only": true,
+  "stable_during_inventory": true,
+  "number_rule": "Only a terminal (N) immediately before the extension is flagged as a copy hint. Meaningful numbers are preserved. A suffix is not duplicate proof; SHA-256 is.",
+  "rows": [
+    {
+      "full_path": "/Users/djb.a.e/Music/DJ-Music/Music/Ambient/_NEEDS CHECK/Ambient/kahwa.mp3",
+      "filename": "kahwa.mp3",
+      "artist": "",
+      "title": "kahwa",
+      "album": "",
+      "genre": "Ambient",
+      "year": "",
+      "bpm": "110",
+      "key": "Bbm",
+      "file_type": "mp3",
+      "bitrate_kbps": 128,
+      "sample_rate_hz": 44100,
+      "file_size_bytes": 2385770,
+      "duration_seconds": 148.381,
+      "date_modified": "2026-04-22T19:13:39-04:00",
+      "sha256": "694968b826ef11ac0f8bd5695436981aa84225868287645d495d64e50b041e58",
+      "version_words": "",
+      "trailing_copy_suffix": "no",
+      "copy_suffix_number": "",
+      "exact_duplicate_count_in_folder": 0
+    }
+  ]
+}
