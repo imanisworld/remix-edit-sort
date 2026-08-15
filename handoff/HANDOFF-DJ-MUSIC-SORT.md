@@ -223,6 +223,30 @@ The user said this folder is something different. It remains completely untouche
 - Undo log: `handoff/pending/nigeria-undo-20260815-180809.jsonl`
 - Applied via `handoff/pending/apply_nigeria_plan.py` (a small dedicated script — this plan's shape, move + Grouping write with no Genre change, hasn't recurred elsewhere yet, so it wasn't folded into either generalized pipeline).
 
+## Completed: `NewFiles`
+
+Source: `/Users/djb.a.e/Music/DJ-Music/Music/NewFiles` (461 flat files + `Music`, `sort`, `Michael`, `SoundCloud`, `NEW downloads`, `Spoken Word` subfolders)
+
+Sorted using the new `scripts/` pipeline (first real run on a large, previously-untouched folder):
+
+- 829 tracks inventoried; 827 eligible for move, 2 deliberately excluded (see below).
+- Version: 23 Clean, 20 Dirty, 4 Instrumental, 48 Remix/Edit, 734 `_NEEDS CHECK`.
+- Genre: 168 resolved from existing tags/filename evidence across Hip-Hop, R&B, Pop, Electronic, and five smaller genres; 504 routed to `_GENRE NEEDS CHECK` rather than guessed.
+- Zero audio-payload changes, zero Serato-frame changes, zero deletions.
+- Post-apply inventory confirms all 829 tracks still present, stable, zero new exact-duplicate groups.
+- Backup: `backups/newfiles-pre-sort-2026-08-15/NewFiles` (repo-root, gitignored, verified byte-identical with `diff -qr`).
+
+**Two `1-01. The Way.flac` files** (different SHA-256, same size/duration — different masters, not duplicates) collided on destination path. Per Brooke's instruction, both were left completely untouched in their original locations (`Music/TMHoarder/1-01. The Way.flac` and `Music/TMHoarder/DRAM - Shake Tape (EP) (2026)/1-01. The Way.flac`) for manual placement later.
+
+**Two real bugs found and fixed in `scripts/apply_version_genre_plan.py` during this run** (both inherited unchanged from the original nine per-folder scripts, never previously exercised):
+
+1. The post-move Genre verification call was unconditional on file format. It crashed on the first non-mp3/flac file carrying a `proposed_genre` (an `.m4a`), even though Genre reads/writes are only implemented for mp3/flac. Fixed: the check now only runs when the destination format is verifiable.
+2. The pre-apply validation's unsupported-tag-target check appended an error but then still called `read_genre()` unconditionally on the same item, which would have crashed instead of failing cleanly. Fixed: the read is now skipped when the format is unsupported.
+
+One file (`Music/thepathforward/[2018-11-28] CHANCES/01 ''KKAAYYTTRRAA'' - CHANCES.m4a`) was moved for real by the first crash before bug #1 was hit, but the crash happened before its undo record was written. Recovered by hash-verifying the file at its destination against the plan's recorded SHA-256 (match confirmed, no tag write had been attempted) and manually appending a reconstructed undo record: `handoff/session-2026-08-15/survey/newfiles/newfiles-orphan-recovered-20260815.jsonl`.
+
+Full run, in order (undo logs under `handoff/session-2026-08-15/survey/newfiles/`): `newfiles-undo-20260815-181211.jsonl` (337, then crashed on bug #1) → `newfiles-remainder-undo-20260815-181341.jsonl` (113, crashed again on bug #1 via a different file) → bugs fixed → `newfiles-remainder3-undo-20260815-181610.jsonl` (378, completed cleanly) → orphan recovery (1). 337+113+378+1+2(excluded) = 829.
+
 ## Next pass: Grouping metadata backfill
 
 Do this as a tags-only, preview-first pass. Do not reorganize the completed folders again.

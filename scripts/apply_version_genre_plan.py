@@ -192,9 +192,10 @@ def load_and_validate(root: Path, plan_path: Path, backup: Path) -> tuple[dict, 
         if item["tag_change"]:
             if source.suffix.casefold() not in {".mp3", ".flac"}:
                 errors.append(f"unsupported tag target: {source}")
-            current = read_genre(source)
-            if current != item["current_genre"]:
-                errors.append(f"genre changed since preview: {source}: {current!r} != {item['current_genre']!r}")
+            else:
+                current = read_genre(source)
+                if current != item["current_genre"]:
+                    errors.append(f"genre changed since preview: {source}: {current!r} != {item['current_genre']!r}")
     if errors:
         raise RuntimeError("Plan validation failed:\n" + "\n".join(errors))
     return plan, items
@@ -251,7 +252,8 @@ def apply(root: Path, plan_path: Path, backup: Path, out_dir: Path, label: str) 
             raise RuntimeError(f"post-move audio verification failed: {destination}")
         if serato_digest(destination) != before_serato:
             raise RuntimeError(f"post-move Serato verification failed: {destination}")
-        if item["proposed_genre"] and not skip_reason and read_genre(destination) != item["proposed_genre"]:
+        genre_verifiable = destination.suffix.casefold() in {".mp3", ".flac"}
+        if item["proposed_genre"] and not skip_reason and genre_verifiable and read_genre(destination) != item["proposed_genre"]:
             raise RuntimeError(f"post-move Genre verification failed: {destination}")
 
         record = {

@@ -1,0 +1,27 @@
+{
+  "mode": "newfiles-remainder3-apply",
+  "plan": "handoff/session-2026-08-15/survey/newfiles/plan-remainder-3.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/backups/newfiles-pre-sort-2026-08-15/NewFiles",
+  "tracks_processed": 378,
+  "files_moved": 378,
+  "genre_tags_changed": 106,
+  "genre_tags_skipped": 0,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/newfiles/newfiles-remainder3-undo-20260815-181610.jsonl",
+  "tag_backup_root": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/newfiles/newfiles-remainder3-tag-file-backups/20260815-181610",
+  "genre_counts": {
+    "Baltimore Club": 1,
+    "Bounce": 2,
+    "Electronic": 22,
+    "Ghettotech": 1,
+    "Hip-Hop": 82,
+    "Juke & Footwork": 3,
+    "Miami Bass": 2,
+    "Pop": 40,
+    "R&B": 44,
+    "_GENRE NEEDS CHECK": 181
+  }
+}
