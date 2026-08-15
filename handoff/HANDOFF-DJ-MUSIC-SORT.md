@@ -118,7 +118,22 @@ The exact 15 paths were printed during the audit and can be regenerated read-onl
 1. Read the local skill completely:
    `/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/SKILL.md`
 2. Do not rerun the full Events plan over the already-sorted destination paths.
-3. Select the next source folder, inventory it read-only, and create a new preview.
+3. Use the reusable pipeline in `scripts/` — do not hand-write another one-off
+   `apply_<folder>_plan.py`. The nine per-folder apply scripts under
+   `handoff/session-2026-08-15/survey/*/` were byte-identical apart from four
+   hardcoded values; that duplication is now retired in favor of:
+   - `scripts/inventory_library.py --root <folder> --out-dir <dir>`
+   - `scripts/build_version_genre_plan.py --root <folder> --inventory <dir>/inventory.csv --out-dir <dir> [--assume-genre "Name"]`
+     (`--assume-genre` only for a folder you've visually confirmed is a single
+     genre, same judgment call already made for Dub/Rave/Metro/Wedding/Ambient/
+     belarusian_electronic; omit it to classify per-track from tags/filenames
+     via `references/version-genre-rules.json`, falling back to
+     `_GENRE NEEDS CHECK` rather than guessing)
+   - Review `<dir>/PREVIEW.md` with Brooke; get explicit approval.
+   - `scripts/apply_version_genre_plan.py --root <folder> --plan <dir>/plan.json --backup <verified-backup> --apply`
+   - Undo: `scripts/apply_version_genre_plan.py --undo <dir>/<label>-undo-<stamp>.jsonl --root <folder>`
+   Regression-tested against the archived Dub and Rave inventories: the
+   generalized builder reproduces the historical plans item-for-item.
 4. Make and verify a new scoped backup before applying that folder's plan.
 5. Preserve the ID3v2.2 skip behavior unless tag conversion is separately approved.
 

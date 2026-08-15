@@ -1,0 +1,33 @@
+{
+  "_comment": "Tag-based genre classification for the version+genre pipeline (build_version_genre_plan.py). Distinct from genre-rules.json, which serves the separate Genre/Remixer skill (SKILL.md). Extend tag_aliases and filename_keywords as new folders surface consistent evidence; never add a guess that isn't backed by an explicit existing tag or filename token.",
+  "tag_aliases": {
+    "hip-hop/rap": "Hip-Hop",
+    "hip hop": "Hip-Hop",
+    "rap/hip hop": "Hip-Hop",
+    "hip-hop & rap": "Hip-Hop",
+    "rap": "Hip-Hop",
+    "hiphop": "Hip-Hop",
+    "rap/hip-hop": "Hip-Hop",
+    "gangsta rap, hip hop, southern hip hop, trap": "Hip-Hop",
+    "r&b": "R&B",
+    "r&b & soul": "R&B",
+    "r&b/soul": "R&B",
+    "pop": "Pop",
+    "bounce": "Bounce",
+    "dembow": "Dembow",
+    "electronic": "Electronic",
+    "miami bass": "Miami Bass",
+    "miamibass": "Miami Bass",
+    "juke": "Juke & Footwork",
+    "classic funk-soul, old head party": "Funk & Soul"
+  },
+  "filename_keywords": [
+    {"contains": "ghettotech", "genre": "Ghettotech", "evidence": "filename explicitly says Ghettotech"},
+    {"contains": "bmore", "genre": "Baltimore Club", "evidence": "filename explicitly says BMORE"},
+    {"contains": "nola bounce", "genre": "Bounce", "evidence": "filename explicitly names a Bounce style"},
+    {"contains": "bankhead bounce", "genre": "Bounce", "evidence": "filename explicitly names a Bounce style"},
+    {"contains": "juke edit", "genre": "Juke & Footwork", "evidence": "filename explicitly says Juke"},
+    {"contains": "juke mix", "genre": "Juke & Footwork", "evidence": "filename explicitly says Juke"},
+    {"contains": "atl bass", "genre": "Miami Bass", "evidence": "filename explicitly says ATL Bass; existing tag says Miami Bass"}
+  ]
+}

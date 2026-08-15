@@ -44,7 +44,9 @@ The reusable standalone prompt is available at `music-sort-prompt.md`. Session-s
 
 - `SKILL.md` — core agent workflow and safety rules
 - `agents/openai.yaml` — Codex skill-list metadata
-- `scripts/` — reusable, parameterized sorting tools
+- `scripts/` — reusable, parameterized sorting tools. Two pipelines live here:
+  - `scan_library.py` / `build_plan.py` / `apply_plan.py` / `detect_bpm.py` / `reclassify.py` / `standardize_names.py` — the Genre/Remixer pipeline for flat SoundCloud/DJ-pool downloads, documented in `SKILL.md`.
+  - `inventory_library.py` / `build_version_genre_plan.py` / `apply_version_genre_plan.py` — the Version+Genre pipeline actually used for the library cleanup in `handoff/`, generalized from nine near-duplicate per-folder scripts. Use this for the next source folder instead of writing a new one-off apply script.
 - `references/` — genre, alias, casing, and troubleshooting knowledge
 - `music-sort-prompt.md` — standalone prompt when the skill cannot be installed
 - `CLAUDE.md` — automatic continuation instructions for Claude Code
