@@ -23,6 +23,7 @@ _Serato_/
 /survey/
 /output/
 /local/
+/.locks/
 /*.jsonl
 /inventory.csv
 /inventory.json

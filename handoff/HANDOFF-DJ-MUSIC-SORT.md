@@ -281,6 +281,36 @@ Do this as a tags-only, preview-first pass. Do not reorganize the completed fold
 - Make and verify a fresh scoped backup, generate a preview, and obtain explicit approval before writing tags.
 - Keep `Imani Drops` completely excluded.
 
+## Completed: `VDBL` (version + genre sort, done by Claude)
+
+Source: `/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL`
+
+Note: despite the pre-existing `Event: VDBL` Grouping tag from the Events backfill
+below, the user clarified VDBL is a source/download folder, not a real event ("where
+i got them from"). No Grouping changes were made here; where these tracks ultimately
+belong is an open question, deferred by the user to a later pass.
+
+- 150 tracks scanned, all pre-existing DJ-pool `MP3/CLEAN`/`MP3/DIRTY` folder labels
+  trusted as version evidence (stronger than filename parsing) before falling back to
+  bracketed-label filename detection.
+- Version results: 79 Clean, 62 Dirty, 3 Instrumentals, 1 Acapella, 5 `_NEEDS CHECK`
+  (all in `Dead Silence Pack`, left unlabeled by the source itself).
+- Genre results: 127 Hip-Hop, 10 Amapiano, 8 R&B, 1 Country, 4 `_GENRE NEEDS CHECK`
+  (Tyla — user chose not to force a call; source folder itself flagged these ambiguous).
+- Added `Country` to `canonical_genres` and a matching keyword rule in
+  `references/genre-rules.json` (user request, prompted by the Shaboozey track).
+- 150/150 files moved, 0 errors, 0 collisions, 0 duplicates skipped.
+- 139/146 classified tracks got a `TCON` write; 7 were skipped as ID3v2.2 (preserved,
+  not converted), matching the same rule used for the Events pass.
+- Every moved file verified present at its destination; every written genre tag
+  re-read from disk and confirmed to match what was recorded in the undo log.
+- 31 now-empty leftover folders pruned; non-empty artwork/PDF folders left in place.
+- Backup: `Tools/remix-edit-sort/handoff/session-2026-08-15/backups/vdbl-pre-sort-2026-08-15`
+- Undo log: `Tools/remix-edit-sort/handoff/session-2026-08-15/vdbl-undo-20260815-184344.jsonl`
+- Script used: adapted from `music-to-move/build_version_plan.py`'s explicit-label-only
+  version rule + `remix-edit-sort/scripts/scan_library.py`'s genre classifier; not yet
+  promoted into `scripts/` — still has VDBL-specific path constants.
+
 ## Completed: Events Grouping metadata backfill
 
 - 3,010 MP3 Grouping fields updated from the original top-level Events folder names.
@@ -292,3 +322,19 @@ Do this as a tags-only, preview-first pass. Do not reorganize the completed fold
 - Undo log: `/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/events/events-grouping-undo-20260815-171044.jsonl`
 - Completion report: `/Users/djb.a.e/.codex/visualizations/2026/08/15/01a006cb-a574-7660-b88f-4e7e372abd6e/survey/events/EVENTS-GROUPING-COMPLETION-REPORT.md`
 - One new live Serato crate (`womens international -  Jamie.crate`) appeared during the pass. It was the only `_Serato_` delta, was not written by the script, and was separately backed up and verified.
+
+## Completed: 8 small `_NEEDS CHECK`-only folders (done by Claude, via the reusable pipeline)
+
+Source: `Halloween Party`, `karaoke`, `tpom `, `women`, `white dance party`, `NYE`, `xmas`, `Gay Women Party` — all under `/Users/djb.a.e/Music/DJ-Music/Music/Events/`.
+
+First use of `inventory_library.py` -> `build_version_genre_plan.py` -> `apply_version_genre_plan.py` by Claude (the reusable pipeline referenced in `CLAUDE.md`, built during this same session). One folder at a time, each with its own inventory, plan, preview, verified backup, and apply.
+
+- 89 tracks total across the 8 folders; 0 exact-duplicate groups in any of them.
+- 51 files moved, 5 Genre tag changes (all in `xmas`: 9 Pop, 16 R&B already-evidenced, plus 5 new writes).
+- Everything else landed `_NEEDS CHECK` / `_GENRE NEEDS CHECK` — none of these folders had explicit version labels or evidenced genres in their filenames/tags, so nothing was guessed.
+- 0 audio-payload changes, 0 Serato-frame changes, 0 errors, 0 destination collisions across all 8 applies.
+- Post-apply audio file counts matched each folder's original inventory count exactly; empty leftover folders pruned.
+- Backups: `handoff/session-2026-08-15/backups/<slug>-pre-sort-2026-08-15/` for each folder.
+- Undo logs, plans, and previews: `handoff/session-2026-08-15/survey/<slug>/`.
+
+This closes out every folder under `Events` that existed before this session — `VDBL` (above) and these 8 were the last ones without a crate or a completed sort.

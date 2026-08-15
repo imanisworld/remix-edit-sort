@@ -47,6 +47,8 @@ The reusable standalone prompt is available at `music-sort-prompt.md`. Session-s
 - `scripts/` — reusable, parameterized sorting tools. Two pipelines live here:
   - `scan_library.py` / `build_plan.py` / `apply_plan.py` / `detect_bpm.py` / `reclassify.py` / `standardize_names.py` — the Genre/Remixer pipeline for flat SoundCloud/DJ-pool downloads, documented in `SKILL.md`.
   - `inventory_library.py` / `build_version_genre_plan.py` / `apply_version_genre_plan.py` — the Version+Genre pipeline actually used for the library cleanup in `handoff/`, generalized from nine near-duplicate per-folder scripts. Use this for the next source folder instead of writing a new one-off apply script.
+  - `build_grouping_plan.py` / `apply_grouping_plan.py` and `build_artist_title_plan.py` / `apply_artist_title_plan.py` — the metadata-completeness pass, run against folders already sorted by the pipeline above.
+  - `folder_lock.py` — **run this before starting work on any source folder.** Multiple agent sessions (Claude, Codex) have worked this library concurrently with no coordination, which has already caused a real incident (see `CLAUDE.md`). `acquire`/`release`/`check`/`status` — locks live in the gitignored `.locks/`.
 - `references/` — genre, alias, casing, and troubleshooting knowledge
 - `music-sort-prompt.md` — standalone prompt when the skill cannot be installed
 - `CLAUDE.md` — automatic continuation instructions for Claude Code
