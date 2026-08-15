@@ -1,0 +1,11 @@
+{
+  "mode": "hip-hop-year-bpm-apply",
+  "plan": "handoff/session-2026-08-15/survey/year-bpm/hip-hop/year-bpm-plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/year-bpm/hip-hop/backup-20260815-195116",
+  "tracks_in_plan": 3,
+  "tags_changed": 3,
+  "skipped_serato_encoding_only": [],
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "undo_log": "handoff/session-2026-08-15/survey/year-bpm/hip-hop/hip-hop-year-bpm-undo-20260815-195133.jsonl"
+}

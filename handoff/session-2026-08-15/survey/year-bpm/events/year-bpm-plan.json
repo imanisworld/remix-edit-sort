@@ -1,0 +1,29 @@
+{
+  "mode": "preview-only",
+  "inventory": "handoff/session-2026-08-15/survey/year-bpm/events/inventory.csv",
+  "root": "/Users/djb.a.e/Music/DJ-Music/Music/Events",
+  "track_count": 1,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_move": true,
+    "unknowns": "Never guess. Year requires exactly one distinct explicit four-digit 19xx/20xx year across the path/filename; BPM requires an explicit `<number> bpm` token in the filename/title."
+  },
+  "skipped": {
+    "not_mp3": 13,
+    "id3v2.2_preserved": 0
+  },
+  "items": [
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Pop/I Gotta feeling-Black Eyed Peas Lyrics Clean 2010.mp3",
+      "sha256": "b284746bbb9ee4b8e19cefcc7c2d6261dc0f290a7959a6042a98b8f5da5d7937",
+      "id3_version": 4,
+      "current_year": "",
+      "proposed_year": "2010",
+      "year_evidence": "single explicit four-digit year in path/filename",
+      "current_bpm": "128",
+      "proposed_bpm": null,
+      "bpm_evidence": null
+    }
+  ]
+}

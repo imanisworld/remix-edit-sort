@@ -1,0 +1,51 @@
+{
+  "mode": "preview-only",
+  "inventory": "handoff/session-2026-08-15/survey/year-bpm/hip-hop/inventory.csv",
+  "root": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop",
+  "track_count": 3,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_move": true,
+    "unknowns": "Never guess. Year requires exactly one distinct explicit four-digit 19xx/20xx year across the path/filename; BPM requires an explicit `<number> bpm` token in the filename/title."
+  },
+  "skipped": {
+    "not_mp3": 40,
+    "id3v2.2_preserved": 0
+  },
+  "items": [
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Get Money (feat. Junior M.A.F.I.A.) - 2007 Remaster.mp3",
+      "sha256": "6193b793688f6742b2995680e4bc4c4ec05850740192827c08c03494e487f1e6",
+      "id3_version": 3,
+      "current_year": "",
+      "proposed_year": "2007",
+      "year_evidence": "single explicit four-digit year in path/filename",
+      "current_bpm": "91",
+      "proposed_bpm": null,
+      "bpm_evidence": null
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Life Is 2009 ft Too Short.mp3",
+      "sha256": "f713ccbf96892fb4068338d9e8929cef47c792d42ab85c85105c0072f796266b",
+      "id3_version": 4,
+      "current_year": "",
+      "proposed_year": "2009",
+      "year_evidence": "single explicit four-digit year in path/filename",
+      "current_bpm": "85",
+      "proposed_bpm": null,
+      "bpm_evidence": null
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Players Anthem 2018.mp3",
+      "sha256": "06581c4301df6515cf3569230684e00951ac621a67c187fa942525eb63eb281d",
+      "id3_version": 3,
+      "current_year": "",
+      "proposed_year": "2018",
+      "year_evidence": "single explicit four-digit year in path/filename",
+      "current_bpm": "74",
+      "proposed_bpm": null,
+      "bpm_evidence": null
+    }
+  ]
+}

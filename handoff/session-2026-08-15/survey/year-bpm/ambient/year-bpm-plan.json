@@ -1,0 +1,17 @@
+{
+  "mode": "preview-only",
+  "inventory": "handoff/session-2026-08-15/survey/year-bpm/ambient/inventory.csv",
+  "root": "/Users/djb.a.e/Music/DJ-Music/Music/Ambient",
+  "track_count": 0,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_move": true,
+    "unknowns": "Never guess. Year requires exactly one distinct explicit four-digit 19xx/20xx year across the path/filename; BPM requires an explicit `<number> bpm` token in the filename/title."
+  },
+  "skipped": {
+    "not_mp3": 0,
+    "id3v2.2_preserved": 0
+  },
+  "items": []
+}

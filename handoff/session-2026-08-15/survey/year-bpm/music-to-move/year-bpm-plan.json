@@ -1,0 +1,40 @@
+{
+  "mode": "preview-only",
+  "inventory": "handoff/session-2026-08-15/survey/year-bpm/music-to-move/inventory.csv",
+  "root": "/Users/djb.a.e/Music/DJ-Music/Music/music to move",
+  "track_count": 2,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_move": true,
+    "unknowns": "Never guess. Year requires exactly one distinct explicit four-digit 19xx/20xx year across the path/filename; BPM requires an explicit `<number> bpm` token in the filename/title."
+  },
+  "skipped": {
+    "not_mp3": 259,
+    "id3v2.2_preserved": 0
+  },
+  "items": [
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/Angela Davis on Freedom of Speech (1974).mp3",
+      "sha256": "26de07cd97f48e895fda03e7eaec7cd341709907f52aef99db27d744a201c71a",
+      "id3_version": 4,
+      "current_year": "",
+      "proposed_year": "1974",
+      "year_evidence": "single explicit four-digit year in path/filename",
+      "current_bpm": "",
+      "proposed_bpm": null,
+      "bpm_evidence": null
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/_GENRE NEEDS CHECK/Infinite Hope_ Angela Davis Speaks at 2025 Peace Ball Ahead of Trump Inauguration.mp3",
+      "sha256": "4b8f5b0f48c11a3bddab9833dc43296dd7f26889fac06de09266d2d9fb1b8d07",
+      "id3_version": 4,
+      "current_year": "",
+      "proposed_year": "2025",
+      "year_evidence": "single explicit four-digit year in path/filename",
+      "current_bpm": "",
+      "proposed_bpm": null,
+      "bpm_evidence": null
+    }
+  ]
+}

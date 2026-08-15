@@ -1,0 +1,30 @@
+{
+  "scope": "/Users/djb.a.e/Music/DJ-Music/Music/belarusian_electronic",
+  "read_only": true,
+  "stable_during_inventory": true,
+  "number_rule": "Only a terminal (N) immediately before the extension is flagged as a copy hint. Meaningful numbers are preserved. A suffix is not duplicate proof; SHA-256 is.",
+  "rows": [
+    {
+      "full_path": "/Users/djb.a.e/Music/DJ-Music/Music/belarusian_electronic/_NEEDS CHECK/_GENRE NEEDS CHECK/Supergirl - Krystal Harris.mp3",
+      "filename": "Supergirl - Krystal Harris.mp3",
+      "artist": "Supergirl",
+      "title": "Krystal Harris",
+      "album": "Krystal Harris",
+      "genre": "r&b, pop",
+      "year": "2023",
+      "bpm": "84",
+      "key": "Am",
+      "file_type": "mp3",
+      "bitrate_kbps": 128,
+      "sample_rate_hz": 44100,
+      "file_size_bytes": 3744377,
+      "duration_seconds": 218.964,
+      "date_modified": "2026-08-15T18:52:01-04:00",
+      "sha256": "1ee750d3fd8b3fbf05603975c3352fd55d0a25f3a352a7cb28673b86271e63a0",
+      "version_words": "",
+      "trailing_copy_suffix": "no",
+      "copy_suffix_number": "",
+      "exact_duplicate_count_in_folder": 0
+    }
+  ]
+}
