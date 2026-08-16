@@ -1,0 +1,28 @@
+{
+  "mode": "alternative-apply",
+  "plan": "handoff/session-2026-08-15/survey/tier55c/alternative/plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/tier55c/alternative/backup-20260815-233251",
+  "tracks_processed": 266,
+  "files_moved": 266,
+  "genre_tags_changed": 96,
+  "genre_tags_skipped": 12,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "handoff/session-2026-08-15/survey/tier55c/alternative/alternative-undo-20260815-233257.jsonl",
+  "tag_backup_root": "handoff/session-2026-08-15/survey/tier55c/alternative/alternative-tag-file-backups/20260815-233257",
+  "genre_counts": {
+    "Alternative": 45,
+    "Alternative Hip-Hop": 6,
+    "Alternative R&B": 22,
+    "Groovy Bounce": 2,
+    "Hip-Hop": 18,
+    "House": 2,
+    "Neo Soul": 18,
+    "Nu Wave": 6,
+    "Pop": 2,
+    "R&B": 24,
+    "_GENRE NEEDS CHECK": 121
+  }
+}

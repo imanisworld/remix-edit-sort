@@ -1,0 +1,22 @@
+{
+  "mode": "jazz-apply",
+  "plan": "handoff/session-2026-08-15/survey/tier55c/jazz/plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/tier55c/jazz/backup-20260815-233230",
+  "tracks_processed": 86,
+  "files_moved": 86,
+  "genre_tags_changed": 10,
+  "genre_tags_skipped": 0,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "handoff/session-2026-08-15/survey/tier55c/jazz/jazz-undo-20260815-233232.jsonl",
+  "tag_backup_root": "handoff/session-2026-08-15/survey/tier55c/jazz/jazz-tag-file-backups/20260815-233232",
+  "genre_counts": {
+    "Hip-Hop": 3,
+    "House": 3,
+    "Jazz": 20,
+    "R&B": 1,
+    "_GENRE NEEDS CHECK": 59
+  }
+}
