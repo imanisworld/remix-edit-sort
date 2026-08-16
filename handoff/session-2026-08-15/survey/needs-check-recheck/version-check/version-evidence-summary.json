@@ -1,0 +1,19 @@
+{
+  "mode": "preview-only",
+  "source_mutation": false,
+  "tracks_checked": 13652,
+  "counts": {
+    "NEEDS_LISTEN": 13651,
+    "OTHER_VERSION_LABEL": 1
+  },
+  "rules": {
+    "explicit_clean_dirty_labels_reuse_existing_classifier": true,
+    "no_detected_profanity_is_not_clean_proof": true,
+    "likely_dirty_requires_review": true,
+    "no_moves": true,
+    "no_tag_writes": true
+  },
+  "outputs": {
+    "csv": "handoff/session-2026-08-15/survey/needs-check-recheck/version-check/version-evidence.csv"
+  }
+}

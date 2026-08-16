@@ -1,0 +1,47 @@
+{
+  "mode": "preview-only",
+  "source_mutation": false,
+  "tracks_checked": 5693,
+  "status_counts": {
+    "ALREADY_MATCHES": 150,
+    "HIGH_CONFIDENCE_PROPOSAL": 235,
+    "REVIEW": 5308
+  },
+  "proposal_counts": {
+    "Afro House": 1,
+    "Alternative Hip-Hop": 17,
+    "Alternative R&B": 25,
+    "Amapiano": 1,
+    "Bounce": 1,
+    "Classic Rock": 34,
+    "Dance": 2,
+    "Disco": 2,
+    "Electronic": 1,
+    "Funk & Soul": 2,
+    "Ghettotech": 5,
+    "Groovy Bounce": 3,
+    "Hip-Hop": 43,
+    "House": 1,
+    "Jersey Club": 1,
+    "Jungle": 3,
+    "Miami Bass": 18,
+    "Neo Soul": 1,
+    "Nu Wave": 4,
+    "Pop": 6,
+    "R&B": 53,
+    "Rock": 1,
+    "Twerk": 8,
+    "UK Garage": 2
+  },
+  "rules": {
+    "classifier": "build_version_genre_plan.classify_genre",
+    "new_aliases_added": false,
+    "new_heuristics_added": false,
+    "review_on_ambiguous_or_compound": true,
+    "no_moves": true,
+    "no_tag_writes": true
+  },
+  "outputs": {
+    "csv": "handoff/session-2026-08-15/survey/needs-check-recheck/genre-check/genre-evidence.csv"
+  }
+}
