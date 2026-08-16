@@ -1,0 +1,82 @@
+{
+  "mode": "events-dedup-merge",
+  "tracks_moved": 9,
+  "undo_log": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/events-dedup-merge/undo-20260815-213508.jsonl",
+  "backup_root": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/events-dedup-merge/backup-20260815-213508",
+  "leftover_duplicates_not_deleted": [
+    "Events/August 30th Random DL/CLEAN/Hip-Hop/Metro Boomin, Roscoe Dash & Quavo - Butterflies (Right Now) (Clean).mp3",
+    "Events/August 30th Random DL/DIRTY/Hip-Hop/Metro Boomin, Roscoe Dash & Quavo - Butterflies (Right Now) (Intro Dirty).mp3",
+    "Events/August 30th Random DL/DIRTY/Hip-Hop/Saweetie - pressure (Intro Dirty).mp3",
+    "Events/August 30th Random DL/CLEAN/R&B/Ciara ft Latto & Jazze Pha - This Right Here (Clean).mp3",
+    "Events/August 30th Random DL/CLEAN/R&B/Ciara ft Latto & Jazze Pha - This Right Here (Intro Clean).mp3",
+    "Events/August 30th Random DL/DIRTY/R&B/Ciara ft Latto & Jazze Pha - This Right Here (Dirty).mp3",
+    "Events/August 30th Random DL/DIRTY/R&B/Ciara ft Latto & Jazze Pha - This Right Here (Intro Dirty).mp3",
+    "Events/August 30th Random DL/DJ TOOLS/R&B/INSTRUMENTALS/Al Green - Love And Happiness (Instrumental).mp3",
+    "Events/August 30th Random DL/DJ TOOLS/R&B/INSTRUMENTALS/Ciara ft Latto & Jazze Pha - This Right Here (Instrumental).mp3"
+  ],
+  "records": [
+    {
+      "index": 1,
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/trendindg august 2025/CLEAN/Hip-Hop/Metro Boomin, Roscoe Dash & Quavo - Butterflies (Right Now) (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Metro Boomin, Roscoe Dash & Quavo - Butterflies (Right Now) (Clean).mp3",
+      "sha256": "3fc101d3a9ecf3e915d895fe9c9c250950b58c6a4f5f917d53ca6a6a6ae960b4",
+      "backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/events-dedup-merge/backup-20260815-213508/Events/trendindg august 2025/CLEAN/Hip-Hop/Metro Boomin, Roscoe Dash & Quavo - Butterflies (Right Now) (Clean).mp3"
+    },
+    {
+      "index": 2,
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/trendindg august 2025/DIRTY/Hip-Hop/Metro Boomin, Roscoe Dash & Quavo - Butterflies (Right Now) (Intro Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Metro Boomin, Roscoe Dash & Quavo - Butterflies (Right Now) (Intro Dirty).mp3",
+      "sha256": "0b9acbc97ab41dce3823e3f89f061517ddec07546377b69f1b1b5281c200b69e",
+      "backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/events-dedup-merge/backup-20260815-213508/Events/trendindg august 2025/DIRTY/Hip-Hop/Metro Boomin, Roscoe Dash & Quavo - Butterflies (Right Now) (Intro Dirty).mp3"
+    },
+    {
+      "index": 3,
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/trendindg august 2025/DIRTY/Hip-Hop/Saweetie - pressure (Intro Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Saweetie - pressure (Intro Dirty).mp3",
+      "sha256": "4611ec07e48f9607359c74482736d7d611f5e018db86c4d19d0a95030ab905da",
+      "backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/events-dedup-merge/backup-20260815-213508/Events/trendindg august 2025/DIRTY/Hip-Hop/Saweetie - pressure (Intro Dirty).mp3"
+    },
+    {
+      "index": 4,
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/trendindg august 2025/CLEAN/R&B/Ciara ft Latto & Jazze Pha - This Right Here (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/R&b/CLEAN/R&B/Ciara ft Latto & Jazze Pha - This Right Here (Clean).mp3",
+      "sha256": "76edbe168237923f8af1e384e8e6aef67d990212a3b363a1399ccd9b5c5c8161",
+      "backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/events-dedup-merge/backup-20260815-213508/Events/trendindg august 2025/CLEAN/R&B/Ciara ft Latto & Jazze Pha - This Right Here (Clean).mp3"
+    },
+    {
+      "index": 5,
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/trendindg august 2025/CLEAN/R&B/Ciara ft Latto & Jazze Pha - This Right Here (Intro Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/R&b/CLEAN/R&B/Ciara ft Latto & Jazze Pha - This Right Here (Intro Clean).mp3",
+      "sha256": "43cd76a8ff76bcc961e47be8691d3bcaeefb4cb5cef54129c85c3d9c3a1da618",
+      "backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/events-dedup-merge/backup-20260815-213508/Events/trendindg august 2025/CLEAN/R&B/Ciara ft Latto & Jazze Pha - This Right Here (Intro Clean).mp3"
+    },
+    {
+      "index": 6,
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/trendindg august 2025/DIRTY/R&B/Ciara ft Latto & Jazze Pha - This Right Here (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/R&b/DIRTY/R&B/Ciara ft Latto & Jazze Pha - This Right Here (Dirty).mp3",
+      "sha256": "e69c829b3003045e34e0b697f999f5bd74341b7dbc4a8d78190a6d49b6b655a2",
+      "backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/events-dedup-merge/backup-20260815-213508/Events/trendindg august 2025/DIRTY/R&B/Ciara ft Latto & Jazze Pha - This Right Here (Dirty).mp3"
+    },
+    {
+      "index": 7,
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/trendindg august 2025/DIRTY/R&B/Ciara ft Latto & Jazze Pha - This Right Here (Intro Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/R&b/DIRTY/R&B/Ciara ft Latto & Jazze Pha - This Right Here (Intro Dirty).mp3",
+      "sha256": "8f20db3e52bc4bd1cc01826d734221e7664a014d15c4020b2e8442cc0760a906",
+      "backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/events-dedup-merge/backup-20260815-213508/Events/trendindg august 2025/DIRTY/R&B/Ciara ft Latto & Jazze Pha - This Right Here (Intro Dirty).mp3"
+    },
+    {
+      "index": 8,
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/trendindg august 2025/INSTRUMENTALS/R&B/INSTRUMENTALS/Al Green - Love And Happiness (Instrumental).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/R&b/INSTRUMENTALS/R&B/Al Green - Love And Happiness (Instrumental).mp3",
+      "sha256": "e889badcd7fc3d3e53b1b791995fed95163575103b30209c60240a2057633fc4",
+      "backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/events-dedup-merge/backup-20260815-213508/Events/trendindg august 2025/INSTRUMENTALS/R&B/INSTRUMENTALS/Al Green - Love And Happiness (Instrumental).mp3"
+    },
+    {
+      "index": 9,
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/trendindg august 2025/INSTRUMENTALS/R&B/INSTRUMENTALS/Ciara ft Latto & Jazze Pha - This Right Here (Instrumental).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/R&b/INSTRUMENTALS/R&B/Ciara ft Latto & Jazze Pha - This Right Here (Instrumental).mp3",
+      "sha256": "39ef6f78a28769d3ec780912c3ebbaab7f2387fbb11f6ea4e7614b362f7304cc",
+      "backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/events-dedup-merge/backup-20260815-213508/Events/trendindg august 2025/INSTRUMENTALS/R&B/INSTRUMENTALS/Ciara ft Latto & Jazze Pha - This Right Here (Instrumental).mp3"
+    }
+  ]
+}
