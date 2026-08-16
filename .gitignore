@@ -17,6 +17,9 @@ venv/
 *.mp4
 *.mov
 *.serato-stems
+*.jpg
+*.jpeg
+*.png
 
 # DJ application data and local run artifacts.
 _Serato_/
