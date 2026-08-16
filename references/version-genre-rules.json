@@ -42,7 +42,9 @@
     "jazzy house": "Jazzy House",
     "groovy bounce": "Groovy Bounce",
     "afro house": "Afro House",
-    "tech house": "Tech House"
+    "tech house": "Tech House",
+    "classic rock": "Classic Rock",
+    "top 40": "Top 40"
   },
   "filename_keywords": [
     {"contains": "ghettotech", "genre": "Ghettotech", "evidence": "filename explicitly says Ghettotech"},
