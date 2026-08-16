@@ -1,0 +1,75 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Music/TMHoarder",
+  "inventory": "handoff/session-2026-08-15/survey/music-to-move-tmhoarder/inventory.csv",
+  "track_count": 2,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": [
+      {
+        "original_destination": "/users/djb.a.e/music/dj-music/music/music to move/music/tmhoarder/_needs check/hip-hop/1-01. the way.flac",
+        "sources": [
+          "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Music/TMHoarder/1-01. The Way.flac",
+          "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Music/TMHoarder/DRAM - Shake Tape (EP) (2026)/1-01. The Way.flac"
+        ]
+      }
+    ]
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 2
+    },
+    "genres": {
+      "Hip-Hop": 2
+    },
+    "moves": 2,
+    "genre_tag_changes": 2
+  },
+  "tag_change_summary": {
+    "Hip-Hop/Rap -> Hip-Hop": 2
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Music/TMHoarder/1-01. The Way.flac",
+      "source_relative": "1-01. The Way.flac",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Music/TMHoarder/_NEEDS CHECK/Hip-Hop/1-01. The Way.flac",
+      "destination_relative": "_NEEDS CHECK/Hip-Hop/1-01. The Way.flac",
+      "sha256": "556f1a7067d72acf2e3efccaac712ee73694623b16bc5bfa345d96eace871b34",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Hip-Hop/Rap",
+      "proposed_genre": "Hip-Hop",
+      "genre_evidence": "existing genre tag: Hip-Hop/Rap",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Music/TMHoarder/DRAM - Shake Tape (EP) (2026)/1-01. The Way.flac",
+      "source_relative": "DRAM - Shake Tape (EP) (2026)/1-01. The Way.flac",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Music/TMHoarder/_NEEDS CHECK/Hip-Hop/1-01. The Way (2).flac",
+      "destination_relative": "_NEEDS CHECK/Hip-Hop/1-01. The Way (2).flac",
+      "sha256": "05c88a69897cdeb904159d745ce42a51bc096a07853f19b7724813d3caf97dc5",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Hip-Hop/Rap",
+      "proposed_genre": "Hip-Hop",
+      "genre_evidence": "existing genre tag: Hip-Hop/Rap",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null,
+      "collision_suffix_applied": true,
+      "collision_evidence": "destination collided with 1 other file(s) of the same name (different SHA-256 each time); kept both, never deduplicated by filename alone"
+    }
+  ]
+}
