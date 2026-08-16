@@ -93,6 +93,14 @@ def main() -> None:
         "e.g. --assume-genre Dub for a folder named Dub). Omit to classify per-track from tags/filenames.",
     )
     parser.add_argument(
+        "--assume-version-fallback",
+        choices=["CLEAN", "DIRTY", "INSTRUMENTALS", "ACAPELLAS"],
+        help="Only for a folder you've confirmed is dedicated to one version type (e.g. an Acapella crate). "
+        "Unlike --assume-genre, this is a FALLBACK, not an override: it only fills in items classify_version() "
+        "left at _NEEDS CHECK (no explicit bracketed marker found), and never touches an item that already "
+        "resolved to CLEAN/DIRTY/INSTRUMENTALS/ACAPELLAS/REMIXES & EDITS from real filename evidence.",
+    )
+    parser.add_argument(
         "--preserve-top-level-subfolder",
         action="store_true",
         help="Treat the first path component under root as context to keep (e.g. an event/crate name) and "
@@ -137,6 +145,9 @@ def main() -> None:
             source_missing.append(str(source))
 
         version_bucket, version_evidence = classify_version(source.stem, row.get("title", ""))
+        if version_bucket == NEEDS_VERSION and args.assume_version_fallback:
+            version_bucket = args.assume_version_fallback
+            version_evidence = f"no explicit filename marker; folder is a confirmed {args.assume_version_fallback.title()} crate"
         genre, genre_evidence, genre_confidence = classify_genre(row, rules, args.assume_genre)
         genre_folder = genre or NEEDS_GENRE
 

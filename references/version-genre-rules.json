@@ -23,7 +23,11 @@
     "house": "House",
     "techno": "Techno",
     "ghetto tech": "Ghettotech",
-    "jersey club": "Jersey Club"
+    "jersey club": "Jersey Club",
+    "dancehall": "Dancehall",
+    "amapiano": "Amapiano",
+    "afro beats": "Afrobeats",
+    "afrobeat": "Afrobeats"
   },
   "filename_keywords": [
     {"contains": "ghettotech", "genre": "Ghettotech", "evidence": "filename explicitly says Ghettotech"},

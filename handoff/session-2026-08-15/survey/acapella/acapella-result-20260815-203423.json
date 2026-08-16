@@ -1,0 +1,23 @@
+{
+  "mode": "acapella-apply",
+  "plan": "handoff/session-2026-08-15/survey/acapella/plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/acapella/backup-20260815-203217",
+  "tracks_processed": 106,
+  "files_moved": 106,
+  "genre_tags_changed": 35,
+  "genre_tags_skipped": 0,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "handoff/session-2026-08-15/survey/acapella/acapella-undo-20260815-203423.jsonl",
+  "tag_backup_root": "handoff/session-2026-08-15/survey/acapella/acapella-tag-file-backups/20260815-203423",
+  "genre_counts": {
+    "Dancehall": 1,
+    "Hip-Hop": 35,
+    "House": 2,
+    "Pop": 4,
+    "R&B": 13,
+    "_GENRE NEEDS CHECK": 51
+  }
+}
