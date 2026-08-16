@@ -79,6 +79,8 @@ INFRASTRUCTURE_ALLOWLIST = {
         "unlink() targets only .locks/<folder>.lock.json coordination files",
     "scripts/detect_bpm.py":
         "unlink() targets only the temporary .wav it decoded for analysis",
+    "scripts/lock_guard.py":
+        "no primitives of its own; renews coordination locks via folder_lock",
 }
 
 # Attribute-style primitives: matched on the attribute name of the call.

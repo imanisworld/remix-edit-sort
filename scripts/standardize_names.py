@@ -1,29 +1,74 @@
 #!/usr/bin/env python3
 """
-Standardize filenames and the title/artist tags to match, across a sorted library.
+PREVIEW-ONLY. Proposes standardized filenames and matching Title/Artist tags.
 
 Operates on the canonical shapes this skill produces:
     Title (Remixer Type) - Original Artist.mp3
     Title - Artist.mp3
 
 It cleans the *content* of those fields — promo spam, stray punctuation, damaged
-acronyms — without changing the shape, and rewrites TIT2/TPE1 so tags and
-filenames stay in agreement. Dry-run by default.
+acronyms — without changing the shape, and proposes TIT2/TPE1 values so tags and
+filenames agree. It writes a preview and a plan. It does not touch the library.
+
+## Why this no longer applies anything
+
+A safety audit found this script mutating a live music library outside every
+control the rest of the repo enforces. It could rename files and rewrite
+Artist/Title with:
+
+  * no folder lock, so it could run concurrently with another agent session
+    mid-apply on the same folder;
+  * no backup requirement of any kind;
+  * no per-file hash, audio-payload or Serato-frame verification, so a
+    corrupting write would be noticed by nobody;
+  * a forced `v2_version=3`, silently rewriting every ID3v2.4 tag it touched
+    down to v2.3 and destroying ID3v2.2 blocks the rest of the repo goes out
+    of its way to preserve;
+  * an undo log recording only renames, so `--undo` restored filenames and
+    left the rewritten Artist/Title values permanently in place. That is not
+    an undo.
+
+Rather than bolt five safety systems onto a second, divergent apply path, the
+mutation half is removed. This script now produces evidence; the approved
+engine performs writes:
+
+    python3 scripts/standardize_names.py <library> --out plan.json
+    # review the preview, then run the Artist/Title plan through the engine:
+    python3 scripts/build_artist_title_plan.py ...
+    python3 scripts/apply_artist_title_plan.py --apply \\
+        --backup-manifest ... --lock-folder ... --session ...
 
 Usage:
-    python3 standardize_names.py <library>              # preview to outputs/_rename_preview.md
-    python3 standardize_names.py <library> --apply
-    python3 standardize_names.py <library> --undo
+    python3 standardize_names.py <library>                    # preview
+    python3 standardize_names.py <library> --out plan.json    # preview + machine-readable plan
 """
-import os, re, sys, json, shutil, argparse, collections
+import os, re, sys, json, argparse, collections
 
 try:
     from mutagen.id3 import ID3, ID3NoHeaderError, TIT2, TPE1
 except ImportError:
     sys.exit("mutagen is required:  python3 -m pip install --user mutagen")
 
-UNDO_LOG = "outputs/undo-rename.json"
 AUDIO = (".mp3", ".m4a", ".aif", ".aiff", ".wav", ".flac")
+
+# Preview-only: builds a plan for human review. Never mutates library media.
+SAFETY_CLASSIFICATION = "preview-only"
+
+RETIRED_MUTATION_MESSAGE = (
+    "standardize_names.py no longer renames or retags anything.\n"
+    "\n"
+    "It mutated the library with no lock, no backup, no verification, a forced\n"
+    "ID3v2.3 downgrade, and an undo that never restored metadata. It is now a\n"
+    "preview/plan builder only.\n"
+    "\n"
+    "To actually apply Artist/Title changes, go through the approved engine:\n"
+    "  1. python3 scripts/standardize_names.py <library> --out plan.json   # review this\n"
+    "  2. python3 scripts/build_artist_title_plan.py ...\n"
+    "  3. python3 scripts/backup_manifest.py verify --source-root ... --backup ... --out manifest.json\n"
+    "  4. python3 scripts/folder_lock.py acquire --folder ... --session ...\n"
+    "  5. python3 scripts/apply_artist_title_plan.py --apply --backup-manifest manifest.json \\\n"
+    "         --lock-folder ... --session ...\n"
+)
 
 # --- promo / distribution spam that is not part of any title -----------------
 PROMO = [
@@ -146,15 +191,22 @@ def read_tag_pair(path):
 
 
 def main():
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     ap.add_argument("root", nargs="?", default=os.path.expanduser("~/Downloads/SoundCloud"))
-    ap.add_argument("--apply", action="store_true")
-    ap.add_argument("--undo", action="store_true")
+    ap.add_argument("--apply", action="store_true",
+                    help="RETIRED -- refuses to run; route through the approved engine instead")
+    ap.add_argument("--undo", action="store_true",
+                    help="RETIRED -- refuses to run; this script no longer mutates anything")
     ap.add_argument("--preview", default="outputs/_rename_preview.md")
+    ap.add_argument("--out", help="also write the proposals as JSON for review/plan building")
     args = ap.parse_args()
 
-    if args.undo:
-        return undo()
+    # Fail loudly rather than silently previewing: a caller passing --apply
+    # believes it is about to change files, and must be told it is not.
+    if args.apply or args.undo:
+        raise SystemExit(RETIRED_MUTATION_MESSAGE)
 
     root = os.path.abspath(os.path.expanduser(args.root))
     changes = []
@@ -192,62 +244,41 @@ def main():
           f"{sum(c['tag_changed'] for c in changes)} tag)", file=sys.stderr)
     print(f"Preview: {args.preview}", file=sys.stderr)
 
-    if not args.apply:
-        print("\nDRY RUN — re-run with --apply to rename and retag.", file=sys.stderr)
-        return
+    if args.out:
+        plan = {
+            "mode": "preview-only",
+            "generator": "standardize_names.py",
+            "root": root,
+            "rules": {"approval_required": True, "mutations_performed": 0},
+            "case_only_renames": [
+                c["path"] for c in changes
+                if c["name_changed"] and _is_case_only_rename(c)
+            ],
+            "items": changes,
+        }
+        os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
+        with open(args.out, "w", encoding="utf-8") as handle:
+            json.dump(plan, handle, indent=2, ensure_ascii=False)
+        print(f"Plan: {args.out}", file=sys.stderr)
 
-    done, errors = [], []
-    for c in changes:
-        target = c["path"]
-        if c["name_changed"]:
-            dest = os.path.join(os.path.dirname(c["path"]), c["new_name"])
-            # macOS APFS is case-insensitive: "Bt005.mp3" and "BT005.mp3" are the
-            # SAME path. os.path.exists(dest) is therefore True for a case-only
-            # rename, and a naive collision check appends " (2)" to a file that
-            # was never colliding. Detect same-file first, and go via a temp name
-            # so the rename actually lands.
-            case_only = (os.path.normcase(os.path.abspath(dest)) ==
-                         os.path.normcase(os.path.abspath(c["path"])))
-            try:
-                if case_only:
-                    if dest != c["path"]:
-                        tmp = c["path"] + ".__case_tmp"
-                        shutil.move(c["path"], tmp)
-                        shutil.move(tmp, dest)
-                else:
-                    if os.path.exists(dest):
-                        stem, ext = os.path.splitext(dest)
-                        n = 2
-                        while os.path.exists(f"{stem} ({n}){ext}"):
-                            n += 1
-                        dest = f"{stem} ({n}){ext}"
-                    shutil.move(c["path"], dest)
-                done.append({"from": c["path"], "to": dest})
-                target = dest
-            except Exception as e:
-                errors.append((c["path"], f"rename failed: {e}"))
-                continue
-        if c["tag_changed"]:
-            try:
-                t = ID3(target)
-                if c["new_title"]:
-                    t.setall("TIT2", [TIT2(encoding=3, text=c["new_title"])])
-                if c["new_artist"]:
-                    t.setall("TPE1", [TPE1(encoding=3, text=c["new_artist"])])
-                t.save(target, v2_version=3)
-            except Exception as e:
-                errors.append((target, f"tag failed: {e}"))
+    print("\nPREVIEW ONLY — nothing was renamed or retagged.", file=sys.stderr)
+    print("Apply Artist/Title changes via apply_artist_title_plan.py "
+          "(lock + verified backup manifest + engine).", file=sys.stderr)
 
-    os.makedirs(os.path.dirname(UNDO_LOG) or ".", exist_ok=True)
-    json.dump({"root": root, "moves": done}, open(UNDO_LOG, "w"),
-              indent=2, ensure_ascii=False)
-    print(f"\nRenamed {len(done)} files, retagged {sum(c['tag_changed'] for c in changes)}.",
-          file=sys.stderr)
-    print(f"Undo log: {UNDO_LOG}", file=sys.stderr)
-    if errors:
-        print(f"{len(errors)} errors:", file=sys.stderr)
-        for p, e in errors[:10]:
-            print(f"   {os.path.basename(p)[:55]}: {e}", file=sys.stderr)
+
+def _is_case_only_rename(change):
+    """Flag renames that differ only by letter case.
+
+    macOS APFS is case-insensitive but case-PRESERVING: "Bt005.mp3" and
+    "BT005.mp3" are the same path, so a case-only rename needs a two-step
+    move through a temp name to actually land, and a naive `if exists(dest)`
+    collision check would wrongly append " (2)" to a file colliding only with
+    itself. The approved engine handles this; the preview marks them so a
+    reviewer can see which ones are in that category.
+    """
+    dest = os.path.join(os.path.dirname(change["path"]), change["new_name"])
+    return (os.path.normcase(os.path.abspath(dest)) ==
+            os.path.normcase(os.path.abspath(change["path"])))
 
 
 def write_preview(changes, root, path):
@@ -271,21 +302,6 @@ def write_preview(changes, root, path):
                 if c["old_artist"] != c["new_artist"]:
                     L.append(f"    - artist: `{c['old_artist']}` → `{c['new_artist']}`\n")
     open(path, "w").write("".join(L))
-
-
-def undo():
-    if not os.path.exists(UNDO_LOG):
-        sys.exit(f"No undo log at {UNDO_LOG}")
-    data = json.load(open(UNDO_LOG))
-    back = 0
-    for m in reversed(data["moves"]):
-        if os.path.exists(m["to"]):
-            try:
-                shutil.move(m["to"], m["from"])
-                back += 1
-            except Exception as e:
-                print(f"  ! {os.path.basename(m['to'])}: {e}", file=sys.stderr)
-    print(f"Reversed {back}/{len(data['moves'])} renames (tags not reverted).", file=sys.stderr)
 
 
 if __name__ == "__main__":
