@@ -1,0 +1,52 @@
+{
+  "scope": "/Users/djb.a.e/Music/DJ-Music/Music/Jerking",
+  "read_only": true,
+  "stable_during_inventory": true,
+  "number_rule": "Only a terminal (N) immediately before the extension is flagged as a copy hint. Meaningful numbers are preserved. A suffix is not duplicate proof; SHA-256 is.",
+  "rows": [
+    {
+      "full_path": "/Users/djb.a.e/Music/DJ-Music/Music/Jerking/01 Boss Ass Bitch.mp3",
+      "filename": "01 Boss Ass Bitch.mp3",
+      "artist": "Ptaf",
+      "title": "Boss Ass Bitch",
+      "album": "Boss Ass Bitch",
+      "genre": "jerking",
+      "year": "",
+      "bpm": "106",
+      "key": "G#m",
+      "file_type": "mp3",
+      "bitrate_kbps": 256,
+      "sample_rate_hz": 44100,
+      "file_size_bytes": 7037316,
+      "duration_seconds": 217.287,
+      "date_modified": "2018-01-17T16:47:18-05:00",
+      "sha256": "09538907bae686f9fd4f9a98cb38e2a18a7a1e99ff14ab1d5d70cc4741ef94cf",
+      "version_words": "",
+      "trailing_copy_suffix": "no",
+      "copy_suffix_number": "",
+      "exact_duplicate_count_in_folder": 0
+    },
+    {
+      "full_path": "/Users/djb.a.e/Music/DJ-Music/Music/Jerking/Vixen Ent, Jerkin Song - I Need That.mp3",
+      "filename": "Vixen Ent, Jerkin Song - I Need That.mp3",
+      "artist": "Vixen Ent, Jerkin Song",
+      "title": "I Need That",
+      "album": "I Need That",
+      "genre": "jerking",
+      "year": "2016",
+      "bpm": "100",
+      "key": "Bbm",
+      "file_type": "mp3",
+      "bitrate_kbps": 128,
+      "sample_rate_hz": 44100,
+      "file_size_bytes": 3465187,
+      "duration_seconds": 215.954,
+      "date_modified": "2024-12-29T23:52:03-05:00",
+      "sha256": "bd70a40ea8cd1eb67fe126afa27af1aadc0d9923d8bd4225c571002f1ac0d64f",
+      "version_words": "",
+      "trailing_copy_suffix": "no",
+      "copy_suffix_number": "",
+      "exact_duplicate_count_in_folder": 0
+    }
+  ]
+}

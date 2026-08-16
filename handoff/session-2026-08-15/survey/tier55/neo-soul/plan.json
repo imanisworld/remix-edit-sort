@@ -1,0 +1,97 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/neo soul",
+  "inventory": "handoff/session-2026-08-15/survey/tier55/neo-soul/inventory/inventory.csv",
+  "track_count": 4,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 4
+    },
+    "genres": {
+      "Neo Soul": 4
+    },
+    "moves": 4,
+    "genre_tag_changes": 4
+  },
+  "tag_change_summary": {
+    "neo soul -> Neo Soul": 4
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/neo soul/Lightning - orion sun.mp3",
+      "source_relative": "Lightning - orion sun.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/neo soul/_NEEDS CHECK/Neo Soul/Lightning - orion sun.mp3",
+      "destination_relative": "_NEEDS CHECK/Neo Soul/Lightning - orion sun.mp3",
+      "sha256": "3d8da5ee87ff73aa92d26245a8ad267007d85039c5b51d3c3426fcf8bd60300f",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "neo soul",
+      "proposed_genre": "Neo Soul",
+      "genre_evidence": "source folder is a confirmed single genre: Neo Soul",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/neo soul/Lowkey (prod. by Black Party + Kari Faux).mp3",
+      "source_relative": "Lowkey (prod. by Black Party + Kari Faux).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/neo soul/_NEEDS CHECK/Neo Soul/Lowkey (prod. by Black Party + Kari Faux).mp3",
+      "destination_relative": "_NEEDS CHECK/Neo Soul/Lowkey (prod. by Black Party + Kari Faux).mp3",
+      "sha256": "e7afb809c9b590541046bc371fdeff3d1dbf7918dd32ec6ca932a56a54024f16",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "neo soul",
+      "proposed_genre": "Neo Soul",
+      "genre_evidence": "source folder is a confirmed single genre: Neo Soul",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/neo soul/Passport - Masego.mp3",
+      "source_relative": "Passport - Masego.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/neo soul/_NEEDS CHECK/Neo Soul/Passport - Masego.mp3",
+      "destination_relative": "_NEEDS CHECK/Neo Soul/Passport - Masego.mp3",
+      "sha256": "a4fc2550ee6581aa46e8b8dacd2c222414a96eba84771c6c143ebf6bebef08cf",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "neo soul",
+      "proposed_genre": "Neo Soul",
+      "genre_evidence": "source folder is a confirmed single genre: Neo Soul",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/neo soul/Same Space - Tiana Major9.mp3",
+      "source_relative": "Same Space - Tiana Major9.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/neo soul/_NEEDS CHECK/Neo Soul/Same Space - Tiana Major9.mp3",
+      "destination_relative": "_NEEDS CHECK/Neo Soul/Same Space - Tiana Major9.mp3",
+      "sha256": "f6530fbab7d0336d3eb4977bb246d2c68accf7b97489b7d576335aefa611ce23",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "neo soul",
+      "proposed_genre": "Neo Soul",
+      "genre_evidence": "source folder is a confirmed single genre: Neo Soul",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "mode": "gospel-apply",
+  "plan": "handoff/session-2026-08-15/survey/tier55/gospel/plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/tier55/gospel/backup-20260815-232321",
+  "tracks_processed": 68,
+  "files_moved": 68,
+  "genre_tags_changed": 63,
+  "genre_tags_skipped": 0,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "handoff/session-2026-08-15/survey/tier55/gospel/gospel-undo-20260815-232322.jsonl",
+  "tag_backup_root": "handoff/session-2026-08-15/survey/tier55/gospel/gospel-tag-file-backups/20260815-232322",
+  "genre_counts": {
+    "Gospel": 68
+  }
+}

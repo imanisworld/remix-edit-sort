@@ -1,0 +1,179 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/World music",
+  "inventory": "handoff/session-2026-08-15/survey/tier55/world-music/inventory/inventory.csv",
+  "track_count": 9,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 9
+    },
+    "genres": {
+      "World Music": 9
+    },
+    "moves": 9,
+    "genre_tag_changes": 5
+  },
+  "tag_change_summary": {
+    "World -> World Music": 2,
+    "World Music, old head party -> World Music": 1,
+    "world -> World Music": 2
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/World music/'00 Nostalgia [feat. André Wolff] [Prod. By Benny Que & DOZ].mp3",
+      "source_relative": "'00 Nostalgia [feat. André Wolff] [Prod. By Benny Que & DOZ].mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/World music/_NEEDS CHECK/World Music/'00 Nostalgia [feat. André Wolff] [Prod. By Benny Que & DOZ].mp3",
+      "destination_relative": "_NEEDS CHECK/World Music/'00 Nostalgia [feat. André Wolff] [Prod. By Benny Que & DOZ].mp3",
+      "sha256": "6c6a00d36651b8c3edbba964a2c28f9e015c8f97588fa5586de9f75770817e50",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "World",
+      "proposed_genre": "World Music",
+      "genre_evidence": "source folder is a confirmed single genre: World Music",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/World music/04-Mirukumunari.mp3",
+      "source_relative": "04-Mirukumunari.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/World music/_NEEDS CHECK/World Music/04-Mirukumunari.mp3",
+      "destination_relative": "_NEEDS CHECK/World Music/04-Mirukumunari.mp3",
+      "sha256": "c8e6a21b8f46ab331a227b1243096ffba6193044f93f5317e8f029b05f6d03a1",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "world",
+      "proposed_genre": "World Music",
+      "genre_evidence": "source folder is a confirmed single genre: World Music",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/World music/Bank On It.mp3",
+      "source_relative": "Bank On It.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/World music/_NEEDS CHECK/World Music/Bank On It.mp3",
+      "destination_relative": "_NEEDS CHECK/World Music/Bank On It.mp3",
+      "sha256": "ae9288e56509226673a7d121fa6dbb30d7eeab6d336d0132183ccccf2cb13a51",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "World",
+      "proposed_genre": "World Music",
+      "genre_evidence": "source folder is a confirmed single genre: World Music",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/World music/Dangote.mp3",
+      "source_relative": "Dangote.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/World music/_NEEDS CHECK/World Music/Dangote.mp3",
+      "destination_relative": "_NEEDS CHECK/World Music/Dangote.mp3",
+      "sha256": "93a4ec814268041ac1c99dc5afc2336987907193eea7fdfd5fcc14684a950194",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "World Music",
+      "proposed_genre": "World Music",
+      "genre_evidence": "source folder is a confirmed single genre: World Music",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/World music/Gum Body (feat. Jorja Smith).mp3",
+      "source_relative": "Gum Body (feat. Jorja Smith).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/World music/_NEEDS CHECK/World Music/Gum Body (feat. Jorja Smith).mp3",
+      "destination_relative": "_NEEDS CHECK/World Music/Gum Body (feat. Jorja Smith).mp3",
+      "sha256": "504fcec507f4e2b2693faa1ac69b2d5778505f24243c000bad52a3a5db7171f4",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "World Music",
+      "proposed_genre": "World Music",
+      "genre_evidence": "source folder is a confirmed single genre: World Music",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/World music/Heaven.mp3",
+      "source_relative": "Heaven.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/World music/_NEEDS CHECK/World Music/Heaven.mp3",
+      "destination_relative": "_NEEDS CHECK/World Music/Heaven.mp3",
+      "sha256": "2a6415bb0cbcb87b42b2114004d744e93693c1977b705d2421ad58efface2acf",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "World Music, old head party",
+      "proposed_genre": "World Music",
+      "genre_evidence": "source folder is a confirmed single genre: World Music",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/World music/Sekkle Down (feat. J Hus).mp3",
+      "source_relative": "Sekkle Down (feat. J Hus).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/World music/_NEEDS CHECK/World Music/Sekkle Down (feat. J Hus).mp3",
+      "destination_relative": "_NEEDS CHECK/World Music/Sekkle Down (feat. J Hus).mp3",
+      "sha256": "4a6a7080e572bd5acb437c862193ac0cfa7164dbc636a3a922ec845ed891b588",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "World Music",
+      "proposed_genre": "World Music",
+      "genre_evidence": "source folder is a confirmed single genre: World Music",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/World music/Şatellites - Hot Jazz.mp3",
+      "source_relative": "Şatellites - Hot Jazz.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/World music/_NEEDS CHECK/World Music/Şatellites - Hot Jazz.mp3",
+      "destination_relative": "_NEEDS CHECK/World Music/Şatellites - Hot Jazz.mp3",
+      "sha256": "74799bda1e5a31ff61fe10ab643022c9f14986e1a704fe10a8ba5bf608340a8b",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "world",
+      "proposed_genre": "World Music",
+      "genre_evidence": "source folder is a confirmed single genre: World Music",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/World music/Ye.mp3",
+      "source_relative": "Ye.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/World music/_NEEDS CHECK/World Music/Ye.mp3",
+      "destination_relative": "_NEEDS CHECK/World Music/Ye.mp3",
+      "sha256": "8583d9970711f545502d401889f4b4b5b962b6e20e88d13ec205623681cbecaa",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "World Music",
+      "proposed_genre": "World Music",
+      "genre_evidence": "source folder is a confirmed single genre: World Music",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}

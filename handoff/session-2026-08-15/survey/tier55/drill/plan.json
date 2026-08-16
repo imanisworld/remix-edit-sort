@@ -1,0 +1,84 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/drill",
+  "inventory": "handoff/session-2026-08-15/survey/tier55/drill/inventory/inventory.csv",
+  "track_count": 3,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "REMIXES & EDITS": 2,
+      "_NEEDS CHECK": 1
+    },
+    "genres": {
+      "Drill": 3
+    },
+    "moves": 3,
+    "genre_tag_changes": 3
+  },
+  "tag_change_summary": {
+    "Rap/Hip-Hop -> Drill": 1,
+    "SEXY DRILL -> Drill": 1,
+    "drill edit hip hop -> Drill": 1
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/drill/LUTHER (SEXY DRILL REMIX) - KENDRICK LAMAR.mp3",
+      "source_relative": "LUTHER (SEXY DRILL REMIX) - KENDRICK LAMAR.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/drill/REMIXES & EDITS/Drill/LUTHER (SEXY DRILL REMIX) - KENDRICK LAMAR.mp3",
+      "destination_relative": "REMIXES & EDITS/Drill/LUTHER (SEXY DRILL REMIX) - KENDRICK LAMAR.mp3",
+      "sha256": "9ed51fbcf80fecf45e66a578758f35f9d909a0d04fca2ddcecc086fc7eb49c70",
+      "version_category": "REMIXES & EDITS",
+      "version_evidence": "explicit remix/edit label",
+      "current_genre": "drill edit hip hop",
+      "proposed_genre": "Drill",
+      "genre_evidence": "source folder is a confirmed single genre: Drill",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/drill/bryson tiller - finished.mp3",
+      "source_relative": "bryson tiller - finished.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/drill/_NEEDS CHECK/Drill/bryson tiller - finished.mp3",
+      "destination_relative": "_NEEDS CHECK/Drill/bryson tiller - finished.mp3",
+      "sha256": "4a3a23678fb0eca89c37dba8677bbac9bd0b3204de52a55aae9f4984efaa7a6c",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Rap/Hip-Hop",
+      "proposed_genre": "Drill",
+      "genre_evidence": "source folder is a confirmed single genre: Drill",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/drill/rammie - luther (sexy drill remix) - kendrick lamar.mp3",
+      "source_relative": "rammie - luther (sexy drill remix) - kendrick lamar.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/drill/REMIXES & EDITS/Drill/rammie - luther (sexy drill remix) - kendrick lamar.mp3",
+      "destination_relative": "REMIXES & EDITS/Drill/rammie - luther (sexy drill remix) - kendrick lamar.mp3",
+      "sha256": "5803131d5d724c897f3394dba0f648dc52cbf5f536145b85d20feec821520945",
+      "version_category": "REMIXES & EDITS",
+      "version_evidence": "explicit remix/edit label",
+      "current_genre": "SEXY DRILL",
+      "proposed_genre": "Drill",
+      "genre_evidence": "source folder is a confirmed single genre: Drill",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}

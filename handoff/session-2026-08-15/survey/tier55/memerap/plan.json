@@ -1,0 +1,134 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/meme_rap",
+  "inventory": "handoff/session-2026-08-15/survey/tier55/memerap/inventory/inventory.csv",
+  "track_count": 6,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 6
+    },
+    "genres": {
+      "Meme Rap": 6
+    },
+    "moves": 6,
+    "genre_tag_changes": 6
+  },
+  "tag_change_summary": {
+    "(blank) -> Meme Rap": 1,
+    "Hip Hop -> Meme Rap": 1,
+    "Hip-hop & Rap -> Meme Rap": 1,
+    "hip hop rap, line dance -> Meme Rap": 1,
+    "hip hop women -> Meme Rap": 1,
+    "soul, funk, jazz, classic, old head party -> Meme Rap": 1
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/meme_rap/310babii, with Saweetie - rock your hips.mp3",
+      "source_relative": "310babii, with Saweetie - rock your hips.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/meme_rap/_NEEDS CHECK/Meme Rap/310babii, with Saweetie - rock your hips.mp3",
+      "destination_relative": "_NEEDS CHECK/Meme Rap/310babii, with Saweetie - rock your hips.mp3",
+      "sha256": "ab1e6cbf7a231e19fbf5e0f7031004242f1bca5aabfd14b749054b294629bff3",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "hip hop rap, line dance",
+      "proposed_genre": "Meme Rap",
+      "genre_evidence": "source folder is a confirmed single genre: Meme Rap",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/meme_rap/Baby Tate, Lucas Scharff - Straight.mp3",
+      "source_relative": "Baby Tate, Lucas Scharff - Straight.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/meme_rap/_NEEDS CHECK/Meme Rap/Baby Tate, Lucas Scharff - Straight.mp3",
+      "destination_relative": "_NEEDS CHECK/Meme Rap/Baby Tate, Lucas Scharff - Straight.mp3",
+      "sha256": "1942c1f2dbe8d723726e1bdfffcec7f45b0ed6cd2dc0011851f35d5142513d1c",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "",
+      "proposed_genre": "Meme Rap",
+      "genre_evidence": "source folder is a confirmed single genre: Meme Rap",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/meme_rap/Boom Pt. 2.mp3",
+      "source_relative": "Boom Pt. 2.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/meme_rap/_NEEDS CHECK/Meme Rap/Boom Pt. 2.mp3",
+      "destination_relative": "_NEEDS CHECK/Meme Rap/Boom Pt. 2.mp3",
+      "sha256": "b1a266c57ab60dea03bf387ce29aa7c8fd1f5c0726815490285b6d16ca894743",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "hip hop women",
+      "proposed_genre": "Meme Rap",
+      "genre_evidence": "source folder is a confirmed single genre: Meme Rap",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/meme_rap/Ghosts.mp3",
+      "source_relative": "Ghosts.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/meme_rap/_NEEDS CHECK/Meme Rap/Ghosts.mp3",
+      "destination_relative": "_NEEDS CHECK/Meme Rap/Ghosts.mp3",
+      "sha256": "a95149f46bc79357690c56b2367d9f76011dd0d401ae1d617becdb55bd36b9d1",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "soul, funk, jazz, classic, old head party",
+      "proposed_genre": "Meme Rap",
+      "genre_evidence": "source folder is a confirmed single genre: Meme Rap",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/meme_rap/yung ohio steppers 2 - zeddy will x bjacks - get jiggy (official audio).mp3",
+      "source_relative": "yung ohio steppers 2 - zeddy will x bjacks - get jiggy (official audio).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/meme_rap/_NEEDS CHECK/Meme Rap/yung ohio steppers 2 - zeddy will x bjacks - get jiggy (official audio).mp3",
+      "destination_relative": "_NEEDS CHECK/Meme Rap/yung ohio steppers 2 - zeddy will x bjacks - get jiggy (official audio).mp3",
+      "sha256": "feacf8be7ca1cb38aef43475fb819755f8fa915e24dff96eb103aa23011c7cb5",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Hip-hop & Rap",
+      "proposed_genre": "Meme Rap",
+      "genre_evidence": "source folder is a confirmed single genre: Meme Rap",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/meme_rap/zeddy will - cha cha.mp3",
+      "source_relative": "zeddy will - cha cha.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/meme_rap/_NEEDS CHECK/Meme Rap/zeddy will - cha cha.mp3",
+      "destination_relative": "_NEEDS CHECK/Meme Rap/zeddy will - cha cha.mp3",
+      "sha256": "00d599a5f51c500c1110ab19dad1d3aaf548393856243316ed245d2a88226163",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Hip Hop",
+      "proposed_genre": "Meme Rap",
+      "genre_evidence": "source folder is a confirmed single genre: Meme Rap",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}

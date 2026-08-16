@@ -1,0 +1,65 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/Jerking",
+  "inventory": "handoff/session-2026-08-15/survey/tier55/jerking/inventory/inventory.csv",
+  "track_count": 2,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 2
+    },
+    "genres": {
+      "Jerking": 2
+    },
+    "moves": 2,
+    "genre_tag_changes": 2
+  },
+  "tag_change_summary": {
+    "jerking -> Jerking": 2
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Jerking/01 Boss Ass Bitch.mp3",
+      "source_relative": "01 Boss Ass Bitch.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Jerking/_NEEDS CHECK/Jerking/01 Boss Ass Bitch.mp3",
+      "destination_relative": "_NEEDS CHECK/Jerking/01 Boss Ass Bitch.mp3",
+      "sha256": "09538907bae686f9fd4f9a98cb38e2a18a7a1e99ff14ab1d5d70cc4741ef94cf",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "jerking",
+      "proposed_genre": "Jerking",
+      "genre_evidence": "source folder is a confirmed single genre: Jerking",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Jerking/Vixen Ent, Jerkin Song - I Need That.mp3",
+      "source_relative": "Vixen Ent, Jerkin Song - I Need That.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Jerking/_NEEDS CHECK/Jerking/Vixen Ent, Jerkin Song - I Need That.mp3",
+      "destination_relative": "_NEEDS CHECK/Jerking/Vixen Ent, Jerkin Song - I Need That.mp3",
+      "sha256": "bd70a40ea8cd1eb67fe126afa27af1aadc0d9923d8bd4225c571002f1ac0d64f",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "jerking",
+      "proposed_genre": "Jerking",
+      "genre_evidence": "source folder is a confirmed single genre: Jerking",
+      "genre_confidence": "assumed",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}

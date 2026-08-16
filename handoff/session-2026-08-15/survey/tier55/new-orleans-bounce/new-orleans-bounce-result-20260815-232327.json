@@ -1,0 +1,18 @@
+{
+  "mode": "new-orleans-bounce-apply",
+  "plan": "handoff/session-2026-08-15/survey/tier55/new-orleans-bounce/plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/tier55/new-orleans-bounce/backup-20260815-232325",
+  "tracks_processed": 126,
+  "files_moved": 126,
+  "genre_tags_changed": 124,
+  "genre_tags_skipped": 0,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "handoff/session-2026-08-15/survey/tier55/new-orleans-bounce/new-orleans-bounce-undo-20260815-232327.jsonl",
+  "tag_backup_root": "handoff/session-2026-08-15/survey/tier55/new-orleans-bounce/new-orleans-bounce-tag-file-backups/20260815-232327",
+  "genre_counts": {
+    "Bounce": 126
+  }
+}
