@@ -170,7 +170,13 @@ def read_grouping_raw(path: Path) -> tuple[list[str], int | None]:
     granularity apply_grouping_plan.py's read_grouping() uses for MP3, so an
     MP3 item's current_grouping here will match what that script re-reads at
     apply time. id3_version is None for non-MP3 (apply_grouping_plan.py can't
-    write those; see SAFETY_CLASSIFICATION note in the module docstring)."""
+    write those; see SAFETY_CLASSIFICATION note in the module docstring) AND
+    for ID3v2.2 MP3s: mutagen's ID3.save() only accepts v2_version 3 or 4 and
+    raises ValueError otherwise. apply_grouping_plan.py's write_grouping()
+    does not guard against this (confirmed live: it crashed mid-write on a
+    real v2.2 file rather than skipping it -- caught safely by the mutation
+    engine's backup/rollback path with zero bytes written, but it should
+    never have been offered as an auto-fix item in the first place)."""
     suffix = path.suffix.casefold()
     if suffix == ".mp3":
         try:
@@ -181,7 +187,8 @@ def read_grouping_raw(path: Path) -> tuple[list[str], int | None]:
             return [], None
         raw = [str(v).strip() for frame in tags.getall("TIT1")
                for v in getattr(frame, "text", []) if str(v).strip()]
-        return raw, tags.version[1]
+        version = tags.version[1]
+        return raw, (version if version in (3, 4) else None)
     if suffix == ".m4a":
         try:
             raw = [str(v).strip() for v in MP4(path).get("\xa9grp", []) if str(v).strip()]
@@ -215,12 +222,13 @@ def build_plan(library_root: Path, canonical: str, pattern: re.Pattern, vocab: d
         raw_values, id3_version = read_grouping_raw(path)
 
         if id3_version is None:
+            if path.suffix.casefold() == ".mp3":
+                reason = "ID3v2.2 -- apply_grouping_plan.py's write_grouping() only supports v2_version 3 or 4"
+            else:
+                reason = f"format {path.suffix} not writable by apply_grouping_plan.py"
             for raw in raw_values:
                 if pattern.search(raw):
-                    unsupported.append({
-                        "path": str(path), "current_grouping": raw,
-                        "reason": f"format {path.suffix} not writable by apply_grouping_plan.py",
-                    })
+                    unsupported.append({"path": str(path), "current_grouping": raw, "reason": reason})
             continue
 
         for raw in raw_values:

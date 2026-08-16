@@ -81,7 +81,7 @@ def _synchsafe(value: int) -> bytes:
                   (value >> 7) & 0x7F, value & 0x7F))
 
 
-def write_id3v22_mp3(path: Path, seed: int = 0, genre: str = "", title: str = "") -> Path:
+def write_id3v22_mp3(path: Path, seed: int = 0, genre: str = "", title: str = "", grouping: str = "") -> Path:
     """Write a real ID3v2.2 file by hand.
 
     mutagen refuses to SAVE v2.2 ("Only 3 or 4 allowed for v2_version"), which
@@ -90,11 +90,12 @@ def write_id3v22_mp3(path: Path, seed: int = 0, genre: str = "", title: str = ""
     original block. Building the bytes directly is the only way to test that
     the engines really do leave them alone.
 
-    v2.2 frames are 3-character IDs (TCO = genre, TT2 = title) with a 3-byte
-    big-endian size, unlike v2.3/v2.4's 4-character IDs and 4-byte sizes.
+    v2.2 frames are 3-character IDs (TCO = genre, TT2 = title, TT1 = grouping)
+    with a 3-byte big-endian size, unlike v2.3/v2.4's 4-character IDs and
+    4-byte sizes.
     """
     frames = bytearray()
-    for frame_id, text in (("TCO", genre), ("TT2", title)):
+    for frame_id, text in (("TCO", genre), ("TT2", title), ("TT1", grouping)):
         if not text:
             continue
         body = b"\x00" + text.encode("latin-1", "replace")

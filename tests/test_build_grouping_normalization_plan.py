@@ -11,7 +11,7 @@ if str(SCRIPTS) not in sys.path:
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import build_grouping_normalization_plan as build_plan_mod  # noqa: E402
-from fixtures import make_library  # noqa: E402
+from fixtures import make_library, write_id3v22_mp3  # noqa: E402
 
 
 class GroupingNormalizationPlanTests(unittest.TestCase):
@@ -120,6 +120,19 @@ class GroupingNormalizationPlanTests(unittest.TestCase):
         self.assertEqual(plan["counts"]["auto_fix"], 0)
         self.assertEqual(plan["counts"]["needs_review"], 1)
         self.assertEqual(plan["needs_review"][0]["current_grouping"], "old head party; Clean")
+
+    def test_id3v22_match_is_unsupported_not_offered_as_auto_fix(self):
+        # Regression: apply_grouping_plan.py's write_grouping() has no v2.2
+        # guard and crashes (mutagen: "Only 3 or 4 allowed for v2_version")
+        # if handed one. Caught live on a real file -- confirmed via hash
+        # comparison that nothing was actually written before this fix, but
+        # this must never be offered as an auto-fix item in the first place.
+        write_id3v22_mp3(self.library / "a.mp3", grouping="old head")
+        plan = self.build(grouping_values_in_use={"Old Head": 5})
+        self.assertEqual(plan["counts"]["auto_fix"], 0)
+        self.assertEqual(plan["counts"]["unsupported_format"], 1)
+        self.assertEqual(plan["unsupported_format"][0]["current_grouping"], "old head")
+        self.assertIn("v2.2", plan["unsupported_format"][0]["reason"])
 
     def test_plan_shape_matches_apply_grouping_plan_expectations(self):
         make_library(self.library, [{"relative": "a.mp3", "grouping": "old head"}])
