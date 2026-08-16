@@ -114,6 +114,30 @@ class GroupingNormalizationPlanTests(unittest.TestCase):
             "Old Head; Event: LIKE SUGAR ON MY TONGUE; Clean",
         )
 
+    def test_event_prefixed_free_text_segment_is_never_decomposed_even_if_it_contains_the_canonical_word(self):
+        # Regression: found live on a real batch run. A generic single-word
+        # canonical like "women" can match incidentally inside an event's
+        # free-text NAME ("Event: Gay Women Party"), which is not a tag-list
+        # and must never be run through vocab-token decomposition -- that
+        # decomposition necessarily fails (words like "Gay"/"Party" aren't
+        # attested standalone tags) and would otherwise wrongly flood
+        # needs_review with false positives instead of leaving it alone.
+        make_library(self.library, [
+            {"relative": "a.mp3", "grouping": "Event: Gay Women Party"},
+            {"relative": "b.mp3", "grouping": "Source: white dance crew"},
+        ])
+        plan = self.build(canonical="women", grouping_values_in_use={"Women": 5})
+        self.assertEqual(plan["counts"]["auto_fix"], 0)
+        self.assertEqual(plan["counts"]["needs_review"], 0)
+
+    def test_event_prefix_still_leaves_a_sibling_segment_fixable(self):
+        make_library(self.library, [
+            {"relative": "a.mp3", "grouping": "women; Event: Gay Women Party"},
+        ])
+        plan = self.build(canonical="Women", grouping_values_in_use={"Women": 5})
+        self.assertEqual(plan["counts"]["auto_fix"], 1)
+        self.assertEqual(plan["items"][0]["combined_grouping"], "Women; Event: Gay Women Party")
+
     def test_semicolon_joined_value_with_one_unresolvable_segment_goes_to_review_whole(self):
         make_library(self.library, [{"relative": "a.mp3", "grouping": "old head party; Clean"}])
         plan = self.build(grouping_values_in_use={"Old Head": 5})

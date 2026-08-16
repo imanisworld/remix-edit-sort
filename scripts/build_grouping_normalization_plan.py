@@ -75,6 +75,17 @@ MUSIC_ROOT = Path("/Users/djb.a.e/Music/DJ-Music/Music").resolve()
 AUDIO_EXTS = {".mp3", ".flac", ".m4a", ".wav", ".aiff"}
 MAX_MATCH_WINDOW = 3
 
+# Segments carrying one of these prefixes are established free-text labels
+# (an event name, a source pool name), never a tag-list -- see module
+# docstring. A generic-word canonical (e.g. "women", "white") can otherwise
+# match incidentally inside one ("Event: Gay Women Party", "Event: white
+# dance party") and get wrongly sent to needs_review trying to decompose a
+# sentence as if it were a comma-joined tag list. Distinctive multi-word
+# canonicals (Old Head, Lounge, White Club) never collided with this in
+# practice, but it surfaced immediately on a batch of generic single-word
+# clusters -- caught by reviewing the needs_review list before applying.
+FREE_TEXT_PREFIX_RE = re.compile(r"^(event|source)\s*:", re.IGNORECASE)
+
 
 def build_vocabulary(tag_audit_report: Path) -> dict[str, str]:
     """casefold(value) -> most-natural casing, from every Grouping value in
@@ -154,7 +165,11 @@ def resolve_segment(segment: str, clusters: list[dict], vocab: dict[str, str]) -
     we're fixing and doesn't need to be "known vocabulary" to be valid. The
     first cluster whose pattern matches "owns" this segment; if that
     cluster's resolution isn't fully evidence-backed, this returns None --
-    it never falls through to try a later cluster on the same segment."""
+    it never falls through to try a later cluster on the same segment.
+    Free-text Event:/Source: segments are never touched, full stop -- see
+    FREE_TEXT_PREFIX_RE."""
+    if FREE_TEXT_PREFIX_RE.match(segment):
+        return segment
     for cluster in clusters:
         if cluster["pattern"].search(segment):
             return resolve_words(segment, cluster["canonical_fold"], cluster["canonical"], vocab)
