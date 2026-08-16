@@ -19,7 +19,11 @@
     "miami bass": "Miami Bass",
     "miamibass": "Miami Bass",
     "juke": "Juke & Footwork",
-    "classic funk-soul, old head party": "Funk & Soul"
+    "classic funk-soul, old head party": "Funk & Soul",
+    "house": "House",
+    "techno": "Techno",
+    "ghetto tech": "Ghettotech",
+    "jersey club": "Jersey Club"
   },
   "filename_keywords": [
     {"contains": "ghettotech", "genre": "Ghettotech", "evidence": "filename explicitly says Ghettotech"},
