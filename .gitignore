@@ -16,6 +16,7 @@ venv/
 *.wma
 *.mp4
 *.mov
+*.serato-stems
 
 # DJ application data and local run artifacts.
 _Serato_/

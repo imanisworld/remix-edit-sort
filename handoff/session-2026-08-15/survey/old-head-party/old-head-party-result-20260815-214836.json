@@ -1,0 +1,33 @@
+{
+  "mode": "old-head-party-apply",
+  "plan": "handoff/session-2026-08-15/survey/old-head-party/plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/old-head-party/backup-20260815-214806",
+  "tracks_processed": 854,
+  "files_moved": 854,
+  "genre_tags_changed": 395,
+  "genre_tags_skipped": 15,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "handoff/session-2026-08-15/survey/old-head-party/old-head-party-undo-20260815-214836.jsonl",
+  "tag_backup_root": "handoff/session-2026-08-15/survey/old-head-party/old-head-party-tag-file-backups/20260815-214836",
+  "genre_counts": {
+    "Classic Rock": 2,
+    "Dance": 6,
+    "Dancehall": 1,
+    "Disco": 6,
+    "Electronic": 21,
+    "Funk & Soul": 37,
+    "Hip-Hop": 157,
+    "Jazz": 3,
+    "Miami Bass": 1,
+    "Nu Wave": 3,
+    "Pop": 36,
+    "R&B": 89,
+    "R&B Throwbacks": 29,
+    "Rock": 25,
+    "Twerk": 1,
+    "_GENRE NEEDS CHECK": 437
+  }
+}

@@ -108,6 +108,13 @@ def main() -> None:
         "insert version/genre inside it, matching the Events plan shape, instead of the flat "
         "<root>/<version>/<genre>/filename layout used for single-genre dumps.",
     )
+    parser.add_argument(
+        "--preserve-context-names",
+        help="Only with --preserve-top-level-subfolder: comma-separated exact top-level folder names to "
+        "preserve as context (e.g. 'Rap'). Any other non-version top-level folder is treated as if its "
+        "files were loose at root -- flattened into the plain version/genre structure with no context kept. "
+        "Omit to preserve every non-version top-level folder (the original, unrestricted behavior).",
+    )
     parser.add_argument("--genre-rules", type=Path, help="Override path to a version-genre-rules.json")
     parser.add_argument(
         "--on-collision",
@@ -135,6 +142,11 @@ def main() -> None:
     genre_counts: collections.Counter = collections.Counter()
     tag_change_counts: collections.Counter = collections.Counter()
     source_missing = []
+    preserve_names = (
+        {name.strip() for name in args.preserve_context_names.split(",")}
+        if args.preserve_context_names
+        else None
+    )
 
     for row in rows:
         source = Path(row["full_path"])
@@ -164,7 +176,13 @@ def main() -> None:
         #    -> without this check, "CLEAN" gets treated as the context and
         #       a second version/genre pair gets nested inside it:
         #       CLEAN/CLEAN/R&B/R&B/track.mp3
-        if args.preserve_top_level_subfolder and len(rel.parts) > 1 and rel.parts[0] not in VERSION_CATEGORIES:
+        is_preservable_context = (
+            args.preserve_top_level_subfolder
+            and len(rel.parts) > 1
+            and rel.parts[0] not in VERSION_CATEGORIES
+            and (preserve_names is None or rel.parts[0].strip() in preserve_names)
+        )
+        if is_preservable_context:
             context, rest = rel.parts[0], list(rel.parts[1:])
             if len(rest) >= 2 and rest[0] in VERSION_CATEGORIES:
                 rest = rest[2:]
