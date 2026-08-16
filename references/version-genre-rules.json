@@ -87,7 +87,19 @@
     "hip hop dallas houston": "Hip-Hop",
     "r&b alternative": "Alternative R&B",
     "hip hop, rap": "Hip-Hop",
-    "latin pop": "Latin Pop"
+    "latin pop": "Latin Pop",
+    "uk": "UK Garage",
+    "uk garage": "UK Garage",
+    "ukg": "UK Garage",
+    "garage": "Garage",
+    "garage volume 1": "Garage",
+    "garage volume 3": "Garage",
+    "garage volume 5": "Garage",
+    "garage volume 6": "Garage",
+    "jungle": "Jungle",
+    "garage house": "Garage House",
+    "speed garage": "Speed Garage",
+    "garage jungle": "Garage Jungle"
   },
   "filename_keywords": [
     {"contains": "ghettotech", "genre": "Ghettotech", "evidence": "filename explicitly says Ghettotech"},
