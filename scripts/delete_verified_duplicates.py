@@ -176,24 +176,55 @@ def apply(pairs_path: Path, manifest: dict, source_root: Path, backup_root: Path
 
 
 def undo(undo_path: Path, label: str, heartbeat: lock_guard.LockHeartbeat) -> None:
-    """Restore deleted files. This is a mutation, so ownership is re-verified
-    before every restore, not once at startup."""
+    """Restore deleted files.
+
+    An undo is a mutation, so it runs through the same engine as the delete:
+    ownership re-verified before every restore, and a write-ahead intent
+    record on disk before each file is written back.
+
+    The engine's `source` here is the BACKUP copy, not the deleted path -- the
+    deleted file does not exist any more, so it cannot be the thing whose
+    preconditions get checked. Pointing source at the backup makes the
+    precondition "the backup we are about to restore from is present and
+    hashes as recorded", which is exactly what must hold before writing.
+    """
     records = [json.loads(line) for line in undo_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    journal_path = undo_path.with_name(undo_path.stem + "-undo-recovery.jsonl")
+    engine = mutation_engine.MutationEngine(
+        journal_path, heartbeat, manifest=None, source_root=None,
+        label=f"{label}-undo", allow_unbacked=True,
+    )
+    engine.start({"undo_log": str(undo_path), "records": len(records)})
+
     restored = 0
-    for record in reversed(records):
-        heartbeat.beat()
+    for position, record in enumerate(reversed(records), start=1):
         deleted = Path(record["deleted"])
         backup = Path(record["backup"])
-        if deleted.exists():
-            raise RuntimeError(f"restore target already exists: {deleted}")
-        if sha256_file(backup) != record["sha256"]:
-            raise RuntimeError(f"backup hash mismatch, refusing to restore: {backup}")
-        deleted.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(backup, deleted)
-        if sha256_file(deleted) != record["sha256"]:
-            raise RuntimeError(f"restore verification failed: {deleted}")
-        restored += 1
-    print(json.dumps({"mode": f"{label}-undo", "restored": restored}, indent=2))
+        with engine.item(
+            position,
+            kind=mutation_engine.DELETE,
+            source=backup,
+            destination=deleted,
+            expected_sha256=record["sha256"],
+            require_backup=False,
+            extra_intent={"undoing_index": record.get("index"),
+                          "restoring_to": str(deleted),
+                          "kept": record.get("kept")},
+        ) as txn:
+            if deleted.exists():
+                raise RuntimeError(f"restore target already exists: {deleted}")
+            deleted.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(backup, deleted)
+            txn.mark_mutated()
+            if sha256_file(deleted) != record["sha256"]:
+                raise RuntimeError(f"restore verification failed: {deleted}")
+            txn.record(restored_to=str(deleted), sha256=record["sha256"])
+            restored += 1
+
+    result = {"mode": f"{label}-undo", "restored": restored,
+              "recovery_journal": str(journal_path)}
+    engine.finish(result)
+    print(json.dumps(result, indent=2))
 
 
 def main() -> None:

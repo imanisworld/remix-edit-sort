@@ -195,6 +195,155 @@ class ScannerBehaviorTests(unittest.TestCase):
         self.assertFalse(report["ok"])
         self.assertTrue(any("must contain no" in v for v in report["violations"]))
 
+    def test_a_primitive_outside_any_transaction_is_rejected(self):
+        """The check that caught three real undo-path defects.
+
+        An engine-user that imports the engine but performs a bare copy2
+        somewhere outside `with engine.item(...)` must fail, even though the
+        import-only check would have passed it.
+        """
+        report = self._scan("apply_sloppy.py", '''
+            SAFETY_CLASSIFICATION = "engine-user"
+            import shutil
+            import lock_guard
+            import mutation_engine
+
+            def apply(engine, items):
+                for index, item in enumerate(items):
+                    with engine.item(index, kind="genre", source=item) as txn:
+                        shutil.copy2(item, item + ".bak")
+                        txn.mark_mutated()
+
+            def undo(records):
+                for record in records:
+                    shutil.copy2(record["backup"], record["path"])   # no transaction
+        ''')
+        self.assertFalse(report["ok"])
+        self.assertTrue(any("undo()" in v and "not inside a" in v for v in report["violations"]))
+
+    def test_a_primitive_inside_a_transaction_is_accepted(self):
+        report = self._scan("apply_tidy.py", '''
+            SAFETY_CLASSIFICATION = "engine-user"
+            import shutil
+            import lock_guard
+            import mutation_engine
+
+            def apply(engine, items):
+                for index, item in enumerate(items):
+                    with engine.item(index, kind="genre", source=item) as txn:
+                        shutil.copy2(item, item + ".bak")
+                        txn.mark_mutated()
+        ''')
+        self.assertTrue(report["ok"], report["violations"])
+
+    def test_a_declared_helper_called_from_a_transaction_is_accepted(self):
+        report = self._scan("apply_helper.py", '''
+            SAFETY_CLASSIFICATION = "engine-user"
+            ENGINE_MUTATION_HELPERS = ("_write",)
+            import shutil
+            import lock_guard
+            import mutation_engine
+
+            def _write(src, dest):
+                shutil.copy2(src, dest)
+
+            def apply(engine, items):
+                for index, item in enumerate(items):
+                    with engine.item(index, kind="genre", source=item) as txn:
+                        _write(item, item + ".bak")
+                        txn.mark_mutated()
+        ''')
+        self.assertTrue(report["ok"], report["violations"])
+
+    def test_a_declared_helper_never_called_from_a_transaction_is_rejected(self):
+        """Declaring a helper is not enough; it must be reachable from one."""
+        report = self._scan("apply_orphan.py", '''
+            SAFETY_CLASSIFICATION = "engine-user"
+            ENGINE_MUTATION_HELPERS = ("_write",)
+            import shutil
+            import lock_guard
+            import mutation_engine
+
+            def _write(src, dest):
+                shutil.copy2(src, dest)
+
+            def apply(items):
+                for item in items:
+                    _write(item, item + ".bak")     # never inside a transaction
+        ''')
+        self.assertFalse(report["ok"])
+        self.assertTrue(any("never calls it from inside" in v for v in report["violations"]))
+
+    def test_helper_reachability_is_transitive_only_through_declared_helpers(self):
+        report = self._scan("apply_chain.py", '''
+            SAFETY_CLASSIFICATION = "engine-user"
+            ENGINE_MUTATION_HELPERS = ("_outer", "_inner")
+            import shutil
+            import lock_guard
+            import mutation_engine
+
+            def _inner(src, dest):
+                shutil.copy2(src, dest)
+
+            def _outer(txn, src, dest):
+                _inner(src, dest)
+
+            def apply(engine, items):
+                for index, item in enumerate(items):
+                    with engine.item(index, kind="genre", source=item) as txn:
+                        _outer(txn, item, item + ".bak")
+        ''')
+        self.assertTrue(report["ok"], report["violations"])
+
+    def test_an_undeclared_function_in_the_chain_breaks_reachability(self):
+        report = self._scan("apply_gap.py", '''
+            SAFETY_CLASSIFICATION = "engine-user"
+            ENGINE_MUTATION_HELPERS = ("_inner",)
+            import shutil
+            import lock_guard
+            import mutation_engine
+
+            def _inner(src, dest):
+                shutil.copy2(src, dest)
+
+            def _undeclared(src, dest):
+                _inner(src, dest)
+
+            def apply(engine, items):
+                for index, item in enumerate(items):
+                    with engine.item(index, kind="genre", source=item) as txn:
+                        _undeclared(item, item + ".bak")
+        ''')
+        self.assertFalse(report["ok"])
+        self.assertTrue(any("never calls it from inside" in v for v in report["violations"]))
+
+    def test_the_helper_list_may_not_grow_without_bound(self):
+        limit = mutation_surface.MAX_ENGINE_MUTATION_HELPERS
+        helpers = ", ".join(f'"_h{n}"' for n in range(limit + 1))
+        body = f'''
+            SAFETY_CLASSIFICATION = "engine-user"
+            ENGINE_MUTATION_HELPERS = ({helpers},)
+            import shutil
+            import lock_guard
+            import mutation_engine
+        '''
+        report = self._scan("apply_bloat.py", body)
+        self.assertFalse(report["ok"])
+        self.assertTrue(any("more than the" in v for v in report["violations"]))
+
+    def test_every_engine_user_in_this_repo_passes_the_provenance_check(self):
+        """Every real engine-user's primitives are inside a transaction or a
+        declared, transaction-reachable helper."""
+        report = mutation_surface.audit(REPO_ROOT)
+        engine_users = [entry["module"] for entry in report["modules"]
+                        if entry["classification"] == mutation_surface.ENGINE_USER]
+        self.assertGreater(len(engine_users), 0)
+        for module in engine_users:
+            with self.subTest(module=module):
+                violations = mutation_surface.engine_provenance_violations(
+                    REPO_ROOT / module, module)
+                self.assertEqual(violations, [])
+
     def test_str_replace_is_not_mistaken_for_a_filesystem_primitive(self):
         report = self._scan("harmless.py", '''
             SAFETY_CLASSIFICATION = "read-only"

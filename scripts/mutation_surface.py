@@ -41,6 +41,25 @@ historical evidence of what past runs did, not tools; they are archived as
 
 Deletion primitives are tracked separately and reported, because "no
 automated deletion path exists" is its own claim the docs make.
+
+## What this scanner does NOT prove
+
+Static AST analysis has hard limits, and overstating them would be worse than
+having no gate at all. For an `engine-user` this proves (a) the module imports
+the approved engine, and (b) every mutation primitive is written lexically
+inside a `with engine.item(...)` block or inside one of at most four declared
+`ENGINE_MUTATION_HELPERS` that are reachable from such a block.
+
+It does NOT prove that a declared helper is *only ever* reached through a
+transaction, nor that primitives reached via aliases, stored callbacks,
+`getattr`, function tables, decorators, or cross-module calls are governed.
+Proving that needs real data-flow analysis, which this deliberately is not.
+
+So this gate is necessary but not sufficient: it catches the careless cases
+reliably (it caught three undo paths doing bare `shutil.copy2()` restores
+outside any transaction), and a new or substantially changed engine-user module
+still requires human code review of its ENGINE_MUTATION_HELPERS. See the
+"Honest limits" section of SAFETY-MODEL.md.
 """
 
 from __future__ import annotations
@@ -122,6 +141,68 @@ class Finding:
         }
 
 
+# An engine-user may declare a SMALL set of named helper functions that are
+# allowed to contain mutation primitives without being lexically inside a
+# `with engine.item(...)` block -- typically the one tag-writer the module
+# calls from inside its transaction. Keeping the list short is the point: it
+# is the exact set of functions a reviewer must check by hand.
+MAX_ENGINE_MUTATION_HELPERS = 4
+
+
+def _governed_call_ids(tree: ast.AST) -> set[int]:
+    """id() of every node lexically inside a `with <expr>.item(...):` body.
+
+    This is the transaction the engine opens per item, so anything written
+    inside it is covered by the engine's heartbeat, precondition checks,
+    write-ahead intent record and rollback.
+    """
+    governed: set[int] = set()
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.With):
+            continue
+        opens_transaction = any(
+            isinstance(item.context_expr, ast.Call)
+            and isinstance(item.context_expr.func, ast.Attribute)
+            and item.context_expr.func.attr == "item"
+            for item in node.items
+        )
+        if not opens_transaction:
+            continue
+        for statement in node.body:
+            for descendant in ast.walk(statement):
+                governed.add(id(descendant))
+    return governed
+
+
+def _enclosing_function(node: ast.AST) -> str | None:
+    current = getattr(node, "parent", None)
+    while current is not None:
+        if isinstance(current, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            return current.name
+        current = getattr(current, "parent", None)
+    return None
+
+
+def _attach_parents(tree: ast.AST) -> None:
+    for node in ast.walk(tree):
+        for child in ast.iter_child_nodes(node):
+            child.parent = node
+
+
+def _declared_helpers(tree: ast.AST) -> tuple[str, ...] | None:
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Assign):
+            continue
+        for target in node.targets:
+            if isinstance(target, ast.Name) and target.id == "ENGINE_MUTATION_HELPERS":
+                if isinstance(node.value, (ast.Tuple, ast.List)):
+                    return tuple(
+                        element.value for element in node.value.elts
+                        if isinstance(element, ast.Constant) and isinstance(element.value, str)
+                    )
+    return None
+
+
 def _call_name(node: ast.Call) -> tuple[str | None, str | None]:
     """-> (attribute_or_bare_name, receiver_text)."""
     func = node.func
@@ -136,6 +217,113 @@ def _call_name(node: ast.Call) -> tuple[str | None, str | None]:
     if isinstance(func, ast.Name):
         return func.id, None
     return None, None
+
+
+def engine_provenance_violations(path: Path, relative: str) -> list[str]:
+    """Check WHERE each mutation primitive sits in an engine-user module.
+
+    See the honest-limits note in the module docstring and in SAFETY-MODEL.md:
+    this is a LEXICAL check, not data-flow analysis. It proves each primitive
+    call is written inside an `engine.item()` transaction, or inside one of a
+    handful of explicitly named helper functions that are themselves called
+    from inside such a transaction. It does not prove that every runtime path
+    reaching that helper came through the engine.
+
+    It is still worth having. It caught three real defects the import-only
+    check could not: the undo paths of apply_genre_refinement_plan.py,
+    apply_needs_check_recheck_genre_plan.py and delete_verified_duplicates.py
+    were performing bare `shutil.copy2()` restores outside any transaction,
+    with a docstring that already claimed write-ahead journaling.
+    """
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(path))
+    _attach_parents(tree)
+    governed = _governed_call_ids(tree)
+    helpers = _declared_helpers(tree) or ()
+    violations: list[str] = []
+
+    imported: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            imported.update(alias.name.split(".")[0] for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            imported.add(node.module.split(".")[0])
+    uses_tag_library = any(name in imported for name in TAG_LIBRARIES)
+
+    defined = {node.name for node in ast.walk(tree)
+               if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))}
+    # Which declared helpers are reachable from inside a transaction?
+    #
+    # Direct calls from a `with engine.item(...)` body seed the set; a declared
+    # helper called from inside another already-reachable declared helper is
+    # then reachable too. That transitivity is deliberate and bounded: the
+    # closure may only be entered through a transaction, and may only pass
+    # through functions on this short, hand-reviewed list. It is what lets
+    # _apply_one_genre_write() -- which the transaction calls -- itself call
+    # write_genre(), without opening the door to arbitrary call chains.
+    reachable = {
+        node.func.id for node in ast.walk(tree)
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+        and id(node) in governed
+    }
+    for _ in range(len(helpers) + 1):        # fixpoint; the set is tiny
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Name):
+                continue
+            caller = _enclosing_function(node)
+            if caller in reachable and caller in helpers:
+                reachable.add(node.func.id)
+    called_from_transaction = reachable
+
+    if len(helpers) > MAX_ENGINE_MUTATION_HELPERS:
+        violations.append(
+            f"{relative}: ENGINE_MUTATION_HELPERS lists {len(helpers)} functions, more than the "
+            f"{MAX_ENGINE_MUTATION_HELPERS} allowed. This list is what a human reviewer must "
+            f"check by hand; keep it small or route the work through the engine directly."
+        )
+    for helper in helpers:
+        if helper not in defined:
+            violations.append(
+                f"{relative}: ENGINE_MUTATION_HELPERS names {helper!r}, which is not a function "
+                f"defined in this module."
+            )
+        elif helper not in called_from_transaction:
+            violations.append(
+                f"{relative}: helper {helper!r} may hold mutation primitives, but this module "
+                f"never calls it from inside a `with engine.item(...)` block. Either call it "
+                f"from a transaction or remove it from ENGINE_MUTATION_HELPERS."
+            )
+
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        name, receiver = _call_name(node)
+        if name is None or name not in PRIMITIVE_KINDS:
+            continue
+        if not isinstance(node.func, ast.Attribute):
+            continue
+        if name == "save" and receiver in {"json", "parser", "argparse"}:
+            continue
+        # Same discriminators the primary scan uses: a `.save()` only counts as
+        # a media-tag write in a module that imports a tag library, and
+        # `str.replace(a, b)` is not os.replace/Path.replace.
+        if name == "save" and not uses_tag_library:
+            continue
+        if name == "replace" and len(node.args) >= 2:
+            continue
+        if id(node) in governed:
+            continue
+        enclosing = _enclosing_function(node)
+        if enclosing in helpers:
+            continue
+        where = f"{enclosing}()" if enclosing else "module level"
+        violations.append(
+            f"{relative}:{node.lineno}: mutation primitive {name!r} in {where} is not inside a "
+            f"`with engine.item(...)` transaction, and {enclosing!r} is not listed in this "
+            f"module's ENGINE_MUTATION_HELPERS. Every mutation in an engine-user must run "
+            f"under the engine."
+        )
+    return violations
 
 
 def scan_module(path: Path) -> tuple[str | None, list[Finding], set[str], bool]:
@@ -234,6 +422,13 @@ def audit(root: Path = REPO_ROOT) -> dict:
                 )
 
         if declared == ENGINE_USER:
+            # Necessary but NOT sufficient -- see engine_provenance_violations()
+            # and the "Honest limits" section of SAFETY-MODEL.md. An import
+            # check proves the module has access to the approved engine; it
+            # says nothing about whether any given rename/save/unlink call
+            # actually flows through it. The provenance pass below adds a
+            # lexical check on top; neither is a substitute for reviewing a new
+            # engine-user module by hand.
             if "mutation_engine" not in imports:
                 violations.append(
                     f"{relative}: declared 'engine-user' but does not import mutation_engine"
@@ -242,6 +437,7 @@ def audit(root: Path = REPO_ROOT) -> dict:
                 violations.append(
                     f"{relative}: declared 'engine-user' but does not import lock_guard"
                 )
+            violations.extend(engine_provenance_violations(path, relative))
         if declared == INFRASTRUCTURE and relative not in INFRASTRUCTURE_ALLOWLIST:
             violations.append(
                 f"{relative}: declared 'infrastructure' but is not in INFRASTRUCTURE_ALLOWLIST. "

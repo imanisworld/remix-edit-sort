@@ -22,6 +22,15 @@ from __future__ import annotations
 # Every library mutation in this module goes through scripts/mutation_engine.py.
 SAFETY_CLASSIFICATION = "engine-user"
 
+# Read by scripts/mutation_surface.py. The small, explicitly-reviewed set of
+# functions allowed to contain a mutation primitive without being lexically
+# inside a `with engine.item(...)` block. The scanner additionally proves each
+# one IS called from inside such a block. Keep this list tiny: it is exactly
+# what a human reviewer has to check by hand.
+#
+# write_year_bpm() is called only from inside `with engine.item(...)`.
+ENGINE_MUTATION_HELPERS = ("write_year_bpm",)
+
 import argparse
 import hashlib
 import json

@@ -217,6 +217,119 @@ class RollbackTests(EngineTestCase):
         with self.assertRaises(mutation_engine.MutationVerificationError):
             mutation_engine.restore_from_backup(wrong, path, "0" * 64)
 
+    def test_a_failed_rollback_is_journaled_as_not_restored(self):
+        """When the restore itself fails, the record must say so."""
+        engine = self.engine()
+        engine.start({})
+        path = self.paths["one.mp3"]
+
+        with self.assertRaises(RuntimeError):
+            with engine.item(1, kind=mutation_engine.GENRE, source=path) as txn:
+                def broken_rollback():
+                    raise OSError("backup copy is corrupted")
+                txn.on_rollback(broken_rollback)
+                fixtures.tag_mp3(path, genre="Wrong")
+                txn.mark_mutated()
+                raise RuntimeError("Genre tag verification failed")
+
+        rolled = [r for r in self.journal_records() if r.get("type") == "rolled_back"]
+        self.assertEqual(len(rolled), 1)
+        self.assertFalse(rolled[0]["restored"])
+        self.assertIn("backup copy is corrupted", rolled[0]["rollback_error"])
+
+    def test_recover_does_not_call_a_failed_rollback_clean(self):
+        """THE regression: a failed rollback must never report as settled.
+
+        Sequence: the mutation happens, verification fails, the engine tries to
+        restore from backup, and that restore ALSO fails. The file is now
+        sitting on disk in its broken mutated state. recover() previously
+        treated ANY 'rolled_back' record as settled without inspecting
+        `restored`, so it reported "clean": true and the damaged file was
+        invisible to the operator.
+        """
+        engine = self.engine()
+        engine.start({})
+        path = self.paths["one.mp3"]
+        pristine = mutation_engine.sha256_file(path)
+
+        with self.assertRaises(RuntimeError):
+            with engine.item(1, kind=mutation_engine.GENRE, source=path,
+                             backup_path=self.backup / "one.mp3") as txn:
+                txn.on_rollback(lambda: (_ for _ in ()).throw(
+                    OSError("Errno 13: permission denied restoring backup")))
+                fixtures.tag_mp3(path, genre="Wrong")
+                txn.mark_mutated()
+                raise RuntimeError("audio payload changed")
+
+        # The file really is damaged -- this is not a hypothetical.
+        self.assertNotEqual(mutation_engine.sha256_file(path), pristine)
+
+        report = mutation_engine.recover(self.journal)
+        self.assertFalse(report["clean"], "a failed rollback was reported as clean")
+        self.assertEqual(report["rollback_failures"], 1)
+        self.assertEqual(len(report["in_flight"]), 1)
+
+        entry = report["in_flight"][0]
+        self.assertEqual(entry["state"], "ROLLBACK_FAILED")
+        self.assertTrue(entry["rollback_attempted"])
+        self.assertIn("permission denied", entry["rollback_error"])
+        self.assertIn("audio payload changed", entry["failure_reason"])
+        # And it carries everything needed to fix it by hand.
+        self.assertEqual(entry["source"], str(path))
+        self.assertEqual(entry["before_sha256"], pristine)
+        self.assertEqual(entry["backup_path"], str(self.backup / "one.mp3"))
+        self.assertTrue(entry["restorable"])
+
+        # That evidence is sufficient to actually restore the file.
+        mutation_engine.restore_from_backup(
+            Path(entry["backup_path"]), Path(entry["source"]), entry["before_sha256"])
+        self.assertEqual(mutation_engine.sha256_file(path), pristine)
+
+    def test_a_successful_rollback_does_settle_the_item(self):
+        """The counterpart: a restore that worked must NOT stay in-flight."""
+        engine = self.engine()
+        engine.start({})
+        path = self.paths["one.mp3"]
+        before = mutation_engine.sha256_file(path)
+        backup_copy = self.backup / "one.mp3"
+
+        with self.assertRaises(RuntimeError):
+            with engine.item(1, kind=mutation_engine.GENRE, source=path,
+                             backup_path=backup_copy) as txn:
+                txn.on_rollback(
+                    lambda: mutation_engine.restore_from_backup(backup_copy, path, before))
+                fixtures.tag_mp3(path, genre="Wrong")
+                txn.mark_mutated()
+                raise RuntimeError("Genre tag verification failed")
+
+        report = mutation_engine.recover(self.journal)
+        self.assertTrue(report["clean"],
+                        "a successfully rolled-back item should not need human attention")
+        self.assertEqual(report["rollback_failures"], 0)
+        self.assertEqual(report["in_flight"], [])
+        self.assertEqual(mutation_engine.sha256_file(path), before)
+
+    def test_the_cli_exits_nonzero_when_a_rollback_failed(self):
+        """`mutation_engine.py recover` must fail loudly, not just print."""
+        engine = self.engine()
+        engine.start({})
+        path = self.paths["one.mp3"]
+        with self.assertRaises(RuntimeError):
+            with engine.item(1, kind=mutation_engine.GENRE, source=path) as txn:
+                txn.on_rollback(lambda: (_ for _ in ()).throw(OSError("restore failed")))
+                fixtures.tag_mp3(path, genre="Wrong")
+                txn.mark_mutated()
+                raise RuntimeError("verification failed")
+
+        import subprocess
+        result = subprocess.run(
+            [sys.executable, str(SCRIPTS_DIR / "mutation_engine.py"),
+             "recover", "--journal", str(self.journal)],
+            capture_output=True, text=True,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("ROLLBACK_FAILED", result.stdout)
+
     def test_no_rollback_is_attempted_when_nothing_was_mutated(self):
         engine = self.engine()
         engine.start({})

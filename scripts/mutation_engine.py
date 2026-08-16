@@ -380,12 +380,22 @@ def recover(journal_path: Path) -> dict:
     restore. `mutated` says whether the physical write had already happened
     when the process died, which is the difference between "nothing to do" and
     "restore this from its backup".
+
+    An item is settled by a `completed` record, or by a `rolled_back` record
+    that reports `restored: true`. A `rolled_back` record with
+    `restored: false` does NOT settle it: that means the engine mutated the
+    file, verification failed, and the automatic restore then failed too (a
+    corrupted backup, a permissions error, a backup copy that vanished). The
+    file is on disk in its broken mutated state and needs a human. Those items
+    are reported with `state: "ROLLBACK_FAILED"` and the original
+    `rollback_error`, and they keep `clean` false.
     """
     journal = RecoveryJournal(Path(journal_path))
     records = journal.read()
     intents: dict[tuple, dict] = {}
     mutated: set[tuple] = set()
     settled: set[tuple] = set()
+    failed_rollbacks: dict[tuple, dict] = {}
     torn = 0
     runs: dict[str, dict] = {}
 
@@ -405,14 +415,29 @@ def recover(journal_path: Path) -> dict:
             intents[key] = record
         elif kind == "mutated":
             mutated.add(key)
-        elif kind in {"completed", "rolled_back"}:
+        elif kind == "completed":
             settled.add(key)
+        elif kind == "rolled_back":
+            # A rollback record only settles an item if the rollback actually
+            # RESTORED it. do_rollback() journals this record either way -- with
+            # restored: false and a rollback_error when the restore itself threw
+            # (a corrupted backup, a permissions failure, a vanished backup
+            # copy). Treating that as settled was a real hole: the file is still
+            # sitting on disk in its broken, half-mutated state, and recovery
+            # would have cheerfully reported "clean": true. An item whose
+            # rollback failed is the single most urgent thing a human needs to
+            # see, so it stays in-flight.
+            if record.get("restored"):
+                settled.add(key)
+            else:
+                failed_rollbacks[key] = record
 
     in_flight = []
     for key, intent in intents.items():
         if key in settled:
             continue
-        in_flight.append({
+        failed = failed_rollbacks.get(key)
+        entry = {
             "run_id": intent.get("run_id"),
             "index": intent.get("index"),
             "kind": intent.get("kind"),
@@ -424,9 +449,29 @@ def recover(journal_path: Path) -> dict:
             "backup_id": intent.get("backup_id"),
             "mutation_had_started": key in mutated,
             "restorable": bool(intent.get("backup_path") or intent.get("backup_sha256")),
-        })
+            "rollback_attempted": failed is not None,
+            "rollback_error": failed.get("rollback_error") if failed else None,
+            "failure_reason": failed.get("reason") if failed else None,
+        }
+        if failed is not None:
+            entry["state"] = "ROLLBACK_FAILED"
+            entry["action_required"] = (
+                "The mutation was performed, verification failed, and the automatic "
+                "restore ALSO failed. This file is on disk in its mutated state. "
+                "Restore it manually from backup_path and confirm it hashes to "
+                "before_sha256 before doing anything else with this folder."
+            )
+        else:
+            entry["state"] = "INTERRUPTED"
+            entry["action_required"] = (
+                "The run stopped between the intent record and the completion record. "
+                "Compare the file against before_sha256 and restore from backup_path "
+                "if it was already mutated."
+            )
+        in_flight.append(entry)
     in_flight.sort(key=lambda entry: (str(entry["run_id"]), entry["index"] or 0))
 
+    rollback_failures = [entry for entry in in_flight if entry["state"] == "ROLLBACK_FAILED"]
     return {
         "journal": str(journal_path),
         "records": len(records),
@@ -435,6 +480,7 @@ def recover(journal_path: Path) -> dict:
         "items_intended": len(intents),
         "items_settled": len(settled),
         "in_flight": in_flight,
+        "rollback_failures": len(rollback_failures),
         "clean": not in_flight and torn == 0,
     }
 

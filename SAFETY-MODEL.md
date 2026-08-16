@@ -72,8 +72,13 @@ Undo paths are mutations. All five apply to them too.
 Every module under `scripts/` declares its own `SAFETY_CLASSIFICATION`.
 `mutation_surface.py` reads them and fails CI if a module carrying a mutation
 primitive is classified as read-only or preview-only, if an engine-user does
-not import the engine, or if a disabled-legacy module lacks its hard-fail
-guard.
+not import the engine, if an engine-user has a mutation primitive outside a
+transaction and outside its declared helpers, or if a disabled-legacy module
+lacks its hard-fail guard.
+
+**Read "The CI gate cannot prove every mutation call flows through the engine"
+under Honest limits before relying on that.** It is a static check with real
+blind spots, and a new engine-user module still needs human review.
 
 ## The approved sequence for a real apply
 
@@ -118,6 +123,53 @@ failed run leaves earlier items applied and journaled, which is what the undo
 log is for. Do not describe a batch as all-or-nothing.
 
 ## Honest limits
+
+### The CI gate cannot prove every mutation call flows through the engine
+
+This is the most important limitation on this page, because it is the one that
+could be mistaken for a stronger guarantee than it is.
+
+`scripts/mutation_surface.py` performs static AST analysis. For a module
+classified `engine-user` it proves two things:
+
+1. **Import provenance** — the module imports `mutation_engine`, `lock_guard`
+   and `backup_manifest`. This proves the module *has access to* the approved
+   engine. It proves nothing about any individual call site.
+2. **Lexical provenance** — every mutation primitive in the file is written
+   either inside a `with engine.item(...):` block, or inside one of at most
+   four functions named in that module's `ENGINE_MUTATION_HELPERS`, each of
+   which the scanner proves is reachable from such a block (directly, or
+   through another declared helper).
+
+What it does **not** prove, and cannot without real data-flow analysis:
+
+- that a declared helper is *only ever* called from inside a transaction — the
+  scanner shows at least one such call path exists, not that every runtime path
+  does;
+- that a primitive reached through an alias, a callback stored in a variable,
+  `getattr`, a dictionary of functions, a decorator, or a call into another
+  module is governed;
+- that the `engine` object a `with` block opens is a real `MutationEngine` and
+  not something else that happens to expose `.item()`;
+- anything at all about dynamically constructed calls.
+
+**What this means practically.** The AST gate is *necessary but not
+sufficient*. It reliably catches the careless cases — a new script that forgets
+the engine, a read-only audit tool that grows a `.save()`, an undo path doing a
+bare `shutil.copy2()` (it caught exactly that in three modules during the
+hardening pass, where the docstrings already claimed write-ahead journaling).
+It will not catch a determined or unusual bypass.
+
+So: **a new or substantially modified `engine-user` module still requires human
+code review.** The reviewer's specific job is to read the functions named in
+`ENGINE_MUTATION_HELPERS` and confirm each really is only invoked from inside a
+transaction, and to check that no mutation reaches disk through indirection the
+scanner cannot see. The helper list is deliberately capped at four so that
+review is a few minutes' work rather than a full-file audit. Green CI is not a
+substitute for that review, and this document should not be read as claiming
+otherwise.
+
+### Other limits
 
 - `manifest_sha256` detects accidental or careless alteration of a backup
   manifest. It is not a signature; anyone who can write the file can recompute

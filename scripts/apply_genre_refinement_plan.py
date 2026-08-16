@@ -26,6 +26,16 @@ from __future__ import annotations
 # Every library mutation in this module goes through scripts/mutation_engine.py.
 SAFETY_CLASSIFICATION = "engine-user"
 
+# Read by scripts/mutation_surface.py. The small, explicitly-reviewed set of
+# functions allowed to contain a mutation primitive without being lexically
+# inside a `with engine.item(...)` block. The scanner additionally proves each
+# one IS called from inside such a block. Keep this list tiny: it is exactly
+# what a human reviewer has to check by hand.
+#
+# both are called only from inside `with engine.item(...)`;
+# _apply_one_genre_write() receives the live txn and drives it.
+ENGINE_MUTATION_HELPERS = ("write_genre", "_apply_one_genre_write")
+
 import argparse
 import hashlib
 import json
@@ -481,24 +491,51 @@ def apply(plan_path: Path, manifest: dict, out_dir: Path, label: str, heartbeat:
     print(json.dumps({**result, "result_path": str(result_path)}, indent=2))
 
 
-def undo(undo_path: Path, label: str, heartbeat: lock_guard.LockHeartbeat) -> None:
-    """An undo is a mutation: ownership is re-verified before every restore,
-    and each restore is journaled write-ahead so a crash mid-undo is
-    recoverable too."""
+def undo(undo_path: Path, label: str, heartbeat) -> None:
+    """Reverse an apply run.
+
+    An undo is a mutation: ownership is re-verified before every restore, and
+    each restore is journaled write-ahead through the same engine an apply
+    uses, so a crash mid-undo is recoverable too. (An earlier version of this
+    function heartbeated but performed a bare shutil.copy2 outside any
+    transaction, while its docstring already claimed write-ahead journaling --
+    the mutation-surface provenance check is what caught that.)
+    """
     records = [json.loads(line) for line in undo_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    journal_path = undo_path.with_name(undo_path.stem + "-undo-recovery.jsonl")
+    engine = mutation_engine.MutationEngine(
+        journal_path, heartbeat, manifest=None, source_root=None,
+        label=f"{label}-undo", allow_unbacked=True,
+    )
+    engine.start({"undo_log": str(undo_path), "records": len(records)})
+
     restored = 0
-    for record in reversed(records):
-        heartbeat.beat()
+    for position, record in enumerate(reversed(records), start=1):
         path = Path(record["path"])
-        if record["tag_changed"]:
-            backup = Path(record["tag_backup"])
-            if sha256_file(backup) != record["before_sha256"]:
-                raise RuntimeError(f"tag backup mismatch: {backup}")
-            shutil.copy2(backup, path)
-        if sha256_file(path) != record["before_sha256"]:
-            raise RuntimeError(f"undo verification failed: {path}")
-        restored += 1
-    print(json.dumps({"mode": f"{label}-undo", "restored": restored}, indent=2))
+        with engine.item(
+            position,
+            kind=mutation_engine.GENRE,
+            source=path,
+            require_backup=False,
+            extra_intent={"undoing_index": record.get("index"),
+                          "restore_from": record.get("tag_backup"),
+                          "restore_to_sha256": record["before_sha256"]},
+        ) as txn:
+            if record["tag_changed"]:
+                backup = Path(record["tag_backup"])
+                if sha256_file(backup) != record["before_sha256"]:
+                    raise RuntimeError(f"tag backup mismatch: {backup}")
+                shutil.copy2(backup, path)
+                txn.mark_mutated()
+            if sha256_file(path) != record["before_sha256"]:
+                raise RuntimeError(f"undo verification failed: {path}")
+            txn.record(restored_to=str(path), sha256=record["before_sha256"])
+            restored += 1
+
+    result = {"mode": f"{label}-undo", "restored": restored,
+              "recovery_journal": str(journal_path)}
+    engine.finish(result)
+    print(json.dumps(result, indent=2))
 
 
 def _dry_run_backup_gate(manifest_path, root) -> str:
