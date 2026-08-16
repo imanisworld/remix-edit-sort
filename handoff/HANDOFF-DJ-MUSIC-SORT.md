@@ -311,6 +311,45 @@ belong is an open question, deferred by the user to a later pass.
   version rule + `remix-edit-sort/scripts/scan_library.py`'s genre classifier; not yet
   promoted into `scripts/` — still has VDBL-specific path constants.
 
+## Completed: `VDBL` merged into the main genre library (done by Claude)
+
+Follow-up to the version+genre sort above. The 141 classified tracks (everything except
+the 9 still sitting in `_GENRE NEEDS CHECK`/`_NEEDS CHECK`) were moved out of
+`Events/VDBL` into the real top-level genre folders, closing the "where do these
+ultimately belong" question deferred earlier.
+
+- Destination structure was checked against the real folders before merging, not
+  assumed: `Hip Hop/2024`/`2025` turned out to hold only Serato Stems files, not
+  regular tracks, so the earlier "merge by year" idea was dropped. Real Hip Hop tracks
+  live in `Clean/Hip-Hop`, `DIRTY/Hip-Hop`, `INSTRUMENTALS/Hip-Hop`, `ACAPELLAS/Hip-Hop`
+  (mirrors VDBL's own structure exactly). `R&b` has no Clean/DIRTY split at all — flat,
+  version kept in the filename — confirmed with the user before merging that way.
+- 127 Hip-Hop → `Hip Hop/<bucket>/Hip-Hop/`, 10 Amapiano → `Amapiano /`, 3 R&B → `R&b/`,
+  1 Country → new `Country/` folder.
+- `TDRC` year written for 127 tracks using `references/release-year-evidence.json`
+  (the evidence-provenance file from the version+genre pass); left blank for 3 Dead
+  Silence Pack tracks with no resolvable evidence.
+- Dedup check against existing destination content before moving anything: 0 exact-hash
+  duplicates, 0 filename collisions. A normalized-title heuristic additionally flagged 9
+  tracks with a likely-existing "Intro Clean/Dirty" counterpart already in the
+  destination folder (Travis Scott FE!N, Veeze - Not a Drill, 3 Tyla tracks, Sexyy Red &
+  Drake, Hitkidd & Juicy J) — not treated as duplicates (Intro/Clean/Dirty edits are
+  distinct, intentional DJ assets per this project's own rules), just surfaced for
+  awareness; all 9 were merged in like everything else.
+- 141/141 files moved, 0 errors. Every move + tag write verified: audio payload hash,
+  Serato-frame hash, and the written TDRC value all re-checked against the undo log
+  after the fact (0 mismatches across all 141 records).
+- Locking: this was the first real production run under the atomic `folder_lock.py`
+  (flock-based, fixes the TOCTOU race an earlier version had) — locks acquired on all
+  five touched folders (`Events`, `Hip Hop`, `R&b`, `Amapiano `, `Country`) before
+  applying, heartbeat-renewed throughout, released cleanly after.
+- Backup: `Tools/remix-edit-sort/handoff/session-2026-08-15/backups/vdbl-pre-merge-20260815-201005`
+  (spot-verified against source by hash before applying).
+- Plan/preview/undo/result: `Tools/remix-edit-sort/handoff/session-2026-08-15/survey/vdbl-merge/`
+- Remaining in VDBL, untouched: 4 tracks in `CLEAN/_GENRE NEEDS CHECK`, 5 in
+  `_NEEDS CHECK/R&B` (the Dead Silence Pack tracks whose version couldn't be
+  determined) — still need the user's own manual review, unrelated to this merge.
+
 ## Completed: Events Grouping metadata backfill
 
 - 3,010 MP3 Grouping fields updated from the original top-level Events folder names.

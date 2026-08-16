@@ -1,0 +1,14 @@
+{
+  "mode": "vdbl-merge-apply",
+  "plan": "handoff/session-2026-08-15/survey/vdbl-merge/plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/backups/vdbl-pre-merge-20260815-201005",
+  "tracks_processed": 141,
+  "files_moved": 141,
+  "year_tags_changed": 127,
+  "year_tags_skipped": 0,
+  "skipped_exact_duplicates": 0,
+  "skipped_needs_review_collisions": 0,
+  "errors": [],
+  "undo_log": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/vdbl-merge/vdbl-merge-undo-20260815-201036.jsonl",
+  "tag_backup_root": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/vdbl-merge/vdbl-merge-tag-file-backups/20260815-201036"
+}

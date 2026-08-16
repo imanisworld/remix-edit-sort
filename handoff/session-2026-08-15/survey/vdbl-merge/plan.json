@@ -1,0 +1,2398 @@
+{
+  "mode": "preview-only",
+  "rules": {
+    "approval_required": true
+  },
+  "source_root": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL",
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Amapiano/. Tyla (with Travis Scott) - Water [Remix] (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Amapiano /. Tyla (with Travis Scott) - Water [Remix] (Clean).mp3",
+      "sha256": "9abff146cb6ab06a2c4e17fb04ebf394826b56e02dca48289d3beb4b651bb314",
+      "genre": "Amapiano",
+      "version_bucket": "CLEAN",
+      "release_folder": "TYLA - TYLA EP",
+      "year_evidence": null,
+      "write_tdrc_year": null,
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Amapiano/. Tyla - Art (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Amapiano /. Tyla - Art (Clean).mp3",
+      "sha256": "2c092473569811e0d6227bdf0a88d6f16ce88a62ebaa6814737288650d12aefe",
+      "genre": "Amapiano",
+      "version_bucket": "CLEAN",
+      "release_folder": "TYLA - TYLA EP",
+      "year_evidence": null,
+      "write_tdrc_year": null,
+      "collision": null,
+      "possible_title_overlaps": [
+        {
+          "existing_path": "/Users/djb.a.e/Music/DJ-Music/Music/Amapiano /Tyla - ART.mp3",
+          "title_token_jaccard": 1.0
+        }
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Amapiano/. Tyla - Breathe Me (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Amapiano /. Tyla - Breathe Me (Clean).mp3",
+      "sha256": "b6313d55dab6b58a0fb073becd87047e72626b4de40396a38fb9a98dd36f017e",
+      "genre": "Amapiano",
+      "version_bucket": "CLEAN",
+      "release_folder": "TYLA - TYLA EP",
+      "year_evidence": null,
+      "write_tdrc_year": null,
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Amapiano/. Tyla - Priorities (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Amapiano /. Tyla - Priorities (Clean).mp3",
+      "sha256": "a04715f9f5c96e67b0d78d7217fac4e782ea5511812e49e05da962a07f6ac3c5",
+      "genre": "Amapiano",
+      "version_bucket": "CLEAN",
+      "release_folder": "TYLA - TYLA EP",
+      "year_evidence": null,
+      "write_tdrc_year": null,
+      "collision": null,
+      "possible_title_overlaps": [
+        {
+          "existing_path": "/Users/djb.a.e/Music/DJ-Music/Music/Amapiano /Tyla - Priorities.mp3",
+          "title_token_jaccard": 1.0
+        }
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Amapiano/. Tyla - Safer (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Amapiano /. Tyla - Safer (Clean).mp3",
+      "sha256": "04fb8e31883c96132a2d7c4bf48efb92bd6f3ad9eb93ecd750967c5859902f5d",
+      "genre": "Amapiano",
+      "version_bucket": "CLEAN",
+      "release_folder": "TYLA - TYLA EP",
+      "year_evidence": null,
+      "write_tdrc_year": null,
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Amapiano/. Tyla - To Last (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Amapiano /. Tyla - To Last (Clean).mp3",
+      "sha256": "a160eebe56a7097f7e90df6531e56199a89b9ab07c371d1af9cc02d8d942965b",
+      "genre": "Amapiano",
+      "version_bucket": "CLEAN",
+      "release_folder": "TYLA - TYLA EP",
+      "year_evidence": null,
+      "write_tdrc_year": null,
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Amapiano/. Tyla feat. Becky G - On My Body (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Amapiano /. Tyla feat. Becky G - On My Body (Clean).mp3",
+      "sha256": "2001e06cfed2553b0da7930fbca85ed135795817e0771d640788f8dc09e7bc0b",
+      "genre": "Amapiano",
+      "version_bucket": "CLEAN",
+      "release_folder": "TYLA - TYLA EP",
+      "year_evidence": null,
+      "write_tdrc_year": null,
+      "collision": null,
+      "possible_title_overlaps": [
+        {
+          "existing_path": "/Users/djb.a.e/Music/DJ-Music/Music/Amapiano /Tyla, Becky G - On My Body.mp3",
+          "title_token_jaccard": 1.0
+        }
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Amapiano/. Tyla feat. Gunna & Skillibeng - Jump (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Amapiano /. Tyla feat. Gunna & Skillibeng - Jump (Clean).mp3",
+      "sha256": "a0ddf9f2d210797b6f8537bf6ec55e368ac4289dc915ac033067fb7a1914580b",
+      "genre": "Amapiano",
+      "version_bucket": "CLEAN",
+      "release_folder": "TYLA - TYLA EP",
+      "year_evidence": null,
+      "write_tdrc_year": null,
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Amapiano/. Tyla feat. Kelvin Momo - Intro (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Amapiano /. Tyla feat. Kelvin Momo - Intro (Clean).mp3",
+      "sha256": "69194912f041c967174e2b8ce9ffaf4340da8c55d18897cc442ca95a8554f27a",
+      "genre": "Amapiano",
+      "version_bucket": "CLEAN",
+      "release_folder": "TYLA - TYLA EP",
+      "year_evidence": null,
+      "write_tdrc_year": null,
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Amapiano/. Tyla feat. Tems - No.1 (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Amapiano /. Tyla feat. Tems - No.1 (Clean).mp3",
+      "sha256": "4302661dcd2c586c301106db1c7541fe7df1752e6582b6433d4a51fddf126ccd",
+      "genre": "Amapiano",
+      "version_bucket": "CLEAN",
+      "release_folder": "TYLA - TYLA EP",
+      "year_evidence": null,
+      "write_tdrc_year": null,
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Hitkidd & GloRilla - FNF (Lets Go) (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Hitkidd & GloRilla - FNF (Lets Go) (Clean).mp3",
+      "sha256": "4875c3af3df214ff7b4ac1c6920eea2e0aee2139aecd92fd4423784832105d4b",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Hitkidd & Juicy J feat Gloss Up - Freak Junt (Ext) (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Hitkidd & Juicy J feat Gloss Up - Freak Junt (Ext) (Clean).mp3",
+      "sha256": "b0fa883f50ebcce5d41585c990bd5fb1fcf15c965dcd90693a5b55116bb479c9",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": [
+        {
+          "existing_path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/HitKidd ft Juicy J & Gloss Up - Freak Junt (Ext) (Intro Clean).mp3",
+          "title_token_jaccard": 1.0
+        }
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Hitkidd feat Aleza & Gloss Up - Doin Too Much (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Hitkidd feat Aleza & Gloss Up - Doin Too Much (Clean).mp3",
+      "sha256": "fb8900da91ca346a1e0b32732a67240d04aff74aadf40899e407bcc18fbaf58a",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Hitkidd feat Aleza - Luv A (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Hitkidd feat Aleza - Luv A (Clean).mp3",
+      "sha256": "083e287bb234da1da072a674a73bb849a0a29350ea15acba473a5a926b08940a",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Hitkidd feat Aleza - Mmm Mmm (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Hitkidd feat Aleza - Mmm Mmm (Clean).mp3",
+      "sha256": "a0097c8c295e646d26ab82b3651a4ade056f242cfb63a82fb9769d0aae391b79",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Hitkidd feat Aleza, Gloss Up, GloRilla, Slimeroni & K Carbon - Set The Tone (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Hitkidd feat Aleza, Gloss Up, GloRilla, Slimeroni & K Carbon - Set The Tone (Clean).mp3",
+      "sha256": "9b8fd130457a6a77c6af10821971a37848841ed66221b3256d4469f81774f89b",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Hitkidd feat Aleza, K Carbon & Slimeroni - No Comment (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Hitkidd feat Aleza, K Carbon & Slimeroni - No Comment (Clean).mp3",
+      "sha256": "4b1bd8fb1b4f0acff8c99d78ae326c0f9c46c89b02a089349a2da3146e5cee8f",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Hitkidd feat Aleza, K Carbon, Gloss Up & Slimeroni - We Outside (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Hitkidd feat Aleza, K Carbon, Gloss Up & Slimeroni - We Outside (Clean).mp3",
+      "sha256": "6893f9b4ae67510d2fe85908c6ba0c1f794aca9c172fcc65903d49d00d433c41",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Hitkidd feat Aleza, K Carbon, Gloss Up, Slimeroni & GloRilla - Set The Tone 2 (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Hitkidd feat Aleza, K Carbon, Gloss Up, Slimeroni & GloRilla - Set The Tone 2 (Clean).mp3",
+      "sha256": "7f4bf196ebabaf2257adb729ae40867a1da5e5498fd8cf9b839c0053467496ca",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Hitkidd feat GloRilla, Aleza, Gloss Up & Slimeroni) - Ghetto (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Hitkidd feat GloRilla, Aleza, Gloss Up & Slimeroni) - Ghetto (Clean).mp3",
+      "sha256": "8d8b836ab6778d95ab5c0413360b2a1f4481387a5744010326363d186bba2c1e",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Hitkidd feat GloRilla, Aleza, K Carbon, Gloss Up & Slimeroni - Section (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Hitkidd feat GloRilla, Aleza, K Carbon, Gloss Up & Slimeroni - Section (Clean).mp3",
+      "sha256": "53bdd53ff1113b361571cd9f4743e927455c358fc0b6ef2e6b507b829a2b18dd",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Hitkidd feat Gloss Up, Aleza, Slimeroni & K Carbon - Not Average (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Hitkidd feat Gloss Up, Aleza, Slimeroni & K Carbon - Not Average (Clean).mp3",
+      "sha256": "d733df6aadbd36be8375dcb57b01fe92763b2abdf43959b599185f7e3dd4caec",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Hitkidd feat Gloss Up, K Carbon, Aleza, Slimeroni & Jucee Froot - Calling Me (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Hitkidd feat Gloss Up, K Carbon, Aleza, Slimeroni & Jucee Froot - Calling Me (Clean).mp3",
+      "sha256": "a27007c1abb67c4536c76362e54eab1a32738cda3926dc01ecd09dec9ccb36e3",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Hitkidd, Aleza & Slimeroni feat Gloss Up & K Carbon - You The Type (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Hitkidd, Aleza & Slimeroni feat Gloss Up & K Carbon - You The Type (Clean).mp3",
+      "sha256": "baaf03f826f3eaf9aaed79dd6e92dbe983450733e6dcb92c2de5919387879567",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Hitkidd, GloRilla & Latto - FNF (Lets Go) (Remix) (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Hitkidd, GloRilla & Latto - FNF (Lets Go) (Remix) (Clean).mp3",
+      "sha256": "a35aa6adf4f3a52a250c7f9e69d8248fbc5f38ae18cb8d293cfa5060155110c9",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Hitkidd, Gloss Up & K Carbon feat Slimeroni & Aleza - Shabooya (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Hitkidd, Gloss Up & K Carbon feat Slimeroni & Aleza - Shabooya (Clean).mp3",
+      "sha256": "e948df0cfe5ac4c8de6d3bad0aae8bb1f00dea5878b01f35606a2395207a1d4d",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Hitkidd, Gloss Up & Lola Brooke feat K Carbon, Slimeroni & Aleza - Shabooya (Remix) (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Hitkidd, Gloss Up & Lola Brooke feat K Carbon, Slimeroni & Aleza - Shabooya (Remix) (Clean).mp3",
+      "sha256": "f200faf9f7e0b4a266379d6864a6c837ce2cfab3c9dbff6d47b0c90e49d72382",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Kalan.Frfr - Ain't Nothin (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Kalan.Frfr - Ain't Nothin (Clean).mp3",
+      "sha256": "8cb576138d4c86f2235e60d5fbc4bfe7d23b590f5ccbd2cfaf8d52f39b5801de",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Kalan.FrFr - Not Hard 2 Understand (EP)",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.allmusic.com/album/not-hard-2-understand-mw0004199268"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Kalan.Frfr - Creep (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Kalan.Frfr - Creep (Clean).mp3",
+      "sha256": "721d9511b4896e743a22929a8ec667cc77b490fd3d348b3334901554bdb63f31",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Kalan.FrFr - Not Hard 2 Understand (EP)",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.allmusic.com/album/not-hard-2-understand-mw0004199268"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Kalan.Frfr - High Vibrations (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Kalan.Frfr - High Vibrations (Clean).mp3",
+      "sha256": "02ce03242870d9e3e0732464a29f90ef3b18990652ad82d8babfd1205c02d366",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Kalan.FrFr - Not Hard 2 Understand (EP)",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.allmusic.com/album/not-hard-2-understand-mw0004199268"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Kalan.Frfr - She So (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Kalan.Frfr - She So (Clean).mp3",
+      "sha256": "018f53a05a5023d7f2ca802c245b60aa015c7e86afc03b29d2f8a749d0c0ef54",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Kalan.FrFr - Not Hard 2 Understand (EP)",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.allmusic.com/album/not-hard-2-understand-mw0004199268"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Kalan.Frfr Feat. Quavo - Butterfly Coupe Part 2 (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Kalan.Frfr Feat. Quavo - Butterfly Coupe Part 2 (Clean).mp3",
+      "sha256": "e917a85cb0ac3740420cf4759b59f58def3b967e449fe84353977aa462794dc0",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Kalan.FrFr - Not Hard 2 Understand (EP)",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.allmusic.com/album/not-hard-2-understand-mw0004199268"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Kalan.Frfr Feat. Tay B - Don't Move (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Kalan.Frfr Feat. Tay B - Don't Move (Clean).mp3",
+      "sha256": "ebb5f10ac6f09a0330a1410615a404c55df98a490407d5653def589a03af44ac",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Kalan.FrFr - Not Hard 2 Understand (EP)",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.allmusic.com/album/not-hard-2-understand-mw0004199268"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Rapsody - Asteroids (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Rapsody - Asteroids (Clean).mp3",
+      "sha256": "a254190c4e883f9953905e516edfdb1a815408c9bb14ad294f74718aac061432",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Rapsody - Back In My Bag (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Rapsody - Back In My Bag (Clean).mp3",
+      "sha256": "e8c4aaa3ec149adf9acff48c068366c4defcf077e5880a77441cd31e0a33759e",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Rapsody - Faith (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Rapsody - Faith (Clean).mp3",
+      "sha256": "08a7b98ca0bfe096ecde505424153931d15d8ef09bcc99e9efdf90205404f510",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Rapsody - Lonely Women (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Rapsody - Lonely Women (Clean).mp3",
+      "sha256": "d2a148762eabc70361aefedf862b78b275f9cfe8076db08e7194b6a6585f22d9",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Rapsody - Look What You’ve Done (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Rapsody - Look What You’ve Done (Clean).mp3",
+      "sha256": "a25ffc0f8301fed4a3f5b368c378b48fdce661642b06ec0f42af7d421f3f172f",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Rapsody - Marlanna (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Rapsody - Marlanna (Clean).mp3",
+      "sha256": "dcf8a0e23208fdaae9b0dc903002b865d5a91c7fae97fec2370f439cfdbc0241",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Rapsody - Stand Tall (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Rapsody - Stand Tall (Clean).mp3",
+      "sha256": "0193a22c8dc8d84d94c36f7b16557512ba2f81aa40e63d699bb2160a177388e1",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Rapsody - That One Time (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Rapsody - That One Time (Clean).mp3",
+      "sha256": "84dea2a38d35bc348bd0dffd1fbf807e41f7ffa48eff6d2081964f6348a0e3ea",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Rapsody feat. Alex Isley - Loose Rocks (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Rapsody feat. Alex Isley - Loose Rocks (Clean).mp3",
+      "sha256": "f492d4cedecb6d604a1d18bc0c3799f28a9d56625d68b5b9ee9219931372a419",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Rapsody feat. Amber Navran & Phylicia Rashad - Forget Me Not (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Rapsody feat. Amber Navran & Phylicia Rashad - Forget Me Not (Clean).mp3",
+      "sha256": "2d4fe7303f779706e7d628843b5d9b7252d899d5878037e77baa9acd8e60ac7b",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Rapsody feat. Baby Tate - A Ballad For Homegirls (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Rapsody feat. Baby Tate - A Ballad For Homegirls (Clean).mp3",
+      "sha256": "6ecf327ff724f37b545d62e317dfa705b12bc9f0c8432c2ac9268af56406e2f9",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Rapsody feat. Bee-B - DND (It’s Not Personal) (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Rapsody feat. Bee-B - DND (It’s Not Personal) (Clean).mp3",
+      "sha256": "91913962600fa4f78c693605d84a6f521634d494561928adf680a0ecb6cbe8c8",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Rapsody feat. Bibi Bourelly - Diary Of A Mad Bitch (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Rapsody feat. Bibi Bourelly - Diary Of A Mad Bitch (Clean).mp3",
+      "sha256": "8a4fe9fad9aaf085c4256caea58597a8815ac4c47713008873f0964a320f1adb",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Rapsody feat. DIXSON - Black Popstar (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Rapsody feat. DIXSON - Black Popstar (Clean).mp3",
+      "sha256": "a599f9a99b398f9cd84168fe31877feedfe5a05f0019af692cfe527245e41105",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Rapsody feat. Erykah Badu - 3-AM (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Rapsody feat. Erykah Badu - 3-AM (Clean).mp3",
+      "sha256": "3e01001cad2b483d3597538ced6937177a9e3ae46dcfed7c921eeacc7b266ff7",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Rapsody feat. Keznamdi & Nicole Bus - Never Enough (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Rapsody feat. Keznamdi & Nicole Bus - Never Enough (Clean).mp3",
+      "sha256": "07c908e3590a421b387a82b22b548553bd964ce941d1ff8a5c6c3a692eb4eb6f",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Rapsody feat. Lil Wayne - Raw (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Rapsody feat. Lil Wayne - Raw (Clean).mp3",
+      "sha256": "1aa7fe49535a96008196a0d2ae6885dbaa4f1c7bb04ef3fafe643a52531fa2ef",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Rapsody feat. Phylicia Rashad - She’s Expecting You (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Rapsody feat. Phylicia Rashad - She’s Expecting You (Clean).mp3",
+      "sha256": "2e35039cfcc5de8444bd038b5ecdea5fe4f3cfd204dc8ee154e70424b3921d70",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Saweetie - Richtivities (Intro Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Saweetie - Richtivities (Intro Clean).mp3",
+      "sha256": "691a33720957fddaf699a79d4ab29e83763a465d20f949bb12503e235c4bceda",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Saweetie - Richtivities",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "web_search",
+        "date": "2024-02-23",
+        "source": "https://www.rollingstone.com/music/music-news/saweetie-richtivities-single-1234972451/"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Sexyy Red & Drake - U My Everything (Super Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Sexyy Red & Drake - U My Everything (Super Clean).mp3",
+      "sha256": "fa9e3861e658226dbad4129f93027862e3b2758ae0e3b74b059c6b2424ad4585",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": [
+        {
+          "existing_path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/sexyy red - u my everything (feat. drake).mp3",
+          "title_token_jaccard": 0.8
+        },
+        {
+          "existing_path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Sexyy Red ft Drake - U My Everything (Intro Dirty).mp3",
+          "title_token_jaccard": 1.0
+        },
+        {
+          "existing_path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Sexyy Red ft Drake - U My Everything (Intro Clean).mp3",
+          "title_token_jaccard": 1.0
+        }
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Sexyy Red & Lil Baby - Lick Me (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Sexyy Red & Lil Baby - Lick Me (Clean).mp3",
+      "sha256": "1903559ca408cb97885f874565bfb8e9b50857b42ad5c6a5c8e23b17b3f8982e",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Sexyy Red & Mike WiLL Made-It - Outside (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Sexyy Red & Mike WiLL Made-It - Outside (Clean).mp3",
+      "sha256": "e99eab015ebfb62bf14cfcbc596ec1c6c8934cc2e517058090aa068d78032ef9",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Sexyy Red & VonOff1700 - Sexyy Love Money (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Sexyy Red & VonOff1700 - Sexyy Love Money (Clean).mp3",
+      "sha256": "96fb7fefea39aad144c3345c955a33fa92e40a1cd2d2fa2a7e2ddcff3d0ef25c",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Sexyy Red - Awesome Jawsome (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Sexyy Red - Awesome Jawsome (Clean).mp3",
+      "sha256": "e648800b94a0ff72d58b767e88f6b4ff23321dfdfbbc5346252d0c560d7ca659",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Sexyy Red - Boss Me Up (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Sexyy Red - Boss Me Up (Clean).mp3",
+      "sha256": "55d493fa59b092ff4d507f7417b927d12d7adf997e87b3d6df0834b4815eff8b",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Sexyy Red - Fake Jammin (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Sexyy Red - Fake Jammin (Clean).mp3",
+      "sha256": "55184ac99ec82b8c32ea612ee8fa0fe29304f4024a43a1fbd28f166ffcef759c",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Sexyy Red - Get It Sexyy (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Sexyy Red - Get It Sexyy (Clean).mp3",
+      "sha256": "2b783859da4ffd2da3477e5302f8c4f566314def26e786334c412e11a4a9a465",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Sexyy Red - Get It Sexyy (Super Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Sexyy Red - Get It Sexyy (Super Clean).mp3",
+      "sha256": "3662340f309c9bfa7c176b9f8ea1a91952f054c390ad180b4c0c8351b143c4df",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Sexyy Red - It's My Birthday (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Sexyy Red - It's My Birthday (Clean).mp3",
+      "sha256": "0145ce6e228630b51d93e51a9727237760f1f0a92d8dcf39e9736b3ba59788ed",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Sexyy Red - Ova Bad (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Sexyy Red - Ova Bad (Clean).mp3",
+      "sha256": "fb629348afc1332feb0ee410e2c7b01171faeb83204067517eb50f42a918ff47",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Sexyy Red - She's Back (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Sexyy Red - She's Back (Clean).mp3",
+      "sha256": "1c5222c7128bea36006dd9aa947d7c54ece901a4ca2ac9ccc3503a76a26c98be",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Sexyy Red - Sport (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Sexyy Red - Sport (Clean).mp3",
+      "sha256": "fce993b1e7885c163edb8ce2b1bb9b02fb02369a0f801fd91c01dfd828a45a33",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Sexyy Red - TTG (Go) (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Sexyy Red - TTG (Go) (Clean).mp3",
+      "sha256": "1963ec3d3ec537536fe7cf683db6ccc4c20cd1155a244c67c6caa45679f6ccd3",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/SheSoHouston - BIG SPENDAS (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/SheSoHouston - BIG SPENDAS (Clean).mp3",
+      "sha256": "dbebbd6d428d36f48a423fa2cae00e633a32bd549b9bdb9c0ea22fdca67b6bdb",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "SheSoHouston - BIG SPENDAS",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.amazon.com/BIG-SPENDAS-Explicit-SheSoHouston/dp/B0CPJSN1DH"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/SheSoHouston - BIG SPENDAS (Intro Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/SheSoHouston - BIG SPENDAS (Intro Clean).mp3",
+      "sha256": "a90ecc28bc31bdc1839b6195f5a5a7ab34d033facc96235fd23708b1814ad28f",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "SheSoHouston - BIG SPENDAS",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.amazon.com/BIG-SPENDAS-Explicit-SheSoHouston/dp/B0CPJSN1DH"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Skilla Baby ft NoCap - Wifey (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Skilla Baby ft NoCap - Wifey (Clean).mp3",
+      "sha256": "01055817fc97166693bba11dcaad63dc2884189c43023055551e1ef1eda8f916",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Skilla Baby ft NoCap - Wifey",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "2024 single"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/SleazyWorld Go - WTW (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/SleazyWorld Go - WTW (Clean).mp3",
+      "sha256": "7a1388a48982e82174e842e3fea68466d768ed1d7c8add65d26b06a9750c22fa",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "SleazyWorld Go - WTW",
+      "year_evidence": {
+        "year": "2022",
+        "evidence": "memory",
+        "note": "2022 breakout single (Whoop That Trick)"
+      },
+      "write_tdrc_year": "2022",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/SleazyWorld Go - WTW (Intro Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/SleazyWorld Go - WTW (Intro Clean).mp3",
+      "sha256": "1f17f1c09ede7df1138d00ae598fb413b9a8a47efac85226abbd07bb4bb0d677",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "SleazyWorld Go - WTW",
+      "year_evidence": {
+        "year": "2022",
+        "evidence": "memory",
+        "note": "2022 breakout single (Whoop That Trick)"
+      },
+      "write_tdrc_year": "2022",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/Hip-Hop/Young Nudy ft 21 Savage - Peaches & Eggplants (Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Young Nudy ft 21 Savage - Peaches & Eggplants (Clean).mp3",
+      "sha256": "7a5ba0a01971e152d9b4c4f7e3ac2a44f792f004afbabc6e8cf5aa5f7f71238f",
+      "genre": "Hip-Hop",
+      "version_bucket": "CLEAN",
+      "release_folder": "Young Nudy ft 21 Savage - Peaches & Eggplants",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-02-28",
+        "source": "https://en.wikipedia.org/wiki/Peaches_%26_Eggplants",
+        "note": "Lead single from Gumbo (2023)"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/R&B/Reply Back (Topper-Intro) Clean.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/R&b/Reply Back (Topper-Intro) Clean.mp3",
+      "sha256": "664c126ded18ebb415a201c56bd625d05f105251653d232020ec4b89ed154ce5",
+      "genre": "R&B",
+      "version_bucket": "CLEAN",
+      "release_folder": "Dead Silence Pack",
+      "year_evidence": null,
+      "write_tdrc_year": null,
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/R&B/There You Go  (Topper-Intro) Clean.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/R&b/There You Go  (Topper-Intro) Clean.mp3",
+      "sha256": "8b7c911e4dc098d412a5d5ebb10d4acff8ba4a333e79951b4db8d1a27e905ec9",
+      "genre": "R&B",
+      "version_bucket": "CLEAN",
+      "release_folder": "Dead Silence Pack",
+      "year_evidence": null,
+      "write_tdrc_year": null,
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/CLEAN/R&B/Vanilla Bean-2 (Topper-Intro) Clean.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/R&b/Vanilla Bean-2 (Topper-Intro) Clean.mp3",
+      "sha256": "d7fc0e79af36a3c6c725793ba69b7173d1c9844ccc1fc5eb8b2e90ea66f1624e",
+      "genre": "R&B",
+      "version_bucket": "CLEAN",
+      "release_folder": "Dead Silence Pack",
+      "year_evidence": null,
+      "write_tdrc_year": null,
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Country/Shaboozey - A Bar Song (Tipsy) (Intro Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Country/Shaboozey - A Bar Song (Tipsy) (Intro Dirty).mp3",
+      "sha256": "b9bcfc9a5d5d7a65c5ce18f5c314357d8cd0a4b50190fa825af6389f92a2a23a",
+      "genre": "Country",
+      "version_bucket": "DIRTY",
+      "release_folder": "Shaboozey - A Bar Song (Tipsy)",
+      "year_evidence": null,
+      "write_tdrc_year": null,
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Gunna - Whatsapp (Wassam) (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Gunna - Whatsapp (Wassam) (Dirty).mp3",
+      "sha256": "ad8b9e7843a6649ae91a94f1a2d53ad24412aa8f4b8e6cbbd4cba86368d1085e",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Gunna - Whatsapp (Wassam)",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "web_search",
+        "date": "2024-05-03",
+        "source": "https://www.billboard.com/music/rb-hip-hop/gunna-new-album-release-date-new-song-whatsapp-wassam-1235672971/"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Hitkidd & GloRilla - FNF (Lets Go) (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Hitkidd & GloRilla - FNF (Lets Go) (Dirty).mp3",
+      "sha256": "45b02f703b4c0d43b28afa488bf0417237869deb377bd86be124bbc54f2862a5",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Hitkidd & Juicy J feat Gloss Up - Freak Junt (Ext) (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Hitkidd & Juicy J feat Gloss Up - Freak Junt (Ext) (Dirty).mp3",
+      "sha256": "4b7d88ca34c2c8a7f9f5dab24f4f369043831aed7541c7796c0c1b2acc5af244",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": [
+        {
+          "existing_path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/HitKidd ft Juicy J & Gloss Up - Freak Junt (Ext) (Intro Clean).mp3",
+          "title_token_jaccard": 1.0
+        }
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Hitkidd feat Aleza & Gloss Up - Doin Too Much (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Hitkidd feat Aleza & Gloss Up - Doin Too Much (Dirty).mp3",
+      "sha256": "29a78610f9a6012866b469b2958488789770912881868670042922909d717faa",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Hitkidd feat Aleza - Luv A (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Hitkidd feat Aleza - Luv A (Dirty).mp3",
+      "sha256": "edb723f366efd1b2acd124e0a64c06efd6440859d81a1dcef5703883e421da17",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Hitkidd feat Aleza - Mmm Mmm (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Hitkidd feat Aleza - Mmm Mmm (Dirty).mp3",
+      "sha256": "3210e87d0d61ceb74b3134385729aef47df65a9d8c4fae74e79d5b6c456a419b",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Hitkidd feat Aleza, Gloss Up, GloRilla, Slimeroni & K Carbon - Set The Tone (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Hitkidd feat Aleza, Gloss Up, GloRilla, Slimeroni & K Carbon - Set The Tone (Dirty).mp3",
+      "sha256": "7703b9651555383e899dab0d055991b45066a31b29e072b2525eabd458a963e2",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Hitkidd feat Aleza, K Carbon & Slimeroni - No Comment (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Hitkidd feat Aleza, K Carbon & Slimeroni - No Comment (Dirty).mp3",
+      "sha256": "08cbae05906dca2136a7e7a5d58186a7c631ef1ce8b9d05d2e26841e6cfa142e",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Hitkidd feat Aleza, K Carbon, Gloss Up & Slimeroni - We Outside (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Hitkidd feat Aleza, K Carbon, Gloss Up & Slimeroni - We Outside (Dirty).mp3",
+      "sha256": "90dc0b3f245b8244ff2fc9825d9b825b208dc75fc36dfcf9752e5efc6397d554",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Hitkidd feat Aleza, K Carbon, Gloss Up, Slimeroni & GloRilla - Set The Tone 2 (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Hitkidd feat Aleza, K Carbon, Gloss Up, Slimeroni & GloRilla - Set The Tone 2 (Dirty).mp3",
+      "sha256": "da8870498e63606ffa241488d272a49b93fc6fe47ddafffc2590ed0621e89acf",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Hitkidd feat GloRilla, Aleza, Gloss Up & Slimeroni) - Ghetto (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Hitkidd feat GloRilla, Aleza, Gloss Up & Slimeroni) - Ghetto (Dirty).mp3",
+      "sha256": "79faf1d18dce07a0cb1137f66c3effdfa3bc3f743c7ea2e5a41499dfd1b7a241",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Hitkidd feat GloRilla, Aleza, K Carbon, Gloss Up & Slimeroni - Section (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Hitkidd feat GloRilla, Aleza, K Carbon, Gloss Up & Slimeroni - Section (Dirty).mp3",
+      "sha256": "21744a4a16642c1d5065bae08fad5a1e6d0f0277d832dc3e90de6ea850ac04cc",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Hitkidd feat Gloss Up, Aleza, Slimeroni & K Carbon - Not Average (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Hitkidd feat Gloss Up, Aleza, Slimeroni & K Carbon - Not Average (Dirty).mp3",
+      "sha256": "cc678bd108e98692433ee3627fee453af8c441b9da46e6b1426543f2cdb6663e",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Hitkidd feat Gloss Up, K Carbon, Aleza, Slimeroni & Jucee Froot - Calling Me (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Hitkidd feat Gloss Up, K Carbon, Aleza, Slimeroni & Jucee Froot - Calling Me (Dirty).mp3",
+      "sha256": "a7425395549f39b0592d31385161afdf1c857bef8622c1693cd425153e64e69d",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Hitkidd, Aleza & Slimeroni feat Gloss Up & K Carbon - You The Type (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Hitkidd, Aleza & Slimeroni feat Gloss Up & K Carbon - You The Type (Dirty).mp3",
+      "sha256": "3a71218c7c0c52481eb4b1df22365ad2c12059d80afe540a5ade3e5b6ab53301",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Hitkidd, GloRilla & Latto - FNF (Lets Go) (Remix) (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Hitkidd, GloRilla & Latto - FNF (Lets Go) (Remix) (Dirty).mp3",
+      "sha256": "92c69bac1958431be60710b2ab627cc8a967dde181e358bc5f64cccf8aaf78ba",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Hitkidd, Gloss Up & K Carbon feat Slimeroni & Aleza - Shabooya (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Hitkidd, Gloss Up & K Carbon feat Slimeroni & Aleza - Shabooya (Dirty).mp3",
+      "sha256": "58cad044b677fba2699f395d7e89cadc131a5db69611f1b7927d02a2211401cd",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Hitkidd, Gloss Up & Lola Brooke feat K Carbon, Slimeroni & Aleza - Shabooya (Remix) (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Hitkidd, Gloss Up & Lola Brooke feat K Carbon, Slimeroni & Aleza - Shabooya (Remix) (Dirty).mp3",
+      "sha256": "2ff53edc1d8891b4ac1190d7a32ba9eb63da22982282f1522d1a234838d22b7b",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Hitkidd - Renegade",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.rapreviews.com/2023/12/hitkidd-renegade/",
+        "note": "Whole album, not a mixed-era compilation -- covers all tracks in this folder"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Juelz Santana feat. Jadakiss - Party N Bullsh_t (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Juelz Santana feat. Jadakiss - Party N Bullsh_t (Dirty).mp3",
+      "sha256": "3cce6aaec5a9352d797db4c2705b19cd2e2e979d9545e0fd290790cfa680f338",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Juelz Santana feat. Jadakiss - Party N Bullsh_t",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "web_search",
+        "date": "2024-06-21",
+        "source": "https://thesource.com/2024/06/26/juelz-santana-drops-new-single-party-n-bullshit-featuring-jadakiss/"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Kalan.Frfr - Ain't Nothin (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Kalan.Frfr - Ain't Nothin (Dirty).mp3",
+      "sha256": "9834b630ce37eb74f25d9f41921c92cf5887a204faa451bf93de060bc99d69c6",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Kalan.FrFr - Not Hard 2 Understand (EP)",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.allmusic.com/album/not-hard-2-understand-mw0004199268"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Kalan.Frfr - Creep (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Kalan.Frfr - Creep (Dirty).mp3",
+      "sha256": "2715374a0833d7a91d9a35b416f79ecf3c3862b8fe334b54f1acdc67183e5046",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Kalan.FrFr - Not Hard 2 Understand (EP)",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.allmusic.com/album/not-hard-2-understand-mw0004199268"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Kalan.Frfr - High Vibrations (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Kalan.Frfr - High Vibrations (Dirty).mp3",
+      "sha256": "f236faefc1ce7c72962c25dc7f4ba0353b87ad2ddbaaa925a5b53137f240fac2",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Kalan.FrFr - Not Hard 2 Understand (EP)",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.allmusic.com/album/not-hard-2-understand-mw0004199268"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Kalan.Frfr - She So (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Kalan.Frfr - She So (Dirty).mp3",
+      "sha256": "d95089e9a42b85990e30c0575f65e090b081e5975be1002a5c82668b4641201f",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Kalan.FrFr - Not Hard 2 Understand (EP)",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.allmusic.com/album/not-hard-2-understand-mw0004199268"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Kalan.Frfr Feat. Quavo - Butterfly Coupe Part 2 (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Kalan.Frfr Feat. Quavo - Butterfly Coupe Part 2 (Dirty).mp3",
+      "sha256": "c9e5a8ecbe05394c4aaa757687c0ec94e0e08c409d9ff8b82938c4138f242945",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Kalan.FrFr - Not Hard 2 Understand (EP)",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.allmusic.com/album/not-hard-2-understand-mw0004199268"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Kalan.Frfr Feat. Tay B - Don't Move (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Kalan.Frfr Feat. Tay B - Don't Move (Dirty).mp3",
+      "sha256": "c15c1909abe7c3d231d5f654555273413ad41a1fd047b173c6d57bbdfa7edca8",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Kalan.FrFr - Not Hard 2 Understand (EP)",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.allmusic.com/album/not-hard-2-understand-mw0004199268"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Rapsody - Asteroids (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Rapsody - Asteroids (Dirty).mp3",
+      "sha256": "754871684f90698668883216c39df12fa888fd9ef9c0b706b42386cac0258d95",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Rapsody - Back In My Bag (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Rapsody - Back In My Bag (Dirty).mp3",
+      "sha256": "5dad6cd3ae8c9fa8eae8abcb9348556e20a762b0df28183ae89498e8279b50e1",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Rapsody - Look What You’ve Done (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Rapsody - Look What You’ve Done (Dirty).mp3",
+      "sha256": "3c5d4f0f6d846c3d3766e0a528b1de6294be76a3e2380194acedd6c90a07c7b3",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Rapsody - Marlanna (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Rapsody - Marlanna (Dirty).mp3",
+      "sha256": "dc599c8e164642304bfdc9c8b8a66f2ed6daf6bd6b005925e231c57d7526cc25",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Rapsody - Stand Tall (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Rapsody - Stand Tall (Dirty).mp3",
+      "sha256": "6717eedd2da3a8cee667974173f610fdad1ba6fcc5e445abbafa88289b1d6926",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Rapsody - That One Time (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Rapsody - That One Time (Dirty).mp3",
+      "sha256": "58ff2d789f6571e66e5f492bc26c251834149de5025ccbbeb55e6c158634f979",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Rapsody feat. Alex Isley - Loose Rocks (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Rapsody feat. Alex Isley - Loose Rocks (Dirty).mp3",
+      "sha256": "201b58d51d20e627700d5295a5c52e1392a79d8f3a33ebe030708b0304279fad",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Rapsody feat. Baby Tate - A Ballad For Homegirls (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Rapsody feat. Baby Tate - A Ballad For Homegirls (Dirty).mp3",
+      "sha256": "b8054c727014505ecc133deb1bb89dc186ebced035fbf641260730b37922fb61",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Rapsody feat. Bee-B - DND (It’s Not Personal) (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Rapsody feat. Bee-B - DND (It’s Not Personal) (Dirty).mp3",
+      "sha256": "1a062ac5de60f3a910570f03f491c176a0aef7db88fbba1b260152469d86b814",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Rapsody feat. Bibi Bourelly - Diary Of A Mad Bitch (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Rapsody feat. Bibi Bourelly - Diary Of A Mad Bitch (Dirty).mp3",
+      "sha256": "a3b74d7bb43190ee76dc074beb9492c4d2f82a693c6622cb81688b5831c0f8ed",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Rapsody feat. DIXSON - Black Popstar (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Rapsody feat. DIXSON - Black Popstar (Dirty).mp3",
+      "sha256": "8f9106ab864607c4be7031d77c1a9ab835070696c0e6bdaaf7de3217d2f3187e",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Rapsody feat. Keznamdi & Nicole Bus - Never Enough (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Rapsody feat. Keznamdi & Nicole Bus - Never Enough (Dirty).mp3",
+      "sha256": "4671b02d720b5a4f9dcb414ce01ef0a188c74ceb3d068c58ff782a4155a19d69",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Rapsody feat. Lil Wayne - Raw (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Rapsody feat. Lil Wayne - Raw (Dirty).mp3",
+      "sha256": "1df8bc1af57daaf50f6497051a26ed38bab39cb56160e1bd0853fdda0224270e",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Rapsody - Please Don_t Cry",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Rapsody's 'Please Don't Cry' album, April 2024"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Saweetie - Richtivities (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Saweetie - Richtivities (Dirty).mp3",
+      "sha256": "1d665bc37293571c839255d671e8b577e3cdf96c477cf42369d49d691510f2db",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Saweetie - Richtivities",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "web_search",
+        "date": "2024-02-23",
+        "source": "https://www.rollingstone.com/music/music-news/saweetie-richtivities-single-1234972451/"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Sexyy Red & Drake - U My Everything (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Sexyy Red & Drake - U My Everything (Dirty).mp3",
+      "sha256": "3bad0af73ab0331eae862573f4b2f73f270b185ea630c76e6f34802852f9718f",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": [
+        {
+          "existing_path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/sexyy red - u my everything (feat. drake).mp3",
+          "title_token_jaccard": 0.8
+        },
+        {
+          "existing_path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Sexyy Red ft Drake - U My Everything (Intro Dirty).mp3",
+          "title_token_jaccard": 1.0
+        },
+        {
+          "existing_path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Sexyy Red ft Drake - U My Everything (Intro Clean).mp3",
+          "title_token_jaccard": 1.0
+        }
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Sexyy Red & Lil Baby - Lick Me (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Sexyy Red & Lil Baby - Lick Me (Dirty).mp3",
+      "sha256": "d605ddefbdf9055b6c9e6982a76c469bb3e55e8cd7db20ba908353819e1dbaa9",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Sexyy Red & Mike WiLL Made-It - Outside (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Sexyy Red & Mike WiLL Made-It - Outside (Dirty).mp3",
+      "sha256": "50be9cdcdedfc7bc6592c98cd17b99fa73fb139b00c4ca7b250ff0c372b4ae95",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Sexyy Red & VonOff1700 - Sexyy Love Money (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Sexyy Red & VonOff1700 - Sexyy Love Money (Dirty).mp3",
+      "sha256": "cf75c5057561b4a90f4776443ed77ccd7cdc0658c8dad9b886584fd8fee638af",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Sexyy Red - Awesome Jawsome (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Sexyy Red - Awesome Jawsome (Dirty).mp3",
+      "sha256": "d691d90e1b7fb6f25fca5f8dc16127fc4d36fd219170a5b6dd20f44c4febed2f",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Sexyy Red - Boss Me Up (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Sexyy Red - Boss Me Up (Dirty).mp3",
+      "sha256": "c22370a0df95532b437e68ba4a72723c91d1eaa92d9e886aa439a4767eed7562",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Sexyy Red - Fake Jammin (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Sexyy Red - Fake Jammin (Dirty).mp3",
+      "sha256": "2560ba562e1910a6119f298aed157739fc7e32ccb63d6dfe94eae86391b2d3d9",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Sexyy Red - Get It Sexyy (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Sexyy Red - Get It Sexyy (Dirty).mp3",
+      "sha256": "6a27829ddebf0a7995c78c9879e57994187dc10dac97f0d7b2e04e2cc00f0c80",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Sexyy Red - It's My Birthday (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Sexyy Red - It's My Birthday (Dirty).mp3",
+      "sha256": "1a1567957f9b8f694b6e85230a9adbfdb1e5ecdbd19aff03c9088e09146e100c",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Sexyy Red - Ova Bad (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Sexyy Red - Ova Bad (Dirty).mp3",
+      "sha256": "5b53ed69031432988de8fc40b539f472b48800ccd160f126b2855335aaa8d7fa",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Sexyy Red - She's Back (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Sexyy Red - She's Back (Dirty).mp3",
+      "sha256": "de6d81482299e58f296de59657b3602d3ee3b695bb127c363abc5746e9ae94a1",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Sexyy Red - Sport (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Sexyy Red - Sport (Dirty).mp3",
+      "sha256": "0da5e3813c53dd0a15d156afd2ce97f78b993040781ea829f6dbd5b9452469ca",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Sexyy Red - TTG (Go) (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Sexyy Red - TTG (Go) (Dirty).mp3",
+      "sha256": "a109acd379135c9ea74132cd6509fb7394dbd38d8a2cba5d0db206656bf5f1b3",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Sexyy Red - In Sexyy We Trust",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "Sexyy Red's 2024 mixtape/album"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/SheSoHouston - BIG SPENDAS (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/SheSoHouston - BIG SPENDAS (Dirty).mp3",
+      "sha256": "70a05efbb42336c70195b831902deca4556d32fe9c556194c0bf0c55bdcb0967",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "SheSoHouston - BIG SPENDAS",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.amazon.com/BIG-SPENDAS-Explicit-SheSoHouston/dp/B0CPJSN1DH"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/SheSoHouston - BIG SPENDAS (Intro Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/SheSoHouston - BIG SPENDAS (Intro Dirty).mp3",
+      "sha256": "c570a9625a7c02f225d625b8d8f05ddefdf225d3e1f295fc681103d19ed8e427",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "SheSoHouston - BIG SPENDAS",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-12-08",
+        "source": "https://www.amazon.com/BIG-SPENDAS-Explicit-SheSoHouston/dp/B0CPJSN1DH"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Skilla Baby ft NoCap - Wifey (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Skilla Baby ft NoCap - Wifey (Dirty).mp3",
+      "sha256": "38e5547a758dda133157b0f4dbe70a382f586853d10bdf09ef93cf36e6181366",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Skilla Baby ft NoCap - Wifey",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "2024 single"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/SleazyWorld Go - WTW (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/SleazyWorld Go - WTW (Dirty).mp3",
+      "sha256": "8a0c03da2b656ce4bd7035484a5b4563c87e2d01d7d6d623cd37177dbb078524",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "SleazyWorld Go - WTW",
+      "year_evidence": {
+        "year": "2022",
+        "evidence": "memory",
+        "note": "2022 breakout single (Whoop That Trick)"
+      },
+      "write_tdrc_year": "2022",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/SleazyWorld Go - WTW (Intro Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/SleazyWorld Go - WTW (Intro Dirty).mp3",
+      "sha256": "87f47437f8901f817a5daf8648036b656a8e03ffad45c0aae04d9d5bbc396009",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "SleazyWorld Go - WTW",
+      "year_evidence": {
+        "year": "2022",
+        "evidence": "memory",
+        "note": "2022 breakout single (Whoop That Trick)"
+      },
+      "write_tdrc_year": "2022",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Travis Scott feat. Playboi Carti - FE!N (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Travis Scott feat. Playboi Carti - FE!N (Dirty).mp3",
+      "sha256": "15efe331730c7eb9c654cda9e838ee6be62610ff937ccbe41c12b2b8eaee1c78",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Travis Scott feat. Playboi Carti - FE!N",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "memory",
+        "note": "From Utopia album, July 2023"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": [
+        {
+          "existing_path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Travis Scott ft Playboi Carti - FE!N (Intro Dirty).mp3",
+          "title_token_jaccard": 1.0
+        },
+        {
+          "existing_path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Travis Scott ft Playboi Carti - FE!N (Intro Clean).mp3",
+          "title_token_jaccard": 1.0
+        }
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Veeze - Not a Drill (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Veeze - Not a Drill (Dirty).mp3",
+      "sha256": "0e21278e603cb469783fea690887f1d5f9185617e328df31b37845551d7682c1",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Veeze - Not a Drill",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-06-27",
+        "source": "https://hiphopsince1987.com/2023/music/veeze-drops-debut-album-ganger-and-video-for-not-a-drill/",
+        "note": "From debut album Ganger"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": [
+        {
+          "existing_path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Veeze - Not a Drill (Intro Dirty).mp3",
+          "title_token_jaccard": 1.0
+        },
+        {
+          "existing_path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/Clean/Hip-Hop/Veeze - Not a Drill (Intro Clean).mp3",
+          "title_token_jaccard": 1.0
+        }
+      ]
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Young Nudy ft 21 Savage - Peaches & Eggplants (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Young Nudy ft 21 Savage - Peaches & Eggplants (Dirty).mp3",
+      "sha256": "e3e7465fda0d70b0c0c09b8d73c41bab5b21048d6ed653f30777ec0f3d671e37",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Young Nudy ft 21 Savage - Peaches & Eggplants",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-02-28",
+        "source": "https://en.wikipedia.org/wiki/Peaches_%26_Eggplants",
+        "note": "Lead single from Gumbo (2023)"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/DIRTY/Hip-Hop/Young Nudy ft 21 Savage - Peaches & Eggplants (Intro Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Young Nudy ft 21 Savage - Peaches & Eggplants (Intro Dirty).mp3",
+      "sha256": "d9f930606eab91b3b65f45e337de3d1f173a0483ca6ffd9b8872f47880d47e58",
+      "genre": "Hip-Hop",
+      "version_bucket": "DIRTY",
+      "release_folder": "Young Nudy ft 21 Savage - Peaches & Eggplants",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-02-28",
+        "source": "https://en.wikipedia.org/wiki/Peaches_%26_Eggplants",
+        "note": "Lead single from Gumbo (2023)"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/INSTRUMENTALS/Hip-Hop/Juelz Santana feat. Jadakiss - Party N Bullsh_t (Instrumental).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/INSTRUMENTALS/Hip-Hop/Juelz Santana feat. Jadakiss - Party N Bullsh_t (Instrumental).mp3",
+      "sha256": "fb34ea1364a90415fbf454d1b9a3ca3fc4ca6f7462139818256c5862477d56f8",
+      "genre": "Hip-Hop",
+      "version_bucket": "INSTRUMENTALS",
+      "release_folder": "Juelz Santana feat. Jadakiss - Party N Bullsh_t",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "web_search",
+        "date": "2024-06-21",
+        "source": "https://thesource.com/2024/06/26/juelz-santana-drops-new-single-party-n-bullshit-featuring-jadakiss/"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/INSTRUMENTALS/Hip-Hop/Tommy Richman - MILLION DOLLAR BABY (Instrumental).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/INSTRUMENTALS/Hip-Hop/Tommy Richman - MILLION DOLLAR BABY (Instrumental).mp3",
+      "sha256": "e2b91d74446f06a5d1c7aa8b4cb5aaa50afa0799e933b1682d95ce3e05bad1ee",
+      "genre": "Hip-Hop",
+      "version_bucket": "INSTRUMENTALS",
+      "release_folder": "Tommy Richman - MILLION DOLLAR BABY",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "memory",
+        "note": "2024 breakout single"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/INSTRUMENTALS/Hip-Hop/Young Nudy ft 21 Savage - Peaches & Eggplants (Instrumental).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/INSTRUMENTALS/Hip-Hop/Young Nudy ft 21 Savage - Peaches & Eggplants (Instrumental).mp3",
+      "sha256": "6a9a285288e71eae0b0f28528f4b384d9eff836731595bc3d23e306289b4981b",
+      "genre": "Hip-Hop",
+      "version_bucket": "INSTRUMENTALS",
+      "release_folder": "Young Nudy ft 21 Savage - Peaches & Eggplants",
+      "year_evidence": {
+        "year": "2023",
+        "evidence": "web_search",
+        "date": "2023-02-28",
+        "source": "https://en.wikipedia.org/wiki/Peaches_%26_Eggplants",
+        "note": "Lead single from Gumbo (2023)"
+      },
+      "write_tdrc_year": "2023",
+      "collision": null,
+      "possible_title_overlaps": []
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Events/VDBL/ACAPELLAS/Hip-Hop/Juelz Santana feat. Jadakiss - Party N Bullsh_t (Acapella).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/ACAPELLAS/Hip-Hop/Juelz Santana feat. Jadakiss - Party N Bullsh_t (Acapella).mp3",
+      "sha256": "eb4e8f8b0b321c104074724daec860ae1318301eca0fc9d6775d3b31bd6539f8",
+      "genre": "Hip-Hop",
+      "version_bucket": "ACAPELLAS",
+      "release_folder": "Juelz Santana feat. Jadakiss - Party N Bullsh_t",
+      "year_evidence": {
+        "year": "2024",
+        "evidence": "web_search",
+        "date": "2024-06-21",
+        "source": "https://thesource.com/2024/06/26/juelz-santana-drops-new-single-party-n-bullshit-featuring-jadakiss/"
+      },
+      "write_tdrc_year": "2024",
+      "collision": null,
+      "possible_title_overlaps": []
+    }
+  ],
+  "counts": {
+    "by_genre": {
+      "Amapiano": 10,
+      "Hip-Hop": 127,
+      "R&B": 3,
+      "Country": 1
+    },
+    "by_bucket": {
+      "CLEAN": 75,
+      "DIRTY": 62,
+      "INSTRUMENTALS": 3,
+      "ACAPELLAS": 1
+    },
+    "year_written": 127,
+    "year_unresolved": 3,
+    "exact_duplicate_at_dest": 0,
+    "name_collision_diff_content": 0,
+    "clean_moves": 141,
+    "possible_title_overlap": 9
+  }
+}
