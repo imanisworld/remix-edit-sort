@@ -37,7 +37,12 @@
     "baltimore club": "Baltimore Club",
     "funk & soul": "Funk & Soul",
     "ghettotech": "Ghettotech",
-    "juke & footwork": "Juke & Footwork"
+    "juke & footwork": "Juke & Footwork",
+    "deep house": "Deep House",
+    "jazzy house": "Jazzy House",
+    "groovy bounce": "Groovy Bounce",
+    "afro house": "Afro House",
+    "tech house": "Tech House"
   },
   "filename_keywords": [
     {"contains": "ghettotech", "genre": "Ghettotech", "evidence": "filename explicitly says Ghettotech"},
