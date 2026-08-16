@@ -6,6 +6,8 @@ The operating rule is:
 
 **existing evidence first -> audio-derived evidence second -> human review where ambiguity remains -> approved mutation only through lock/backup/apply/verify/undo.**
 
+For the downstream Serato integrity, backup restore verification, canonical keeper recommendation, DJ readiness status, provenance, dashboard, and durable-decision layers, see `references/library-readiness-roadmap.md`.
+
 ## 1. Audio-fingerprint duplicate/equivalence checker
 
 Goal: detect same-recording equivalents that SHA-256 cannot see because the file was re-encoded, renamed, remuxed, or stored in a different format.
@@ -180,6 +182,7 @@ Do not build all of these before using the current recheck tools.
 7. Add intro/outro candidate detection if the remaining version-review population justifies it.
 8. Test vocal separation only if ordinary transcription quality is a real bottleneck.
 9. Feed all evidence into the prioritized manual-review queue and permanent decision ledger.
+10. Continue with `references/library-readiness-roadmap.md` for Serato integrity, backup proof, readiness, and unified reporting.
 
 ## Non-negotiable safety boundary
 
