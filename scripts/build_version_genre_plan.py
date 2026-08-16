@@ -12,6 +12,9 @@ Writes reports only. Never moves, renames, or retags a file.
 
 from __future__ import annotations
 
+# Preview-only: builds a plan for human review. Never mutates library media.
+SAFETY_CLASSIFICATION = "preview-only"
+
 import argparse
 import collections
 import csv

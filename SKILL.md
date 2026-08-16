@@ -125,7 +125,27 @@ Writes `outputs/plan.json` (machine) and `outputs/_preview.md` (human). Nothing 
 
 Casing is normalized here, reusing the stylized-name dictionary from `music-library-sort` — `BEYONCE` → `Beyoncé`, `FKA TWIGS` → `FKA twigs` — while anything already mixed-case is left alone, because `maxcy` and `nextdimensional` are lowercase on purpose.
 
-Files that would collide are checked by duration: same name and same length means a genuine duplicate (SoundCloud's `(1)` re-downloads), so it goes to `_Unsorted/Duplicates` instead of being silently renamed. Different lengths get a numeric suffix.
+Two files landing on one destination name **collide**. That is all it means, and it is never
+enough to call them duplicates.
+
+An older version of this step called same-name-plus-duration-within-2s a "duplicate" and filed
+it under `_Unsorted/Duplicates`. In a DJ library that heuristic fires on exactly the pairs that
+must never be conflated: `(Clean)` vs `(Dirty)`, `(Intro)` vs `(Intro Dirty)`, two different
+edits of one track — same length, different masters, both wanted.
+
+The repo-wide truth model lives in `scripts/duplicate_semantics.py`:
+
+| Verdict | Evidence required | May authorize deletion? |
+| --- | --- | --- |
+| `EXACT_DUPLICATE` | identical SHA-256 over the whole file | yes, and still only with human approval |
+| `AUDIO_EQUIVALENT` | strong audio-fingerprint match, bytes differ | no (nothing produces this yet) |
+| `RELATED_VERSION` | different version markers — Clean/Dirty/Intro/Extended/Remix/Edit/… | no, they are different tracks |
+| `REVIEW` | filename / title / duration similarity, in any combination | no |
+
+So a collision between two *related versions* keeps both, disambiguated with a numeric suffix.
+Anything else goes to `_Unsorted/Possible Collisions` flagged for review. This planner works
+from a filename/duration scan and has no hashes available, so it can never produce
+`EXACT_DUPLICATE` — and no longer pretends to.
 
 ### 4. Review with Brooke
 
@@ -136,20 +156,54 @@ Files that would collide are checked by duration: same name and same length mean
 
 ### 5. Apply
 
+> **`apply_plan.py` is hard-disabled.** It forced ID3v2.3 on every file it tagged (destroying
+> ID3v2.2 blocks), verified neither the audio payload nor the Serato frames, required no
+> verified backup, wrote its undo log only after the whole run, never reverted tags on undo,
+> and deleted directories as a side effect of a move. `--legacy-confirm` is gone; a
+> confirmation flag could not make any of that safe. Only a read-only `--report` remains.
+
+Every mutation now goes through the shared engine (`scripts/mutation_engine.py`) via the
+approved apply family. Read `SAFETY-MODEL.md` for the full sequence; the short version:
+
 ```bash
-python3 scripts/apply_plan.py --dry-run    # default — reports, changes nothing
-python3 scripts/apply_plan.py --apply      # move + tag for real
+# 1. Prove the backup. A directory existing is not a backup.
+python3 scripts/backup_manifest.py verify \
+    --source-root "<folder>" --backup "<backup dir>" \
+    --serato-backup "<_Serato_ backup>" --require-serato \
+    --out backup-manifest.json          # must print "status": "PASS"
+
+# 2. Take the lock.
+python3 scripts/folder_lock.py acquire --folder "<library folder>" --session "<session>" --agent claude
+
+# 3. Dry run, then apply.
+python3 scripts/apply_version_genre_plan.py --root "<folder>" --plan plan.json \
+    --backup-manifest backup-manifest.json                       # reports, changes nothing
+python3 scripts/apply_version_genre_plan.py --root "<folder>" --plan plan.json \
+    --backup-manifest backup-manifest.json --apply \
+    --lock-folder "<library folder>" --session "<session>"
+
+# 4. Confirm the journal is clean, then release.
+python3 scripts/mutation_engine.py recover --journal <recovery journal>
+python3 scripts/folder_lock.py release --folder "<library folder>" --session "<session>"
 ```
 
-Useful variants: `--copy` (leave originals in place, doubles disk), `--tags-only` (write metadata without moving), `--skip-review` (act only on the confident ones and leave everything flagged where it is — good for a first pass).
+Per item the engine re-verifies lock ownership, re-checks the source hash against the preview,
+proves per-file backup evidence, fsyncs a write-ahead intent record, performs the mutation,
+verifies the tag plus the audio payload plus the Serato frames, and only then commits a
+completion record. Any verification failure restores the file immediately and stops the run.
 
-Every move is recorded to `outputs/undo.json`. `python3 scripts/apply_plan.py --undo` reverses them and prunes the empty folders. **Undo restores locations, not tags** — say so when reporting, so nobody assumes a full rollback.
+Undo is a mutation too: `--undo <undo log>` needs the same `--lock-folder`/`--session`,
+heartbeats before every restore, and journals write-ahead. Unlike the retired legacy engine,
+it restores tags as well as locations, verified against the recorded pre-apply SHA-256.
 
 ### 6. Sweeping `_Unclassified` later
 
 `_Unclassified` is where honest ignorance goes, and it's meant to be worked down over time. That's a **different operation** from the pipeline above — the files are already correctly named and tagged, they just landed in the wrong genre folder. Re-running the full pipeline over them would re-parse their filenames and make some of them worse.
 
-Use `reclassify.py` instead. It moves files between genre folders and rewrites **only** `TCON`, leaving filenames and every other tag untouched:
+Use `reclassify.py` to **propose** the moves. It is preview-only: it writes a plan and changes
+nothing. (It used to move files and rewrite `TCON` itself, with no lock, no backup, no
+verification, a forced ID3v2.3 downgrade, directory deletion as a side effect, and an undo
+that explicitly did not restore the Genre it had overwritten. That mutation half is gone.)
 
 ```bash
 # 1. Scan the unclassified folders directly and merge the results
@@ -157,9 +211,11 @@ python3 scripts/scan_library.py "<library>/Remixes & Edits/_Unclassified" --out 
 python3 scripts/scan_library.py "<library>/Originals/_Unclassified"      --out outputs/t_org.json
 #    merge the two "tracks" arrays into outputs/tracks.json with root = the library root
 
-# 2. Dry run, then apply
-python3 scripts/reclassify.py --tracks outputs/tracks.json
-python3 scripts/reclassify.py --tracks outputs/tracks.json --apply
+# 2. Preview, and write a plan for review
+python3 scripts/reclassify.py --tracks outputs/tracks.json --out outputs/reclassify-plan.json
+
+# 3. Apply through the engine (move + Genre is apply_version_genre_plan.py's mutation class),
+#    with a PASS backup manifest and an owned lock — see step 5 above.
 ```
 
 The work happens in `references/artist-genre-extra.json` — every producer you map there is mapped permanently, so each sweep is smaller than the last. Map **remixers** as readily as original artists: `classify_genre` checks the remixer against the same map, because a known house producer's edit is house regardless of whose record it was.
@@ -168,11 +224,21 @@ The work happens in `references/artist-genre-extra.json` — every producer you 
 
 The pipeline gives every file the same *shape*. `standardize_names.py` cleans the *contents* of that shape — promo spam, punctuation artifacts, damaged acronyms — and rewrites `TIT2`/`TPE1` so filenames and tags stay in agreement.
 
+`standardize_names.py` is **preview-only**. It writes the preview and a plan; it renames and
+retags nothing. (It used to do both with no lock, no backup, no verification, a forced ID3v2.3
+downgrade, and an undo that restored filenames while leaving the rewritten Artist/Title
+permanently in place.)
+
 ```bash
-python3 scripts/standardize_names.py <library>            # preview to outputs/_rename_preview.md
-python3 scripts/standardize_names.py <library> --apply
-python3 scripts/standardize_names.py <library> --undo
+python3 scripts/standardize_names.py <library>                          # preview to outputs/_rename_preview.md
+python3 scripts/standardize_names.py <library> --out outputs/names-plan.json
+# then apply Artist/Title through the engine:
+#   python3 scripts/apply_artist_title_plan.py --apply --backup-manifest ... --lock-folder ... --session ...
 ```
+
+The preview marks **case-only renames** separately, because macOS/APFS is case-insensitive:
+`bt005.mp3` and `BT005.mp3` are the same path there, so such a rename needs a two-step move
+through a temp name and must not be mistaken for a collision. See `MAC-CANARY.md`.
 
 What it fixes: `Free DL` / `OUT NOW` / `PREMIERE` / `@handle` / `#tag` spam · `Trsn021` → `TRSN021` and `P.i.m.p` → `P.I.M.P.` · `-Umi Says-` → `Umi Says` · `--` and `- -` · `Hustlin''` · leading `01`/`06.` track numbers · stray `]` and unbalanced brackets · a literal `.mp3` inside a name.
 

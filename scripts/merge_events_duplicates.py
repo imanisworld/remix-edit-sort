@@ -1,31 +1,48 @@
 #!/usr/bin/env python3
-"""One-off: merge 9 duplicate tracks living in two junk-named Events folders
-("August 30th Random DL" and "trendindg august 2025") into the real Hip Hop /
-R&b genre folders (a single copy each, matching classify_version()'s
-evidence-based CLEAN/DIRTY/INSTRUMENTALS bucket). The duplicate left behind
-in the other junk folder is intentionally NOT deleted here -- only the move
-was approved; deletion of the leftover copy is a separate decision.
+"""
+HARD-DISABLED one-off. Historical record of a completed 9-track Events merge.
 
-Every pair was independently verified before this script was written:
-audio-payload SHA-256 and Serato GEOB frame set/sizes match exactly between
-both copies, so which physical copy moves is arbitrary and no Serato
-performance data is at risk either way.
+This moved 9 duplicate tracks out of two junk-named Events folders ("August
+30th Random DL" and "trendindg august 2025") into the real Hip Hop / R&b genre
+folders. Every pair had been independently verified first: audio-payload
+SHA-256 and Serato GEOB frame set/sizes matched exactly between both copies,
+so which physical copy moved was arbitrary. The leftover copy in the other
+junk folder was intentionally NOT deleted -- only the move was approved.
+
+That run is done. This file is kept as evidence of what was moved where.
+
+## Why it is disabled
+
+A safety audit found three problems that make re-running it unsafe, quite
+apart from the fact that re-running a completed one-off is meaningless:
+
+  * it hardcoded `lock_guard.require_lock_or_exit(folder, "claude-metadata-pass")`
+    -- someone else's session name. Any operator running this would either
+    fail outright or, worse, satisfy the gate using a lock they do not own,
+    which defeats the entire purpose of the lock;
+  * it had no per-item heartbeat, so a long run could keep moving files after
+    another session had reclaimed Events, Hip Hop or R&b;
+  * it took its own ad-hoc backup copy inline instead of requiring a verified
+    backup manifest, and wrote its recovery record only AFTER each rename, so
+    a crash between the rename and the journal write left an untracked move.
+
+Equivalent work now goes through `apply_version_genre_plan.py` (mutation class
+`relocate`), which runs on the shared engine: owned lock, PASS backup manifest,
+write-ahead intent journal, per-item verification, real undo.
 """
 
 from __future__ import annotations
 
-import hashlib
+# Hard-disabled legacy mutator. Kept as history; cannot run.
+SAFETY_CLASSIFICATION = "disabled-legacy"
+
 import json
-import os
-import shutil
-from datetime import datetime
-from pathlib import Path
+import sys
 
-import lock_guard
+# Read by scripts/mutation_surface.py: no live mutation path may exist here.
+MUTATION_DISABLED = True
 
-ROOT = Path("/Users/djb.a.e/Music/DJ-Music/Music")
-OUT_DIR = Path(__file__).resolve().parent.parent / "handoff/session-2026-08-15/survey/events-dedup-merge"
-
+# Kept verbatim as the historical record of what this run moved.
 PAIRS = [
     ("Events/trendindg august 2025/CLEAN/Hip-Hop/Metro Boomin, Roscoe Dash & Quavo - Butterflies (Right Now) (Clean).mp3",
      "Hip Hop/Clean/Hip-Hop/Metro Boomin, Roscoe Dash & Quavo - Butterflies (Right Now) (Clean).mp3"),
@@ -60,81 +77,38 @@ LEFTOVER_DUPLICATES = [
 ]
 
 
-def sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        while chunk := handle.read(4 * 1024 * 1024):
-            digest.update(chunk)
-    return digest.hexdigest()
+def _refuse_to_run() -> None:
+    raise SystemExit(
+        "merge_events_duplicates.py is a completed one-off and is permanently disabled.\n"
+        "\n"
+        "It hardcoded another session's lock name ('claude-metadata-pass'), had no\n"
+        "per-item heartbeat, and journaled each move only after performing it.\n"
+        "\n"
+        "The 9 moves it describes were applied on 2026-08-15; see\n"
+        "handoff/session-2026-08-15/survey/events-dedup-merge/ for the result and\n"
+        "undo log. This file remains only as evidence of what moved where.\n"
+        "\n"
+        "For equivalent work use scripts/apply_version_genre_plan.py, which runs on\n"
+        "the shared mutation engine (lock + PASS backup manifest + write-ahead\n"
+        "journal + per-item verification).\n"
+    )
 
 
 def main() -> None:
-    for folder in ("Events", "Hip Hop", "R&b"):
-        lock_guard.require_lock_or_exit(folder, "claude-metadata-pass")
+    _refuse_to_run()
 
-    stamp = datetime.now().astimezone().strftime("%Y%m%d-%H%M%S")
-    backup_root = OUT_DIR / f"backup-{stamp}"
-    undo_path = OUT_DIR / f"undo-{stamp}.jsonl"
-    result_path = OUT_DIR / f"result-{stamp}.json"
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    errors = []
-    for src_rel, dest_rel in PAIRS:
-        src = ROOT / src_rel
-        dest = ROOT / dest_rel
-        if not src.is_file():
-            errors.append(f"missing source: {src}")
-        if dest.exists():
-            errors.append(f"destination already exists: {dest}")
-        if not dest.parent.is_dir():
-            errors.append(f"destination parent does not exist: {dest.parent}")
-    if errors:
-        raise RuntimeError("Pre-flight validation failed:\n" + "\n".join(errors))
-
-    completed = []
-    for index, (src_rel, dest_rel) in enumerate(PAIRS, start=1):
-        src = ROOT / src_rel
-        dest = ROOT / dest_rel
-        before_hash = sha256_file(src)
-
-        backup = backup_root / src_rel
-        backup.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src, backup)
-        if sha256_file(backup) != before_hash:
-            raise RuntimeError(f"backup verification failed: {src}")
-
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        os.rename(src, dest)
-
-        after_hash = sha256_file(dest)
-        if after_hash != before_hash:
-            raise RuntimeError(f"post-move hash mismatch: {dest}")
-
-        record = {
-            "index": index,
-            "source": str(src),
-            "destination": str(dest),
-            "sha256": before_hash,
-            "backup": str(backup),
-        }
-        with undo_path.open("a", encoding="utf-8") as handle:
-            handle.write(json.dumps(record, ensure_ascii=False) + "\n")
-            handle.flush()
-            os.fsync(handle.fileno())
-        completed.append(record)
-        print(f"[{index}/9] moved: {src_rel} -> {dest_rel}")
-
-    result = {
-        "mode": "events-dedup-merge",
-        "tracks_moved": len(completed),
-        "undo_log": str(undo_path),
-        "backup_root": str(backup_root),
+def record() -> dict:
+    """Read-only accessor for the historical record."""
+    return {
+        "status": "completed 2026-08-15, script disabled",
+        "moves": [{"source": src, "destination": dest} for src, dest in PAIRS],
         "leftover_duplicates_not_deleted": LEFTOVER_DUPLICATES,
-        "records": completed,
     }
-    result_path.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(json.dumps({"tracks_moved": len(completed), "result_path": str(result_path)}, indent=2))
 
 
 if __name__ == "__main__":
+    if "--record" in sys.argv:
+        print(json.dumps(record(), indent=2, ensure_ascii=False))
+        sys.exit(0)
     main()

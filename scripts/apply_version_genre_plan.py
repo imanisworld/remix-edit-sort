@@ -19,6 +19,19 @@ re-parses the box tree after every write and hashes mdat wherever it landed.
 
 from __future__ import annotations
 
+# Every library mutation in this module goes through scripts/mutation_engine.py.
+SAFETY_CLASSIFICATION = "engine-user"
+
+# Read by scripts/mutation_surface.py. The small, explicitly-reviewed set of
+# functions allowed to contain a mutation primitive without being lexically
+# inside a `with engine.item(...)` block. The scanner additionally proves each
+# one IS called from inside such a block. Keep this list tiny: it is exactly
+# what a human reviewer has to check by hand.
+#
+# write_genre() is the only function here that touches a tag outside a
+# transaction; apply() and undo() call it from inside `with engine.item(...)`.
+ENGINE_MUTATION_HELPERS = ("write_genre",)
+
 import argparse
 import hashlib
 import json
@@ -31,7 +44,9 @@ from mutagen.flac import FLAC
 from mutagen.id3 import ID3, ID3NoHeaderError, TCON
 from mutagen.mp4 import MP4
 
+import backup_manifest
 import lock_guard
+import mutation_engine
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -269,13 +284,11 @@ def tag_skip_reason(path: Path, item: dict) -> str | None:
     return None
 
 
-def load_and_validate(root: Path, plan_path: Path, backup: Path) -> tuple[dict, list[dict]]:
+def load_and_validate(root: Path, plan_path: Path) -> tuple[dict, list[dict]]:
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
     if plan.get("mode") != "preview-only" or not plan.get("rules", {}).get("approval_required"):
         raise RuntimeError("unexpected plan mode")
     items = plan["items"]
-    if not backup.is_dir():
-        raise RuntimeError(f"verified pre-apply backup is missing: {backup}")
 
     errors = []
     destinations: dict[str, str] = {}
@@ -310,105 +323,157 @@ def load_and_validate(root: Path, plan_path: Path, backup: Path) -> tuple[dict, 
     return plan, items
 
 
-def apply(root: Path, plan_path: Path, backup: Path, out_dir: Path, label: str, heartbeat: lock_guard.LockHeartbeat) -> None:
-    plan, items = load_and_validate(root, plan_path, backup)
+def apply(
+    root: Path,
+    plan_path: Path,
+    manifest: dict,
+    out_dir: Path,
+    label: str,
+    heartbeat: lock_guard.LockHeartbeat,
+) -> None:
+    """Apply the plan through the shared mutation engine.
+
+    Every per-item safety step -- heartbeat, source-hash precondition, backup
+    evidence, write-ahead intent record, rollback, completion record -- lives
+    in mutation_engine.MutationEngine.item(). What stays here is only what is
+    specific to this mutation class: which tag to write, and what "verified"
+    means for a Genre write plus an optional relocation.
+    """
+    plan, items = load_and_validate(root, plan_path)
     stamp = datetime.now().astimezone().strftime("%Y%m%d-%H%M%S")
     tag_backup_root = out_dir / f"{label}-tag-file-backups" / stamp
     undo_path = out_dir / f"{label}-undo-{stamp}.jsonl"
     result_path = out_dir / f"{label}-result-{stamp}.json"
-    completed = []
+    journal_path = out_dir / f"{label}-recovery-{stamp}.jsonl"
 
+    engine = mutation_engine.MutationEngine(
+        journal_path, heartbeat, manifest, root, label,
+    )
+    engine.start({
+        "plan": str(plan_path),
+        "items": len(items),
+        "moves": sum(bool(item["move"]) for item in items),
+        "tag_changes": sum(bool(item["tag_change"]) for item in items),
+    })
+
+    completed = []
     for index, item in enumerate(items, start=1):
-        # Re-verifies lock ownership and renews it (rate-limited) before
-        # every item -- a run long enough to cross the stale window stops
-        # here, before its next write, rather than mutating past the point
-        # another session may have reclaimed this folder.
-        heartbeat.beat()
         source = Path(item["source"])
         destination = Path(item["destination"])
-        before_hash = sha256_file(source)
-        before_audio = sha256_bytes(audio_payload(source))
-        before_serato = serato_digest(source)
-        before_serato_payload = serato_payload_digest(source)
-        tag_backup = None
-        tag_was_changed = False
-        skip_reason = tag_skip_reason(source, item)
+        kind = mutation_engine.RELOCATE if item["move"] else mutation_engine.GENRE
 
-        if item["tag_change"] and not skip_reason:
-            tag_backup = tag_backup_root / item["source_relative"]
-            tag_backup.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, tag_backup)
-            try:
-                write_genre(source, item["proposed_genre"])
-                if read_genre(source) != item["proposed_genre"]:
-                    raise RuntimeError("Genre tag verification failed")
-                if sha256_bytes(audio_payload(source)) != before_audio:
-                    raise RuntimeError("audio payload changed")
-                if serato_digest(source) != before_serato:
-                    if serato_payload_digest(source) == before_serato_payload:
-                        raise SeratoEncodingOnlyChange(
-                            "Genre write forced an ID3-version-compliance re-encoding of a Serato "
-                            "frame's encoding byte (its actual binary payload was verified "
-                            "byte-identical before and after); write rolled back and skipped out of "
-                            "caution rather than trusting the payload check alone"
-                        )
-                    raise RuntimeError("Serato frames changed")
-                tag_was_changed = True
-            except SeratoEncodingOnlyChange as exc:
-                shutil.copy2(tag_backup, source)
-                skip_reason = str(exc)
-            except Exception:
-                shutil.copy2(tag_backup, source)
-                raise
+        with engine.item(
+            index,
+            kind=kind,
+            source=source,
+            expected_sha256=item["sha256"],
+            destination=destination if item["move"] else None,
+            extra_intent={
+                "current_genre": item["current_genre"],
+                "proposed_genre": item["proposed_genre"],
+                "tag_change": bool(item["tag_change"]),
+            },
+        ) as txn:
+            before_hash = sha256_file(source)
+            before_audio = sha256_bytes(audio_payload(source))
+            before_serato = serato_digest(source)
+            before_serato_payload = serato_payload_digest(source)
+            tag_backup = None
+            tag_was_changed = False
+            moved = False
+            skip_reason = tag_skip_reason(source, item)
 
-        try:
+            def rollback():
+                # Ordered to undo the mutations in reverse: put the file back
+                # where it was first, then restore its pre-write bytes.
+                if moved and destination.exists():
+                    os.rename(destination, source)
+                if tag_was_changed and tag_backup is not None:
+                    mutation_engine.restore_from_backup(tag_backup, source, before_hash)
+
+            txn.on_rollback(rollback)
+
+            if item["tag_change"] and not skip_reason:
+                tag_backup = tag_backup_root / item["source_relative"]
+                tag_backup.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source, tag_backup)
+                if sha256_file(tag_backup) != before_hash:
+                    raise RuntimeError(f"per-item tag backup verification failed: {tag_backup}")
+                try:
+                    write_genre(source, item["proposed_genre"])
+                    tag_was_changed = True
+                    txn.mark_mutated()
+                    if read_genre(source) != item["proposed_genre"]:
+                        raise RuntimeError("Genre tag verification failed")
+                    if sha256_bytes(audio_payload(source)) != before_audio:
+                        raise RuntimeError("audio payload changed")
+                    if serato_digest(source) != before_serato:
+                        if serato_payload_digest(source) == before_serato_payload:
+                            raise SeratoEncodingOnlyChange(
+                                "Genre write forced an ID3-version-compliance re-encoding of a Serato "
+                                "frame's encoding byte (its actual binary payload was verified "
+                                "byte-identical before and after); write rolled back and skipped out of "
+                                "caution rather than trusting the payload check alone"
+                            )
+                        raise RuntimeError("Serato frames changed")
+                except SeratoEncodingOnlyChange as exc:
+                    # Verified benign: restore and skip this file's tag write.
+                    # Not an engine-level failure, so it is handled here rather
+                    # than propagating out of the transaction.
+                    mutation_engine.restore_from_backup(tag_backup, source, before_hash)
+                    tag_was_changed = False
+                    skip_reason = str(exc)
+
             if item["move"]:
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 os.rename(source, destination)
+                moved = True
+                txn.mark_mutated()
             else:
                 destination = source
-        except Exception:
-            if tag_was_changed and tag_backup is not None:
-                shutil.copy2(tag_backup, source)
-            raise
 
-        after_hash = sha256_file(destination)
-        if sha256_bytes(audio_payload(destination)) != before_audio:
-            raise RuntimeError(f"post-move audio verification failed: {destination}")
-        if serato_digest(destination) != before_serato:
-            raise RuntimeError(f"post-move Serato verification failed: {destination}")
-        genre_verifiable = destination.suffix.casefold() in {".mp3", ".flac", ".m4a"}
-        if item["proposed_genre"] and not skip_reason and genre_verifiable and read_genre(destination) != item["proposed_genre"]:
-            raise RuntimeError(f"post-move Genre verification failed: {destination}")
+            after_hash = sha256_file(destination)
+            if sha256_bytes(audio_payload(destination)) != before_audio:
+                raise RuntimeError(f"post-move audio verification failed: {destination}")
+            if serato_digest(destination) != before_serato:
+                raise RuntimeError(f"post-move Serato verification failed: {destination}")
+            genre_verifiable = destination.suffix.casefold() in {".mp3", ".flac", ".m4a"}
+            if item["proposed_genre"] and not skip_reason and genre_verifiable and read_genre(destination) != item["proposed_genre"]:
+                raise RuntimeError(f"post-move Genre verification failed: {destination}")
 
-        record = {
-            "index": index,
-            "source": str(source),
-            "destination": str(destination),
-            "moved": bool(item["move"]),
-            "tag_changed": tag_was_changed,
-            "tag_skipped": bool(skip_reason),
-            "tag_skip_reason": skip_reason,
-            "old_genre": item["current_genre"],
-            "new_genre": item["proposed_genre"],
-            "tag_backup": str(tag_backup) if tag_backup else None,
-            "before_sha256": before_hash,
-            "after_sha256": after_hash,
-            "audio_payload_sha256": before_audio,
-            "serato_frames_sha256": before_serato,
-        }
-        with undo_path.open("a", encoding="utf-8") as handle:
-            handle.write(json.dumps(record, ensure_ascii=False) + "\n")
-            handle.flush()
-            os.fsync(handle.fileno())
-        completed.append(record)
+            record = {
+                "index": index,
+                "source": str(source),
+                "destination": str(destination),
+                "moved": bool(item["move"]),
+                "tag_changed": tag_was_changed,
+                "tag_skipped": bool(skip_reason),
+                "tag_skip_reason": skip_reason,
+                "old_genre": item["current_genre"],
+                "new_genre": item["proposed_genre"],
+                "tag_backup": str(tag_backup) if tag_backup else None,
+                "before_sha256": before_hash,
+                "after_sha256": after_hash,
+                "audio_payload_sha256": before_audio,
+                "serato_frames_sha256": before_serato,
+            }
+            txn.record(**{k: v for k, v in record.items() if k not in {"index", "source", "destination"}})
+            with undo_path.open("a", encoding="utf-8") as handle:
+                handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+                handle.flush()
+                os.fsync(handle.fileno())
+            completed.append(record)
 
     missing_destinations = [r["destination"] for r in completed if not Path(r["destination"]).is_file()]
     surviving_sources = [r["source"] for r in completed if r["moved"] and Path(r["source"]).exists()]
     result = {
         "mode": f"{label}-apply",
         "plan": str(plan_path),
-        "verified_backup": str(backup),
+        "verified_backup_manifest": {
+            "backup_id": manifest["backup_id"],
+            "status": manifest["status"],
+            "file_count": manifest["file_count"],
+        },
         "tracks_processed": len(completed),
         "files_moved": sum(r["moved"] for r in completed),
         "genre_tags_changed": sum(r["tag_changed"] for r in completed),
@@ -418,40 +483,96 @@ def apply(root: Path, plan_path: Path, backup: Path, out_dir: Path, label: str, 
         "missing_destinations": missing_destinations,
         "surviving_moved_sources": surviving_sources,
         "undo_log": str(undo_path),
+        "recovery_journal": str(journal_path),
         "tag_backup_root": str(tag_backup_root),
         "genre_counts": plan["counts"]["genres"],
     }
+    engine.finish(result)
     result_path.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(json.dumps({**result, "result_path": str(result_path)}, indent=2))
 
 
-def undo(undo_path: Path, label: str) -> None:
+def undo(undo_path: Path, label: str, heartbeat: lock_guard.LockHeartbeat) -> None:
+    """Reverse an apply run.
+
+    An undo is a mutation. It moves files and rewrites tags, so it gets the
+    same treatment as an apply: ownership is re-verified before EVERY restore
+    (not just once at startup), and each restore is journaled write-ahead so a
+    crash mid-undo is recoverable too. A half-finished undo that nobody can
+    reconstruct is exactly as damaging as a half-finished apply.
+    """
     records = [json.loads(line) for line in undo_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    journal_path = undo_path.with_name(undo_path.stem + "-undo-recovery.jsonl")
+    engine = mutation_engine.MutationEngine(
+        journal_path, heartbeat, manifest=None, source_root=None,
+        label=f"{label}-undo", allow_unbacked=True,
+    )
+    engine.start({"undo_log": str(undo_path), "records": len(records)})
+
     restored = 0
-    for record in reversed(records):
+    for position, record in enumerate(reversed(records), start=1):
         source = Path(record["source"])
         destination = Path(record["destination"])
-        if record["moved"]:
-            if source.exists():
-                raise RuntimeError(f"undo source already exists: {source}")
-            source.parent.mkdir(parents=True, exist_ok=True)
-            os.rename(destination, source)
-        if record["tag_changed"]:
-            backup = Path(record["tag_backup"])
-            if sha256_file(backup) != record["before_sha256"]:
-                raise RuntimeError(f"tag backup mismatch: {backup}")
-            shutil.copy2(backup, source)
-        if sha256_file(source) != record["before_sha256"]:
-            raise RuntimeError(f"undo verification failed: {source}")
-        restored += 1
-    print(json.dumps({"mode": f"{label}-undo", "restored": restored}, indent=2))
+        # The file to verify preconditions on is wherever it currently lives.
+        current = destination if record["moved"] else source
+        with engine.item(
+            position,
+            kind=mutation_engine.RELOCATE if record["moved"] else mutation_engine.GENRE,
+            source=current,
+            destination=source,
+            require_backup=False,
+            extra_intent={
+                "undoing_index": record.get("index"),
+                "restore_to_sha256": record["before_sha256"],
+                "tag_backup": record.get("tag_backup"),
+            },
+        ) as txn:
+            if record["moved"]:
+                if source.exists():
+                    raise RuntimeError(f"undo source already exists: {source}")
+                source.parent.mkdir(parents=True, exist_ok=True)
+                os.rename(destination, source)
+                txn.mark_mutated()
+            if record["tag_changed"]:
+                backup = Path(record["tag_backup"])
+                if sha256_file(backup) != record["before_sha256"]:
+                    raise RuntimeError(f"tag backup mismatch: {backup}")
+                shutil.copy2(backup, source)
+                txn.mark_mutated()
+            if sha256_file(source) != record["before_sha256"]:
+                raise RuntimeError(f"undo verification failed: {source}")
+            txn.record(restored_to=str(source), sha256=record["before_sha256"])
+            restored += 1
+
+    result = {"mode": f"{label}-undo", "restored": restored, "recovery_journal": str(journal_path)}
+    engine.finish(result)
+    print(json.dumps(result, indent=2))
+
+
+def _dry_run_backup_gate(manifest_path: Path | None, root: Path) -> str:
+    """Report, without mutating, whether the backup gate would let an apply run."""
+    if not manifest_path:
+        return "not checked -- pass --backup-manifest to validate the backup gate"
+    try:
+        manifest = backup_manifest.require_pass(manifest_path, root)
+    except backup_manifest.BackupGateError as exc:
+        return f"WOULD REFUSE: {exc}"
+    return f"PASS ({manifest['backup_id']}, {manifest['file_count']} files)"
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", required=True, type=Path, help="Source folder the plan's paths live under")
     parser.add_argument("--plan", required=True, type=Path, help="plan.json from build_version_genre_plan.py")
-    parser.add_argument("--backup", type=Path, help="Verified pre-apply backup directory (required with --apply)")
+    parser.add_argument(
+        "--backup-manifest", type=Path,
+        help="PASS manifest from backup_manifest.py verify (required with --apply). "
+             "A directory existing is not proof of a backup; this is.",
+    )
+    parser.add_argument(
+        "--require-serato-backup", action="store_true",
+        help="also require the manifest to carry PASS Serato backup evidence",
+    )
     parser.add_argument("--out-dir", type=Path, help="Where undo/result/tag-backup files land (defaults to plan's dir)")
     parser.add_argument("--label", help="Prefix for undo/result files, e.g. 'dub' (defaults to root folder name)")
     parser.add_argument("--apply", action="store_true")
@@ -467,16 +588,31 @@ def main() -> None:
     if args.undo:
         if not args.lock_folder or not args.session:
             raise SystemExit("--lock-folder and --session are required with --undo")
-        lock_guard.require_lock_or_exit(args.lock_folder, args.session)
-        undo(args.undo.resolve(), label)
+        lock = lock_guard.require_lock_or_exit(args.lock_folder, args.session)
+        heartbeat = lock_guard.LockHeartbeat(args.lock_folder, args.session)
+        heartbeat.pin_run_id(lock)
+        undo(args.undo.resolve(), label, heartbeat)
     elif args.apply:
-        if not args.backup:
-            raise SystemExit("--backup is required with --apply")
+        if not args.backup_manifest:
+            raise SystemExit(
+                "--backup-manifest is required with --apply.\n"
+                "Produce one with:\n"
+                "  python3 scripts/backup_manifest.py verify --source-root <root> "
+                "--backup <backup dir> --out manifest.json"
+            )
         if not args.lock_folder or not args.session:
             raise SystemExit("--lock-folder and --session are required with --apply")
-        lock_guard.require_lock_or_exit(args.lock_folder, args.session)
-        heartbeat = lock_guard.LockHeartbeat(args.lock_folder, args.session)
-        apply(root, args.plan, args.backup.resolve(), out_dir, label, heartbeat)
+        try:
+            heartbeat, manifest = mutation_engine.run_preflight(
+                lock_folder=args.lock_folder,
+                session=args.session,
+                manifest_path=args.backup_manifest,
+                source_root=root,
+                serato_required=args.require_serato_backup,
+            )
+        except backup_manifest.BackupGateError as exc:
+            raise SystemExit(f"REFUSING TO MUTATE: {exc}") from exc
+        apply(root, args.plan, manifest, out_dir, label, heartbeat)
     else:
         plan = json.loads(args.plan.read_text(encoding="utf-8"))
         items = plan["items"]
@@ -491,7 +627,7 @@ def main() -> None:
                     "genre_tag_changes_to_apply": sum(item["tag_change"] for item in items) - skipped,
                     "id3v22_tag_writes_skipped": skipped,
                     "unresolved": plan["counts"]["version_categories"].get("_NEEDS CHECK", 0),
-                    "validation": "passed" if args.backup and args.backup.is_dir() else "backup not checked (pass --backup to validate fully)",
+                    "backup_gate": _dry_run_backup_gate(args.backup_manifest, root),
                     "changes_made": 0,
                 },
                 indent=2,

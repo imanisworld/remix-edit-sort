@@ -1,0 +1,528 @@
+#!/usr/bin/env python3
+"""The one approved mutation engine. Every production mutation goes through it.
+
+Before this existed, five apply scripts each carried their own hand-rolled
+copy of "hash it, back it up, write it, verify it, roll back on failure,
+append an undo line". They had drifted: some heartbeat the lock per item and
+some don't, some prove a per-file backup and some check only that a directory
+exists, none of them write recovery intent *before* mutating. Duplicated
+safety code is not safety; it is five chances to get it wrong once.
+
+## The invariant this enforces, per item, in this order
+
+ 1. reverify lock ownership and renew the heartbeat        (abort if lost)
+ 2. validate source preconditions -- exists, is a file,
+    SHA-256 still matches what the preview recorded        (abort if drifted)
+ 3. prove verified backup evidence for THIS file           (abort if absent)
+ 4. write a durable write-ahead INTENT record and fsync it (before any write)
+ 5. perform exactly one mutation
+ 6. verify: expected metadata, audio payload unchanged,
+    Serato payload/frames unchanged where applicable
+ 7. on any verification failure: restore immediately from backup, journal the
+    rollback, and stop the run
+ 8. commit a durable COMPLETED record and fsync it
+ 9. only then move to the next item
+
+Steps 4 and 8 are what make a crash recoverable. If the process dies at any
+point after step 4 and before step 8, the journal still contains the intent
+record -- source path, destination path, pre-mutation SHA-256, backup path
+and its hash, and the mutation class -- which is everything needed to
+deterministically restore or inspect that one item. `recover()` and the
+`--recover` CLI report exactly those in-flight items.
+
+## What "transactional" does and does not mean here
+
+Each ITEM is transactional: it either completes and is verified, or it is
+rolled back to its pre-mutation bytes. A BATCH is not atomic -- there is no
+way to make N independent filesystem renames commit as one unit on APFS -- so
+a failed run leaves earlier items applied and journaled. That is deliberate
+and is why the undo log exists. Do not describe a batch as all-or-nothing.
+
+## Mutation classes
+
+The engine knows about exactly the currently approved classes (see
+MUTATION_CLASSES). A caller asking for anything else is refused, so a new
+kind of mutation cannot quietly ride in on the existing machinery without
+someone extending this list on purpose.
+"""
+
+from __future__ import annotations
+
+import argparse
+import contextlib
+import hashlib
+import json
+import os
+import shutil
+import sys
+from datetime import datetime
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import backup_manifest  # noqa: E402
+import lock_guard  # noqa: E402
+
+SAFETY_CLASSIFICATION = "mutation-engine"
+
+# The mutation classes this engine is approved to perform. Anything else is
+# refused at begin_item() time.
+RELOCATE = "relocate"
+GENRE = "genre"
+GROUPING = "grouping"
+ARTIST_TITLE = "artist_title"
+YEAR_BPM = "year_bpm"
+DELETE = "delete"
+
+MUTATION_CLASSES = frozenset({RELOCATE, GENRE, GROUPING, ARTIST_TITLE, YEAR_BPM, DELETE})
+
+JOURNAL_VERSION = 1
+
+
+class MutationRefused(Exception):
+    """A precondition failed. Nothing was mutated for this item."""
+
+
+class MutationVerificationError(Exception):
+    """The mutation happened but did not verify. The item was rolled back."""
+
+
+def sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as handle:
+        while chunk := handle.read(4 * 1024 * 1024):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+class RecoveryJournal:
+    """Append-only, fsync-per-record write-ahead log.
+
+    Every record is one JSON line flushed and fsync'd before the call
+    returns, so an intent record is on stable storage before the mutation it
+    describes is attempted. Buffered writes would defeat the entire point:
+    the crash window this closes is precisely the one where the process dies
+    with the record still in a userspace buffer.
+    """
+
+    def __init__(self, path: Path):
+        self.path = Path(path)
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+
+    def append(self, record: dict) -> dict:
+        record = {"ts": datetime.now().astimezone().isoformat(timespec="seconds"), **record}
+        with self.path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        return record
+
+    def read(self) -> list[dict]:
+        if not self.path.is_file():
+            return []
+        records = []
+        for line in self.path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                records.append(json.loads(line))
+            except json.JSONDecodeError:
+                # A torn final line means the process died mid-append. That is
+                # itself recovery-relevant information, not something to hide.
+                records.append({"type": "torn_record", "raw": line})
+        return records
+
+
+class _ItemTransaction:
+    """One journaled mutation. Created by MutationEngine.item()."""
+
+    def __init__(self, engine: "MutationEngine", index: int, intent: dict):
+        self.engine = engine
+        self.index = index
+        self.intent = intent
+        self.mutated = False
+        self._rollback = None
+        self.outcome: dict = {}
+
+    def on_rollback(self, callback) -> None:
+        """Register how to restore this item if verification fails."""
+        self._rollback = callback
+
+    def mark_mutated(self) -> None:
+        """Call immediately after the single physical mutation succeeds.
+
+        This is what tells the engine that a failure from here on needs a
+        rollback rather than a plain abort, and it is recorded in the journal
+        so recovery can tell "died before touching anything" apart from
+        "died with the file already changed".
+        """
+        self.mutated = True
+        self.engine.journal.append({
+            "type": "mutated",
+            "run_id": self.engine.run_id,
+            "index": self.index,
+            "source": self.intent.get("source"),
+        })
+
+    def record(self, **fields) -> None:
+        """Attach result fields to the completion record."""
+        self.outcome.update(fields)
+
+    def do_rollback(self, reason: str) -> None:
+        restored = False
+        error = None
+        if self._rollback is not None and self.mutated:
+            try:
+                self._rollback()
+                restored = True
+            except Exception as exc:  # noqa: BLE001 - recorded, then re-surfaced
+                error = f"{type(exc).__name__}: {exc}"
+        self.engine.journal.append({
+            "type": "rolled_back",
+            "run_id": self.engine.run_id,
+            "index": self.index,
+            "source": self.intent.get("source"),
+            "reason": reason,
+            "restored": restored,
+            "rollback_error": error,
+        })
+
+
+class MutationEngine:
+    """Drives a batch of mutations under lock, backup evidence and a WAL.
+
+    Usage from an apply script::
+
+        engine = MutationEngine(journal_path, heartbeat, manifest, source_root, label)
+        for index, item in enumerate(items, start=1):
+            with engine.item(index, kind=GENRE, source=path, expected_sha256=item["sha256"]) as txn:
+                txn.on_rollback(lambda: shutil.copy2(backup, path))
+                write_genre(path, new_genre)
+                txn.mark_mutated()
+                verify(...)            # raise on any mismatch
+                txn.record(old_genre=..., new_genre=...)
+
+    The context manager does the heartbeat, the precondition checks, the
+    backup proof, the intent record, the rollback-on-exception and the
+    completion record. The caller supplies only what is specific to its
+    mutation class.
+    """
+
+    def __init__(
+        self,
+        journal_path: Path,
+        heartbeat,
+        manifest: dict | None,
+        source_root: Path | None,
+        label: str,
+        run_id: str | None = None,
+        allow_unbacked: bool = False,
+    ):
+        self.journal = RecoveryJournal(journal_path)
+        self.heartbeat = heartbeat
+        self.manifest = manifest
+        self.source_root = Path(source_root) if source_root else None
+        self.label = label
+        self.run_id = run_id or datetime.now().astimezone().strftime("%Y%m%d-%H%M%S-") + os.urandom(4).hex()
+        # allow_unbacked exists ONLY for synthetic tests of engine mechanics.
+        # Production callers must pass a manifest; run_preflight() enforces it.
+        self.allow_unbacked = allow_unbacked
+        self.completed: list[dict] = []
+        self._started = False
+
+    def start(self, plan_summary: dict) -> None:
+        """Journal the run header. Call once, before the first item."""
+        if self.manifest is None and not self.allow_unbacked:
+            raise MutationRefused(
+                "MutationEngine requires a verified backup manifest for production mutation"
+            )
+        self.journal.append({
+            "type": "run_start",
+            "journal_version": JOURNAL_VERSION,
+            "run_id": self.run_id,
+            "label": self.label,
+            "source_root": str(self.source_root) if self.source_root else None,
+            "backup_id": (self.manifest or {}).get("backup_id"),
+            "backup_manifest_sha256": (self.manifest or {}).get("manifest_sha256"),
+            "plan": plan_summary,
+        })
+        self._started = True
+
+    def finish(self, result: dict) -> None:
+        self.journal.append({
+            "type": "run_complete",
+            "run_id": self.run_id,
+            "items_completed": len(self.completed),
+            "result": result,
+        })
+
+    @contextlib.contextmanager
+    def item(
+        self,
+        index: int,
+        kind: str,
+        source: Path,
+        expected_sha256: str | None = None,
+        destination: Path | None = None,
+        backup_path: Path | None = None,
+        require_backup: bool = True,
+        extra_intent: dict | None = None,
+    ):
+        if kind not in MUTATION_CLASSES:
+            raise MutationRefused(
+                f"{kind!r} is not an approved mutation class "
+                f"(approved: {sorted(MUTATION_CLASSES)})"
+            )
+        if not self._started:
+            raise MutationRefused("MutationEngine.start() must be called before the first item")
+
+        source = Path(source)
+
+        # 1. Ownership, before anything else. Raises SystemExit if lost.
+        if self.heartbeat is not None:
+            self.heartbeat.beat()
+
+        # 2. Source preconditions.
+        if not source.is_file():
+            raise MutationRefused(f"missing source: {source}")
+        actual = sha256_file(source)
+        if expected_sha256 is not None and actual != expected_sha256:
+            raise MutationRefused(
+                f"source hash changed since preview, refusing to mutate: {source} "
+                f"({actual} != {expected_sha256})"
+            )
+
+        # 3. Backup evidence for this exact file.
+        backup_sha = None
+        if require_backup:
+            if self.manifest is not None and self.source_root is not None:
+                backup_sha = backup_manifest.require_item_backed_up(
+                    self.manifest, self.source_root, source
+                )
+                if backup_sha != actual:
+                    raise MutationRefused(
+                        f"verified backup for {source} records {backup_sha}, but the file on disk "
+                        f"is now {actual} -- it changed after the backup was taken"
+                    )
+            elif not self.allow_unbacked:
+                raise MutationRefused(
+                    f"no backup manifest available to authorize mutating {source}"
+                )
+        if backup_path is not None:
+            backup_path = Path(backup_path)
+            if not backup_path.is_file():
+                raise MutationRefused(f"per-item backup copy missing: {backup_path}")
+            if sha256_file(backup_path) != actual:
+                raise MutationRefused(f"per-item backup copy hash mismatch: {backup_path}")
+
+        intent = {
+            "type": "intent",
+            "run_id": self.run_id,
+            "index": index,
+            "kind": kind,
+            "source": str(source),
+            "destination": str(destination) if destination else None,
+            "before_sha256": actual,
+            "backup_path": str(backup_path) if backup_path else None,
+            "backup_sha256": backup_sha,
+            "backup_id": (self.manifest or {}).get("backup_id"),
+            **(extra_intent or {}),
+        }
+        # 4. Durable intent BEFORE the mutation.
+        self.journal.append(intent)
+
+        txn = _ItemTransaction(self, index, intent)
+        try:
+            yield txn
+        except BaseException as exc:  # noqa: BLE001 - journal, restore, re-raise
+            txn.do_rollback(f"{type(exc).__name__}: {exc}")
+            raise
+        # 8. Durable completion record.
+        completion = {
+            "type": "completed",
+            "run_id": self.run_id,
+            "index": index,
+            "kind": kind,
+            "source": str(source),
+            "destination": str(destination) if destination else None,
+            "before_sha256": actual,
+            "backup_path": str(backup_path) if backup_path else None,
+            "mutated": txn.mutated,
+            **txn.outcome,
+        }
+        self.journal.append(completion)
+        self.completed.append(completion)
+
+
+def restore_from_backup(backup: Path, target: Path, expected_sha256: str) -> None:
+    """Standard rollback: copy the verified backup back and prove it landed."""
+    backup, target = Path(backup), Path(target)
+    if sha256_file(backup) != expected_sha256:
+        raise MutationVerificationError(
+            f"refusing to roll back from a backup whose hash does not match the pre-mutation "
+            f"state: {backup}"
+        )
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(backup, target)
+    if sha256_file(target) != expected_sha256:
+        raise MutationVerificationError(f"rollback verification failed: {target}")
+
+
+def recover(journal_path: Path) -> dict:
+    """Report what a crashed run left behind.
+
+    An item is IN-FLIGHT if the journal has its intent record but no
+    completed/rolled_back record. Those are the items a human must inspect or
+    restore. `mutated` says whether the physical write had already happened
+    when the process died, which is the difference between "nothing to do" and
+    "restore this from its backup".
+
+    An item is settled by a `completed` record, or by a `rolled_back` record
+    that reports `restored: true`. A `rolled_back` record with
+    `restored: false` does NOT settle it: that means the engine mutated the
+    file, verification failed, and the automatic restore then failed too (a
+    corrupted backup, a permissions error, a backup copy that vanished). The
+    file is on disk in its broken mutated state and needs a human. Those items
+    are reported with `state: "ROLLBACK_FAILED"` and the original
+    `rollback_error`, and they keep `clean` false.
+    """
+    journal = RecoveryJournal(Path(journal_path))
+    records = journal.read()
+    intents: dict[tuple, dict] = {}
+    mutated: set[tuple] = set()
+    settled: set[tuple] = set()
+    failed_rollbacks: dict[tuple, dict] = {}
+    torn = 0
+    runs: dict[str, dict] = {}
+
+    for record in records:
+        kind = record.get("type")
+        if kind == "torn_record":
+            torn += 1
+            continue
+        if kind == "run_start":
+            runs[record.get("run_id")] = {"started": record.get("ts"), "complete": False}
+            continue
+        if kind == "run_complete":
+            runs.setdefault(record.get("run_id"), {})["complete"] = True
+            continue
+        key = (record.get("run_id"), record.get("index"))
+        if kind == "intent":
+            intents[key] = record
+        elif kind == "mutated":
+            mutated.add(key)
+        elif kind == "completed":
+            settled.add(key)
+        elif kind == "rolled_back":
+            # A rollback record only settles an item if the rollback actually
+            # RESTORED it. do_rollback() journals this record either way -- with
+            # restored: false and a rollback_error when the restore itself threw
+            # (a corrupted backup, a permissions failure, a vanished backup
+            # copy). Treating that as settled was a real hole: the file is still
+            # sitting on disk in its broken, half-mutated state, and recovery
+            # would have cheerfully reported "clean": true. An item whose
+            # rollback failed is the single most urgent thing a human needs to
+            # see, so it stays in-flight.
+            if record.get("restored"):
+                settled.add(key)
+            else:
+                failed_rollbacks[key] = record
+
+    in_flight = []
+    for key, intent in intents.items():
+        if key in settled:
+            continue
+        failed = failed_rollbacks.get(key)
+        entry = {
+            "run_id": intent.get("run_id"),
+            "index": intent.get("index"),
+            "kind": intent.get("kind"),
+            "source": intent.get("source"),
+            "destination": intent.get("destination"),
+            "before_sha256": intent.get("before_sha256"),
+            "backup_path": intent.get("backup_path"),
+            "backup_sha256": intent.get("backup_sha256"),
+            "backup_id": intent.get("backup_id"),
+            "mutation_had_started": key in mutated,
+            "restorable": bool(intent.get("backup_path") or intent.get("backup_sha256")),
+            "rollback_attempted": failed is not None,
+            "rollback_error": failed.get("rollback_error") if failed else None,
+            "failure_reason": failed.get("reason") if failed else None,
+        }
+        if failed is not None:
+            entry["state"] = "ROLLBACK_FAILED"
+            entry["action_required"] = (
+                "The mutation was performed, verification failed, and the automatic "
+                "restore ALSO failed. This file is on disk in its mutated state. "
+                "Restore it manually from backup_path and confirm it hashes to "
+                "before_sha256 before doing anything else with this folder."
+            )
+        else:
+            entry["state"] = "INTERRUPTED"
+            entry["action_required"] = (
+                "The run stopped between the intent record and the completion record. "
+                "Compare the file against before_sha256 and restore from backup_path "
+                "if it was already mutated."
+            )
+        in_flight.append(entry)
+    in_flight.sort(key=lambda entry: (str(entry["run_id"]), entry["index"] or 0))
+
+    rollback_failures = [entry for entry in in_flight if entry["state"] == "ROLLBACK_FAILED"]
+    return {
+        "journal": str(journal_path),
+        "records": len(records),
+        "torn_records": torn,
+        "runs": runs,
+        "items_intended": len(intents),
+        "items_settled": len(settled),
+        "in_flight": in_flight,
+        "rollback_failures": len(rollback_failures),
+        "clean": not in_flight and torn == 0,
+    }
+
+
+def run_preflight(
+    *,
+    lock_folder: str,
+    session: str,
+    manifest_path: Path,
+    source_root: Path,
+    serato_required: bool = False,
+    stale_hours: float = 6.0,
+) -> tuple[lock_guard.LockHeartbeat, dict]:
+    """The single entry point every production apply script calls first.
+
+    Proves, in order: the lock is owned right now, and the backup manifest
+    PASSes for this exact source root. Returns a heartbeat pinned to the lock
+    instance that was just proven, plus the verified manifest.
+
+    Either failure aborts before a single file is touched -- SystemExit for
+    the lock (so the CLI exit is unambiguous), BackupGateError for the backup.
+    """
+    lock = lock_guard.require_lock_or_exit(lock_folder, session, stale_hours)
+    heartbeat = lock_guard.LockHeartbeat(lock_folder, session, stale_hours)
+    heartbeat.pin_run_id(lock)
+    manifest = backup_manifest.require_pass(
+        Path(manifest_path), Path(source_root), serato_required=serato_required
+    )
+    return heartbeat, manifest
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = parser.add_subparsers(dest="command", required=True)
+    p_recover = sub.add_parser("recover", help="report in-flight items from a crashed run")
+    p_recover.add_argument("--journal", required=True, type=Path)
+    args = parser.parse_args()
+
+    report = recover(args.journal)
+    print(json.dumps(report, indent=2, ensure_ascii=False))
+    return 0 if report["clean"] else 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())

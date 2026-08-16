@@ -42,3 +42,25 @@ _Serato_/
 .env
 .env.*
 !.env.example
+
+# Raw library inventories and scans, anywhere in the tree.
+#
+# These are complete listings of real music folders: absolute local paths, the
+# whole machine-specific directory structure, and per-track private metadata.
+# The root-only patterns above did not cover the nested per-folder copies that
+# the survey pipeline actually writes (handoff/.../<folder>/inventory.json),
+# and 143 MB of them reached HEAD before this was noticed. See
+# handoff/session-2026-08-15/survey/REMOVED-INVENTORIES.md.
+#
+# Plans, undo logs and result files stay tracked -- those are the audit
+# evidence of what a run DID, which an inventory is not.
+**/inventory.json
+**/inventory.csv
+**/tracks.json
+**/full-inventory/
+**/post-apply-inventory/
+
+# Per-run mutation artifacts, anywhere in the tree.
+**/*-recovery-*.jsonl
+**/backup-manifest.json
+**/*-backup-manifest.json

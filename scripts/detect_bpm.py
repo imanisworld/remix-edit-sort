@@ -14,6 +14,9 @@ Usage:
     python3 detect_bpm.py [--tracks outputs/tracks.json] [--out outputs/bpm.json]
                           [--limit N] [--redetect] [--jobs 4]
 """
+
+# Infrastructure: mutates only files this module owns (locks / its own temp files).
+SAFETY_CLASSIFICATION = "infrastructure"
 import os, sys, json, wave, argparse, tempfile, subprocess
 from concurrent.futures import ThreadPoolExecutor
 

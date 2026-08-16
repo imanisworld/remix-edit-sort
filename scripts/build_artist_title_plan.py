@@ -12,6 +12,9 @@ anything from a filename with zero or multiple " - " separators (ambiguous).
 
 from __future__ import annotations
 
+# Preview-only: builds a plan for human review. Never mutates library media.
+SAFETY_CLASSIFICATION = "preview-only"
+
 import argparse
 import csv
 import json

@@ -8,6 +8,9 @@ or SHA-256 changes. It also writes an immutable run manifest with report hashes.
 
 from __future__ import annotations
 
+# Read-only: inspects the library and writes reports/derived data only.
+SAFETY_CLASSIFICATION = "read-only"
+
 import argparse
 import hashlib
 import json

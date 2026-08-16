@@ -11,7 +11,15 @@ Usage:
     python3 build_plan.py [--tracks outputs/tracks.json] [--bpm outputs/bpm.json]
                           [--dest <folder>] [--out outputs/plan.json]
 """
-import os, re, sys, json, argparse, collections, unicodedata
+
+# Preview-only: builds a plan for human review. Never mutates library media.
+SAFETY_CLASSIFICATION = "preview-only"
+import os, re, sys, json, argparse, collections
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import unicodedata
+
+import duplicate_semantics
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from skill_paths import load_reference
@@ -169,27 +177,48 @@ def main():
 
     items = [plan_one(t, bpms.get(t["path"])) for t in tracks]
 
-    # Two files landing on one name are usually the same track downloaded twice
-    # (SoundCloud appends "(1)"). Same name AND same rounded duration = duplicate;
-    # otherwise they're different records that need disambiguating.
+    # Two files landing on one destination name COLLIDE. That is all it means.
+    #
+    # This used to call same-name-plus-duration-within-2s a "duplicate" and
+    # file it under _Unsorted/Duplicates. In a DJ library that heuristic fires
+    # on exactly the pairs that must never be conflated: "(Clean)" vs
+    # "(Dirty)", "(Intro)" vs "(Intro Dirty)", two different edits of one
+    # track -- same length, different masters, both wanted. Calling those
+    # duplicates is how a library loses records.
+    #
+    # The repository-wide truth model (scripts/duplicate_semantics.py) allows
+    # only one basis for EXACT_DUPLICATE: an identical SHA-256 over the whole
+    # file. Filename and duration similarity produce REVIEW, nothing more.
+    # This planner has no hashes available -- it works from a filename/duration
+    # scan -- so it can never produce that verdict, and no longer pretends to.
     seen = {}
     for it in items:
         key = os.path.join(it["dest_dir"], it["dest_name"]).lower()
+        it["duplicate_of"] = None
         if key not in seen:
             seen[key] = it
-            it["duplicate_of"] = None
+            it["collision_with"] = None
+            it["duplicate_verdict"] = None
         else:
             first = seen[key]
-            if abs(it["duration"] - first["duration"]) < 2.0:
-                it["duplicate_of"] = first["path"]
-                it["bucket"] = "duplicate"
-                it["dest_dir"] = os.path.join(UNSORTED, "Duplicates")
-                it["needs_review"] = True
-            else:
-                it["duplicate_of"] = None
+            verdict = duplicate_semantics.classify(
+                name_a=it.get("dest_name", ""), name_b=first.get("dest_name", ""),
+                duration_a=it.get("duration"), duration_b=first.get("duration"),
+            )
+            it["collision_with"] = first["path"]
+            it["duplicate_verdict"] = verdict["verdict"]
+            it["duplicate_verdict_reason"] = verdict["reason"]
+            if verdict["verdict"] == duplicate_semantics.RELATED_VERSION:
+                # Intentionally different versions. Keep BOTH, disambiguated.
                 stem, ext = os.path.splitext(it["dest_name"])
                 n = sum(1 for x in items if x.get("dest_name", "").startswith(stem)) + 1
                 it["dest_name"] = f"{stem} ({n}){ext}"
+            else:
+                # REVIEW: a possible collision a human must resolve. Never
+                # deleted, never overwritten, never labelled a duplicate.
+                it["bucket"] = "possible_collision"
+                it["dest_dir"] = os.path.join(UNSORTED, "Possible Collisions")
+                it["needs_review"] = True
         it["dest"] = os.path.join(dest_root, it["dest_dir"], it["dest_name"])
 
     json.dump({"root": root, "dest_root": dest_root, "items": items},
@@ -199,7 +228,8 @@ def main():
 
     b = collections.Counter(i["bucket"] for i in items)
     print(f"  {b['remix'] + b['remix_unknown']} remixes/edits, {b['original']} originals, "
-          f"{b['duplicate']} duplicates, {b['long_mix']} long mixes, {b['unsorted']} unsorted",
+          f"{b['possible_collision']} possible collisions (NOT duplicates), "
+          f"{b['long_mix']} long mixes, {b['unsorted']} unsorted",
           file=sys.stderr)
     print(f"  {sum(1 for i in items if i['needs_review'])} flagged for review", file=sys.stderr)
 
@@ -218,11 +248,12 @@ def write_preview(items, dest_root, path):
          f"Destination: `{dest_root}`\n\n",
          f"**{len(items)} files** — "
          f"{by_bucket['remix'] + by_bucket['remix_unknown']} remixes/edits, "
-         f"{by_bucket['original']} originals, {by_bucket['duplicate']} duplicates, "
+         f"{by_bucket['original']} originals, "
+         f"{by_bucket['possible_collision']} possible collisions (NOT duplicates), "
          f"{by_bucket['long_mix']} long mixes, {by_bucket['unsorted']} unsorted\n\n"]
     review = [i for i in items if i["needs_review"]]
     L.append(f"**{len(review)} need review** — unclassified genre, low-confidence BPM, "
-             f"unknown remixer, duplicate, or a recorded set.\n")
+             f"unknown remixer, a possible destination collision, or a recorded set.\n")
 
     L.append("\n---\n\n## Remixes & Edits\n")
     for genre in sorted(remix_tree, key=lambda g: -sum(len(v) for v in remix_tree[g].values())):
@@ -255,7 +286,9 @@ def write_preview(items, dest_root, path):
             if i["bpm_conflict"]: why.append(f"BPM {i['bpm_conflict']}")
             if i["bucket"] == "long_mix": why.append("long mix")
             if i["bucket"] == "unsorted": why.append("unparseable")
-            if i["bucket"] == "duplicate": why.append("duplicate")
+            if i["bucket"] == "possible_collision":
+                why.append("possible collision -- needs a human decision; "
+                           "similarity is not duplicate proof (SHA-256 is)")
             if i["bucket"] == "remix_unknown": why.append("unknown remixer")
             L.append(f"- `{os.path.basename(i['path'])[:70]}` → `{i['dest_dir']}` "
                      f"({', '.join(why) or 'check'})\n")

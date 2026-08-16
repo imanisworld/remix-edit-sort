@@ -8,6 +8,9 @@ apart from --root and the report title). Never writes inside the library root.
 
 from __future__ import annotations
 
+# Read-only: inspects the library and writes reports/derived data only.
+SAFETY_CLASSIFICATION = "read-only"
+
 import argparse
 import collections
 import csv
