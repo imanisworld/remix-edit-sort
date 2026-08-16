@@ -118,7 +118,12 @@
     "jungle": "Jungle",
     "garage house": "Garage House",
     "speed garage": "Speed Garage",
-    "garage jungle": "Garage Jungle"
+    "garage jungle": "Garage Jungle",
+    "hiphop/rap": "Hip-Hop",
+    "alternative hip-hop": "Alternative Hip-Hop",
+    "footwork; juke": "Juke & Footwork",
+    "footwork; ghetto house; juke": "Juke & Footwork",
+    "electronic; footwork; juke": "Juke & Footwork"
   },
   "filename_keywords": [
     {"contains": "ghettotech", "genre": "Ghettotech", "evidence": "filename explicitly says Ghettotech"},
