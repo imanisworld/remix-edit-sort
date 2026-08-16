@@ -11,6 +11,9 @@ Usage:
     python3 build_plan.py [--tracks outputs/tracks.json] [--bpm outputs/bpm.json]
                           [--dest <folder>] [--out outputs/plan.json]
 """
+
+# Preview-only: builds a plan for human review. Never mutates library media.
+SAFETY_CLASSIFICATION = "preview-only"
 import os, re, sys, json, argparse, collections, unicodedata
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

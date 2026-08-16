@@ -16,6 +16,9 @@ future session; would need actual listening, not metadata work.
 
 from __future__ import annotations
 
+# Read-only: inspects the library and writes reports/derived data only.
+SAFETY_CLASSIFICATION = "read-only"
+
 import argparse
 import json
 import sys

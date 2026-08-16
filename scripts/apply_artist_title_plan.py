@@ -11,6 +11,9 @@ legitimately happen) is treated as a skip rather than a hard failure.
 
 from __future__ import annotations
 
+# Every library mutation in this module goes through scripts/mutation_engine.py.
+SAFETY_CLASSIFICATION = "engine-user"
+
 import argparse
 import hashlib
 import json

@@ -9,6 +9,9 @@ Zero installs beyond mutagen (already present). No ffmpeg, no Homebrew.
 Usage:
     python3 scan_library.py <folder> [--out outputs/tracks.json]
 """
+
+# Read-only: inspects the library and writes reports/derived data only.
+SAFETY_CLASSIFICATION = "read-only"
 import os, re, sys, json, argparse, unicodedata
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

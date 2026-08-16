@@ -3,6 +3,9 @@
 
 from __future__ import annotations
 
+# Read-only: inspects the library and writes reports/derived data only.
+SAFETY_CLASSIFICATION = "read-only"
+
 import argparse
 import json
 from pathlib import Path

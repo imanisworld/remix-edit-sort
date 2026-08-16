@@ -12,6 +12,9 @@ only when you explicitly want it in the local output artifact.
 
 from __future__ import annotations
 
+# Read-only: inspects the library and writes reports/derived data only.
+SAFETY_CLASSIFICATION = "read-only"
+
 import argparse
 import csv
 import hashlib

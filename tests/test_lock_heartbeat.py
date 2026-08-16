@@ -78,19 +78,68 @@ class LockHeartbeatTests(unittest.TestCase):
         # lock on disk must still belong to s2, untouched by s1's failed beat.
         self.assertEqual(folder_lock.read_lock("Hip Hop")["session"], "s2")
 
-    def test_heartbeat_does_not_renew_faster_than_its_interval(self):
+    def test_heartbeat_skips_only_the_renewal_write_inside_its_interval(self):
+        """Rate limiting must throttle the WRITE, never the ownership CHECK.
+
+        The original implementation returned immediately when the last beat
+        was inside the interval, so a fast loop could mutate hundreds of files
+        between two ownership checks -- reopening the exact gap the heartbeat
+        exists to close. Now every beat verifies; only the durable renewal is
+        throttled.
+        """
         _run(folder_lock.cmd_acquire, folder="Hip Hop", session="s1")
         heartbeat = lock_guard.LockHeartbeat("Hip Hop", "s1", interval_seconds=999)
         heartbeat.beat()
 
-        # Roll the on-disk timestamp back to prove a second beat() inside
-        # the interval window is a genuine no-op, not a disguised renewal.
+        # Backdate a few minutes: distinguishable from "now", but still well
+        # inside the 6h staleness window, so this isolates the rate-limiter
+        # from staleness rules.
+        from datetime import datetime, timedelta
+        backdated = (datetime.now().astimezone() - timedelta(minutes=3)).isoformat(timespec="seconds")
         lock = folder_lock.read_lock("Hip Hop")
-        lock["last_renewed_at"] = "2000-01-01T00:00:00-04:00"
+        lock["last_renewed_at"] = backdated
         folder_lock.write_lock("Hip Hop", lock)
 
         heartbeat.beat()
-        self.assertEqual(folder_lock.read_lock("Hip Hop")["last_renewed_at"], "2000-01-01T00:00:00-04:00")
+        self.assertEqual(folder_lock.read_lock("Hip Hop")["last_renewed_at"], backdated,
+                         "an in-interval beat must not perform a redundant renewal write")
+
+    def test_in_interval_beat_still_fails_closed_when_ownership_is_gone(self):
+        """The check is never skipped, even inside the rate-limit window."""
+        _run(folder_lock.cmd_acquire, folder="Hip Hop", session="s1")
+        heartbeat = lock_guard.LockHeartbeat("Hip Hop", "s1", interval_seconds=999)
+        heartbeat.beat()
+
+        # Ownership changes hands immediately after the first beat -- well
+        # inside the 999s interval the old implementation would have coasted on.
+        _run(folder_lock.cmd_release, folder="Hip Hop", session="s2", force=True,
+             reason="reclaim inside the heartbeat interval", agent="codex")
+        _run(folder_lock.cmd_acquire, folder="Hip Hop", session="s2", agent="codex")
+
+        with self.assertRaises(SystemExit):
+            heartbeat.beat()
+
+    def test_heartbeat_pinned_to_run_id_rejects_a_same_name_reacquisition(self):
+        """A stale owner must not adopt a lock it never acquired.
+
+        Session name alone is not identity: if s1's lock is reclaimed and a
+        *new* lock is later created under the name "s1" (a restarted agent,
+        say), s1's original in-flight run must still stop -- it no longer owns
+        the folder it was mutating, whatever the name on the file says.
+        """
+        _run(folder_lock.cmd_acquire, folder="Hip Hop", session="s1")
+        heartbeat = lock_guard.LockHeartbeat("Hip Hop", "s1", interval_seconds=0)
+        heartbeat.beat()  # pins the original run_id
+        original_run_id = heartbeat.run_id
+        self.assertTrue(original_run_id)
+
+        _run(folder_lock.cmd_release, folder="Hip Hop", session="s2", force=True,
+             reason="reclaimed", agent="codex")
+        _run(folder_lock.cmd_acquire, folder="Hip Hop", session="s1")  # same NAME, new run
+
+        self.assertNotEqual(folder_lock.read_lock("Hip Hop")["run_id"], original_run_id)
+        with self.assertRaises(SystemExit):
+            heartbeat.beat()
 
     def test_forced_beat_bypasses_the_interval(self):
         _run(folder_lock.cmd_acquire, folder="Hip Hop", session="s1")

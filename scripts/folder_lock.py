@@ -91,6 +91,9 @@ Usage:
 
 from __future__ import annotations
 
+# Infrastructure: mutates only files this module owns (locks / its own temp files).
+SAFETY_CLASSIFICATION = "infrastructure"
+
 import argparse
 import contextlib
 import fcntl
@@ -172,14 +175,137 @@ def read_lock(folder: str) -> dict | None:
 
 
 def write_lock(folder: str, lock: dict) -> None:
-    """Atomically replace the lock file's contents (temp file + os.replace,
-    same filesystem, so a reader outside the mutex -- e.g. `status` -- can
-    never observe a partially-written file)."""
+    """Durably and atomically replace the lock file's contents.
+
+    Temp file + fsync(temp) + os.replace + fsync(directory), same filesystem,
+    so (a) a reader outside the mutex -- e.g. `status` -- can never observe a
+    partially-written file, and (b) a renewal that this process reported as
+    successful is on stable storage before the caller proceeds to mutate the
+    library. Losing a heartbeat renewal to the page cache after a crash would
+    make an actively-owned lock look older than it is, which is exactly the
+    condition that lets someone else reclaim a folder out from under a run.
+    """
     LOCKS_DIR.mkdir(parents=True, exist_ok=True)
     target = lock_path(folder)
     tmp = target.with_suffix(target.suffix + f".tmp-{os.getpid()}-{uuid.uuid4().hex[:8]}")
-    tmp.write_text(json.dumps(lock, indent=2) + "\n", encoding="utf-8")
+    with open(tmp, "w", encoding="utf-8") as handle:
+        handle.write(json.dumps(lock, indent=2) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
     os.replace(tmp, target)
+    dir_fd = os.open(str(LOCKS_DIR), os.O_RDONLY)
+    try:
+        os.fsync(dir_fd)
+    finally:
+        os.close(dir_fd)
+
+
+class LockOwnershipError(Exception):
+    """Ownership of a folder lock could not be verified. Always fail closed.
+
+    `reason` is a short machine-readable code so callers can distinguish the
+    cases without string-matching a human message.
+    """
+
+    def __init__(self, reason: str, message: str, lock: dict | None = None):
+        super().__init__(message)
+        self.reason = reason
+        self.lock = lock
+
+
+def verify_and_renew(
+    folder: str,
+    session: str,
+    stale_hours: float = 6.0,
+    expect_run_id: str | None = None,
+    renew: bool = True,
+) -> dict:
+    """Atomically prove `session` owns `folder` right now, then renew it.
+
+    `renew=False` performs every ownership check identically but skips the
+    durable rewrite. It exists for a heartbeat that has already renewed
+    recently and only needs to re-prove ownership before the next mutation:
+    the *check* must never be skipped, but an fsync per item is wasteful when
+    the recorded timestamp is already fresh. Verification is unaffected --
+    the on-disk lock is still read under the mutex either way.
+
+    This is THE ownership primitive. Read-check-renew-write happens as one
+    serialized critical section under the same per-folder `flock()` mutex that
+    acquire/touch/release use. Before this existed, the heartbeat path in
+    lock_guard did that sequence *outside* the mutex, which is a genuine
+    ownership race: process A reads "I own this", process B (having waited out
+    the stale window) reclaims the folder inside the mutex, then A -- still
+    holding the dict it read a moment ago -- writes it back and silently
+    resurrects its own ownership over B's. A then keeps mutating files in a
+    folder B believes it owns exclusively.
+
+    Fail-closed guarantees, in evaluation order:
+
+    * a lock file that exists but does not parse is an ownership FAILURE, never
+      "no lock" (`CorruptLock` is caught here and converted, so no caller can
+      accidentally let a torn write look like a free folder);
+    * a lock whose payload is not a JSON object, or is missing `session`, is
+      malformed and fails;
+    * absence of a lock file fails (the heartbeat's whole job is proving a lock
+      is *still* there);
+    * a stale lock fails and is NOT renewed -- staleness is evaluated on the
+      value just read inside the mutex, so a lock that aged out cannot be
+      revived by its original owner's next beat;
+    * the recorded `session` must equal `session` exactly;
+    * `expect_run_id`, when given, must equal the lock's `run_id` exactly. This
+      is what stops the subtle resurrection case that a session-name check alone
+      misses: if another process reclaims the folder and a *new* lock is later
+      created under the same session name, the run_id differs, so the original
+      run's heartbeat still fails instead of adopting a lock it never acquired.
+
+    Only after every check passes is `last_renewed_at` bumped and written
+    durably, still inside the mutex.
+    """
+    with _folder_mutex(folder):
+        try:
+            existing = read_lock(folder)
+        except CorruptLock as exc:
+            raise LockOwnershipError(
+                "corrupt",
+                f"lock file for folder {folder!r} exists but is not valid JSON: {exc}",
+            ) from exc
+        if existing is None:
+            raise LockOwnershipError(
+                "missing", f"no lock exists for folder {folder!r}"
+            )
+        if not isinstance(existing, dict) or not isinstance(existing.get("session"), str):
+            raise LockOwnershipError(
+                "malformed",
+                f"lock file for folder {folder!r} is missing a usable 'session' field",
+                existing if isinstance(existing, dict) else None,
+            )
+        staleness = evaluate_staleness(existing, stale_hours)
+        if staleness["stale"]:
+            raise LockOwnershipError(
+                "stale",
+                f"lock for folder {folder!r} is stale ({staleness['reason']})",
+                existing,
+            )
+        if existing.get("session") != session:
+            raise LockOwnershipError(
+                "not_owner",
+                f"folder {folder!r} is locked by a different session "
+                f"({existing.get('session')!r}), not {session!r}",
+                existing,
+            )
+        if expect_run_id is not None and existing.get("run_id") != expect_run_id:
+            raise LockOwnershipError(
+                "run_id_mismatch",
+                f"folder {folder!r} lock run_id is {existing.get('run_id')!r}, "
+                f"not the {expect_run_id!r} this run acquired -- ownership changed hands",
+                existing,
+            )
+        if not renew:
+            return existing
+        renewed = dict(existing)
+        renewed["last_renewed_at"] = datetime.now().astimezone().isoformat(timespec="seconds")
+        write_lock(folder, renewed)
+        return renewed
 
 
 def current_hostname() -> str:
@@ -440,37 +566,16 @@ def cmd_require(args: argparse.Namespace) -> int:
     lock (see module docstring: this is what keeps an actively-working
     session's lock from going stale mid-run).
     """
-    with _folder_mutex(args.folder):
-        try:
-            existing = read_lock(args.folder)
-        except CorruptLock as exc:
-            print(json.dumps({"held": False, "reason": f"lock file is corrupt: {exc}"}, indent=2))
-            return 1
-        if not existing:
-            print(json.dumps({
-                "held": False,
-                "reason": "no lock exists for this folder -- run 'acquire' before applying",
-            }, indent=2))
-            return 1
-        staleness = evaluate_staleness(existing, args.stale_hours)
-        if staleness["stale"]:
-            print(json.dumps({
-                "held": False,
-                "reason": f"lock exists but is stale: {staleness['reason']}",
-                "lock": existing,
-            }, indent=2))
-            return 1
-        if existing.get("session") != args.session:
-            print(json.dumps({
-                "held": False,
-                "reason": f"lock is held by a different session ({existing.get('session')!r}), not {args.session!r}",
-                "lock": existing,
-            }, indent=2))
-            return 1
-        existing["last_renewed_at"] = datetime.now().astimezone().isoformat(timespec="seconds")
-        write_lock(args.folder, existing)
-        print(json.dumps({"held": True, "lock": existing}, indent=2))
-        return 0
+    try:
+        lock = verify_and_renew(
+            args.folder, args.session, args.stale_hours,
+            expect_run_id=getattr(args, "expect_run_id", None),
+        )
+    except LockOwnershipError as exc:
+        print(json.dumps({"held": False, "reason": str(exc), "code": exc.reason, "lock": exc.lock}, indent=2))
+        return 1
+    print(json.dumps({"held": True, "lock": lock}, indent=2))
+    return 0
 
 
 def cmd_status(args: argparse.Namespace) -> int:
@@ -529,6 +634,10 @@ def main() -> int:
     p_require = sub.add_parser("require")
     p_require.add_argument("--folder", required=True)
     p_require.add_argument("--session", required=True)
+    p_require.add_argument(
+        "--expect-run-id",
+        help="also require the lock's run_id to match exactly (strongest ownership proof)",
+    )
     p_require.set_defaults(func=cmd_require)
 
     p_status = sub.add_parser("status")

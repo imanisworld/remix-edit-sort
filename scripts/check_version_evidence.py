@@ -11,6 +11,9 @@ that a track is clean.
 
 from __future__ import annotations
 
+# Read-only: inspects the library and writes reports/derived data only.
+SAFETY_CLASSIFICATION = "read-only"
+
 import argparse
 import csv
 import json

@@ -54,7 +54,7 @@ class ApplyScriptLockEnforcementTests(unittest.TestCase):
                 "--lock-folder", TEST_FOLDER, "--session", "test-session-a",
             )
             self.assertNotEqual(result.returncode, 0)
-            self.assertIn("REFUSING TO APPLY", result.stdout + result.stderr)
+            self.assertIn("REFUSING TO MUTATE", result.stdout + result.stderr)
             # No result file should have been produced -- the refusal happened
             # before any mutation logic ran.
             self.assertEqual(list(Path(root).glob("*-result-*.json")), [])
@@ -92,7 +92,7 @@ class ApplyScriptLockEnforcementTests(unittest.TestCase):
                 "--lock-folder", TEST_FOLDER, "--session", "test-session-b",
             )
             self.assertNotEqual(result.returncode, 0)
-            self.assertIn("REFUSING TO APPLY", result.stdout + result.stderr)
+            self.assertIn("REFUSING TO MUTATE", result.stdout + result.stderr)
 
     def test_dry_run_is_unaffected_by_locking(self):
         with tempfile.TemporaryDirectory() as root, tempfile.TemporaryDirectory() as backup:

@@ -7,6 +7,9 @@ version-genre-rules.json. It never adds aliases, moves files, or writes tags.
 
 from __future__ import annotations
 
+# Read-only: inspects the library and writes reports/derived data only.
+SAFETY_CLASSIFICATION = "read-only"
+
 import argparse
 import csv
 import json

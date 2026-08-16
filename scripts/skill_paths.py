@@ -5,6 +5,9 @@ Reusing them beats re-deriving the same knowledge. They live in an app-managed
 folder whose UUIDs change, so search rather than hardcode. Everything here is
 optional — the skill degrades gracefully when nothing is found.
 """
+
+# Read-only: inspects the library and writes reports/derived data only.
+SAFETY_CLASSIFICATION = "read-only"
 import os, glob, json
 
 APP_SUPPORT = os.path.expanduser(

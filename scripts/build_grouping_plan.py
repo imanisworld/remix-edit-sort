@@ -24,6 +24,9 @@ overwritten — same rule as everywhere else in this project.
 
 from __future__ import annotations
 
+# Preview-only: builds a plan for human review. Never mutates library media.
+SAFETY_CLASSIFICATION = "preview-only"
+
 import argparse
 import collections
 import json

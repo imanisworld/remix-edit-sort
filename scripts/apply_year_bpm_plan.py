@@ -19,6 +19,9 @@ Requires an owned, non-stale folder_lock.py lock via lock_guard.py for both
 
 from __future__ import annotations
 
+# Every library mutation in this module goes through scripts/mutation_engine.py.
+SAFETY_CLASSIFICATION = "engine-user"
+
 import argparse
 import hashlib
 import json

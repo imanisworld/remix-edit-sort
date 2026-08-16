@@ -14,6 +14,9 @@ performance data is at risk either way.
 
 from __future__ import annotations
 
+# Hard-disabled legacy mutator. Kept as history; cannot run.
+SAFETY_CLASSIFICATION = "disabled-legacy"
+
 import hashlib
 import json
 import os

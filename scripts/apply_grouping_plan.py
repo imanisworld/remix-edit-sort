@@ -10,6 +10,9 @@ or renamed by this script — it only writes the TIT1 frame.
 
 from __future__ import annotations
 
+# Every library mutation in this module goes through scripts/mutation_engine.py.
+SAFETY_CLASSIFICATION = "engine-user"
+
 import argparse
 import hashlib
 import json

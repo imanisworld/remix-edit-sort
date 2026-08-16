@@ -22,6 +22,9 @@ locking. This script still works for its original narrow use case but
 requires --legacy-confirm to run --apply/--undo, so it can't be reached by
 accident.
 """
+
+# Hard-disabled legacy mutator. Kept as history; cannot run.
+SAFETY_CLASSIFICATION = "disabled-legacy"
 import os, sys, json, shutil, argparse, collections
 
 import lock_guard

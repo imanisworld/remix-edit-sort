@@ -15,6 +15,9 @@ genre_status) instead of a single-folder plan.json.
 
 from __future__ import annotations
 
+# Every library mutation in this module goes through scripts/mutation_engine.py.
+SAFETY_CLASSIFICATION = "engine-user"
+
 import argparse
 import csv
 import hashlib
