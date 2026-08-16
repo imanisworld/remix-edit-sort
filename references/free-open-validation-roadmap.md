@@ -1,168 +1,117 @@
 # Free/open external validation roadmap
 
-This layer answers a different question from the local file analyzers:
+This layer asks one narrow question:
 
 > **Does independent evidence support what we think this audio actually is?**
 
-The design is local-first, evidence-first, and no-cost for the intended personal/non-commercial library workflow. No paid metadata, transcription, fingerprinting, or AI API is required for the core path.
+It is local-first, evidence-first, and designed so the intended personal/non-commercial cleanup path does not require a paid API.
 
-It complements:
-
-- `references/needs-check-preview.md`;
-- `references/audio-intelligence-roadmap.md`;
-- `references/library-readiness-roadmap.md`;
-- `references/library-maintenance-roadmap.md`;
-- `references/evidence-assurance-roadmap.md`.
+It complements the existing needs-check, audio-intelligence, readiness, maintenance, and evidence-assurance roadmaps.
 
 ## Non-negotiable rules
 
 1. External databases are corroborating evidence, not automatic authority over the library.
-2. No external lookup may silently rewrite Artist, Title, Genre, Year/date, version, BPM, Key, Grouping, or Serato data.
-3. `NOT_RUN`, `FAILED`, `RATE_LIMITED`, `PROVIDER_UNAVAILABLE`, and `NO_MATCH` are different states.
-4. A database match for Artist/Title does not prove Clean/Dirty, Genre, DJ Intro status, or that two files are safe to collapse.
-5. The normal network path sends compact fingerprints/identifiers and required metadata only, never the source audio file.
-6. Successful external evidence is cached so unchanged files are not repeatedly queried.
-7. Human-reviewed decisions remain higher authority than lower-confidence automated suggestions unless explicitly reopened.
-8. External service availability, terms, and rate limits are runtime dependencies and must be checked rather than assumed permanently true.
+2. External lookup must never silently rewrite Artist, Title, Genre, Year/date, version, BPM, Key, Grouping, or Serato data.
+3. `NOT_RUN`, `FAILED`, `RATE_LIMITED`, `PROVIDER_UNAVAILABLE`, and `NO_MATCH` are distinct states.
+4. Artist/Title identity evidence does not prove Clean/Dirty, Genre, DJ Intro status, or duplicate disposability.
+5. Full source audio, Serato data, raw transcripts, absolute paths, and private event notes are not sent to external lookup providers.
+6. All external requests use HTTPS.
+7. Provider credentials are supplied from local configuration/environment and are never committed.
+8. Human-reviewed decisions remain higher authority than lower-confidence automated suggestions unless explicitly reopened.
+9. Provider availability, terms, licensing, and rate limits are runtime dependencies and must be rechecked rather than assumed permanent.
 
 ## Verified no-cost core stack
 
 ### FFmpeg / ffprobe
 
-Use for:
+Use locally for decode/readability checks, duration, codec, bitrate, sample rate, channels, loudness, silence, and supporting audio decoding.
 
-- decode/readability verification;
-- duration, codec, bitrate, sample-rate and channel evidence;
-- loudness/silence/technical analysis;
-- decoded-audio support for fingerprint workflows.
-
-FFmpeg is free/open-source. Upstream states that FFmpeg is LGPL 2.1-or-later by default; builds using optional GPL components become GPL 2-or-later. Persist the installed version and build configuration in run provenance.
+FFmpeg is LGPL 2.1-or-later by default; optional GPL components make a build GPL, and some build configurations can be nonfree/unredistributable. Record the actual binary version and build configuration rather than assuming all FFmpeg binaries are equivalent.
 
 ### Chromaprint / `fpcalc`
 
-Use for:
+Use locally to generate compact fingerprints for audio-identification candidates.
 
-- generating a compact acoustic fingerprint from decoded audio;
-- creating recording-identity candidates across renamed/re-encoded/container-different files;
-- producing the fingerprint used for AcoustID lookup.
+Chromaprint is designed for near-identical/full-file identification, not arbitrary semantic similarity. A match is **identification evidence**, not cryptographic proof that two DJ files are interchangeable.
 
-Important limitation: a Chromaprint result is **identification evidence**, not cryptographic proof that two files are interchangeable. It must not by itself collapse Clean/Dirty/Intro/Outro/Extended/Remix/Edit/Acapella/Instrumental variants.
+Current upstream project-authored Chromaprint code is MIT-licensed, but effective installed-library/`fpcalc` licensing can depend on linked FFmpeg/FFT components and build choices. Older AcoustID licensing text still describes Chromaprint as LGPL, so record the actual installed build/dependencies instead of relying on one summary page.
 
-Current upstream Chromaprint project-authored code is MIT-licensed. Packaged/binary licensing can still depend on linked components and build configuration, so provenance must record the actual installed build/package.
+Important implementation detail: `fpcalc` fingerprints only the first **120 seconds by default**, while its normal whole-file result reports the file's overall duration. AcoustID lookup requires the **whole audio-file duration**. Never substitute the fingerprint-window length for the whole-track duration.
 
-### pyacoustid — optional wrapper
+### pyacoustid — optional convenience wrapper
 
-Use for:
+pyacoustid is MIT-licensed and can call Chromaprint/`fpcalc` locally. Its network lookup role is optional.
 
-- calling Chromaprint/`fpcalc` from Python;
-- optionally performing AcoustID web-service requests.
-
-The library is MIT-licensed. Local fingerprint generation can be offline; its AcoustID-client role requires network access. Keep direct `fpcalc` + HTTP/JSON as a supported fallback so pyacoustid is convenience, not a hard dependency.
+Current upstream source still declares a default API base of `http://api.acoustid.org/v2/`. Therefore this project must **not rely on that default for network lookup**. If pyacoustid is used for lookup, explicitly configure AcoustID's documented HTTPS endpoint; otherwise use direct `fpcalc` plus a small verified HTTPS JSON client.
 
 ### AcoustID
 
-Use for:
+Use for fingerprint lookup and MusicBrainz recording-ID mapping.
 
-- mapping a Chromaprint fingerprint + duration to AcoustID results;
-- retrieving MusicBrainz recording identifiers when available.
+Verified facts:
 
-Verified service facts:
+- the service is free for registered non-commercial applications;
+- lookup requires a registered application/client key;
+- lookup sends a fingerprint plus the **whole-track duration**, not the source audio file;
+- the published limit is no more than **3 requests per second**;
+- the public fingerprint database is CC BY-SA 3.0;
+- the MusicBrainz-AcoustID mapping is described as public domain.
 
-- AcoustID describes the service as based entirely on open-source software;
-- non-commercial use of the web service is free after registering an application/client key;
-- fingerprint lookup sends the fingerprint and whole-track duration, not the source audio file;
-- the published usage guideline says no more than 3 requests per second;
-- the public fingerprint database is CC BY-SA 3.0, while the MusicBrainz-AcoustID mapping is described as public domain.
+This project is **lookup-only**. Do not submit fingerprints. A user submission key is therefore unnecessary and must not be requested or stored.
 
-Use **lookup only**. Do not automatically submit new fingerprints from this cleanup system.
+The application client key belongs in local configuration/environment, not the repository.
 
-Provider maintenance/unavailability must surface explicitly. At review time AcoustID reports a read-only maintenance state; because this project is lookup-only, that does not authorize assuming submissions work or that service state will remain unchanged.
+At review time AcoustID reports a read-only maintenance state. Provider maintenance or outage must become `PROVIDER_UNAVAILABLE`/`FAILED`, never `NO_MATCH`.
 
 ### MusicBrainz
 
-Use for:
+Use for recording MBID resolution and corroboration of Artist credit, Title, recording length, ISRCs, release/release-group relationships, and release dates.
 
-- resolving recording MBIDs returned by AcoustID;
-- corroborating Artist credit, Title, recording identity, length, ISRCs, release/release-group relationships and release dates;
-- distinguishing a Recording from the Releases on which it appears.
-
-Verified service/data facts:
+Verified facts:
 
 - non-commercial API use is free;
 - no API key is currently required for normal lookup requests;
 - a meaningful User-Agent is required;
-- client applications must not exceed one request per second, and source IPs are also rate-limited around one request per second unless separately arranged;
+- client applications must not exceed **1 request per second**;
+- source-IP throttling also applies around 1 request/second unless separately arranged;
 - core database data is CC0;
 - supplementary data is CC BY-NC-SA 3.0;
-- the MusicBrainz Server source is GPLv2.
+- MusicBrainz Server source is GPLv2.
 
-### Important date correction
+#### Date model
 
-A MusicBrainz **Recording does not have one generic recording-date property**. The Recording entity exposes properties such as title, artist credit, length, ISRC, MBID, disambiguation and relationships. Search/API data can expose dates of releases containing the recording, including an earliest release date.
+A MusicBrainz **Recording does not have one generic recording-date property**. Keep these distinct:
 
-Therefore keep these concepts separate:
-
-- earliest known release date containing the recording;
+- earliest known release containing the recording;
 - release-group first-release date;
-- date of the particular matched Release/reissue;
-- performance/recording-session date **only when separately supported** by an appropriate relationship, annotation, official source, or other explicit evidence;
+- matched Release/reissue date;
+- performance/recording-session date only when separately and explicitly supported;
 - local acquisition/event date.
 
-A later reissue must never silently turn an older recording into a song from the reissue year.
+A later reissue must not turn an older recording into a song from the reissue year.
 
 ### faster-whisper
 
-Use for:
+Use locally for unresolved Clean/Dirty transcription evidence.
 
-- local transcription evidence for unresolved Clean/Dirty review;
-- optional timestamps for matched, user-reviewed explicit-language terms.
+The faster-whisper codebase is MIT-licensed. Loading a model by Hub name can download model files from Hugging Face. A strict offline run requires model files to be staged locally first and loaded from a local path/cache with download disabled (`local_files_only` or equivalent local-path behavior).
 
-The faster-whisper codebase is MIT-licensed and inference can run locally. However, loading a model by a Hub name can automatically download model files from Hugging Face. A strict offline run therefore requires the model files to be staged locally first and loaded from a local path/cache with download disabled.
+Track package version, model ID/path, model revision/hash, model license/source when known, compute type, and transcription options separately.
 
-Track separately:
-
-- faster-whisper package version;
-- model identifier/local path;
-- model revision/hash;
-- model license/source where known;
-- compute type;
-- transcription options.
-
-The code license and the model-weight license are not assumed to be the same thing.
-
-Semantic rule: detected reviewed explicit language can support `LIKELY_DIRTY`; absence of detected explicit language can never prove `CLEAN`.
-
-### Python standard library + local SQLite/JSON/CSV
-
-Use for SHA-256, joins, cache, manifests, rate limiting, evidence states, decision-ledger integration and deterministic reports. Prefer simple local storage until scale requires more.
-
-## Deliberately not required
-
-### Discogs
-
-Useful for optional manual corroboration, but not required for cleanup correctness and not part of the free/open core.
-
-### Paid recognition / metadata / transcription APIs
-
-Do not require Gracenote, paid recognition APIs, commercial LLM/audio APIs, paid metadata subscriptions, or paid transcription services for the core path.
-
-### Essentia
-
-May remain an optional local analyzer, but is not a mandatory core dependency because its licensing/use conditions differ from the permissive components above and can matter if the project is reused commercially.
+Detected reviewed explicit language can support `LIKELY_DIRTY`; non-detection never proves `CLEAN`.
 
 ## Validation pipeline
 
 ### Stage 1 — stable local identity packet
 
-For each candidate needing external validation, generate/reuse:
+For each unresolved candidate, generate/reuse:
 
 - SHA-256;
 - root-relative path;
 - current Artist / Title / Album / Year / Genre/version labels;
-- duration;
-- codec/container;
-- bitrate/sample rate/channels;
-- Chromaprint fingerprint;
+- **whole-track duration**;
+- codec/container/bitrate/sample rate/channels;
+- Chromaprint fingerprint and fingerprint-window configuration;
 - analyzer/tool versions;
 - run ID.
 
@@ -173,161 +122,73 @@ Do not start network lookup until this packet is stable.
 Input:
 
 - Chromaprint fingerprint;
-- whole-track duration;
-- registered application client key.
+- **whole-track duration**;
+- registered application client key from local configuration.
 
-Retain:
+Use HTTPS only and respect the 3 requests/second ceiling.
 
-- provider availability state;
-- lookup status;
-- AcoustID result ID;
-- score returned by AcoustID;
-- returned MusicBrainz recording IDs;
-- response timestamp;
-- raw-response hash/cache key;
-- provider/parser version.
+Retain provider availability, lookup status, AcoustID result ID, score, returned MusicBrainz recording IDs, timestamp, response hash/cache key, and parser/provider provenance.
 
-Suggested states:
-
-- `ACOUSTID_MATCH_STRONG`;
-- `ACOUSTID_MATCH_MULTIPLE`;
-- `ACOUSTID_MATCH_WEAK`;
-- `ACOUSTID_NO_MATCH`;
-- `ACOUSTID_NOT_RUN`;
-- `ACOUSTID_RATE_LIMITED`;
-- `ACOUSTID_PROVIDER_UNAVAILABLE`;
-- `ACOUSTID_FAILED`.
-
-Do not invent a universal strong/weak threshold until it has been calibrated on a known local test set. A no-match is not evidence that local metadata is wrong.
+Do not invent universal strong/weak score thresholds until calibrated on known local files.
 
 ### Stage 3 — MusicBrainz lookup
 
-For credible returned recording MBIDs, fetch only the evidence needed for the unresolved question.
+Prefer returned recording MBIDs over free-text searches. Fetch only the evidence needed for the unresolved question.
 
-Retain separately:
+Retain recording MBID, Artist credit, Title, recording length, ISRCs, release/release-group IDs and titles, earliest release date where exposed, release-group first-release date, matched-release date/country/status, disambiguation comments, lookup timestamp, and response hash/cache key.
 
-- recording MBID;
-- Artist credit;
-- recording Title;
-- recording length where available;
-- ISRCs where available;
-- release/release-group IDs;
-- release titles;
-- earliest release date containing the recording where exposed;
-- release-group first-release date where exposed;
-- matched-release date/country/status;
-- disambiguation/version comments;
-- lookup timestamp;
-- raw-response hash/cache key.
-
-Never collapse these dates into one unlabeled generic `year` field.
+Never collapse date concepts into one unlabeled `year` field.
 
 ### Stage 4 — field-specific validation
 
 #### Recording identity
 
-A strong automated corroboration case can include:
+Strong automated corroboration can combine a stable local fingerprint, a calibrated high-quality AcoustID result, one credible MusicBrainz recording identity, compatible duration, and no material Artist/Title/version contradiction.
 
-- stable local SHA/fingerprint;
-- a high-quality AcoustID result;
-- one credible MusicBrainz recording identity;
-- compatible duration;
-- no material Artist/Title/version contradiction.
-
-Statuses:
-
-- `IDENTITY_CORROBORATED`;
-- `IDENTITY_AMBIGUOUS`;
-- `IDENTITY_CONFLICT`;
-- `IDENTITY_UNVERIFIED`.
-
-`CORROBORATED` is not the same as cryptographically proven.
+Use `IDENTITY_CORROBORATED`, `IDENTITY_AMBIGUOUS`, `IDENTITY_CONFLICT`, or `IDENTITY_UNVERIFIED`. `CORROBORATED` is not cryptographic proof.
 
 #### Artist / Title
 
-External canonical Artist/Title may produce a normalization proposal, but never overwrite local DJ-relevant naming without review. Featured-credit formatting, aliases, remix credits, punctuation/stylization and local version suffixes can all be intentionally different.
+External canonical metadata may produce a proposal, never a silent overwrite. Featured-credit formatting, aliases, remix credits, punctuation/stylization, and local DJ-version suffixes may be intentionally different.
 
-#### Year / date
+#### Version / Clean-Dirty
 
-Store the exact date concept and source. Use release dates for release facts; use separately supported evidence for recording/performance-session dates.
-
-#### Version
-
-External databases may corroborate explicit remix/radio/live/version names. They do not automatically prove local `Clean`, `Dirty`, `Intro`, `Outro`, `Extended`, `Acapella`, or `Instrumental` status. Those require local labels, audio evidence, related-version comparison, or listening.
+MusicBrainz/AcoustID identity does not automatically prove `Clean`, `Dirty`, `Intro`, `Outro`, `Extended`, `Acapella`, or `Instrumental`. Those require explicit local labels, actual audio evidence, related-version comparison, or listening.
 
 #### Genre
 
-Genre is classification evidence, not a single objectively provable identity field. External tags/genres remain low-authority corroboration only and must not outrank durable human decisions, strong prior/local evidence, or approved deterministic project rules.
-
-## Triangulation and conflict logic
-
-Multiple weak sources must not become fake certainty merely because there are several of them.
-
-Examples:
-
-- strong AcoustID candidate + consistent MusicBrainz recording + compatible local duration -> strong identity corroboration;
-- AcoustID/MusicBrainz identity conflicts with an explicitly protected local remix label -> `VERSION_IDENTITY_CONFLICT`;
-- `[Clean]` filename + detected reviewed explicit-language evidence -> Clean/Dirty conflict regardless of MusicBrainz identity;
-- external Genre differs from approved deterministic/local evidence -> Genre review, not overwrite;
-- several plausible AcoustID/MusicBrainz candidates -> ambiguous, no apply-ready proposal.
+Genre is classification evidence, not one objectively provable identity field. External genre/tag data stays low-authority and cannot outrank durable human decisions, strong local evidence, or approved deterministic project rules.
 
 ## Privacy and network boundary
 
-Normal external requests may include only what is necessary:
+Explicit request payloads may contain only what is necessary: fingerprint, whole-track duration, AcoustID application/client identifier, MusicBrainz MBIDs, and narrowly scoped search terms when MBID lookup is unavailable.
 
-- Chromaprint fingerprint;
-- duration;
-- AcoustID application/client identifier;
-- MusicBrainz MBIDs;
-- narrowly scoped textual metadata search terms only when an MBID path is unavailable and a search is explicitly required.
+Network services will also inherently observe ordinary connection/request metadata such as source IP, TLS/HTTP metadata, and (for MusicBrainz) the required User-Agent. Do not describe the external path as revealing *only* fingerprints/IDs.
 
-Do not automatically upload:
+Never send full audio, Serato databases/crates/history, cues/loops/beatgrids, raw transcripts, absolute local paths, or private event notes.
 
-- source audio files;
-- Serato database/crates/history;
-- cue/loop/beatgrid data;
-- raw Whisper transcripts;
-- local absolute filesystem paths;
-- private event notes.
+## Cache, rate limits, and transport
 
-## Cache and rate-limit rules
+Cache by stable content/provider/query identity, including SHA-256, fingerprint algorithm/version, provider, query type, MBID/result ID, and parser/schema version.
 
-Cache external evidence by stable content/provider/query identity. Cache keys should include, where applicable:
+Provider limits are independent:
 
-- SHA-256;
-- fingerprint algorithm/version;
-- provider;
-- provider query type;
-- MBID/result ID;
-- parser/schema version.
+- AcoustID: max 3 requests/second under published guidance;
+- MusicBrainz: max 1 request/second per client application, with source-IP throttling also applying.
 
-Respect provider-specific limits independently:
-
-- AcoustID: no more than 3 requests/second under its published guideline;
-- MusicBrainz: no more than 1 request/second per client application, with source-IP throttling also applying.
-
-Use backoff for rate-limit/server failures. Never reinterpret a provider outage as `NO_MATCH`.
-
-Refresh cached evidence only when content changes, cache is invalidated, a human requests revalidation, or a provider/parser/schema migration requires it.
+Use HTTPS only, retry/backoff for transient server/rate-limit failures, and never reinterpret provider failure as `NO_MATCH`.
 
 ## Proposed implementation modules
 
-These are implementation targets, not claims that they exist:
+These are targets, not claims that they already exist:
 
-- `scripts/build_audio_identity_evidence.py`
-  - SHA + media facts + `fpcalc` packet;
-- `scripts/lookup_acoustid_evidence.py`
-  - provider-state-aware, rate-limited, cache-aware lookup only;
-- `scripts/lookup_musicbrainz_evidence.py`
-  - MBID-oriented lookup with User-Agent and one-request-per-second compliance;
-- `scripts/join_external_identity_evidence.py`
-  - field-specific corroboration/conflict states;
-- `scripts/check_validation_stack.py`
-  - installed binary/package/model versions, credentials, offline readiness and provider availability;
-- `references/external-validation-providers.json`
-  - machine-readable provider/cost/network/license/provenance registry.
+- `scripts/build_audio_identity_evidence.py` — SHA, media facts, whole duration, `fpcalc` fingerprint packet;
+- `scripts/lookup_acoustid_evidence.py` — HTTPS-only, provider-state-aware, rate-limited, cache-aware lookup;
+- `scripts/lookup_musicbrainz_evidence.py` — MBID-oriented HTTPS lookup with meaningful User-Agent and 1 request/second compliance;
+- `scripts/join_external_identity_evidence.py` — field-specific corroboration/conflict states;
+- `scripts/check_validation_stack.py` — installed versions/builds, model readiness, local client-key configuration, HTTPS configuration, and provider availability.
 
-All scripts are read-only against production audio and Serato state.
+All are read-only against production audio and Serato state.
 
 ## Required outputs
 
@@ -338,37 +199,14 @@ At minimum:
 - `EXTERNAL-IDENTITY-PREVIEW.md`;
 - provider/cache/run-manifest metadata.
 
-Useful track-level fields include:
+Useful fields include SHA-256, path, fingerprint status/configuration, whole-track duration, AcoustID status/score/ID, MusicBrainz recording ID, external Artist/Title/length/ISRCs, separate release-date concepts, identity/version/date statuses, conflict reason, evidence grade, lookup timestamp, and provider-response hash.
 
-- `sha256`;
-- `path`;
-- `fingerprint_status`;
-- `acoustid_status`;
-- `acoustid_score`;
-- `acoustid_id`;
-- `musicbrainz_recording_id`;
-- `external_artist`;
-- `external_title`;
-- `external_recording_length_ms`;
-- `external_isrcs`;
-- `earliest_recording_release_date`;
-- `release_group_first_release_date`;
-- `matched_release_date`;
-- `identity_status`;
-- `artist_title_status`;
-- `date_status`;
-- `version_status`;
-- `conflict_reason`;
-- `evidence_grade`;
-- `lookup_timestamp`;
-- `provider_response_hash`.
+## Evidence authority
 
-## Evidence authority for this layer
-
-For identity-related questions, a useful ordering is:
+Authority is field-specific. A useful default order for identity questions is:
 
 1. durable human-reviewed decision tied to exact content identity;
-2. exact local cryptographic/content evidence where that question is actually cryptographic;
+2. exact local cryptographic/content evidence where the question is actually cryptographic;
 3. calibrated fingerprint evidence + consistent external recording identity;
 4. explicit local structured metadata/version evidence;
 5. corroborating external release metadata;
@@ -376,31 +214,31 @@ For identity-related questions, a useful ordering is:
 7. audio-model/AI inference;
 8. unsupported filename guess.
 
-This hierarchy is **field-specific**. Fingerprint + MusicBrainz can be strong Artist/Title identity evidence while still being weaker than actual audio evidence for Clean/Dirty.
+Fingerprint + MusicBrainz can be strong Artist/Title identity evidence while still being weaker than actual audio evidence for Clean/Dirty.
 
 ## Implementation order
 
-1. Keep the already-merged unresolved Clean/Dirty + Genre recheck as the first pass.
-2. Implement local `fpcalc` identity packets and cache them by SHA-256.
-3. Calibrate fingerprint/AcoustID result handling against known files before defining strong thresholds.
-4. Add AcoustID lookup for unresolved identity/version-family cases.
+1. Keep the already-merged Clean/Dirty + Genre recheck as the first pass.
+2. Implement local identity packets with whole-track duration and `fpcalc` fingerprint configuration recorded separately.
+3. Calibrate fingerprint/AcoustID result handling against known files.
+4. Add HTTPS-only AcoustID lookup for unresolved identity/version-family cases.
 5. Add MusicBrainz lookup by returned recording MBID.
 6. Add field-specific conflict/triangulation reporting.
 7. Feed only unresolved/conflicting results into human review.
-8. Later use validated identities to strengthen duplicate/equivalent and version-family analysis.
+8. Use validated identities later to strengthen duplicate/equivalent and version-family analysis.
 
-Do not externally validate every library track blindly. Prioritize unresolved, conflicting, duplicate/equivalent, and high-usage tracks.
+Do not externally validate the whole library blindly. Prioritize unresolved, conflicting, duplicate/equivalent, and high-usage tracks.
 
 ## Definition of success
 
-The layer must be able to distinguish, with provenance:
+The layer must distinguish with provenance:
 
-- **mathematically proven facts**;
-- **strongly corroborated external identity**;
-- **classification/opinion**;
-- **conflict**;
-- **provider unavailable/failure**;
-- **never checked**;
-- **still requires listening/human judgment**.
+- mathematically proven facts;
+- strongly corroborated external identity;
+- classification/opinion;
+- conflict;
+- provider unavailable/failure;
+- never checked;
+- human listening/judgment still required.
 
 More metadata must never be converted into unjustified certainty.
