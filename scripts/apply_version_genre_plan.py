@@ -9,6 +9,12 @@ behavior is preserved: per-item hash/audio-payload/Serato-frame verification
 before and after every write, atomic rollback on any failure, ID3v2.2 Genre
 writes skipped and logged rather than silently upgraded, and an append-only
 fsync'd undo log.
+
+.m4a genre writes are supported via MP4's ©gen atom (see _mp4_mdat_payload
+and the MP4 branches of audio_payload/serato_digest/read_genre/write_genre).
+Verified on real files: mutagen's MP4 save reuses existing "free" box
+padding rather than relocating mdat, but this code never assumes that -- it
+re-parses the box tree after every write and hashes mdat wherever it landed.
 """
 
 from __future__ import annotations
@@ -23,6 +29,7 @@ from pathlib import Path
 
 from mutagen.flac import FLAC
 from mutagen.id3 import ID3, ID3NoHeaderError, TCON
+from mutagen.mp4 import MP4
 
 import lock_guard
 
@@ -39,9 +46,37 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _mp4_top_level_boxes(data: bytes):
+    """Yield (type: bytes, start, size, header_size) for each top-level MP4 box."""
+    pos, end = 0, len(data)
+    while pos + 8 <= end:
+        size = int.from_bytes(data[pos:pos + 4], "big")
+        btype = data[pos + 4:pos + 8]
+        header = 8
+        if size == 1:
+            if pos + 16 > end:
+                raise RuntimeError(f"truncated 64-bit MP4 box header at offset {pos}")
+            size = int.from_bytes(data[pos + 8:pos + 16], "big")
+            header = 16
+        elif size == 0:
+            size = end - pos
+        if size < header:
+            raise RuntimeError(f"invalid MP4 box size at offset {pos}")
+        yield btype, pos, size, header
+        pos += size
+
+
 def audio_payload(path: Path) -> bytes:
     data = path.read_bytes()
     suffix = path.suffix.casefold()
+    if suffix == ".m4a":
+        payload = bytearray()
+        for btype, start, size, header in _mp4_top_level_boxes(data):
+            if btype == b"mdat":
+                payload += data[start + header:start + size]
+        if not payload:
+            raise RuntimeError(f"no mdat box found: {path}")
+        return bytes(payload)
     if suffix == ".mp3":
         start, end = 0, len(data)
         if data[:3] == b"ID3" and len(data) >= 10:
@@ -100,6 +135,17 @@ def serato_digest_mp3(tags: ID3) -> str:
     return sha256_bytes(payload)
 
 
+def serato_digest_mp4(audio: MP4) -> str:
+    values = []
+    for key, value in audio.items():
+        if "serato" not in key.casefold():
+            continue
+        parts = value if isinstance(value, list) else [value]
+        values.append({"key": key, "parts_sha256": [sha256_bytes(bytes(p)) for p in parts]})
+    payload = json.dumps(sorted(values, key=lambda item: item["key"]), ensure_ascii=False).encode()
+    return sha256_bytes(payload)
+
+
 def serato_digest(path: Path) -> str:
     if path.suffix.casefold() == ".mp3":
         try:
@@ -110,6 +156,8 @@ def serato_digest(path: Path) -> str:
         audio = FLAC(path)
         values = {key: list(value) for key, value in audio.tags.items() if "serato" in key.casefold()}
         return sha256_bytes(json.dumps(values, sort_keys=True, ensure_ascii=False).encode())
+    if path.suffix.casefold() == ".m4a":
+        return serato_digest_mp4(MP4(path))
     return sha256_bytes(b"[]")
 
 
@@ -150,8 +198,10 @@ def serato_payload_digest(path: Path) -> str:
             return serato_payload_digest_mp3(ID3(path))
         except ID3NoHeaderError:
             return sha256_bytes(b"[]")
-    # FLAC Serato values are plain Vorbis comment text, not encoding-sensitive
-    # the way ID3 GEOB frames are, so the strict digest already is payload-only.
+    # FLAC and MP4 Serato values are stored as plain tag bytes with no separate
+    # encoding metadata the way ID3 GEOB frames have (verified for MP4 by
+    # comparing MP4FreeForm.dataformat before/after a genre write on sample
+    # files -- identical), so the strict digest is already payload-only.
     return serato_digest(path)
 
 
@@ -174,6 +224,9 @@ def read_genre(path: Path) -> str:
     if suffix == ".flac":
         values = FLAC(path).get("genre", [])
         return str(values[0]).strip() if values else ""
+    if suffix == ".m4a":
+        values = MP4(path).get("\xa9gen", [])
+        return str(values[0]).strip() if values else ""
     raise RuntimeError(f"genre write not supported for {path.suffix}: {path}")
 
 
@@ -194,6 +247,11 @@ def write_genre(path: Path, value: str) -> None:
     if suffix == ".flac":
         audio = FLAC(path)
         audio["genre"] = [value]
+        audio.save()
+        return
+    if suffix == ".m4a":
+        audio = MP4(path)
+        audio["\xa9gen"] = [value]
         audio.save()
         return
     raise RuntimeError(f"genre write not supported for {path.suffix}: {path}")
@@ -241,7 +299,7 @@ def load_and_validate(root: Path, plan_path: Path, backup: Path) -> tuple[dict, 
         if item["move"] and destination.exists() and str(destination) not in source_paths:
             errors.append(f"destination already exists: {destination}")
         if item["tag_change"]:
-            if source.suffix.casefold() not in {".mp3", ".flac"}:
+            if source.suffix.casefold() not in {".mp3", ".flac", ".m4a"}:
                 errors.append(f"unsupported tag target: {source}")
             else:
                 current = read_genre(source)
@@ -319,7 +377,7 @@ def apply(root: Path, plan_path: Path, backup: Path, out_dir: Path, label: str, 
             raise RuntimeError(f"post-move audio verification failed: {destination}")
         if serato_digest(destination) != before_serato:
             raise RuntimeError(f"post-move Serato verification failed: {destination}")
-        genre_verifiable = destination.suffix.casefold() in {".mp3", ".flac"}
+        genre_verifiable = destination.suffix.casefold() in {".mp3", ".flac", ".m4a"}
         if item["proposed_genre"] and not skip_reason and genre_verifiable and read_genre(destination) != item["proposed_genre"]:
             raise RuntimeError(f"post-move Genre verification failed: {destination}")
 

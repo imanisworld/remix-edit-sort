@@ -9,9 +9,16 @@ schema: a single "path" per item (never moved), matched against
 provenance.current_sha256 and current_genre, writing proposed_genre.
 
 Only items with combined_status in {A_ONLY, B_ONLY, A_AND_B_SAME} and a
-non-blank proposed_genre are eligible. Only .mp3/.flac are supported for
-writing; any other extension (e.g. .m4a) is reported as unsupported and left
-untouched rather than guessed at with unverified format-specific code.
+non-blank proposed_genre are eligible. .mp3/.flac/.m4a are supported for
+writing; any other extension is reported as unsupported and left untouched.
+
+.m4a support was added and verified separately (see _mp4_mdat_payload and
+the MP4 branches of audio_payload/serato_digest/read_genre/write_genre):
+mutagen's MP4 tag save on the sampled files reuses the existing top-level
+"free" padding box rather than moving mdat, but this code never assumes
+that -- it re-parses the box tree after every write and hashes the mdat
+payload wherever it actually landed, so a relocation would still verify
+correctly (only re-encoded audio bytes would fail it).
 """
 
 from __future__ import annotations
@@ -26,10 +33,11 @@ from pathlib import Path
 
 from mutagen.flac import FLAC
 from mutagen.id3 import ID3, ID3NoHeaderError, TCON
+from mutagen.mp4 import MP4
 
 import lock_guard
 
-SUPPORTED_EXTS = {".mp3", ".flac"}
+SUPPORTED_EXTS = {".mp3", ".flac", ".m4a"}
 ELIGIBLE_STATUSES = {"A_ONLY", "B_ONLY", "A_AND_B_SAME"}
 LIBRARY_ROOT = Path("/Users/djb.a.e/Music/DJ-Music/Music")
 
@@ -46,9 +54,37 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _mp4_top_level_boxes(data: bytes):
+    """Yield (type: bytes, start, size, header_size) for each top-level MP4 box."""
+    pos, end = 0, len(data)
+    while pos + 8 <= end:
+        size = int.from_bytes(data[pos:pos + 4], "big")
+        btype = data[pos + 4:pos + 8]
+        header = 8
+        if size == 1:
+            if pos + 16 > end:
+                raise RuntimeError(f"truncated 64-bit MP4 box header at offset {pos}")
+            size = int.from_bytes(data[pos + 8:pos + 16], "big")
+            header = 16
+        elif size == 0:
+            size = end - pos
+        if size < header:
+            raise RuntimeError(f"invalid MP4 box size at offset {pos}")
+        yield btype, pos, size, header
+        pos += size
+
+
 def audio_payload(path: Path) -> bytes:
     data = path.read_bytes()
     suffix = path.suffix.casefold()
+    if suffix == ".m4a":
+        payload = bytearray()
+        for btype, start, size, header in _mp4_top_level_boxes(data):
+            if btype == b"mdat":
+                payload += data[start + header:start + size]
+        if not payload:
+            raise RuntimeError(f"no mdat box found: {path}")
+        return bytes(payload)
     if suffix == ".mp3":
         start, end = 0, len(data)
         if data[:3] == b"ID3" and len(data) >= 10:
@@ -107,6 +143,17 @@ def serato_digest_mp3(tags: ID3) -> str:
     return sha256_bytes(payload)
 
 
+def serato_digest_mp4(audio: MP4) -> str:
+    values = []
+    for key, value in audio.items():
+        if "serato" not in key.casefold():
+            continue
+        parts = value if isinstance(value, list) else [value]
+        values.append({"key": key, "parts_sha256": [sha256_bytes(bytes(p)) for p in parts]})
+    payload = json.dumps(sorted(values, key=lambda item: item["key"]), ensure_ascii=False).encode()
+    return sha256_bytes(payload)
+
+
 def serato_digest(path: Path) -> str:
     if path.suffix.casefold() == ".mp3":
         try:
@@ -117,6 +164,8 @@ def serato_digest(path: Path) -> str:
         audio = FLAC(path)
         values = {key: list(value) for key, value in audio.tags.items() if "serato" in key.casefold()}
         return sha256_bytes(json.dumps(values, sort_keys=True, ensure_ascii=False).encode())
+    if path.suffix.casefold() == ".m4a":
+        return serato_digest_mp4(MP4(path))
     return sha256_bytes(b"[]")
 
 
@@ -150,6 +199,10 @@ def serato_payload_digest(path: Path) -> str:
             return serato_payload_digest_mp3(ID3(path))
         except ID3NoHeaderError:
             return sha256_bytes(b"[]")
+    # FLAC and MP4 Serato values are stored as plain tag bytes with no
+    # separate encoding metadata the way ID3 GEOB frames have (verified for
+    # MP4 by comparing MP4FreeForm.dataformat before/after a genre write on
+    # sample files -- identical), so the strict digest is already payload-only.
     return serato_digest(path)
 
 
@@ -171,6 +224,9 @@ def read_genre(path: Path) -> str:
     if suffix == ".flac":
         values = FLAC(path).get("genre", [])
         return str(values[0]).strip() if values else ""
+    if suffix == ".m4a":
+        values = MP4(path).get("\xa9gen", [])
+        return str(values[0]).strip() if values else ""
     raise RuntimeError(f"genre read not supported for {path.suffix}: {path}")
 
 
@@ -191,6 +247,11 @@ def write_genre(path: Path, value: str) -> None:
     if suffix == ".flac":
         audio = FLAC(path)
         audio["genre"] = [value]
+        audio.save()
+        return
+    if suffix == ".m4a":
+        audio = MP4(path)
+        audio["\xa9gen"] = [value]
         audio.save()
         return
     raise RuntimeError(f"genre write not supported for {path.suffix}: {path}")
@@ -246,20 +307,31 @@ def load_and_validate(plan_path: Path, backup: Path) -> tuple[dict, list[dict], 
         if not path.is_file():
             errors.append(f"missing file: {path}")
             continue
+        # Check "already at the target value" BEFORE the hash check. A
+        # successful genre write on a prior run legitimately changes the
+        # whole-file hash -- that's not drift, it's this exact plan already
+        # having been applied to this item, and re-running must recognize
+        # that and skip it rather than hash-fail on its own prior success.
+        current = read_genre(path)
+        if current == item["proposed_genre"]:
+            already_correct.append(item)
+            continue
         actual_hash = sha256_file(path)
         if actual_hash != item["provenance"]["current_sha256"]:
             errors.append(f"hash changed since preview: {path}")
             continue
-        current = read_genre(path)
         if current != item["current_genre"]:
-            # Whole-file hash is unchanged since the plan was built, so the
-            # file itself has not been touched -- this is a stale/wrong
-            # current_genre value recorded by the plan builder, not real
-            # drift. Only bypass the hard error when the on-disk value
-            # already equals the exact proposed target (nothing to write);
-            # any other mismatch is still a hard validation failure.
-            if current == item["proposed_genre"]:
-                already_correct.append(item)
+            # File is verified untouched since the plan was built (hash
+            # matches) but the plan's recorded current_genre doesn't match
+            # what's actually on disk -- a plan-builder data bug (confirmed
+            # for every .m4a item: the inventory read never populated
+            # current_genre for that format). Trust the verified-unchanged
+            # file's real genre only when it matches pre_overwrite_genre --
+            # the actual evidence pass_a_alias_key used to compute
+            # proposed_genre -- so this isn't guessing, it's re-confirming
+            # the same evidence chain the proposal was already built from.
+            if current == item.get("pre_overwrite_genre"):
+                supported.append(item)
                 continue
             errors.append(f"genre changed since preview: {path}: {current!r} != {item['current_genre']!r}")
             continue

@@ -23,7 +23,7 @@ NEEDS_VERSION = "_NEEDS CHECK"
 NEEDS_GENRE = "_GENRE NEEDS CHECK"
 VERSION_CATEGORIES = {"CLEAN", "DIRTY", "INSTRUMENTALS", "ACAPELLAS", "REMIXES & EDITS", NEEDS_VERSION}
 # apply_version_genre_plan.py's Genre reader/writer only supports these formats.
-WRITABLE_GENRE_FORMATS = {".mp3", ".flac"}
+WRITABLE_GENRE_FORMATS = {".mp3", ".flac", ".m4a"}
 
 # Version labels must be syntactically explicit. A plain word match is not
 # enough: "Talking Dirty" is a title, not proof of a dirty DJ version.

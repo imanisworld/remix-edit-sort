@@ -1,0 +1,1112 @@
+{
+  "mode": "genre-refinement-m4a-apply",
+  "plan": "handoff/session-2026-08-15/survey/genre-refinement/genre-refinement-plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/genre-refinement/genre-refinement-backup-m4a-pass-20260815-2200",
+  "tracks_processed": 73,
+  "genre_tags_changed": 29,
+  "genre_tags_skipped": 44,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "unsupported_format_count": 0,
+  "unsupported_format_items": [],
+  "already_correct_count": 218,
+  "already_correct_items": [
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/ACAPELLAS/Hip-Hop/Crazy In Love (BPM Supreme Acapella Starter ReDrum) (Clean Extended).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/ACAPELLAS/Hip-Hop/Donell Jones - Where I Wanna Be (Acapella) [ ezmp3.cc ].mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Avant ft Lil Wayne - You Know What (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Blxst & Tyga - Chosen (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Blxst - Overrated.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Britney Spears ft T.I. - Tik Tik Boom (Clean).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Britney Spears ft T.I. - Tik Tik Boom (Intro Clean).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Coco Jones - Sweep It Up (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Coco Jones - Sweep It Up (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Coldplay - Viva La Vida (Clean).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Crazy In Love (Bassic Remix) (Clean) (Extended).mp3",
+      "proposed_genre": "House",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/DJ Kanai ft Donelle Valentine - Nah, WTF (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/DJ Kanai ft Donelle Valentine - Nah, WTF (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/DJ Mustard - Ridin' Around (Clean).mp3",
+      "proposed_genre": "Juke & Footwork",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Destiny Rydas ft Offset - Addictive (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Elmiene - Light Work (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Elmiene - Light Work (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Felix Ames - Mr. Weatherman (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Fridayy - Baddest In The Room (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Fridayy - Baddest In The Room (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Girlfriend ft Bay Swag - Tell Me Again (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Hold Up (Intro Clean).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Honey Bxby ft Kaliii - Touchin (Remix) (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Honey Bxby ft Kaliii - Touchin (Remix) (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/It Wasn't Me (Intro Clean).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/J Balvin & Willy William vs ED - Mi Gente (Cesar Castilla Mashup) (Club Edit) (Clean).mp3",
+      "proposed_genre": "Tech House",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Jackson 5 - I Got A Sure Thing (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Jackson 5 - I Got A Sure Thing (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Jeremih ft 4batz - Sick (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Jeremih ft 4batz - Sick (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Jhene Aiko - guidance (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Jhene Aiko - guidance (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Lemon (Mr. Collipark Remix) (Clean) (Extended).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Lil Wayne ft Drake & Future vs VINNE - Bitches Love Me (DJ Nasa VIP Bootleg) (Clean Extended).mp3",
+      "proposed_genre": "Tech House",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Mack 10 - Backyard Boogie (Clean).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Marques Houston - Cowgirl (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Marques Houston - Cowgirl (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Mary J. Blige - You Ain't The Only One (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Mary J. Blige - You Ain't The Only One (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Mischif ft John Givez - Black Roses (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Mischif ft John Givez - Black Roses (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Muni Long - Ruined Me (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Muni Long - Ruined Me (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Muni Long - The Baddest (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Muni Long - The Baddest (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/N.E.R.D. ft Vita & Lee Harvey - Lapdance (Clean).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/N.E.R.D. ft Vita & Lee Harvey - Lapdance (Intro Clean).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/October London - A Beautiful Woman (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/October London - A Beautiful Woman (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Queen Naija - Good Girls Finish Last (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Queen Naija - Good Girls Finish Last (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/RINI - Your Ecstasy (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/RINI - Your Ecstasy (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Rae Khalil ft Anderson .Paak - KNOW YOU (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Rae Khalil ft Anderson .Paak - KNOW YOU (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Ronnie Bell - Lotto (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Ronnie Bell - Lotto (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Round & Round (Remix) (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Sad Girls Luv Money (Borgore Remix) (Clean Extended) 4.mp3",
+      "proposed_genre": "Tech House",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Sorry (Intro Clean).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Summer Walker - Heart Of A Woman (Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Summer Walker - Heart Of A Woman (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/The Isley Brothers - Floatin' On Your Love (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/The Way That You Love Me (Clean) (Extended).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Tink ft Skilla Baby - Playa (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Toosii & Muni Long - I Do (Intro Clean).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/CLEAN/Hip-Hop/Yonaguni (Franz Alexander House Remix) (Clean Extended).mp3",
+      "proposed_genre": "House",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/4batz ft Usher - Act IV Fckin U Again (18-) (Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/4batz ft Usher - Act IV Fckin U Again (18-) (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Ace (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Azealia Banks ft Lazy Jay - 212 (DJ Nasa Epic Edit) (Dirty Extended).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Blxst & Tyga - Chosen (Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Britney Spears ft T.I. - Tik Tik Boom (Dirty).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Britney Spears ft T.I. - Tik Tik Boom (Intro Dirty).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Coco Jones ft London On Da Track & Future - Most Beautiful Design (Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Coco Jones ft London On Da Track & Future - Most Beautiful Design (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Destiny Rydas ft Offset - Addictive (Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Destiny Rydas ft Offset - Addictive (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Fav (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Felix Ames - Mr. Weatherman (Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Felix Ames - Mr. Weatherman (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Fridayy - Back To You (Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Fridayy - Back To You (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Fridayy - Baddest In The Room (Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Fridayy - Baddest In The Room (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Girlfriend ft Bay Swag - Tell Me Again (Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Girlfriend ft Bay Swag - Tell Me Again (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Guilty (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Jhene Aiko - guidance (Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Jhene Aiko - guidance (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Jordan Adetunji ft Lil Baby - Options (Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Jordan Adetunji ft Lil Baby - Options (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Kehlani - What I Want (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Kehlani ft Lucky Daye - When Hes Not There (Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Kehlani ft Lucky Daye - When Hes Not There (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Level Up (Intro Dirty).mp3",
+      "proposed_genre": "Dancehall",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Mischif ft John Givez - Black Roses (Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Mischif ft John Givez - Black Roses (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Mushroom Chocolate (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/N.E.R.D. ft Vita & Lee Harvey - Lapdance (Dirty).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/N.E.R.D. ft Vita & Lee Harvey - Lapdance (Intro Dirty).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Please Me (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Round & Round (Remix) (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Sing To Her (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/So Fly (Intro Dirty) 1.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Summer Walker - Heart Of A Woman (Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Summer Walker - Heart Of A Woman (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/That Girl (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/The Weeknd & Playboi Carti - Timeless (Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/The Weeknd & Playboi Carti - Timeless (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Tink ft Skilla Baby - Playa (Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Tink ft Skilla Baby - Playa (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Tommy Richman - WHITNEY (Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Tommy Richman - WHITNEY (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Too Good (Intro Dirty).mp3",
+      "proposed_genre": "Dancehall",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Toosii & Muni Long - I Do (Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Toosii & Muni Long - I Do (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Try Me (Intro Dirty).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/INSTRUMENTALS/Hip-Hop/Power Trip (Instrumental).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/INSTRUMENTALS/Hip-Hop/Summer Walker - Heart Of A Woman (Instrumental).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/Cleva (Radio Edit).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/Dan Kye - Focus (SE Edit).mp3",
+      "proposed_genre": "Electronic",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/J. Valentine_Ft_Pleasure_P_&_Chris_Brown_-_Up_(R&B_Remix).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/Kanye West - Work it out (New Workout Plan - Seb Best Remix).mp3",
+      "proposed_genre": "House",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/Luxurious (Remix).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/Me & You (BAVR & Al Dente Edit).mp3",
+      "proposed_genre": "Groovy Bounce",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/Positions (Zikomo Remix) - Zikomo.mp3",
+      "proposed_genre": "Groovy Bounce",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/Skrillex, Boys Noize, Ty Dolla $ign - Midnight Hour (Four Tet Remix).mp3",
+      "proposed_genre": "Electronic",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/Snoh Aalegra - I Want You Around (Zikomo & DrewsThatDude Remix).mp3",
+      "proposed_genre": "Groovy Bounce",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/This Is Why We Hot (Female Rmx) (Mixshow Ingredients).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/Unfoolish Remix.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/Valentines DayFlipTheScripta Remix Love Like This X Girlfriend.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/kelela-bruises_(sucia_remix)-a8eecde6.mp3",
+      "proposed_genre": "Electronic",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/kelela-closure_(flexulant_x_bambii_remix_feat_rahrah_gabor_and_brazy)-3b95426f.mp3",
+      "proposed_genre": "Electronic",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/kelela-divorce_(dj_manny_remix)-42574504.mp3",
+      "proposed_genre": "Electronic",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/kelela-divorce_(loraine_james_remix)-aed9a793.mp3",
+      "proposed_genre": "Electronic",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/kelela-enough_for_love_(tayhana_remix)-ad2aae08.mp3",
+      "proposed_genre": "Electronic",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/kelela-enough_for_love_(yaeji_heartbeat_remix)-acd7c26a.mp3",
+      "proposed_genre": "Electronic",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/kelela-far_away_(dj_lhc_remix)-65ed7fb2.mp3",
+      "proposed_genre": "Electronic",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/kelela-far_away_(suutoo_his_eye_is_on_the_raven_remix_feat_ms_carrie_stacks)-fb9448d6.mp3",
+      "proposed_genre": "Electronic",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/kelela-fooley_(leech_ambient_queen_remix)-d4acac8a.mp3",
+      "proposed_genre": "Electronic",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/kelela-happy_ending_(ag_remix)-24d5bdc4.mp3",
+      "proposed_genre": "Electronic",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/kelela-holier_(jd_reid_remix_feat_shygirl)-50b5323c.mp3",
+      "proposed_genre": "Electronic",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/kelela-let_it_go_(nguzunguzu_x_dj_gay-z_remix)-9dcab48c.mp3",
+      "proposed_genre": "Electronic",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/kelela-raven_(tygapaw_remix_feat_rochelle_jordan)-298960e4.mp3",
+      "proposed_genre": "Electronic",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/REMIXES & EDITS/Hip-Hop/white crocs. (Tokyo Ave Remix).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/01 Myself.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/03 Nice & Slow.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/04 Trading Places.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/05 BB.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/05 Gucci Gucci.mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Airto - Modaji Contemporary Mix.mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/All The Way.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Baby.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Backseat.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Bahamadia - Spontaneity.flac",
+      "proposed_genre": "Hip-Hop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Bahamadia - WordPlay.flac",
+      "proposed_genre": "Hip-Hop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Blxst & Bino Rideaux - Might Do Well.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Blxst & Bino Rideaux - Pop Out.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Bow Wow - Let Me Hold You (feat. Omarion).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Bow Wow feat. Omarion - Let Me Hold You.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Brown Skin.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/CONSIDERATION_126.mp3",
+      "proposed_genre": "Electronic",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Call On Me.mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Crack A Bottle.mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Didn't Cha Know.mp3",
+      "proposed_genre": "Neo Soul",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Don't Do It For You No More.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Dont Wanna Be A Player (LP Version).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Drake-Sweeter Man.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Dreamville, Ari Lennox - Blackberry Sap (with Ari Lennox) - Dreamville.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Drop Some New Shit (Intro).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Elkka - Alexandra.mp3",
+      "proposed_genre": "Electronic",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Girl.mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Gone Baby, Don't Be Long.mp3",
+      "proposed_genre": "Neo Soul",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Happen Again (Prod. monty g).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Hate Me Now.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/High Hopes.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/I Got That (feat. Beyoncé) - Explicit Album Version.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/IDC.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Kalisway - S.A.H.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Lifetime 1.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Low Battery.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Luhlaza.mp3",
+      "proposed_genre": "Afro House",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Ma I Don't Love Her (Karaoke Version) (Originally Performed By Clipse & Faith Evans).mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Make A Mil.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Ms. Parker.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Options.mp3",
+      "proposed_genre": "Groovy Bounce",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Orange Moon.mp3",
+      "proposed_genre": "Neo Soul",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/PARTYNEXTDOOR ~ CANDY Feat. NIPSEY..mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/PARTYNEXTDOOR ~ Jus Know (feat. Travis Scott).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/PARTYNEXTDOOR ~ Let's Get Married.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Peace Sign (feat. Dave East).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Preach (echos redo).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Present Situation (feat. The-Dream).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Pressure Drop.mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Pro Lover.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Pull Over.mp3",
+      "proposed_genre": "Miami Bass",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Right Now.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/SIDEKICK.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Say I.mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Shoulda Left You.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/T-Shirt & Panties.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/TBH.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Temptations.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Transparency.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Twork It Out.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/What's Luv copy.mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/cash money.mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/de'leon - sza lamar-30 for 30.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/enchanting - freaky deaky (feat. coi leray).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/enchanting - keep it playa.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/enchanting - love scars.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/enchanting - needy.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/enchanting - tell me why.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/enchanting - what i want (feat. jacquees).mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/joanna.mp3",
+      "proposed_genre": "Electronic",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/justin bieber, sexyy red - sweet spot.mp3",
+      "proposed_genre": "Pop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/lakeyah - indecisive ft loe shimmy.mp3",
+      "proposed_genre": "R&B",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    }
+  ],
+  "undo_log": "handoff/session-2026-08-15/survey/genre-refinement/genre-refinement-m4a-undo-20260815-221024.jsonl",
+  "tag_backup_root": "handoff/session-2026-08-15/survey/genre-refinement/genre-refinement-m4a-tag-file-backups/20260815-221024",
+  "genre_counts": {
+    "Hip-Hop": 27,
+    "R&B": 1,
+    "Neo Soul": 1
+  }
+}
