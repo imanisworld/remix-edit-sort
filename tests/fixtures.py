@@ -44,10 +44,10 @@ def write_mp3(path: Path, seed: int = 0, frames: int = 8) -> Path:
 
 
 def tag_mp3(path: Path, *, genre=None, title=None, artist=None, grouping=None,
-            year=None, bpm=None, v2_version: int = 4) -> Path:
+            year=None, bpm=None, key=None, v2_version: int = 4) -> Path:
     """Attach ID3 tags at the requested version. v2_version=2 makes an ID3v2.2
     file, which the engines must preserve rather than silently upgrade."""
-    from mutagen.id3 import ID3, ID3NoHeaderError, TCON, TIT2, TPE1, TIT1, TDRC, TYER, TBPM
+    from mutagen.id3 import ID3, ID3NoHeaderError, TCON, TIT2, TPE1, TIT1, TDRC, TYER, TBPM, TKEY
 
     try:
         tags = ID3(path)
@@ -68,6 +68,8 @@ def tag_mp3(path: Path, *, genre=None, title=None, artist=None, grouping=None,
             tags.setall("TYER", [TYER(encoding=1, text=[year])])
     if bpm is not None:
         tags.setall("TBPM", [TBPM(encoding=1, text=[bpm])])
+    if key is not None:
+        tags.setall("TKEY", [TKEY(encoding=1, text=[key])])
     if v2_version == 2:
         raise ValueError("use write_id3v22_mp3(); mutagen can only write v2.3/v2.4")
     tags.save(path, v2_version=v2_version)
@@ -154,7 +156,7 @@ def passing_manifest(source_root: Path, backup_root: Path, out_path: Path,
 
 def make_library(root: Path, tracks) -> dict:
     """Create a small synthetic library. `tracks` is a list of dicts:
-    {relative, seed?, genre?, title?, artist?, grouping?, year?, bpm?,
+    {relative, seed?, genre?, title?, artist?, grouping?, year?, bpm?, key?,
      v2_version?, serato?}
     Returns {relative: Path}.
     """
@@ -168,9 +170,9 @@ def make_library(root: Path, tracks) -> dict:
             made[spec["relative"]] = path
             continue
         path = write_mp3(Path(root) / spec["relative"], seed=spec.get("seed", index))
-        tag_kwargs = {key: spec[key] for key in
-                      ("genre", "title", "artist", "grouping", "year", "bpm")
-                      if key in spec}
+        tag_kwargs = {field: spec[field] for field in
+                      ("genre", "title", "artist", "grouping", "year", "bpm", "key")
+                      if field in spec}
         if tag_kwargs or "v2_version" in spec:
             tag_mp3(path, v2_version=spec.get("v2_version", 4), **tag_kwargs)
         if spec.get("serato"):
