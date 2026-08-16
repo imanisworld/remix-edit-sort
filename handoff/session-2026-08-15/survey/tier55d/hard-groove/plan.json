@@ -1,0 +1,115 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/Hard GROOVE",
+  "inventory": "handoff/session-2026-08-15/survey/tier55d/hard-groove/inventory/inventory.csv",
+  "track_count": 5,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "REMIXES & EDITS": 1,
+      "_NEEDS CHECK": 4
+    },
+    "genres": {
+      "R&B": 1,
+      "_GENRE NEEDS CHECK": 4
+    },
+    "moves": 5,
+    "genre_tag_changes": 1
+  },
+  "tag_change_summary": {
+    "R&B & Soul -> R&B": 1
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Hard GROOVE/JIALING - GET OFF MY JOGWHEEL.mp3",
+      "source_relative": "JIALING - GET OFF MY JOGWHEEL.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hard GROOVE/_NEEDS CHECK/_GENRE NEEDS CHECK/JIALING - GET OFF MY JOGWHEEL.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/JIALING - GET OFF MY JOGWHEEL.mp3",
+      "sha256": "66217b9f7c97ec3eabfb1a017a4c80d266d4076199ebbe54dc28df880ebfe25d",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "",
+      "proposed_genre": null,
+      "genre_evidence": "no genre tag and no explicit genre evidence",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Hard GROOVE/JIALING - PERCOLATE ON ACID.mp3",
+      "source_relative": "JIALING - PERCOLATE ON ACID.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hard GROOVE/_NEEDS CHECK/_GENRE NEEDS CHECK/JIALING - PERCOLATE ON ACID.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/JIALING - PERCOLATE ON ACID.mp3",
+      "sha256": "f4489d69a5a4468d86059ed40ff63cdc6f7cbc5f3f9374ceaa5f02a509374cea",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "",
+      "proposed_genre": null,
+      "genre_evidence": "no genre tag and no explicit genre evidence",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Hard GROOVE/PREMIERE Chimale, CWXD010 - Jack Tool 1.mp3",
+      "source_relative": "PREMIERE Chimale, CWXD010 - Jack Tool 1.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hard GROOVE/_NEEDS CHECK/_GENRE NEEDS CHECK/PREMIERE Chimale, CWXD010 - Jack Tool 1.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/PREMIERE Chimale, CWXD010 - Jack Tool 1.mp3",
+      "sha256": "dc292f4348005efe1d68e04c3e21b691cd6a60572c2b599badfe9970b4e2ba16",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "",
+      "proposed_genre": null,
+      "genre_evidence": "no genre tag and no explicit genre evidence",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Hard GROOVE/Rene Wise - Knock Motion E.P BP065.mp3",
+      "source_relative": "Rene Wise - Knock Motion E.P BP065.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hard GROOVE/_NEEDS CHECK/_GENRE NEEDS CHECK/Rene Wise - Knock Motion E.P BP065.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Rene Wise - Knock Motion E.P BP065.mp3",
+      "sha256": "b983058ab6f1793f2c2c54dbc79d66940776589612ab17fce3bc06c55d3878fc",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "hard groove",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: hard groove",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Hard GROOVE/brii - yukon 2step swing (brii edit).mp3",
+      "source_relative": "brii - yukon 2step swing (brii edit).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Hard GROOVE/REMIXES & EDITS/R&B/brii - yukon 2step swing (brii edit).mp3",
+      "destination_relative": "REMIXES & EDITS/R&B/brii - yukon 2step swing (brii edit).mp3",
+      "sha256": "e56151db9128adc5aed1b3a10fa9b48483d3638417afba4b0753931369faff46",
+      "version_category": "REMIXES & EDITS",
+      "version_evidence": "explicit remix/edit label",
+      "current_genre": "R&B & Soul",
+      "proposed_genre": "R&B",
+      "genre_evidence": "existing genre tag: R&B & Soul",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}

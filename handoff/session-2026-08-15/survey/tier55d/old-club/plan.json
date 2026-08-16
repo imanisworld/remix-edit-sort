@@ -1,0 +1,67 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/Old Club",
+  "inventory": "handoff/session-2026-08-15/survey/tier55d/old-club/inventory/inventory.csv",
+  "track_count": 2,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "DIRTY": 1,
+      "_NEEDS CHECK": 1
+    },
+    "genres": {
+      "Hip-Hop": 2
+    },
+    "moves": 2,
+    "genre_tag_changes": 2
+  },
+  "tag_change_summary": {
+    "Hip Hop -> Hip-Hop": 1,
+    "hip hop -> Hip-Hop": 1
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Old Club/06 Stilettos - Pumps.m4a",
+      "source_relative": "06 Stilettos - Pumps.m4a",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Old Club/_NEEDS CHECK/Hip-Hop/06 Stilettos - Pumps.m4a",
+      "destination_relative": "_NEEDS CHECK/Hip-Hop/06 Stilettos - Pumps.m4a",
+      "sha256": "54a3a21cd3772cfc622fe57989e9d9aa25a08ab7aeb21b4554bf2fe4a090c37b",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "hip hop",
+      "proposed_genre": "Hip-Hop",
+      "genre_evidence": "existing genre tag: hip hop",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Old Club/Whatever You Need (Dirty).m4a",
+      "source_relative": "Whatever You Need (Dirty).m4a",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Old Club/DIRTY/Hip-Hop/Whatever You Need (Dirty).m4a",
+      "destination_relative": "DIRTY/Hip-Hop/Whatever You Need (Dirty).m4a",
+      "sha256": "6178fe495e2cdc9d7d8b3a62cd45b55c143f78c2effde9512af2849d8f95c0af",
+      "version_category": "DIRTY",
+      "version_evidence": "explicit dirty/explicit label",
+      "current_genre": "Hip Hop",
+      "proposed_genre": "Hip-Hop",
+      "genre_evidence": "existing genre tag: Hip Hop",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}

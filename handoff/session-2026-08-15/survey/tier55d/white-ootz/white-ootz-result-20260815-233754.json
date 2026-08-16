@@ -1,0 +1,29 @@
+{
+  "mode": "white-ootz-apply",
+  "plan": "handoff/session-2026-08-15/survey/tier55d/white-ootz/plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/tier55d/white-ootz/backup-20260815-233753",
+  "tracks_processed": 63,
+  "files_moved": 63,
+  "genre_tags_changed": 7,
+  "genre_tags_skipped": 0,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "handoff/session-2026-08-15/survey/tier55d/white-ootz/white-ootz-undo-20260815-233754.jsonl",
+  "tag_backup_root": "handoff/session-2026-08-15/survey/tier55d/white-ootz/white-ootz-tag-file-backups/20260815-233754",
+  "genre_counts": {
+    "Afrobeat": 1,
+    "Dance": 6,
+    "Disco": 1,
+    "Electronic": 6,
+    "Hip-Hop": 4,
+    "House": 4,
+    "Juke & Footwork": 1,
+    "Pop": 4,
+    "R&B": 1,
+    "Tech House": 3,
+    "Techno": 1,
+    "_GENRE NEEDS CHECK": 31
+  }
+}

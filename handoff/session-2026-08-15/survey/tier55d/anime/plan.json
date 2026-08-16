@@ -1,0 +1,82 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/anime",
+  "inventory": "handoff/session-2026-08-15/survey/tier55d/anime/inventory/inventory.csv",
+  "track_count": 3,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 3
+    },
+    "genres": {
+      "Hip-Hop": 1,
+      "_GENRE NEEDS CHECK": 2
+    },
+    "moves": 3,
+    "genre_tag_changes": 1
+  },
+  "tag_change_summary": {
+    "Hip-Hop/Rap -> Hip-Hop": 1
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/anime/A Million Miles Away.mp3",
+      "source_relative": "A Million Miles Away.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/anime/_NEEDS CHECK/_GENRE NEEDS CHECK/A Million Miles Away.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/A Million Miles Away.mp3",
+      "sha256": "4b2d870e021e00649a2d602bf52c0fe0b84fc93be7ec1379dd95b37b923ece68",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Pop;Pop Rock;Rock;Soft Rock",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Pop;Pop Rock;Rock;Soft Rock",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/anime/Fever.mp3",
+      "source_relative": "Fever.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/anime/_NEEDS CHECK/Hip-Hop/Fever.mp3",
+      "destination_relative": "_NEEDS CHECK/Hip-Hop/Fever.mp3",
+      "sha256": "7f4c250398d3e0f446e64630d0f6ef55031f8568f158e373d612553c2bc3490b",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Hip-Hop/Rap",
+      "proposed_genre": "Hip-Hop",
+      "genre_evidence": "existing genre tag: Hip-Hop/Rap",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/anime/U Say Ye ♥️.mp3",
+      "source_relative": "U Say Ye ♥️.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/anime/_NEEDS CHECK/_GENRE NEEDS CHECK/U Say Ye ♥️.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/U Say Ye ♥️.mp3",
+      "sha256": "ccef51352c5e5c536459357d90d2afae4c9a76637c939b44f08494822417bd5d",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Vibes",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Vibes",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}

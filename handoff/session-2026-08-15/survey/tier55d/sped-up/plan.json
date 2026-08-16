@@ -1,0 +1,96 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/sped_up",
+  "inventory": "handoff/session-2026-08-15/survey/tier55d/sped-up/inventory/inventory.csv",
+  "track_count": 4,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "CLEAN": 1,
+      "_NEEDS CHECK": 3
+    },
+    "genres": {
+      "_GENRE NEEDS CHECK": 4
+    },
+    "moves": 4,
+    "genre_tag_changes": 0
+  },
+  "tag_change_summary": {},
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/sped_up/Ooohh La La (Menace's Hype ReDrum) (Intro Clean).mp3",
+      "source_relative": "Ooohh La La (Menace's Hype ReDrum) (Intro Clean).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/sped_up/CLEAN/_GENRE NEEDS CHECK/Ooohh La La (Menace's Hype ReDrum) (Intro Clean).mp3",
+      "destination_relative": "CLEAN/_GENRE NEEDS CHECK/Ooohh La La (Menace's Hype ReDrum) (Intro Clean).mp3",
+      "sha256": "6e7c3fcac62352aa760670edda4f4fc16e6b157a2f6a2e2c951e6b8526f9c8cb",
+      "version_category": "CLEAN",
+      "version_evidence": "explicit clean label",
+      "current_genre": "Remix",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Remix",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/sped_up/Prolly.mp3",
+      "source_relative": "Prolly.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/sped_up/_NEEDS CHECK/_GENRE NEEDS CHECK/Prolly.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Prolly.mp3",
+      "sha256": "b1991917f5e41de72f6adf5f48c7394fbfc6e29dffcee78867ed3f1877ae4462",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Hip Hop Rap",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Hip Hop Rap",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/sped_up/Smells Like Teen Drill.mp3",
+      "source_relative": "Smells Like Teen Drill.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/sped_up/_NEEDS CHECK/_GENRE NEEDS CHECK/Smells Like Teen Drill.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/Smells Like Teen Drill.mp3",
+      "sha256": "af7e54c5bc524a38ca230d206a8b3edcf9f5caad16a9954e5e6504f3b680fde1",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "rock drill",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: rock drill",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/sped_up/yancy - oh boy a munch.mp3",
+      "source_relative": "yancy - oh boy a munch.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/sped_up/_NEEDS CHECK/_GENRE NEEDS CHECK/yancy - oh boy a munch.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/yancy - oh boy a munch.mp3",
+      "sha256": "33342abd2af2838400a4f37d5ec3f7593450011142c962807be9b61b9bb161b9",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Drill",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Drill",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "mode": "club-rn-apply",
+  "plan": "handoff/session-2026-08-15/survey/tier55d/club-rn/plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/tier55d/club-rn/backup-20260815-233806",
+  "tracks_processed": 155,
+  "files_moved": 155,
+  "genre_tags_changed": 108,
+  "genre_tags_skipped": 0,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "handoff/session-2026-08-15/survey/tier55d/club-rn/club-rn-undo-20260815-233809.jsonl",
+  "tag_backup_root": "handoff/session-2026-08-15/survey/tier55d/club-rn/club-rn-tag-file-backups/20260815-233809",
+  "genre_counts": {
+    "Afrobeat": 1,
+    "Amapiano": 1,
+    "Deep House": 1,
+    "Disco": 1,
+    "Hip-Hop": 103,
+    "House": 2,
+    "Jersey Club": 1,
+    "Miami Bass": 2,
+    "Pop": 1,
+    "R&B": 6,
+    "Tech House": 1,
+    "Techno": 1,
+    "_GENRE NEEDS CHECK": 34
+  }
+}

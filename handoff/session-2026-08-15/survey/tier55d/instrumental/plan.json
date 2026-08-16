@@ -1,0 +1,134 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/Instrumental",
+  "inventory": "handoff/session-2026-08-15/survey/tier55d/instrumental/inventory/inventory.csv",
+  "track_count": 6,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "CLEAN": 1,
+      "DIRTY": 1,
+      "INSTRUMENTALS": 3,
+      "_NEEDS CHECK": 1
+    },
+    "genres": {
+      "Hip-Hop": 5,
+      "_GENRE NEEDS CHECK": 1
+    },
+    "moves": 6,
+    "genre_tag_changes": 5
+  },
+  "tag_change_summary": {
+    "Hip Hop -> Hip-Hop": 4,
+    "Hip-hop & Rap -> Hip-Hop": 1
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Instrumental/2Pac - Heartz Of Men (Instrumental) (Greatest Hits Instrumentals).mp3",
+      "source_relative": "2Pac - Heartz Of Men (Instrumental) (Greatest Hits Instrumentals).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Instrumental/INSTRUMENTALS/Hip-Hop/2Pac - Heartz Of Men (Instrumental) (Greatest Hits Instrumentals).mp3",
+      "destination_relative": "INSTRUMENTALS/Hip-Hop/2Pac - Heartz Of Men (Instrumental) (Greatest Hits Instrumentals).mp3",
+      "sha256": "3208df1554d402b7b850098596c3ab7837de234c9a7f109f9c0eac60dc34a336",
+      "version_category": "INSTRUMENTALS",
+      "version_evidence": "explicit instrumental label",
+      "current_genre": "Hip Hop",
+      "proposed_genre": "Hip-Hop",
+      "genre_evidence": "existing genre tag: Hip Hop",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Instrumental/2Pac - Hit Em Up (Extra Clean Version) (Official!).mp3",
+      "source_relative": "2Pac - Hit Em Up (Extra Clean Version) (Official!).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Instrumental/CLEAN/Hip-Hop/2Pac - Hit Em Up (Extra Clean Version) (Official!).mp3",
+      "destination_relative": "CLEAN/Hip-Hop/2Pac - Hit Em Up (Extra Clean Version) (Official!).mp3",
+      "sha256": "dfc48a25b1f7c1cd35d9c70b20a1d096ad5ef25698902afeb81277c0b2121cb1",
+      "version_category": "CLEAN",
+      "version_evidence": "explicit clean label",
+      "current_genre": "Hip Hop",
+      "proposed_genre": "Hip-Hop",
+      "genre_evidence": "existing genre tag: Hip Hop",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Instrumental/2Pac - Me Against The World (Instrumental) (Feat. Dramacydal) (Greatest Hits Instrumentals).mp3",
+      "source_relative": "2Pac - Me Against The World (Instrumental) (Feat. Dramacydal) (Greatest Hits Instrumentals).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Instrumental/INSTRUMENTALS/Hip-Hop/2Pac - Me Against The World (Instrumental) (Feat. Dramacydal) (Greatest Hits Instrumentals).mp3",
+      "destination_relative": "INSTRUMENTALS/Hip-Hop/2Pac - Me Against The World (Instrumental) (Feat. Dramacydal) (Greatest Hits Instrumentals).mp3",
+      "sha256": "a05f680c22acfd0192e9d68e3b268b2d64d82ef8d3e2188502765f9222dd5374",
+      "version_category": "INSTRUMENTALS",
+      "version_evidence": "explicit instrumental label",
+      "current_genre": "Hip Hop",
+      "proposed_genre": "Hip-Hop",
+      "genre_evidence": "existing genre tag: Hip Hop",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Instrumental/2Pac ft Outlawz - Me Against The World (Dirty).mp3",
+      "source_relative": "2Pac ft Outlawz - Me Against The World (Dirty).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Instrumental/DIRTY/Hip-Hop/2Pac ft Outlawz - Me Against The World (Dirty).mp3",
+      "destination_relative": "DIRTY/Hip-Hop/2Pac ft Outlawz - Me Against The World (Dirty).mp3",
+      "sha256": "3ce729ad0946384255b2ea2a1a72623871f5977efb2ea5b097ac73b1f6ba511d",
+      "version_category": "DIRTY",
+      "version_evidence": "explicit dirty/explicit label",
+      "current_genre": "Hip Hop",
+      "proposed_genre": "Hip-Hop",
+      "genre_evidence": "existing genre tag: Hip Hop",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Instrumental/Babylon (Instrumental).mp3",
+      "source_relative": "Babylon (Instrumental).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Instrumental/INSTRUMENTALS/_GENRE NEEDS CHECK/Babylon (Instrumental).mp3",
+      "destination_relative": "INSTRUMENTALS/_GENRE NEEDS CHECK/Babylon (Instrumental).mp3",
+      "sha256": "59c13b19594c2e7519c79e951cc34928a4043634cbcb23806b86f80c48936703",
+      "version_category": "INSTRUMENTALS",
+      "version_evidence": "explicit instrumental label",
+      "current_genre": "",
+      "proposed_genre": null,
+      "genre_evidence": "no genre tag and no explicit genre evidence",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Instrumental/letsuo - baliwood (free download).mp3",
+      "source_relative": "letsuo - baliwood (free download).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Instrumental/_NEEDS CHECK/Hip-Hop/letsuo - baliwood (free download).mp3",
+      "destination_relative": "_NEEDS CHECK/Hip-Hop/letsuo - baliwood (free download).mp3",
+      "sha256": "3aa3cc41e58e9673a9cb57fdcdb07f4e71b420788cc22c3ab394ca84395ee0df",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Hip-hop & Rap",
+      "proposed_genre": "Hip-Hop",
+      "genre_evidence": "existing genre tag: Hip-hop & Rap",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}

@@ -20,6 +20,8 @@ venv/
 *.jpg
 *.jpeg
 *.png
+*.ssp
+Icon?
 
 # DJ application data and local run artifacts.
 _Serato_/
