@@ -24,7 +24,10 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
+import backup_manifest
+import duplicate_semantics
 import lock_guard
+import mutation_engine
 
 
 def sha256_file(path: Path) -> str:
@@ -35,10 +38,18 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def load_and_validate(pairs_path: Path, backup_root: Path) -> list[dict]:
+def load_and_validate(pairs_path: Path) -> list[dict]:
+    """Every pair must be a proven EXACT_DUPLICATE before it is even eligible.
+
+    The repository-wide truth model (scripts/duplicate_semantics.py) allows
+    exactly one basis for calling two files duplicates: an identical SHA-256
+    over the whole file. Same filename, same title, same duration -- alone or
+    together -- can only ever produce REVIEW. This gate re-derives the verdict
+    here rather than trusting whatever the caller's JSON claims, so a pairs
+    file built by an older or sloppier tool cannot smuggle a filename-based
+    "duplicate" into a deletion run.
+    """
     pairs = json.loads(pairs_path.read_text(encoding="utf-8"))
-    if not backup_root.is_dir():
-        raise RuntimeError(f"verified backup directory missing: {backup_root}")
 
     errors = []
     for pair in pairs:
@@ -58,54 +69,90 @@ def load_and_validate(pairs_path: Path, backup_root: Path) -> list[dict]:
         if delete_hash != pair["sha256"]:
             errors.append(f"hash drifted from recorded value: {delete_path}")
             continue
+        verdict = duplicate_semantics.classify(
+            sha256_a=delete_hash, sha256_b=keep_hash,
+            name_a=delete_path.name, name_b=keep_path.name,
+        )
+        if not duplicate_semantics.may_authorize_deletion(verdict["verdict"]):
+            errors.append(
+                f"refusing to delete: {delete_path} vs {keep_path} classifies as "
+                f"{verdict['verdict']} ({verdict['reason']}), not EXACT_DUPLICATE"
+            )
+            continue
     if errors:
         raise RuntimeError("Validation failed:\n" + "\n".join(errors))
     return pairs
 
 
-def apply(pairs_path: Path, backup_root: Path, out_dir: Path, label: str, heartbeat: lock_guard.LockHeartbeat) -> None:
-    pairs = load_and_validate(pairs_path, backup_root)
+def apply(pairs_path: Path, manifest: dict, source_root: Path, backup_root: Path,
+          out_dir: Path, label: str, heartbeat: lock_guard.LockHeartbeat) -> None:
+    pairs = load_and_validate(pairs_path)
     stamp = datetime.now().astimezone().strftime("%Y%m%d-%H%M%S")
     undo_path = out_dir / f"{label}-undo-{stamp}.jsonl"
     result_path = out_dir / f"{label}-result-{stamp}.json"
+    journal_path = out_dir / f"{label}-recovery-{stamp}.jsonl"
+    engine = mutation_engine.MutationEngine(
+        journal_path, heartbeat, manifest, source_root, label,
+    )
+    engine.start({"pairs_file": str(pairs_path), "pairs": len(pairs)})
     completed = []
 
     for index, pair in enumerate(pairs, start=1):
-        heartbeat.beat()
         delete_path = Path(pair["delete"])
         keep_path = Path(pair["keep"])
-        # Re-verify immediately before removal -- not just at validate time --
-        # in case anything changed in the gap (this is a live, multi-session library).
-        delete_hash = sha256_file(delete_path)
-        keep_hash = sha256_file(keep_path)
-        if delete_hash != keep_hash or delete_hash != pair["sha256"]:
-            raise RuntimeError(f"hash changed since validation, aborting before delete: {delete_path}")
-
         backup_rel = pair.get("backup_relative")
-        backup_path = (backup_root / backup_rel) if backup_rel else None
-        if backup_path is None:
-            # Default convention: backup mirrors the delete path relative to
-            # a shared library root recorded once for the whole run.
+        if not backup_rel:
+            # No default convention: a deletion whose restore path has to be
+            # guessed is not a deletion this tool will perform.
             raise RuntimeError(f"pair missing backup_relative: {pair}")
-        if not backup_path.is_file():
-            raise RuntimeError(f"backup copy missing for {delete_path}: {backup_path}")
-        if sha256_file(backup_path) != delete_hash:
-            raise RuntimeError(f"backup copy hash mismatch for {delete_path}: {backup_path}")
+        backup_path = backup_root / backup_rel
 
-        delete_path.unlink()
+        # The engine performs the heartbeat, re-hashes the source immediately
+        # before the delete (not just at validate time -- this is a live,
+        # multi-session library), proves this exact file is in the verified
+        # backup, and writes the recovery intent BEFORE the unlink. That
+        # ordering is what makes a crash mid-delete recoverable: the journal
+        # already names the file, its hash, and the backup copy to restore from.
+        with engine.item(
+            index,
+            kind=mutation_engine.DELETE,
+            source=delete_path,
+            expected_sha256=pair["sha256"],
+            backup_path=backup_path,
+            extra_intent={"kept": str(keep_path), "verdict": duplicate_semantics.EXACT_DUPLICATE},
+        ) as txn:
+            delete_hash = sha256_file(delete_path)
+            keep_hash = sha256_file(keep_path)
+            if delete_hash != keep_hash or delete_hash != pair["sha256"]:
+                raise RuntimeError(
+                    f"hash changed since validation, aborting before delete: {delete_path}"
+                )
+            txn.on_rollback(
+                lambda p=delete_path, b=backup_path, h=delete_hash:
+                mutation_engine.restore_from_backup(b, p, h)
+            )
 
-        record = {
-            "index": index,
-            "deleted": str(delete_path),
-            "kept": str(keep_path),
-            "sha256": delete_hash,
-            "backup": str(backup_path),
-        }
-        with undo_path.open("a", encoding="utf-8") as handle:
-            handle.write(json.dumps(record, ensure_ascii=False) + "\n")
-            handle.flush()
-            os.fsync(handle.fileno())
-        completed.append(record)
+            delete_path.unlink()
+            txn.mark_mutated()
+
+            if delete_path.exists():
+                raise RuntimeError(f"delete did not take effect: {delete_path}")
+            if not keep_path.is_file():
+                raise RuntimeError(f"the copy being kept vanished during the run: {keep_path}")
+
+            record = {
+                "index": index,
+                "deleted": str(delete_path),
+                "kept": str(keep_path),
+                "sha256": delete_hash,
+                "backup": str(backup_path),
+            }
+            txn.record(kept=str(keep_path), sha256=delete_hash, backup=str(backup_path))
+            with undo_path.open("a", encoding="utf-8") as handle:
+                handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+                handle.flush()
+                os.fsync(handle.fileno())
+            completed.append(record)
 
     surviving = [r["deleted"] for r in completed if Path(r["deleted"]).exists()]
     kept_missing = [r["kept"] for r in completed if not Path(r["kept"]).is_file()]
@@ -117,15 +164,24 @@ def apply(pairs_path: Path, backup_root: Path, out_dir: Path, label: str, heartb
         "surviving_delete_targets": surviving,
         "kept_missing": kept_missing,
         "undo_log": str(undo_path),
+        "recovery_journal": str(journal_path),
+        "verified_backup_manifest": {
+            "backup_id": manifest["backup_id"],
+            "status": manifest["status"],
+        },
     }
+    engine.finish(result)
     result_path.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(json.dumps({**result, "result_path": str(result_path)}, indent=2))
 
 
-def undo(undo_path: Path, label: str) -> None:
+def undo(undo_path: Path, label: str, heartbeat: lock_guard.LockHeartbeat) -> None:
+    """Restore deleted files. This is a mutation, so ownership is re-verified
+    before every restore, not once at startup."""
     records = [json.loads(line) for line in undo_path.read_text(encoding="utf-8").splitlines() if line.strip()]
     restored = 0
     for record in reversed(records):
+        heartbeat.beat()
         deleted = Path(record["deleted"])
         backup = Path(record["backup"])
         if deleted.exists():
@@ -143,7 +199,14 @@ def undo(undo_path: Path, label: str) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pairs", required=True, type=Path, help="JSON list of {sha256, delete, keep} pairs")
-    parser.add_argument("--backup-root", type=Path, help="Verified backup dir (required with --apply)")
+    parser.add_argument("--backup-root", type=Path,
+                        help="Backup dir the per-pair copies live in (required with --apply)")
+    parser.add_argument("--source-root", type=Path,
+                        help="Library root the backup manifest covers (required with --apply)")
+    parser.add_argument("--backup-manifest", type=Path,
+                        help="PASS manifest from backup_manifest.py verify (required with --apply)")
+    parser.add_argument("--require-serato-backup", action="store_true",
+                        help="also require the manifest to carry PASS Serato backup evidence")
     parser.add_argument("--out-dir", type=Path, help="Where undo/result files land (defaults to pairs file's dir)")
     parser.add_argument("--label", default="dedup-delete", help="Prefix for undo/result files")
     parser.add_argument("--apply", action="store_true")
@@ -157,16 +220,32 @@ def main() -> None:
     if args.undo:
         if not args.lock_folder or not args.session:
             raise SystemExit("--lock-folder and --session are required with --undo")
-        lock_guard.require_lock_or_exit(args.lock_folder, args.session)
-        undo(args.undo.resolve(), args.label)
+        lock = lock_guard.require_lock_or_exit(args.lock_folder, args.session)
+        heartbeat = lock_guard.LockHeartbeat(args.lock_folder, args.session)
+        heartbeat.pin_run_id(lock)
+        undo(args.undo.resolve(), args.label, heartbeat)
     elif args.apply:
-        if not args.backup_root:
-            raise SystemExit("--backup-root is required with --apply")
+        if not args.backup_root or not args.source_root or not args.backup_manifest:
+            raise SystemExit(
+                "--backup-root, --source-root and --backup-manifest are required with --apply.\n"
+                "Produce a manifest with:\n"
+                "  python3 scripts/backup_manifest.py verify "
+                "--source-root <root> --backup <dir> --out manifest.json"
+            )
         if not args.lock_folder or not args.session:
             raise SystemExit("--lock-folder and --session are required with --apply")
-        lock_guard.require_lock_or_exit(args.lock_folder, args.session)
-        heartbeat = lock_guard.LockHeartbeat(args.lock_folder, args.session)
-        apply(args.pairs, args.backup_root.resolve(), out_dir, args.label, heartbeat)
+        try:
+            heartbeat, manifest = mutation_engine.run_preflight(
+                lock_folder=args.lock_folder,
+                session=args.session,
+                manifest_path=args.backup_manifest,
+                source_root=args.source_root.resolve(),
+                serato_required=args.require_serato_backup,
+            )
+        except backup_manifest.BackupGateError as exc:
+            raise SystemExit(f"REFUSING TO MUTATE: {exc}") from exc
+        apply(args.pairs, manifest, args.source_root.resolve(), args.backup_root.resolve(),
+              out_dir, args.label, heartbeat)
     else:
         pairs = json.loads(args.pairs.read_text(encoding="utf-8"))
         print(json.dumps({"mode": "dry-run", "pairs": len(pairs), "changes_made": 0}, indent=2))
