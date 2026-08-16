@@ -1,0 +1,186 @@
+{
+  "mode": "genre-refinement-apply",
+  "plan": "handoff/session-2026-08-15/survey/genre-refinement/genre-refinement-plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/genre-refinement/genre-refinement-backup-20260815-2122",
+  "tracks_processed": 260,
+  "genre_tags_changed": 216,
+  "genre_tags_skipped": 44,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "unsupported_format_count": 29,
+  "unsupported_format_items": [
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Crew (Remix) (Dirty).m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/For Everybody (Dirty).m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Love You Better (Dirty).m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/No Problem (Dirty).m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Spar (Dirty).m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/DIRTY/Hip-Hop/Whoa (Dirty).m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/7AM.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/AssMilk (feat. Earl Sweatshirt).m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Bastard.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Blxst & Bino Rideaux - Bacc Home.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "R&B"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Inglorious.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Jack And The Beanstalk.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Kendrick Lamar - King Kunta.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Odd Toddlers (feat. Casey Veggies.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Parade.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Pigs Fly (feat. Domo Genesis).m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/RJ - Left and Right Side.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Sarah.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Seven.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Slow It Down (feat. Hodgy Beats).m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Super Saiyan.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Time's A Wastin.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Neo Soul"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Tina (feat. Jasper Dolphin & Taco.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Touch It.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/VCR_Wheels.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/YG - BPT.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/YG - Do It To Ya (feat. TeeFLii).m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/YG - I Just Wanna Party (feat. ScHoolb.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Yamborghini Dream (feat. Young Th.m4a",
+      "combined_status": "A_ONLY",
+      "proposed_genre": "Hip-Hop"
+    }
+  ],
+  "already_correct_count": 2,
+  "already_correct_items": [
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Bahamadia - Spontaneity.flac",
+      "proposed_genre": "Hip-Hop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    },
+    {
+      "path": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/_NEEDS CHECK/Hip-Hop/Bahamadia - WordPlay.flac",
+      "proposed_genre": "Hip-Hop",
+      "note": "on-disk genre already matched proposed value; plan's recorded current_genre was stale"
+    }
+  ],
+  "undo_log": "handoff/session-2026-08-15/survey/genre-refinement/genre-refinement-undo-20260815-212447.jsonl",
+  "tag_backup_root": "handoff/session-2026-08-15/survey/genre-refinement/genre-refinement-tag-file-backups/20260815-212447",
+  "genre_counts": {
+    "Pop": 30,
+    "R&B": 150,
+    "House": 3,
+    "Juke & Footwork": 1,
+    "Tech House": 3,
+    "Dancehall": 2,
+    "Electronic": 18,
+    "Groovy Bounce": 4,
+    "Neo Soul": 3,
+    "Afro House": 1,
+    "Miami Bass": 1
+  }
+}
