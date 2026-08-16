@@ -60,6 +60,7 @@ import hashlib
 import json
 import os
 import sys
+import unicodedata
 from datetime import datetime
 from pathlib import Path
 
@@ -133,11 +134,21 @@ def canonical_digest(manifest: dict) -> str:
 def _identity(path: Path) -> str:
     """Normalized absolute path used to compare roots.
 
-    Case-folded because the production library is on case-insensitive APFS,
-    where "/Music/Hip Hop" and "/music/hip hop" are genuinely the same
-    directory and treating them as different roots would fail a valid backup.
+    Two normalizations, both deliberate:
+
+    * `casefold()`, NOT `os.path.normcase()`. normcase is the identity
+      function on every POSIX platform including macOS -- it only lowercases
+      on Windows -- so using it here would silently do nothing on the machine
+      that actually matters. The production library lives on case-insensitive
+      APFS, where "/Music/Hip Hop" and "/music/hip hop" are the same
+      directory, and treating them as different roots would reject a
+      perfectly valid backup.
+    * Unicode NFC, because macOS has historically stored filenames decomposed.
+      A manifest written with "Beyoncé" must still match a run targeting
+      "Beyoncé" -- same directory, different bytes.
     """
-    return os.path.normcase(str(Path(path).resolve()))
+    resolved = str(Path(path).resolve())
+    return unicodedata.normalize("NFC", resolved).casefold()
 
 
 def _walk_audio(root: Path) -> dict[str, Path]:
@@ -321,10 +332,22 @@ def require_pass(
     return manifest
 
 
+def _relative_key(relative: str) -> str:
+    """Lookup key for a per-file manifest entry.
+
+    NFC-normalized so a manifest written on a decomposing filesystem still
+    matches a path presented in composed form (and vice versa). Case is NOT
+    folded here: unlike the root-identity check, two entries differing only by
+    case are two distinct plan targets whose collision must be caught by the
+    apply engine's validator, not silently merged here.
+    """
+    return unicodedata.normalize("NFC", relative)
+
+
 def backed_up_hashes(manifest: dict) -> dict[str, str]:
     """{relative path -> sha256} for every file the manifest proves is backed up."""
     return {
-        entry["path"]: entry["sha256"]
+        _relative_key(entry["path"]): entry["sha256"]
         for entry in manifest.get("files", [])
         if entry.get("backed_up") and entry.get("matched", True)
     }
@@ -344,6 +367,7 @@ def require_item_backed_up(manifest: dict, source_root: Path, path: Path) -> str
             f"{path} is not under the backed-up source root {source_root}"
         ) from exc
     hashes = backed_up_hashes(manifest)
+    relative = _relative_key(relative)
     if relative not in hashes:
         raise BackupGateError(
             f"no verified backup evidence for {relative!r} in manifest {manifest.get('backup_id')!r}"
