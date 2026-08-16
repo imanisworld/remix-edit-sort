@@ -155,5 +155,63 @@ def re_compile(pattern: str):
     return re.compile(pattern, re.IGNORECASE)
 
 
+class MultiClusterPlanTests(unittest.TestCase):
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.tmp = Path(self._tmp.name)
+        self.library = self.tmp / "Music"
+        self.library.mkdir()
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def build(self, clusters, grouping_values_in_use):
+        report_path = self.tmp / "tag-audit.json"
+        report_path.write_text(json.dumps({"grouping_values_in_use": grouping_values_in_use}))
+        vocab = build_plan_mod.build_vocabulary(report_path)
+        made = [build_plan_mod.make_cluster(name) for name in clusters]
+        return build_plan_mod.build_plan_clusters(self.library, made, vocab)
+
+    def test_two_clusters_each_fix_their_own_file_in_one_pass(self):
+        make_library(self.library, [
+            {"relative": "a.mp3", "grouping": "old head"},
+            {"relative": "b.mp3", "grouping": "lounge"},
+        ])
+        plan = self.build(["Old Head", "Lounge"], {"Old Head": 5, "Lounge": 5})
+        self.assertEqual(plan["counts"]["auto_fix"], 2)
+        results = {tuple(it["current_grouping"]): it["combined_grouping"] for it in plan["items"]}
+        self.assertEqual(results[("old head",)], "Old Head")
+        self.assertEqual(results[("lounge",)], "Lounge")
+
+    def test_one_file_with_both_terms_gets_both_segments_fixed_together(self):
+        make_library(self.library, [{"relative": "a.mp3", "grouping": "old head; lounge; Clean"}])
+        plan = self.build(["Old Head", "Lounge"], {"Old Head": 5, "Lounge": 5})
+        self.assertEqual(plan["counts"]["auto_fix"], 1)
+        self.assertEqual(plan["items"][0]["combined_grouping"], "Old Head; Lounge; Clean")
+
+    def test_rules_records_all_canonicals(self):
+        make_library(self.library, [{"relative": "a.mp3", "grouping": "old head"}])
+        plan = self.build(["Old Head", "Lounge"], {"Old Head": 5})
+        self.assertEqual(plan["rules"]["canonicals"], ["Old Head", "Lounge"])
+
+    def test_single_canonical_wrapper_still_reports_singular_canonical_field(self):
+        report_path = self.tmp / "tag-audit.json"
+        report_path.write_text(json.dumps({"grouping_values_in_use": {"Old Head": 5}}))
+        vocab = build_plan_mod.build_vocabulary(report_path)
+        make_library(self.library, [{"relative": "a.mp3", "grouping": "old head"}])
+        plan = build_plan_mod.build_plan(
+            self.library, "Old Head", build_plan_mod.default_pattern("Old Head"), vocab
+        )
+        self.assertEqual(plan["rules"]["canonical"], "Old Head")
+        self.assertEqual(plan["rules"]["canonicals"], ["Old Head"])
+
+    def test_no_library_file_is_ever_modified(self):
+        made = make_library(self.library, [{"relative": "a.mp3", "grouping": "old head; lounge"}])
+        before = made["a.mp3"].read_bytes()
+        self.build(["Old Head", "Lounge"], {"Old Head": 5, "Lounge": 5})
+        after = made["a.mp3"].read_bytes()
+        self.assertEqual(before, after)
+
+
 if __name__ == "__main__":
     unittest.main()

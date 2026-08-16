@@ -46,6 +46,14 @@ Only AUTO-FIX MP3 items go into the plan's "items" list, in the exact
 apply_grouping_plan.py's load_and_validate() requires. NEEDS_REVIEW and
 UNSUPPORTED_FORMAT are reported alongside for a human to look at, but are
 never part of what could be applied.
+
+--clusters lets multiple canonicals share ONE pass over the library instead
+of each doing its own full rescan: pass a JSON file of
+[{"canonical": "...", "pattern": "..." (optional)}, ...] instead of
+--canonical/--pattern. A file whose Grouping value mentions two different
+clusters' terms gets both fixed in the same plan item -- the first cluster
+whose pattern matches a given ";"-segment "owns" that segment (never falls
+through to a later cluster on the same segment).
 """
 
 from __future__ import annotations
@@ -138,27 +146,28 @@ def resolve_words(text: str, canonical_fold: str, canonical: str, vocab: dict[st
     return dedupe_join(parts)
 
 
-def resolve_segment(segment: str, pattern: re.Pattern, canonical_fold: str, canonical: str,
-                     vocab: dict[str, str]) -> str | None:
-    """One ';'-delimited segment of a Grouping value. A segment that doesn't
-    mention the canonical term at all (an Event/Source/Clean-Dirty tag
-    already living happily alongside it) is returned untouched -- it's not
-    what we're fixing and doesn't need to be "known vocabulary" to be valid.
-    Only segments that DO mention the canonical term get resolved; if that
-    resolution isn't fully evidence-backed, this returns None."""
-    if not pattern.search(segment):
-        return segment
-    return resolve_words(segment, canonical_fold, canonical, vocab)
+def resolve_segment(segment: str, clusters: list[dict], vocab: dict[str, str]) -> str | None:
+    """One ';'-delimited segment of a Grouping value, checked against every
+    configured cluster (in order). A segment that doesn't mention ANY
+    cluster's canonical term at all (an Event/Source/Clean-Dirty tag already
+    living happily alongside it) is returned untouched -- it's not what
+    we're fixing and doesn't need to be "known vocabulary" to be valid. The
+    first cluster whose pattern matches "owns" this segment; if that
+    cluster's resolution isn't fully evidence-backed, this returns None --
+    it never falls through to try a later cluster on the same segment."""
+    for cluster in clusters:
+        if cluster["pattern"].search(segment):
+            return resolve_words(segment, cluster["canonical_fold"], cluster["canonical"], vocab)
+    return segment
 
 
-def resolve_value(raw: str, pattern: re.Pattern, canonical: str, vocab: dict[str, str]) -> str | None:
+def resolve_value(raw: str, clusters: list[dict], vocab: dict[str, str]) -> str | None:
     """Full raw Grouping value -> resolved value, or None if any segment
-    that mentions the canonical term can't be fully resolved."""
-    canonical_fold = canonical.casefold()
+    that mentions a cluster's canonical term can't be fully resolved."""
     segments = [s.strip() for s in raw.split(";") if s.strip()] if ";" in raw else [raw.strip()]
     resolved_segments = []
     for segment in segments:
-        resolved = resolve_segment(segment, pattern, canonical_fold, canonical, vocab)
+        resolved = resolve_segment(segment, clusters, vocab)
         if resolved is None:
             return None
         resolved_segments.append(resolved)
@@ -204,37 +213,44 @@ def read_grouping_raw(path: Path) -> tuple[list[str], int | None]:
     return [], None
 
 
-def find_matches(library_root: Path, pattern: re.Pattern) -> list[Path]:
-    matches = []
-    for p in sorted(library_root.rglob("*")):
-        if not (p.is_file() and p.suffix.lower() in AUDIO_EXTS and not p.is_symlink()):
-            continue
-        raw, _ = read_grouping_raw(p)
-        if any(pattern.search(v) for v in raw):
-            matches.append(p)
-    return matches
+def make_cluster(canonical: str, pattern: re.Pattern | None = None) -> dict:
+    return {
+        "canonical": canonical,
+        "canonical_fold": canonical.casefold(),
+        "pattern": pattern or default_pattern(canonical),
+    }
 
 
-def build_plan(library_root: Path, canonical: str, pattern: re.Pattern, vocab: dict[str, str]) -> dict:
+def build_plan_clusters(library_root: Path, clusters: list[dict], vocab: dict[str, str]) -> dict:
+    """Same classification as build_plan(), for any number of canonicals in
+    ONE pass over the library -- one filesystem walk, one tag read per file,
+    regardless of how many clusters are configured. A file whose Grouping
+    value mentions two different clusters' terms (e.g. one segment is an Old
+    Head variant, another a Lounge variant) gets both fixed in the same
+    plan item, rather than needing two separate build+apply cycles that
+    would each re-scan the whole library and re-lock/re-backup the same
+    leaf directory."""
     auto_fix, needs_review, unsupported = [], [], []
 
-    for path in find_matches(library_root, pattern):
+    for path in sorted(library_root.rglob("*")):
+        if not (path.is_file() and path.suffix.lower() in AUDIO_EXTS and not path.is_symlink()):
+            continue
         raw_values, id3_version = read_grouping_raw(path)
+        matching_raw = [v for v in raw_values if any(c["pattern"].search(v) for c in clusters)]
+        if not matching_raw:
+            continue
 
         if id3_version is None:
             if path.suffix.casefold() == ".mp3":
                 reason = "ID3v2.2 -- apply_grouping_plan.py's write_grouping() only supports v2_version 3 or 4"
             else:
                 reason = f"format {path.suffix} not writable by apply_grouping_plan.py"
-            for raw in raw_values:
-                if pattern.search(raw):
-                    unsupported.append({"path": str(path), "current_grouping": raw, "reason": reason})
+            for raw in matching_raw:
+                unsupported.append({"path": str(path), "current_grouping": raw, "reason": reason})
             continue
 
-        for raw in raw_values:
-            if not pattern.search(raw):
-                continue
-            resolved = resolve_value(raw, pattern, canonical, vocab)
+        for raw in matching_raw:
+            resolved = resolve_value(raw, clusters, vocab)
             if resolved is None:
                 needs_review.append({"path": str(path), "current_grouping": raw})
             elif resolved != raw:
@@ -249,7 +265,7 @@ def build_plan(library_root: Path, canonical: str, pattern: re.Pattern, vocab: d
         "mode": "preview-only",
         "rules": {
             "approval_required": True,
-            "canonical": canonical,
+            "canonicals": [c["canonical"] for c in clusters],
             "note": "Only AUTO-FIX items with a full evidence-based token resolution are in 'items'. "
                     "needs_review/unsupported_format are report-only, never applyable as-is.",
         },
@@ -265,10 +281,24 @@ def build_plan(library_root: Path, canonical: str, pattern: re.Pattern, vocab: d
     return plan
 
 
+def build_plan(library_root: Path, canonical: str, pattern: re.Pattern, vocab: dict[str, str]) -> dict:
+    """Single-canonical convenience wrapper, unchanged behavior/shape from
+    before multi-cluster support existed -- see build_plan_clusters() for
+    the one-scan-many-canonicals path."""
+    plan = build_plan_clusters(library_root, [make_cluster(canonical, pattern)], vocab)
+    plan["rules"]["canonical"] = canonical
+    return plan
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--canonical", required=True, help='e.g. "Old Head"')
-    parser.add_argument("--pattern", help="override regex for finding variants (default: derived from --canonical)")
+    parser.add_argument("--canonical", help='single-cluster mode, e.g. "Old Head"')
+    parser.add_argument("--pattern", help="single-cluster mode: override regex (default: derived from --canonical)")
+    parser.add_argument(
+        "--clusters", type=Path,
+        help='multi-cluster mode: JSON file [{"canonical": "...", "pattern": "..." (optional)}, ...] -- '
+             "scans the library ONCE for all of them instead of once per canonical",
+    )
     parser.add_argument("--library-root", type=Path, default=MUSIC_ROOT)
     parser.add_argument("--tag-audit-report", type=Path, required=True,
                          help="a handoff/maintenance-audits/tag-audit-*.json from audit_maintenance.py --tags, "
@@ -276,14 +306,29 @@ def main() -> None:
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
 
-    pattern = re.compile(args.pattern, re.IGNORECASE) if args.pattern else default_pattern(args.canonical)
+    if bool(args.clusters) == bool(args.canonical):
+        parser.error("pass exactly one of --canonical or --clusters")
+
     vocab = build_vocabulary(args.tag_audit_report)
-    plan = build_plan(args.library_root.resolve(), args.canonical, pattern, vocab)
+    library_root = args.library_root.resolve()
+
+    if args.clusters:
+        raw_clusters = json.loads(args.clusters.read_text(encoding="utf-8"))
+        clusters = [
+            make_cluster(c["canonical"], re.compile(c["pattern"], re.IGNORECASE) if c.get("pattern") else None)
+            for c in raw_clusters
+        ]
+        plan = build_plan_clusters(library_root, clusters, vocab)
+        canonical_label = ", ".join(repr(c["canonical"]) for c in clusters)
+    else:
+        pattern = re.compile(args.pattern, re.IGNORECASE) if args.pattern else default_pattern(args.canonical)
+        plan = build_plan(library_root, args.canonical, pattern, vocab)
+        canonical_label = repr(args.canonical)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(plan, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
-    print(f"canonical: {args.canonical!r}")
+    print(f"canonical(s): {canonical_label}")
     print(f"auto-fix:          {plan['counts']['auto_fix']}")
     print(f"needs review:      {plan['counts']['needs_review']}")
     print(f"unsupported format:{plan['counts']['unsupported_format']}")
