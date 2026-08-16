@@ -1,0 +1,9 @@
+{
+  "mode": "lounge-dedup-apply",
+  "pairs_file": "handoff/session-2026-08-15/survey/library-wide-dedup/lounge-dedup-pairs.json",
+  "backup_root": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/library-wide-dedup/lounge-dedup-backup-20260815-2306",
+  "deleted_count": 5,
+  "surviving_delete_targets": [],
+  "kept_missing": [],
+  "undo_log": "handoff/session-2026-08-15/survey/library-wide-dedup/lounge-dedup-undo-20260815-230338.jsonl"
+}

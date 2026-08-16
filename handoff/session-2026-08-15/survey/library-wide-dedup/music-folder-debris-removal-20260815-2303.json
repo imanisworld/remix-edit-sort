@@ -1,0 +1,32 @@
+{
+  "mode": "music-folder-debris-removal",
+  "reason": "Music/ top-level folder was entirely leftover debris from the earlier NewFiles-merge incident (Music/NewFiles/enomiya, Music/NewFiles/midaiganes). Every real file in it (4 audio files + 1 .serato-stems sidecar) verified byte-identical to content already present at the real top-level enomiya/ and midaiganes/ folders; only other contents were 2 .DS_Store junk files.",
+  "verified_before_removal": [
+    {
+      "removed": "/Users/djb.a.e/Music/DJ-Music/Music/Music/NewFiles/enomiya/09. Earth, Wind & Fire - You and I.flac",
+      "kept": "/Users/djb.a.e/Music/DJ-Music/Music/enomiya/09. Earth, Wind & Fire - You and I.flac",
+      "sha256": "verified byte-identical via direct shasum immediately before removal"
+    },
+    {
+      "removed": "/Users/djb.a.e/Music/DJ-Music/Music/Music/NewFiles/enomiya/09. Earth, Wind & Fire - You and I.1.2.serato-stems",
+      "kept": "/Users/djb.a.e/Music/DJ-Music/Music/enomiya/09. Earth, Wind & Fire - You and I.1.2.serato-stems",
+      "sha256": "verified byte-identical via direct shasum immediately before removal"
+    },
+    {
+      "removed": "/Users/djb.a.e/Music/DJ-Music/Music/Music/NewFiles/midaiganes/1-05. Left Right (feat. Lee Cash & Ellis Quinn).flac",
+      "kept": "/Users/djb.a.e/Music/DJ-Music/Music/midaiganes/1-05. Left Right (feat. Lee Cash & Ellis Quinn).flac",
+      "sha256": "verified byte-identical via direct shasum immediately before removal"
+    },
+    {
+      "removed": "/Users/djb.a.e/Music/DJ-Music/Music/Music/NewFiles/midaiganes/1-06. Trop Cherry, Part 2.flac",
+      "kept": "/Users/djb.a.e/Music/DJ-Music/Music/midaiganes/1-06. Trop Cherry, Part 2.flac",
+      "sha256": "verified byte-identical via direct shasum immediately before removal"
+    }
+  ],
+  "junk_removed": [
+    "/Users/djb.a.e/Music/DJ-Music/Music/Music/.DS_Store",
+    "/Users/djb.a.e/Music/DJ-Music/Music/Music/NewFiles/.DS_Store"
+  ],
+  "backup": "handoff/session-2026-08-15/survey/library-wide-dedup/music-folder-debris-backup-20260815-2303",
+  "approval": "Direct approval from Brooke in-session, per library-wide dedup sweep follow-up"
+}
