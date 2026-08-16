@@ -79,7 +79,15 @@
     "jazz, old head party": "Jazz",
     "jazz": "Jazz",
     "nu wave, old head party": "Nu Wave",
-    "nu wave": "Nu Wave"
+    "nu wave": "Nu Wave",
+    "afro beat": "Afrobeats",
+    "rap 2025": "Hip-Hop",
+    "house with words": "House",
+    "house edit": "House",
+    "hip hop dallas houston": "Hip-Hop",
+    "r&b alternative": "Alternative R&B",
+    "hip hop, rap": "Hip-Hop",
+    "latin pop": "Latin Pop"
   },
   "filename_keywords": [
     {"contains": "ghettotech", "genre": "Ghettotech", "evidence": "filename explicitly says Ghettotech"},
