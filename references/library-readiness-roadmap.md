@@ -2,6 +2,8 @@
 
 This file complements `references/audio-intelligence-roadmap.md`. It defines the final operational layers needed to turn evidence from the cleanup into a DJ-library readiness view.
 
+For ongoing operation after the initial cleanup, also see `references/library-maintenance-roadmap.md` for caching, drift detection, new-music intake, relocation mapping, analysis provenance, canary testing, DJ-utility enrichment, and storage-impact reporting.
+
 These capabilities are read-only by default. They may recommend review actions, but they must not silently move, rename, retag, archive, or delete music or rewrite Serato data.
 
 Operating order:
@@ -262,6 +264,7 @@ Do not build these before using the current recheck tools.
 8. Add DJ readiness status.
 9. Generate the unified master review/dashboard report.
 10. Persist human-reviewed outcomes in the durable decision ledger.
+11. Transition recurring operation to `references/library-maintenance-roadmap.md` so future cycles use analysis caching, snapshot drift detection, controlled new-music intake, relocation history, provenance, canary testing, and versioned analysis instead of starting over.
 
 ## Non-negotiable safety boundary
 
