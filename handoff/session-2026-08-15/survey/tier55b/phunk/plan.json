@@ -1,0 +1,183 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk",
+  "inventory": "handoff/session-2026-08-15/survey/tier55b/phunk/inventory/inventory.csv",
+  "track_count": 9,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "REMIXES & EDITS": 2,
+      "_NEEDS CHECK": 7
+    },
+    "genres": {
+      "Afrobeat": 1,
+      "Juke & Footwork": 1,
+      "R&B": 1,
+      "_GENRE NEEDS CHECK": 6
+    },
+    "moves": 9,
+    "genre_tag_changes": 3
+  },
+  "tag_change_summary": {
+    "Juke -> Juke & Footwork": 1,
+    "R&B & Soul -> R&B": 1,
+    "afrobeat -> Afrobeat": 1
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk/1heure42 - a diva is a hustler.mp3",
+      "source_relative": "1heure42 - a diva is a hustler.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk/_NEEDS CHECK/_GENRE NEEDS CHECK/1heure42 - a diva is a hustler.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/1heure42 - a diva is a hustler.mp3",
+      "sha256": "5f832b48bca713d29674e8609bc5ea84f4926fc82e5fb7ee7694b1dc092d63ad",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "World",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: World",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk/JULES - DAKITI FUNK.mp3",
+      "source_relative": "JULES - DAKITI FUNK.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk/_NEEDS CHECK/_GENRE NEEDS CHECK/JULES - DAKITI FUNK.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/JULES - DAKITI FUNK.mp3",
+      "sha256": "f7936135bec2cf10b4edd36f582456b2e7dafc06ced1dc161f1ec48e8b964b9b",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "baile",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: baile",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk/LE KACANG - DROID AMBUSH.mp3",
+      "source_relative": "LE KACANG - DROID AMBUSH.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk/_NEEDS CHECK/_GENRE NEEDS CHECK/LE KACANG - DROID AMBUSH.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/LE KACANG - DROID AMBUSH.mp3",
+      "sha256": "6d05526874570aee6302ba5810d3c05379c021517623ae2a802e30c144e9bd87",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "phunk",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: phunk",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk/NOT MY PROBLEM.mp3",
+      "source_relative": "NOT MY PROBLEM.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk/_NEEDS CHECK/Juke & Footwork/NOT MY PROBLEM.mp3",
+      "destination_relative": "_NEEDS CHECK/Juke & Footwork/NOT MY PROBLEM.mp3",
+      "sha256": "8b1c18b44bec184deb51203175486e1e8514721fda41fca3af0655707529a2e0",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Juke",
+      "proposed_genre": "Juke & Footwork",
+      "genre_evidence": "existing genre tag: Juke",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk/OH!DULCEARi, ODD MAMI - HELLO KiTTY REMIX.mp3",
+      "source_relative": "OH!DULCEARi, ODD MAMI - HELLO KiTTY REMIX.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk/REMIXES & EDITS/_GENRE NEEDS CHECK/OH!DULCEARi, ODD MAMI - HELLO KiTTY REMIX.mp3",
+      "destination_relative": "REMIXES & EDITS/_GENRE NEEDS CHECK/OH!DULCEARi, ODD MAMI - HELLO KiTTY REMIX.mp3",
+      "sha256": "a6ff0d371f0f4668d645c24af4fc57ac0fa868131e1214f2cb622ff26d274728",
+      "version_category": "REMIXES & EDITS",
+      "version_evidence": "explicit remix/edit label",
+      "current_genre": "",
+      "proposed_genre": null,
+      "genre_evidence": "no genre tag and no explicit genre evidence",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk/STYN, free dl - GET DRIPPED BATIDA.mp3",
+      "source_relative": "STYN, free dl - GET DRIPPED BATIDA.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk/_NEEDS CHECK/_GENRE NEEDS CHECK/STYN, free dl - GET DRIPPED BATIDA.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/STYN, free dl - GET DRIPPED BATIDA.mp3",
+      "sha256": "21540fbaaa962887f189526d0193e949426e941653aeb1802c874588f12c40cd",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "edit",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: edit",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk/Saï T - Sumthin' Sumthin'.mp3",
+      "source_relative": "Saï T - Sumthin' Sumthin'.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk/_NEEDS CHECK/Afrobeat/Saï T - Sumthin' Sumthin'.mp3",
+      "destination_relative": "_NEEDS CHECK/Afrobeat/Saï T - Sumthin' Sumthin'.mp3",
+      "sha256": "c8d9594368239d91ef22284f0276c6d6e7b461116af9a3f6d726f9d14c15e3b6",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "afrobeat",
+      "proposed_genre": "Afrobeat",
+      "genre_evidence": "existing genre tag: afrobeat",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk/brii - how about one (brii edit).mp3",
+      "source_relative": "brii - how about one (brii edit).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk/REMIXES & EDITS/R&B/brii - how about one (brii edit).mp3",
+      "destination_relative": "REMIXES & EDITS/R&B/brii - how about one (brii edit).mp3",
+      "sha256": "65992761ecb09eda408972d35f90fc142e677ac9a0c091892fcada603ea0fe54",
+      "version_category": "REMIXES & EDITS",
+      "version_evidence": "explicit remix/edit label",
+      "current_genre": "R&B & Soul",
+      "proposed_genre": "R&B",
+      "genre_evidence": "existing genre tag: R&B & Soul",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk/petrus.wav, Novin Yarp - FILHA DA PUTA.mp3",
+      "source_relative": "petrus.wav, Novin Yarp - FILHA DA PUTA.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/Phunk/_NEEDS CHECK/_GENRE NEEDS CHECK/petrus.wav, Novin Yarp - FILHA DA PUTA.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/petrus.wav, Novin Yarp - FILHA DA PUTA.mp3",
+      "sha256": "5ffc54c0196e2dc00fde5a7a62b41d9f1d06a98a56033a2db1c56342106b3698",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "end",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: end",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}

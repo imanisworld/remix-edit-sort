@@ -1,0 +1,164 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/RIDDIM",
+  "inventory": "handoff/session-2026-08-15/survey/tier55b/riddim/inventory/inventory.csv",
+  "track_count": 8,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "REMIXES & EDITS": 3,
+      "_NEEDS CHECK": 5
+    },
+    "genres": {
+      "Bouyon": 1,
+      "Dancehall": 1,
+      "_GENRE NEEDS CHECK": 6
+    },
+    "moves": 8,
+    "genre_tag_changes": 1
+  },
+  "tag_change_summary": {
+    "dancehall -> Dancehall": 1
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/RIDDIM/lorkestra - fever.mp3",
+      "source_relative": "lorkestra - fever.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/RIDDIM/_NEEDS CHECK/_GENRE NEEDS CHECK/lorkestra - fever.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/lorkestra - fever.mp3",
+      "sha256": "e99c680a954e1c93ba13e3c3a0abfdbe6bef96ef773d227d134f79e6cc04aa57",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "UKBaile",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: UKBaile",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/RIDDIM/lorkestra - follow the leader (ft. lamsi).mp3",
+      "source_relative": "lorkestra - follow the leader (ft. lamsi).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/RIDDIM/_NEEDS CHECK/_GENRE NEEDS CHECK/lorkestra - follow the leader (ft. lamsi).mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/lorkestra - follow the leader (ft. lamsi).mp3",
+      "sha256": "43939722fc1ee76d062d4d9e13a837e27f91d05f933db402a6e8b0d3bc0ef1e8",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Sokawina",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Sokawina",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/RIDDIM/lorkestra - kiss of life.mp3",
+      "source_relative": "lorkestra - kiss of life.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/RIDDIM/_NEEDS CHECK/_GENRE NEEDS CHECK/lorkestra - kiss of life.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/lorkestra - kiss of life.mp3",
+      "sha256": "3661d3859df05142f2bf9e9fd337397559e7791a1f48ffd8ebef04831bf010f4",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Batida",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Batida",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/RIDDIM/lorkestra - looking for the hoes.mp3",
+      "source_relative": "lorkestra - looking for the hoes.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/RIDDIM/_NEEDS CHECK/Bouyon/lorkestra - looking for the hoes.mp3",
+      "destination_relative": "_NEEDS CHECK/Bouyon/lorkestra - looking for the hoes.mp3",
+      "sha256": "0c43f336950f545fd997d7a058f4772b764fa7e965dd965da743c42aa52131f1",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Bouyon",
+      "proposed_genre": "Bouyon",
+      "genre_evidence": "existing genre tag: Bouyon",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/RIDDIM/pinkpantheress - tonight.mp3",
+      "source_relative": "pinkpantheress - tonight.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/RIDDIM/_NEEDS CHECK/Dancehall/pinkpantheress - tonight.mp3",
+      "destination_relative": "_NEEDS CHECK/Dancehall/pinkpantheress - tonight.mp3",
+      "sha256": "ab68325c90fc8e25ca5f2e1b3bbde0a358aefc4ce2433be3550e5de889ff8228",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "dancehall",
+      "proposed_genre": "Dancehall",
+      "genre_evidence": "existing genre tag: dancehall",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/RIDDIM/sean dream - bdkmv (decemberkid vox blend).mp3",
+      "source_relative": "sean dream - bdkmv (decemberkid vox blend).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/RIDDIM/REMIXES & EDITS/_GENRE NEEDS CHECK/sean dream - bdkmv (decemberkid vox blend).mp3",
+      "destination_relative": "REMIXES & EDITS/_GENRE NEEDS CHECK/sean dream - bdkmv (decemberkid vox blend).mp3",
+      "sha256": "51c0e7e3424de99e65b64e54a3615e6a6842e2474fb3341f2e82a14ffb835cae",
+      "version_category": "REMIXES & EDITS",
+      "version_evidence": "explicit remix/edit label",
+      "current_genre": "Britpop",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: Britpop",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/RIDDIM/tdesu² - lady lava - ring finger x bnyx - where you been (tdesu blend).mp3",
+      "source_relative": "tdesu² - lady lava - ring finger x bnyx - where you been (tdesu blend).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/RIDDIM/REMIXES & EDITS/_GENRE NEEDS CHECK/tdesu² - lady lava - ring finger x bnyx - where you been (tdesu blend).mp3",
+      "destination_relative": "REMIXES & EDITS/_GENRE NEEDS CHECK/tdesu² - lady lava - ring finger x bnyx - where you been (tdesu blend).mp3",
+      "sha256": "63e9c2ebe78abf9b22fe544c6ba99752bcc4bb9eaa98e1beca6315dd93db6b3c",
+      "version_category": "REMIXES & EDITS",
+      "version_evidence": "explicit remix/edit label",
+      "current_genre": "caribbean",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: caribbean",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/RIDDIM/tdesu² - wizkid - karamo x osunlade - crazy you (tdesu blend).mp3",
+      "source_relative": "tdesu² - wizkid - karamo x osunlade - crazy you (tdesu blend).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/RIDDIM/REMIXES & EDITS/_GENRE NEEDS CHECK/tdesu² - wizkid - karamo x osunlade - crazy you (tdesu blend).mp3",
+      "destination_relative": "REMIXES & EDITS/_GENRE NEEDS CHECK/tdesu² - wizkid - karamo x osunlade - crazy you (tdesu blend).mp3",
+      "sha256": "ed9c30caddcb971e7e9077376befa2b9748403a5079581a4b8cad72663825798",
+      "version_category": "REMIXES & EDITS",
+      "version_evidence": "explicit remix/edit label",
+      "current_genre": "blend",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: blend",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}

@@ -102,6 +102,15 @@ def main() -> None:
         "resolved to CLEAN/DIRTY/INSTRUMENTALS/ACAPELLAS/REMIXES & EDITS from real filename evidence.",
     )
     parser.add_argument(
+        "--assume-genre-fallback",
+        help="Only for a folder you've confirmed is dedicated to one genre overall, but whose tracks are "
+        "individually tagged well enough that per-track classification should still win where it succeeds "
+        "(e.g. a folder named 'Afrobeat' that already contains some tracks correctly tagged as the distinct "
+        "'Afrobeats' genre). Unlike --assume-genre, this is a FALLBACK, not an override: it only fills in "
+        "items classify_genre() left at _GENRE NEEDS CHECK, and never touches an item that already resolved "
+        "from a real tag or filename match.",
+    )
+    parser.add_argument(
         "--preserve-top-level-subfolder",
         action="store_true",
         help="Treat the first path component under root as context to keep (e.g. an event/crate name) and "
@@ -162,6 +171,10 @@ def main() -> None:
             version_bucket = args.assume_version_fallback
             version_evidence = f"no explicit filename marker; folder is a confirmed {args.assume_version_fallback.title()} crate"
         genre, genre_evidence, genre_confidence = classify_genre(row, rules, args.assume_genre)
+        if genre is None and args.assume_genre_fallback:
+            genre = args.assume_genre_fallback
+            genre_evidence = f"no tag/filename match; folder is a confirmed {args.assume_genre_fallback} crate"
+            genre_confidence = "fallback"
         genre_folder = genre or NEEDS_GENRE
 
         # Idempotency: preserve-top-level-subfolder mode must recognize a file

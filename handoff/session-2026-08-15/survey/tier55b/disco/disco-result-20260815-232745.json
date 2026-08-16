@@ -1,0 +1,24 @@
+{
+  "mode": "disco-apply",
+  "plan": "handoff/session-2026-08-15/survey/tier55b/disco/plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/tier55b/disco/backup-20260815-232743",
+  "tracks_processed": 87,
+  "files_moved": 87,
+  "genre_tags_changed": 4,
+  "genre_tags_skipped": 5,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "handoff/session-2026-08-15/survey/tier55b/disco/disco-undo-20260815-232745.jsonl",
+  "tag_backup_root": "handoff/session-2026-08-15/survey/tier55b/disco/disco-tag-file-backups/20260815-232745",
+  "genre_counts": {
+    "Boogie": 4,
+    "Classic Rock": 1,
+    "Disco": 45,
+    "Funk & Soul": 1,
+    "Hip-Hop": 2,
+    "Nu Disco": 2,
+    "_GENRE NEEDS CHECK": 32
+  }
+}

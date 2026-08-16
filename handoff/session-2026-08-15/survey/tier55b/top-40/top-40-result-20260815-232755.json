@@ -1,0 +1,19 @@
+{
+  "mode": "top-40-apply",
+  "plan": "handoff/session-2026-08-15/survey/tier55b/top-40/plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/tier55b/top-40/backup-20260815-232755",
+  "tracks_processed": 7,
+  "files_moved": 7,
+  "genre_tags_changed": 5,
+  "genre_tags_skipped": 0,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "handoff/session-2026-08-15/survey/tier55b/top-40/top-40-undo-20260815-232755.jsonl",
+  "tag_backup_root": "handoff/session-2026-08-15/survey/tier55b/top-40/top-40-tag-file-backups/20260815-232755",
+  "genre_counts": {
+    "Hip-Hop": 6,
+    "_GENRE NEEDS CHECK": 1
+  }
+}

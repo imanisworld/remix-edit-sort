@@ -1,0 +1,148 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/top 40",
+  "inventory": "handoff/session-2026-08-15/survey/tier55b/top-40/inventory/inventory.csv",
+  "track_count": 7,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 7
+    },
+    "genres": {
+      "Hip-Hop": 6,
+      "_GENRE NEEDS CHECK": 1
+    },
+    "moves": 7,
+    "genre_tag_changes": 5
+  },
+  "tag_change_summary": {
+    "Hip Hop -> Hip-Hop": 2,
+    "Hip-hop & Rap -> Hip-Hop": 1,
+    "Rap/Hip-Hop -> Hip-Hop": 2
+  },
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/top 40/calboy - she know (in too deep).mp3",
+      "source_relative": "calboy - she know (in too deep).mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/top 40/_NEEDS CHECK/Hip-Hop/calboy - she know (in too deep).mp3",
+      "destination_relative": "_NEEDS CHECK/Hip-Hop/calboy - she know (in too deep).mp3",
+      "sha256": "c43bf5c61b6b596e36b8c9e24fa87c5845250cea6581ea0450ac3a46871c30ec",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Rap/Hip-Hop",
+      "proposed_genre": "Hip-Hop",
+      "genre_evidence": "existing genre tag: Rap/Hip-Hop",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/top 40/neverbrokeagain llc - what you is.mp3",
+      "source_relative": "neverbrokeagain llc - what you is.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/top 40/_NEEDS CHECK/_GENRE NEEDS CHECK/neverbrokeagain llc - what you is.mp3",
+      "destination_relative": "_NEEDS CHECK/_GENRE NEEDS CHECK/neverbrokeagain llc - what you is.mp3",
+      "sha256": "409b50f5ff8f669c9835abfa89aab027b97c2da52864c88dcd1f383134070f7c",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "",
+      "proposed_genre": null,
+      "genre_evidence": "no genre tag and no explicit genre evidence",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/top 40/pluto, youngboy never broke again - 2 crash outs.mp3",
+      "source_relative": "pluto, youngboy never broke again - 2 crash outs.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/top 40/_NEEDS CHECK/Hip-Hop/pluto, youngboy never broke again - 2 crash outs.mp3",
+      "destination_relative": "_NEEDS CHECK/Hip-Hop/pluto, youngboy never broke again - 2 crash outs.mp3",
+      "sha256": "d921ae2dcb99197eaa230156eb18c41e0171aa706548d8dfa9d9098d66e237d7",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Hip Hop",
+      "proposed_genre": "Hip-Hop",
+      "genre_evidence": "existing genre tag: Hip Hop",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/top 40/sexyy red - is you coo.mp3",
+      "source_relative": "sexyy red - is you coo.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/top 40/_NEEDS CHECK/Hip-Hop/sexyy red - is you coo.mp3",
+      "destination_relative": "_NEEDS CHECK/Hip-Hop/sexyy red - is you coo.mp3",
+      "sha256": "02439cfa0615b6139068e7ce467b4635693bdf99cc5b894a7cb862eb26e3cd32",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Rap/Hip-Hop",
+      "proposed_genre": "Hip-Hop",
+      "genre_evidence": "existing genre tag: Rap/Hip-Hop",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/top 40/youngboy never broke again - from the back.mp3",
+      "source_relative": "youngboy never broke again - from the back.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/top 40/_NEEDS CHECK/Hip-Hop/youngboy never broke again - from the back.mp3",
+      "destination_relative": "_NEEDS CHECK/Hip-Hop/youngboy never broke again - from the back.mp3",
+      "sha256": "2dad563dfd967b146f87460fb04e3b1253235b2b883b4fbc465f81e523f02818",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Hip-hop & Rap",
+      "proposed_genre": "Hip-Hop",
+      "genre_evidence": "existing genre tag: Hip-hop & Rap",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/top 40/youngboy never broke again - sneaking.mp3",
+      "source_relative": "youngboy never broke again - sneaking.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/top 40/_NEEDS CHECK/Hip-Hop/youngboy never broke again - sneaking.mp3",
+      "destination_relative": "_NEEDS CHECK/Hip-Hop/youngboy never broke again - sneaking.mp3",
+      "sha256": "a1c0a112952b68ebf3f7989fa38c3dbabb9a0bb4e73260670518008ce19b3448",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Hip-Hop",
+      "proposed_genre": "Hip-Hop",
+      "genre_evidence": "existing genre tag: Hip-Hop",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/top 40/youngboy never broke again, mellow rackz - what you is.mp3",
+      "source_relative": "youngboy never broke again, mellow rackz - what you is.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/top 40/_NEEDS CHECK/Hip-Hop/youngboy never broke again, mellow rackz - what you is.mp3",
+      "destination_relative": "_NEEDS CHECK/Hip-Hop/youngboy never broke again, mellow rackz - what you is.mp3",
+      "sha256": "7fe77bcebf50a3e7d176fdbc3b66a977bac8558bd5b07a929eb7efa120715884",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "Hip Hop",
+      "proposed_genre": "Hip-Hop",
+      "genre_evidence": "existing genre tag: Hip Hop",
+      "genre_confidence": "tag",
+      "move": true,
+      "tag_change": true,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}
