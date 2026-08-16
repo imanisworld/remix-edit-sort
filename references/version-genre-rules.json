@@ -123,7 +123,9 @@
     "alternative hip-hop": "Alternative Hip-Hop",
     "footwork; juke": "Juke & Footwork",
     "footwork; ghetto house; juke": "Juke & Footwork",
-    "electronic; footwork; juke": "Juke & Footwork"
+    "electronic; footwork; juke": "Juke & Footwork",
+    "reggae": "Reggae",
+    "baile": "Baile"
   },
   "filename_keywords": [
     {"contains": "ghettotech", "genre": "Ghettotech", "evidence": "filename explicitly says Ghettotech"},
