@@ -27,7 +27,17 @@
     "dancehall": "Dancehall",
     "amapiano": "Amapiano",
     "afro beats": "Afrobeats",
-    "afrobeat": "Afrobeats"
+    "afrobeat": "Afrobeats",
+    "r & b": "R&B",
+    "hip-hop": "Hip-Hop",
+    "alternative r&b": "Alternative R&B",
+    "nu r&b": "Nu R&B",
+    "neo soul": "Neo Soul",
+    "afrobeats": "Afrobeats",
+    "baltimore club": "Baltimore Club",
+    "funk & soul": "Funk & Soul",
+    "ghettotech": "Ghettotech",
+    "juke & footwork": "Juke & Footwork"
   },
   "filename_keywords": [
     {"contains": "ghettotech", "genre": "Ghettotech", "evidence": "filename explicitly says Ghettotech"},

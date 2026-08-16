@@ -1,0 +1,31 @@
+{
+  "mode": "r-and-b-apply",
+  "plan": "handoff/session-2026-08-15/survey/r-and-b/plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/r-and-b/backup-20260815-204515",
+  "tracks_processed": 3353,
+  "files_moved": 3353,
+  "genre_tags_changed": 1209,
+  "genre_tags_skipped": 26,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "handoff/session-2026-08-15/survey/r-and-b/r-and-b-undo-20260815-204649.jsonl",
+  "tag_backup_root": "handoff/session-2026-08-15/survey/r-and-b/r-and-b-tag-file-backups/20260815-204649",
+  "genre_counts": {
+    "Afrobeats": 4,
+    "Alternative R&B": 50,
+    "Amapiano": 2,
+    "Dancehall": 5,
+    "Electronic": 1,
+    "Hip-Hop": 275,
+    "House": 5,
+    "Jersey Club": 1,
+    "Juke & Footwork": 2,
+    "Neo Soul": 34,
+    "Nu R&B": 38,
+    "Pop": 45,
+    "R&B": 2006,
+    "_GENRE NEEDS CHECK": 885
+  }
+}

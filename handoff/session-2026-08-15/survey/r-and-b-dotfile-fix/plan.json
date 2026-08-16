@@ -1,0 +1,79 @@
+{
+  "mode": "preview-only",
+  "library_root": "/Users/djb.a.e/Music/DJ-Music/Music/R&b",
+  "inventory": "handoff/session-2026-08-15/survey/r-and-b-dotfile-fix/inventory.csv",
+  "track_count": 3,
+  "rules": {
+    "approval_required": true,
+    "no_delete": true,
+    "no_audio_change": true,
+    "unknowns": "Never guess. Route to _NEEDS CHECK / _GENRE NEEDS CHECK."
+  },
+  "validation": {
+    "missing_sources": [],
+    "destination_collisions": {},
+    "existing_destination_conflicts": [],
+    "collisions_resolved_by_suffix": []
+  },
+  "counts": {
+    "version_categories": {
+      "_NEEDS CHECK": 3
+    },
+    "genres": {
+      "_GENRE NEEDS CHECK": 3
+    },
+    "moves": 3,
+    "genre_tag_changes": 0
+  },
+  "tag_change_summary": {},
+  "items": [
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '00-'19/Blaque - 808.mp3",
+      "source_relative": "R&B '00-'19/Blaque - 808.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '00-'19/_NEEDS CHECK/_GENRE NEEDS CHECK/Blaque - 808.mp3",
+      "destination_relative": "R&B '00-'19/_NEEDS CHECK/_GENRE NEEDS CHECK/Blaque - 808.mp3",
+      "sha256": "e4b60f9ad21e2c0848507f8b9a1e5f72bf56eca58473e2886534afb498ee67ad",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "r&b, pop",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: r&b, pop",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '20-'22 /Bruno Mars, Anderson .Paak & Silk Sonic - 777.mp3",
+      "source_relative": "R&B '20-'22 /Bruno Mars, Anderson .Paak & Silk Sonic - 777.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '20-'22 /_NEEDS CHECK/_GENRE NEEDS CHECK/Bruno Mars, Anderson .Paak & Silk Sonic - 777.mp3",
+      "destination_relative": "R&B '20-'22 /_NEEDS CHECK/_GENRE NEEDS CHECK/Bruno Mars, Anderson .Paak & Silk Sonic - 777.mp3",
+      "sha256": "58bbb32ca919d014965afcede1157d651318644c0e75a0d6371382f847914eb1",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "pop, soul, r&b",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: pop, soul, r&b",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    },
+    {
+      "source": "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B 2023 /JayO - 22.mp3",
+      "source_relative": "R&B 2023 /JayO - 22.mp3",
+      "destination": "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B 2023 /_NEEDS CHECK/_GENRE NEEDS CHECK/JayO - 22.mp3",
+      "destination_relative": "R&B 2023 /_NEEDS CHECK/_GENRE NEEDS CHECK/JayO - 22.mp3",
+      "sha256": "cb4a6e64c1a5598f9fb301d1ff2ec94bf557f823295a3735a17cfdb7676b71f7",
+      "version_category": "_NEEDS CHECK",
+      "version_evidence": "no proven version label",
+      "current_genre": "r&b, afro",
+      "proposed_genre": null,
+      "genre_evidence": "ambiguous or compound genre tag: r&b, afro",
+      "genre_confidence": "review",
+      "move": true,
+      "tag_change": false,
+      "genre_write_skipped_reason": null
+    }
+  ]
+}

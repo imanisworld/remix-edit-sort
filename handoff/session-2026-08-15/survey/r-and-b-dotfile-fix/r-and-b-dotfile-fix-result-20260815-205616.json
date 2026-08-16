@@ -1,0 +1,18 @@
+{
+  "mode": "r-and-b-dotfile-fix-apply",
+  "plan": "handoff/session-2026-08-15/survey/r-and-b-dotfile-fix/plan.json",
+  "verified_backup": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/r-and-b-dotfile-fix/backup-20260815-205605",
+  "tracks_processed": 3,
+  "files_moved": 3,
+  "genre_tags_changed": 0,
+  "genre_tags_skipped": 0,
+  "audio_payloads_changed": 0,
+  "serato_frames_changed": 0,
+  "missing_destinations": [],
+  "surviving_moved_sources": [],
+  "undo_log": "handoff/session-2026-08-15/survey/r-and-b-dotfile-fix/r-and-b-dotfile-fix-undo-20260815-205616.jsonl",
+  "tag_backup_root": "handoff/session-2026-08-15/survey/r-and-b-dotfile-fix/r-and-b-dotfile-fix-tag-file-backups/20260815-205616",
+  "genre_counts": {
+    "_GENRE NEEDS CHECK": 3
+  }
+}

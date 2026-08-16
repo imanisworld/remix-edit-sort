@@ -21,6 +21,7 @@ from pathlib import Path
 
 NEEDS_VERSION = "_NEEDS CHECK"
 NEEDS_GENRE = "_GENRE NEEDS CHECK"
+VERSION_CATEGORIES = {"CLEAN", "DIRTY", "INSTRUMENTALS", "ACAPELLAS", "REMIXES & EDITS", NEEDS_VERSION}
 # apply_version_genre_plan.py's Genre reader/writer only supports these formats.
 WRITABLE_GENRE_FORMATS = {".mp3", ".flac"}
 
@@ -151,8 +152,22 @@ def main() -> None:
         genre, genre_evidence, genre_confidence = classify_genre(row, rules, args.assume_genre)
         genre_folder = genre or NEEDS_GENRE
 
-        if args.preserve_top_level_subfolder and len(rel.parts) > 1:
-            context, rest = rel.parts[0], rel.parts[1:]
+        # Idempotency: preserve-top-level-subfolder mode must recognize a file
+        # that's already been sorted, in TWO shapes, or a second run corrupts
+        # every already-correct path (caught live on R&b, both variants):
+        #  - had real context, already sorted: <context>/<version>/<genre>/name
+        #    -> without stripping, a re-run nests a second version/genre pair
+        #       inside the first: 2025/CLEAN/R&B/CLEAN/R&B/track.mp3
+        #  - had NO context (was loose at root), already sorted:
+        #    <version>/<genre>/name -- rel.parts[0] is itself a version
+        #    category, not a real context folder to preserve
+        #    -> without this check, "CLEAN" gets treated as the context and
+        #       a second version/genre pair gets nested inside it:
+        #       CLEAN/CLEAN/R&B/R&B/track.mp3
+        if args.preserve_top_level_subfolder and len(rel.parts) > 1 and rel.parts[0] not in VERSION_CATEGORIES:
+            context, rest = rel.parts[0], list(rel.parts[1:])
+            if len(rest) >= 2 and rest[0] in VERSION_CATEGORIES:
+                rest = rest[2:]
             dest_rel = Path(context, version_bucket, genre_folder, *rest)
         else:
             dest_rel = Path(version_bucket, genre_folder, rel.name)

@@ -22,6 +22,19 @@ from mutagen.id3 import ID3
 
 AUDIO_EXTS = {".mp3", ".m4a", ".wav", ".aif", ".aiff", ".flac", ".ogg"}
 
+
+def audio_ext(path: Path) -> str:
+    """Like path.suffix.lower(), but correct for a dotfile-only name like
+    ".mp3" (no basename before the extension) -- pathlib treats such a name
+    as having NO suffix at all (Path(".mp3").suffix == ""), which silently
+    hid three real, tagged tracks from every inventory pass until caught by
+    hand. String-matching the filename tail sidesteps that pathlib quirk."""
+    name = path.name.lower()
+    for ext in AUDIO_EXTS:
+        if name.endswith(ext):
+            return ext
+    return path.suffix.lower()
+
 # Only this exact terminal pattern is a copy-suffix hint. Numbers elsewhere
 # remain meaningful content: 21 Savage, 112, Part 1, 1999, 123 BPM, etc.
 COPY_SUFFIX_RE = re.compile(r"\s\((\d+)\)$")
@@ -122,7 +135,7 @@ def read_row(path: Path) -> dict[str, object]:
         "year": year[:4] if year else "",
         "bpm": bpm,
         "key": key,
-        "file_type": path.suffix.lower().lstrip("."),
+        "file_type": audio_ext(path).lstrip("."),
         "bitrate_kbps": round(bitrate / 1000) if bitrate else "",
         "sample_rate_hz": sample_rate or "",
         "file_size_bytes": stat.st_size,
@@ -150,7 +163,7 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     label = args.label or root.name
 
-    before = sorted(path for path in root.rglob("*") if path.is_file() and path.suffix.lower() in AUDIO_EXTS)
+    before = sorted(path for path in root.rglob("*") if path.is_file() and audio_ext(path) in AUDIO_EXTS)
     before_state = {str(path): (path.stat().st_size, path.stat().st_mtime_ns) for path in before}
     rows = [read_row(path) for path in before]
 
@@ -158,7 +171,7 @@ def main() -> None:
     for row in rows:
         row["exact_duplicate_count_in_folder"] = hash_counts[str(row["sha256"])] - 1
 
-    after = sorted(path for path in root.rglob("*") if path.is_file() and path.suffix.lower() in AUDIO_EXTS)
+    after = sorted(path for path in root.rglob("*") if path.is_file() and audio_ext(path) in AUDIO_EXTS)
     after_state = {str(path): (path.stat().st_size, path.stat().st_mtime_ns) for path in after}
     stable = before_state == after_state
 
