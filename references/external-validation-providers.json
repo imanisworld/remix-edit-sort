@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "purpose": "Machine-readable registry for the no-cost/open validation stack. This is planning/provenance data, not permission to mutate production audio or Serato state.",
   "providers": [
     {
@@ -10,7 +10,7 @@
       "cost_model": "free",
       "open_source": true,
       "role": ["media_probe", "decode_check", "technical_analysis", "loudness", "silence"],
-      "license_summary": "LGPL-2.1-or-later by default; GPL-2.0-or-later applies to builds using optional GPL components",
+      "license_summary": "LGPL-2.1-or-later by default; GPL-2.0-or-later applies when optional GPL components are enabled",
       "provenance_required": ["binary_path", "version", "build_configuration"],
       "source": "https://ffmpeg.org/legal.html"
     },
@@ -21,23 +21,24 @@
       "network_required": false,
       "cost_model": "free",
       "open_source": true,
-      "role": ["audio_fingerprint", "near_identical_recording_identity"],
-      "license_summary": "Current upstream project-authored source reports MIT; effective packaged/binary licensing may depend on linked components and distribution",
-      "provenance_required": ["binary_path", "version", "build_or_package_source"],
+      "role": ["audio_fingerprint", "recording_identity_candidate_generation"],
+      "license_summary": "Current upstream project-authored code is MIT; effective packaged/binary licensing can depend on linked components and build configuration",
+      "provenance_required": ["binary_path", "version", "build_or_package_source", "build_configuration"],
       "source": "https://github.com/acoustid/chromaprint",
-      "notes": "Do not treat fingerprint similarity as permission to collapse protected Clean/Dirty/Intro/Outro/Extended/Remix/Edit/Acapella/Instrumental variants."
+      "notes": "Chromaprint generates fingerprints for audio identification. A fingerprint or similarity result is evidence, not proof that protected Clean/Dirty/Intro/Outro/Extended/Remix/Edit/Acapella/Instrumental variants are disposable or identical."
     },
     {
       "id": "pyacoustid",
       "kind": "local_library",
       "core": false,
       "network_required": false,
+      "network_required_for_roles": ["acoustid_client_wrapper"],
       "cost_model": "free",
       "open_source": true,
       "role": ["python_chromaprint_wrapper", "acoustid_client_wrapper"],
       "license_summary": "MIT",
       "source": "https://github.com/beetbox/pyacoustid",
-      "notes": "Convenience only; direct fpcalc + HTTP/JSON must remain possible."
+      "notes": "Local fingerprinting can be offline; AcoustID lookup through this wrapper requires network access. Convenience only; direct fpcalc + HTTP/JSON must remain possible."
     },
     {
       "id": "acoustid",
@@ -47,14 +48,18 @@
       "cost_model": "free_for_noncommercial_registered_applications",
       "open_source": true,
       "role": ["fingerprint_lookup", "musicbrainz_recording_id_mapping"],
-      "credentials": "registered application/client key required for lookup",
+      "credentials": "registered application client key required for lookup",
+      "rate_limit": "no more than 3 requests per second under the published usage guidelines",
+      "runtime_availability_check_required": true,
       "data_license_summary": "Public fingerprint database CC BY-SA 3.0; MusicBrainz-AcoustID mapping described as public domain",
       "server_license_summary": "MIT",
       "privacy_boundary": ["fingerprint", "duration", "client_identifier"],
       "forbidden_default_uploads": ["source_audio", "serato_data", "raw_transcript", "absolute_local_path"],
       "source": "https://acoustid.org/",
+      "webservice_source": "https://acoustid.org/webservice",
       "license_source": "https://acoustid.org/license",
-      "database_source": "https://acoustid.org/database"
+      "database_source": "https://acoustid.org/database",
+      "notes": "Use lookup only in this project. Provider maintenance/unavailability must surface as a runtime state, never as a successful no-match."
     },
     {
       "id": "musicbrainz",
@@ -65,27 +70,31 @@
       "open_source": true,
       "role": ["recording_identity", "artist_title_corroboration", "release_relationships", "release_dates", "isrc_relationships"],
       "credentials": "no API key currently required for normal lookup requests",
-      "rate_limit": "maximum 1 request per second per client/IP unless separately arranged",
+      "rate_limit": "client applications must not exceed 1 request per second; source IP is also rate-limited around 1 request per second unless separately arranged",
       "client_requirement": "meaningful User-Agent required",
       "core_data_license_summary": "CC0",
       "supplementary_data_license_summary": "CC BY-NC-SA 3.0",
       "server_license_summary": "GPLv2",
       "source": "https://musicbrainz.org/doc/MusicBrainz_API",
+      "rate_limit_source": "https://musicbrainz.org/doc/MusicBrainz_API/Rate_Limiting",
       "data_license_source": "https://musicbrainz.org/doc/About/Data_License",
-      "notes": "Do not collapse recording date, release-group first-release date, matched release date, and acquisition/event date into one generic year."
+      "notes": "A MusicBrainz Recording has title, artist credit, length, ISRCs and relationships, but not a generic recording-date property. Keep earliest release date, release-group first-release date, matched-release date, and any separately sourced performance/recording date distinct."
     },
     {
       "id": "faster_whisper",
       "kind": "local_tool",
       "core": true,
       "network_required": false,
+      "initial_model_download_may_require_network": true,
+      "offline_requires_local_model_files": true,
       "cost_model": "free",
       "open_source": true,
       "role": ["local_transcription_evidence", "clean_dirty_review_support"],
-      "license_summary": "MIT",
+      "license_summary": "faster-whisper code is MIT; model weights/configuration must be tracked separately with their own source/version/license",
+      "provenance_required": ["package_version", "model_id_or_local_path", "model_revision_or_hash", "model_license_when_known", "compute_type", "transcription_options"],
       "source": "https://github.com/SYSTRAN/faster-whisper",
-      "privacy_boundary": "local_only_by_default",
-      "notes": "Detected reviewed explicit terms can support LIKELY_DIRTY; non-detection never proves CLEAN."
+      "privacy_boundary": "local_inference_only_after_model_files_are_present",
+      "notes": "Loading a model by Hub name can download it from Hugging Face. For a strict offline run, pre-stage model files and use local-files-only/local-path behavior. Detected reviewed explicit terms can support LIKELY_DIRTY; non-detection never proves CLEAN."
     },
     {
       "id": "discogs",
@@ -105,6 +114,7 @@
     "automatic_external_metadata_overwrite_allowed": false,
     "cache_by_content_identity": true,
     "explicit_failure_states_required": true,
+    "provider_unavailable_is_not_no_match": true,
     "human_reviewed_decisions_are_high_authority": true
   }
 }
