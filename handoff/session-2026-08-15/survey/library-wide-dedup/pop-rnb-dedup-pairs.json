@@ -1,0 +1,20 @@
+[
+  {
+    "sha256": "81dc2f59fb15453178ffc30d72861b04fe1a5475128948e56db726332974419c",
+    "delete": "/Users/djb.a.e/Music/DJ-Music/Music/Pop/_NEEDS CHECK/R&B/sailorr - done shaving 4 u.mp3",
+    "keep": "/Users/djb.a.e/Music/DJ-Music/Music/R&b/_NEEDS CHECK/R&B/sailorr - done shaving 4 u.mp3",
+    "backup_relative": "Pop/_NEEDS CHECK/R&B/sailorr - done shaving 4 u.mp3"
+  },
+  {
+    "sha256": "0f0d33a980a6f7e0756d01f64d1983e9b9446e420846dcee5ec964a48cf29afa",
+    "delete": "/Users/djb.a.e/Music/DJ-Music/Music/Pop/_NEEDS CHECK/R&B/sailorr - rent free.mp3",
+    "keep": "/Users/djb.a.e/Music/DJ-Music/Music/R&b/_NEEDS CHECK/R&B/sailorr - rent free.mp3",
+    "backup_relative": "Pop/_NEEDS CHECK/R&B/sailorr - rent free.mp3"
+  },
+  {
+    "sha256": "ce732cbfa81dc0521ab6c1e1fc62b277a65bb09ae84db719bf3f8d72710cb90a",
+    "delete": "/Users/djb.a.e/Music/DJ-Music/Music/Pop/_NEEDS CHECK/R&B/sailorr - ur mother's son.mp3",
+    "keep": "/Users/djb.a.e/Music/DJ-Music/Music/R&b/_NEEDS CHECK/R&B/sailorr - ur mother's son.mp3",
+    "backup_relative": "Pop/_NEEDS CHECK/R&B/sailorr - ur mother's son.mp3"
+  }
+]

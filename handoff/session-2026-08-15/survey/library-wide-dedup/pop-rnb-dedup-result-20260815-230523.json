@@ -1,0 +1,9 @@
+{
+  "mode": "pop-rnb-dedup-apply",
+  "pairs_file": "handoff/session-2026-08-15/survey/library-wide-dedup/pop-rnb-dedup-pairs.json",
+  "backup_root": "/Users/djb.a.e/Music/DJ-Music/Tools/remix-edit-sort/handoff/session-2026-08-15/survey/library-wide-dedup/pop-rnb-dedup-backup-20260815-2308",
+  "deleted_count": 3,
+  "surviving_delete_targets": [],
+  "kept_missing": [],
+  "undo_log": "handoff/session-2026-08-15/survey/library-wide-dedup/pop-rnb-dedup-undo-20260815-230523.jsonl"
+}
