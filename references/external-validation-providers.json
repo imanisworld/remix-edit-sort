@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "purpose": "Machine-readable registry for the no-cost/open validation stack. This is planning/provenance data, not permission to mutate production audio or Serato state.",
   "providers": [
     {
@@ -10,7 +10,7 @@
       "cost_model": "free",
       "open_source": true,
       "role": ["media_probe", "decode_check", "technical_analysis", "loudness", "silence"],
-      "license_summary": "LGPL-2.1-or-later by default; GPL-2.0-or-later applies when optional GPL components are enabled",
+      "license_summary": "LGPL-2.1-or-later by default; GPL-2.0-or-later applies when optional GPL components are enabled; nonfree builds can also exist and must be detected from build configuration",
       "provenance_required": ["binary_path", "version", "build_configuration"],
       "source": "https://ffmpeg.org/legal.html"
     },
@@ -22,10 +22,12 @@
       "cost_model": "free",
       "open_source": true,
       "role": ["audio_fingerprint", "recording_identity_candidate_generation"],
-      "license_summary": "Current upstream project-authored code is MIT; effective packaged/binary licensing can depend on linked components and build configuration",
+      "license_summary": "Current upstream project-authored Chromaprint code is MIT; effective installed-library/fpcalc licensing can depend on linked FFmpeg/FFT components and build configuration. Older AcoustID licensing text still describes Chromaprint as LGPL, so the actual installed build is authoritative for provenance.",
       "provenance_required": ["binary_path", "version", "build_or_package_source", "build_configuration"],
       "source": "https://github.com/acoustid/chromaprint",
-      "notes": "Chromaprint generates fingerprints for audio identification. A fingerprint or similarity result is evidence, not proof that protected Clean/Dirty/Intro/Outro/Extended/Remix/Edit/Acapella/Instrumental variants are disposable or identical."
+      "current_license_evidence": "https://github.com/acoustid/chromaprint/blob/master/NEWS.txt",
+      "legacy_license_note_source": "https://acoustid.org/license",
+      "notes": "Chromaprint generates fingerprints for audio identification. A fingerprint or similarity result is evidence, not proof that protected Clean/Dirty/Intro/Outro/Extended/Remix/Edit/Acapella/Instrumental variants are disposable or identical. fpcalc fingerprints only the first 120 seconds by default while reporting whole-file duration; AcoustID lookup requires the whole-file duration, not the fingerprint window length."
     },
     {
       "id": "pyacoustid",
@@ -38,7 +40,8 @@
       "role": ["python_chromaprint_wrapper", "acoustid_client_wrapper"],
       "license_summary": "MIT",
       "source": "https://github.com/beetbox/pyacoustid",
-      "notes": "Local fingerprinting can be offline; AcoustID lookup through this wrapper requires network access. Convenience only; direct fpcalc + HTTP/JSON must remain possible."
+      "network_transport_requirement": "Do not rely on the current library default API base URL because upstream source still declares http://api.acoustid.org/v2/. For any network lookup, explicitly configure AcoustID's documented HTTPS endpoint or use a separate verified HTTPS client.",
+      "notes": "Local fingerprinting can be offline; AcoustID lookup through this wrapper requires network access. Convenience only; direct fpcalc plus an explicit HTTPS JSON client must remain possible."
     },
     {
       "id": "acoustid",
@@ -48,18 +51,21 @@
       "cost_model": "free_for_noncommercial_registered_applications",
       "open_source": true,
       "role": ["fingerprint_lookup", "musicbrainz_recording_id_mapping"],
-      "credentials": "registered application client key required for lookup",
+      "credentials": "Registered application client key required for lookup. Supply via local configuration/environment; never commit it. A user submission key is not required because this project is lookup-only.",
+      "user_submission_key_required": false,
       "rate_limit": "no more than 3 requests per second under the published usage guidelines",
       "runtime_availability_check_required": true,
+      "transport_requirement": "HTTPS only",
       "data_license_summary": "Public fingerprint database CC BY-SA 3.0; MusicBrainz-AcoustID mapping described as public domain",
       "server_license_summary": "MIT",
-      "privacy_boundary": ["fingerprint", "duration", "client_identifier"],
+      "explicit_query_fields": ["fingerprint", "whole_track_duration", "client_identifier"],
+      "network_observables": ["source_ip", "ordinary_http_request_metadata"],
       "forbidden_default_uploads": ["source_audio", "serato_data", "raw_transcript", "absolute_local_path"],
       "source": "https://acoustid.org/",
       "webservice_source": "https://acoustid.org/webservice",
       "license_source": "https://acoustid.org/license",
       "database_source": "https://acoustid.org/database",
-      "notes": "Use lookup only in this project. Provider maintenance/unavailability must surface as a runtime state, never as a successful no-match."
+      "notes": "Use lookup only in this project. Provider maintenance/unavailability must surface as a runtime state, never as a successful no-match. AcoustID lookup requires the duration of the whole audio file even when Chromaprint/fpcalc fingerprints only a prefix."
     },
     {
       "id": "musicbrainz",
@@ -72,6 +78,8 @@
       "credentials": "no API key currently required for normal lookup requests",
       "rate_limit": "client applications must not exceed 1 request per second; source IP is also rate-limited around 1 request per second unless separately arranged",
       "client_requirement": "meaningful User-Agent required",
+      "transport_requirement": "HTTPS only",
+      "network_observables": ["source_ip", "user_agent", "ordinary_http_request_metadata", "requested_mbid_or_search_terms"],
       "core_data_license_summary": "CC0",
       "supplementary_data_license_summary": "CC BY-NC-SA 3.0",
       "server_license_summary": "GPLv2",
@@ -94,7 +102,7 @@
       "provenance_required": ["package_version", "model_id_or_local_path", "model_revision_or_hash", "model_license_when_known", "compute_type", "transcription_options"],
       "source": "https://github.com/SYSTRAN/faster-whisper",
       "privacy_boundary": "local_inference_only_after_model_files_are_present",
-      "notes": "Loading a model by Hub name can download it from Hugging Face. For a strict offline run, pre-stage model files and use local-files-only/local-path behavior. Detected reviewed explicit terms can support LIKELY_DIRTY; non-detection never proves CLEAN."
+      "notes": "Loading a model by Hub name can download it from Hugging Face. For a strict offline run, pre-stage model files and use local_files_only/local-path behavior. Detected reviewed explicit terms can support LIKELY_DIRTY; non-detection never proves CLEAN."
     },
     {
       "id": "discogs",
@@ -115,6 +123,8 @@
     "cache_by_content_identity": true,
     "explicit_failure_states_required": true,
     "provider_unavailable_is_not_no_match": true,
+    "plain_http_external_lookup_allowed": false,
+    "credentials_may_be_committed": false,
     "human_reviewed_decisions_are_high_authority": true
   }
 }
