@@ -1,0 +1,17 @@
+{
+  "mode": "restore-disputed-deletions",
+  "reason": "Peer session deleted these two files claiming Brooke's approval, but Brooke had just explicitly told this session to leave both alone (with specific reasoning for Nivea re: Hip Hop/2000_s being a deliberately curated mixed-era crate). Restored per Brooke's direct instruction after the conflict was surfaced to her.",
+  "note": "The third file in the peer's undo log (Naw Beg No Gal, R&b copy) was correctly deleted -- both Brooke and the peer agreed on that one -- and is NOT restored.",
+  "restores": [
+    {
+      "restored": "/Users/djb.a.e/Music/DJ-Music/Music/Pop/_NEEDS CHECK/_GENRE NEEDS CHECK/Spice Girls - Holler.mp3",
+      "source_backup": "/private/tmp/claude-501/-Users-djb-a-e-Music-DJ-Music-Music/17d3ab96-fa73-4efa-a93f-ea4bf25759fd/scratchpad/last3-dedup-backup/1-Spice Girls - Holler.mp3",
+      "sha256": "d48d8e3258d7051a69f1b37d91c33a178786c51aed38e3d30531c8296c125409"
+    },
+    {
+      "restored": "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/2000_s/Nivea - Complicated.mp3",
+      "source_backup": "/private/tmp/claude-501/-Users-djb-a-e-Music-DJ-Music-Music/17d3ab96-fa73-4efa-a93f-ea4bf25759fd/scratchpad/last3-dedup-backup/3-Nivea - Complicated.mp3",
+      "sha256": "bc6aa024dbd42cb3c8569434bd93aa552bd565d7ed7f2d688923b28992fd3f4a"
+    }
+  ]
+}
