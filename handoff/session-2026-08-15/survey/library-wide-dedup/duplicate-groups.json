@@ -1,0 +1,1419 @@
+{
+  "total_files_scanned_excl_imani": 25619,
+  "total_duplicate_groups": 122,
+  "total_redundant_instances": 128,
+  "cross_folder_groups_count": 76,
+  "same_folder_groups_count": 46,
+  "cross_folder_groups": [
+    {
+      "sha256": "f48865f7648542bbad02891a23db95dc211e8f11719ad3a876fa5e2c14eddab5",
+      "count": 2,
+      "folders": [
+        "Baile",
+        "Lounge"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Baile/Sango, Tyler ICU, EKANY - Me De Amor X Mnike (EKANY Edit).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Lounge/REMIXES & EDITS/_GENRE NEEDS CHECK/Sango, Tyler ICU, EKANY - Me De Amor X Mnike (EKANY Edit).mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "2fb8cd78178c807fc1b108b62b4cf2c0e2839e22c40600f80c2fc5487b3598e2",
+      "count": 2,
+      "folders": [
+        "Baile",
+        "Lounge"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Baile/Smochi, Excez - Make It Baile (Excez Edit).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Lounge/REMIXES & EDITS/_GENRE NEEDS CHECK/Smochi, Excez - Make It Baile (Excez Edit).mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "d5557cfb6830d78c85252f272ef943d3fe26efbe81f1e81c7661545851b9da70",
+      "count": 2,
+      "folders": [
+        "Baile",
+        "Lounge"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Baile/shekdash - SPIT IT OUT.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Lounge/_NEEDS CHECK/_GENRE NEEDS CHECK/shekdash - SPIT IT OUT.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "17699fbe5ce3b73cd28653f13bc11fa37f3cb3941991870aea43cec4323ca584",
+      "count": 2,
+      "folders": [
+        "Club RN",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Club RN/Mid Club type /Scotti Dee - Lost In Abyss X Bitch Better Have My Money (Cupidon Flip.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Scotti Dee - Lost In Abyss X Bitch Better Have My Money (Cupidon Flip.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "db56b8098998fa45bf8fd635eb7cbcd51f7641cfc69e410513373acf18624a08",
+      "count": 2,
+      "folders": [
+        "Dancehall",
+        "oLD Head Party"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Dancehall/REMIXES & EDITS/_GENRE NEEDS CHECK/Meck It Clap (Remix).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/oLD Head Party/REMIXES & EDITS/_GENRE NEEDS CHECK/Meck It Clap (Remix).mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "4da4e2a2b1e6c7e42def82195a632c3bfd744960b8dbc081d42f29eeae565320",
+      "count": 2,
+      "folders": [
+        "Dancehall",
+        "R&b"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Dancehall/_NEEDS CHECK/_GENRE NEEDS CHECK/Naw Beg No Gal.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '90-'00/_NEEDS CHECK/_GENRE NEEDS CHECK/Naw Beg No Gal.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "bc6aa024dbd42cb3c8569434bd93aa552bd565d7ed7f2d688923b28992fd3f4a",
+      "count": 2,
+      "folders": [
+        "Hip Hop",
+        "R&b"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/2000_s/Nivea - Complicated.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '90-'00/_NEEDS CHECK/_GENRE NEEDS CHECK/Nivea - Complicated.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "ecfc6d625db6215cd261b0db421819d19ef685817243cd463289411a566f5bdd",
+      "count": 2,
+      "folders": [
+        "Hip Hop",
+        "oLD Head Party"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/2000_s/Only One.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/oLD Head Party/_NEEDS CHECK/_GENRE NEEDS CHECK/Only One.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "14bf59bab119e81da070e62ae9d64834d9c524e80ca7bc3c2cbf1e4e79cb9750",
+      "count": 2,
+      "folders": [
+        "Hip Hop",
+        "oLD Head Party"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Hip Hop/2000_s/Shontelle - T-Shirt (Intro) Radio).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/oLD Head Party/_NEEDS CHECK/_GENRE NEEDS CHECK/Shontelle - T-Shirt (Intro) Radio).mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "dd0a55bc6fa130cb39a2e6fcfd8c7caa777f2a9cc1a21c50c7c56f75900e4db5",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/Hip House/_NEEDS CHECK/Groovy Bounce/Andrew. - missy in the bottle.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Andrew. - missy in the bottle.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "22f703ccb6179bb5838a98c7ec5c2c8ece053c6dcc602efa25eb4e95352c20fa",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/Hip House/_NEEDS CHECK/_GENRE NEEDS CHECK/dvsn - Keep It Going.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/dvsn - Keep It Going.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "029c8e6add6773c9225b46b0dc92dbb3301567c4929a997101c6038822cb9980",
+      "count": 2,
+      "folders": [
+        "House",
+        "Lounge"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/REMIXES & EDITS/_GENRE NEEDS CHECK/Katie Got Bandz, Alex Autajon - Drop Down Do A Split (Alex Autajon Remix).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Lounge/REMIXES & EDITS/_GENRE NEEDS CHECK/Katie Got Bandz, Alex Autajon - Drop Down Do A Split (Alex Autajon Remix).mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "23f98abc74b70d629f25751b81e6d5726f90fc590b38ba6f12305b8e7e02981c",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_chill/_NEEDS CHECK/_GENRE NEEDS CHECK/Perfect.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Perfect.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "046453c68d2e4e5f9023f1be9d6bc1194bd987b8e5ea3db6ff00b083577bc3f7",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_chill/_NEEDS CHECK/_GENRE NEEDS CHECK/Personal.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Personal.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "43754b32b9e24fd99cf9e44cd811468d7862b4ceb937bf938d691317330b476c",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_edit/_NEEDS CHECK/Groovy Bounce/Quartz.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Quartz.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "a3d718689dbdc5befdea64c3735ccd8f348bb49c3e32d1558a067a8d094587e9",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_latin/_NEEDS CHECK/_GENRE NEEDS CHECK/NÍDIA_BLUE LIGHT_123 BPM.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/NÍDIA_BLUE LIGHT_123 BPM.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "964b590b371ccaa1f91e39882bc26ff8d4813fddbda8d7973d87ca162ef9f98a",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/REMIXES & EDITS/Groovy Bounce/Silence & Secrets (Black Coffee Remix).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Silence & Secrets (Black Coffee Remix).mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "513ca220dc57a041415424c1858f423efcea7090a5cb4699451bda437f2b8162",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/REMIXES & EDITS/House/Arms (Lone Remix).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Arms (Lone Remix).mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "df73dd2a3ac4c1d6c03342c940b7d7b189d7bea1128acac955770fa724bea70f",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/REMIXES & EDITS/_GENRE NEEDS CHECK/Beyoncé & Terry Hunter - BREAK MY SOUL (Terry Hunter Remix) .mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Beyoncé & Terry Hunter - BREAK MY SOUL (Terry Hunter Remix) .mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "fe3257230df95e04e1b4216cbc8de054ab16e455c30cc5fe70cc5ba659fee011",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/REMIXES & EDITS/_GENRE NEEDS CHECK/Beyoncé & will.i.am - BREAK MY SOUL (will.i.am Remix) .mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Beyoncé & will.i.am - BREAK MY SOUL (will.i.am Remix) .mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "1cd2410af8533bbf7ffc29c643663fb6214497e6f8547732e80e28ab6e77cc2d",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/REMIXES & EDITS/_GENRE NEEDS CHECK/GOT EM (Sango Remix).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/GOT EM (Sango Remix).mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "77e09d84d06d807a79d88dc8ac3969d603c6f25e8bdf1989516ff1e30b7c84b5",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/_NEEDS CHECK/Groovy Bounce/Beyoncé feat. Beam - ENERGY .mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Beyoncé feat. Beam - ENERGY .mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "260dc8ffd3d04e454757c1141e3770ae095b8200aff18a170f69d0956fce75d0",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/_NEEDS CHECK/Groovy Bounce/Magic Drum Machine.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Magic Drum Machine.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "65443fafd3bff4d90d616fde3521e8e28162d1286fbf5f13843f0e496d098cae",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/_NEEDS CHECK/House/Octagon.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Octagon.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "3cd8fcc869e6f3568782645dda240fef8e94a687f777472ce38127d24f55ae11",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/_NEEDS CHECK/_GENRE NEEDS CHECK/Let's Go.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Let's Go.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "e7e4e03b1eba3d2e50554ee1c880aab218a9139a5f62e50866967d8b72a7ce83",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/_NEEDS CHECK/_GENRE NEEDS CHECK/Love on Wheels.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Love on Wheels.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "74c89324e2f59f21d72d541e1832191e9756d0a2179a4d4222bed23d2269c4e6",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/_NEEDS CHECK/_GENRE NEEDS CHECK/Oro.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Oro.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "3737babc45389effeaae771997150e42e2162511858af79edb607fde2beae4cd",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/_NEEDS CHECK/_GENRE NEEDS CHECK/Sing My Blues - Album Mix.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Sing My Blues - Album Mix.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "712c344d2faca2613f2715cda467932a2d96291f534ddfdd82bc7f9d35e1e283",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/_NEEDS CHECK/_GENRE NEEDS CHECK/TAKE A CHANCE.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/TAKE A CHANCE.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "b6652938fd70a141780410faaa26cdcb7d7397d01c75c079482856417de111b2",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_lounge/_NEEDS CHECK/_GENRE NEEDS CHECK/nobody.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/nobody.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "1584ecb0482768619f647b7c9038e2bb4ccdc4fa5a61b31b72de6a917150cfa9",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_plex/REMIXES & EDITS/_GENRE NEEDS CHECK/Peru (FS Green & Dave Nunes Remix).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Peru (FS Green & Dave Nunes Remix).mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "72d81fccacc333d98e7b99cd659f0c63e55e360fe5b3b049c09b8104115a9a17",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_plex/_NEEDS CHECK/House/Inertia.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Inertia.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "e425535ebf6364a25ea7f62c102e26d2aff069c7d272acdaf7df537a285096dc",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_plex/_NEEDS CHECK/_GENRE NEEDS CHECK/Got Til It's Gone.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Got Til It's Gone.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "1f3810812c138e81c4d78ad3d01d6cbbffe2e43527cfd2efbb183b0e74cee428",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_plex/_NEEDS CHECK/_GENRE NEEDS CHECK/IAMNOBODI - Babygirl.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/IAMNOBODI - Babygirl.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "486df66352a82d1c009335b5dbae5e2f0eb3e799f04311deea1f53149bf7ec05",
+      "count": 2,
+      "folders": [
+        "House",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/house_plex/_NEEDS CHECK/_GENRE NEEDS CHECK/One Two Step.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/One Two Step.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "99a999ff2fd37d4c7de65b1e226afda5b95764cbabeb0209cee231026fb02790",
+      "count": 2,
+      "folders": [
+        "Lounge",
+        "R&b"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Lounge/_NEEDS CHECK/R&B/Summer Walker - Heart Of A Woman.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/_NEEDS CHECK/R&B/Summer Walker - Heart Of A Woman.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "1d648a0664c7a483e7cbe14f2894e932e1d030d706c9fe291945012d6b737ef1",
+      "count": 2,
+      "folders": [
+        "Music",
+        "enomiya"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Music/NewFiles/enomiya/09. Earth, Wind & Fire - You and I.flac",
+        "/Users/djb.a.e/Music/DJ-Music/Music/enomiya/09. Earth, Wind & Fire - You and I.flac"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "277d71d97c73a4e762f79a16f933f6bed6a12951eb5e2cffa8f44c1098be5f17",
+      "count": 2,
+      "folders": [
+        "Music",
+        "midaiganes"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Music/NewFiles/midaiganes/1-05. Left Right (feat. Lee Cash & Ellis Quinn).flac",
+        "/Users/djb.a.e/Music/DJ-Music/Music/midaiganes/1-05. Left Right (feat. Lee Cash & Ellis Quinn).flac"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "e18626d49a16313f502a7517bde21b2bb8c72f5138f12262ab9d736236dc7a67",
+      "count": 2,
+      "folders": [
+        "Music",
+        "midaiganes"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Music/NewFiles/midaiganes/1-06. Trop Cherry, Part 2.flac",
+        "/Users/djb.a.e/Music/DJ-Music/Music/midaiganes/1-06. Trop Cherry, Part 2.flac"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "91e095c0e77e03581f0a135223fe0b60973899c316430419e158d509b8d50f9e",
+      "count": 2,
+      "folders": [
+        "New Orleans Bounce",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/New Orleans Bounce/Fred Again, Swedish House Mafia, Future, Remi Oz Bounce - Turn On The Lights Again.. (Remi Oz Bounce Remix).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Fred Again, Swedish House Mafia, Future, Remi Oz Bounce - Turn On The Lights Again.. (Remi Oz Bounce Remix).mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "81dc2f59fb15453178ffc30d72861b04fe1a5475128948e56db726332974419c",
+      "count": 2,
+      "folders": [
+        "Pop",
+        "R&b"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Pop/_NEEDS CHECK/R&B/sailorr - done shaving 4 u.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/_NEEDS CHECK/R&B/sailorr - done shaving 4 u.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "0f0d33a980a6f7e0756d01f64d1983e9b9446e420846dcee5ec964a48cf29afa",
+      "count": 2,
+      "folders": [
+        "Pop",
+        "R&b"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Pop/_NEEDS CHECK/R&B/sailorr - rent free.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/_NEEDS CHECK/R&B/sailorr - rent free.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "ce732cbfa81dc0521ab6c1e1fc62b277a65bb09ae84db719bf3f8d72710cb90a",
+      "count": 2,
+      "folders": [
+        "Pop",
+        "R&b"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Pop/_NEEDS CHECK/R&B/sailorr - ur mother's son.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/_NEEDS CHECK/R&B/sailorr - ur mother's son.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "d48d8e3258d7051a69f1b37d91c33a178786c51aed38e3d30531c8296c125409",
+      "count": 2,
+      "folders": [
+        "Pop",
+        "R&b"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Pop/_NEEDS CHECK/_GENRE NEEDS CHECK/Spice Girls - Holler.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '90-'00/_NEEDS CHECK/_GENRE NEEDS CHECK/Spice Girls - Holler.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "baa9d51dfe97b66de727e580d7dece649f6b1ccacdc04abce743b4172ca5cf35",
+      "count": 2,
+      "folders": [
+        "R&b",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '20-'22 /_NEEDS CHECK/_GENRE NEEDS CHECK/AM (Prod. by @cheecru).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/AM (Prod. by @cheecru).mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "f7211e184322b06b4a3458d8abac0c74abed88093cbf892f435dc0ea383e2751",
+      "count": 2,
+      "folders": [
+        "R&b",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '20-'22 /_NEEDS CHECK/_GENRE NEEDS CHECK/Hotline.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Hotline.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "fdec224502fa6b6485d3fd94287233058ffab8274df1f11cac66c5e7ee77a09b",
+      "count": 2,
+      "folders": [
+        "R&b",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '20-'22 /_NEEDS CHECK/_GENRE NEEDS CHECK/I Do Everything.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/I Do Everything.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "e921e7c355b36631946635e75033bc09830475cc0c0b701c9537fb35abec9dbf",
+      "count": 2,
+      "folders": [
+        "R&b",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '20-'22 /_NEEDS CHECK/_GENRE NEEDS CHECK/KEMET (feat. Saba).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/KEMET (feat. Saba).mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "8c68475a1488966d5409e06808e91da9289be82f95d4688a6765d80a22481936",
+      "count": 2,
+      "folders": [
+        "R&b",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '20-'22 /_NEEDS CHECK/_GENRE NEEDS CHECK/Phone Me (Prod. by Che Ecru).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Phone Me (Prod. by Che Ecru).mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "bd25a34b1bdaa5fd5aa3e8337e9c51388daa6b9e3f0e3f0a620610b5967be18f",
+      "count": 2,
+      "folders": [
+        "R&b",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B '20-'22 /_NEEDS CHECK/_GENRE NEEDS CHECK/THATS MY BABY.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/THATS MY BABY.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "877c267f2a15d538b71b2f7a95866a739b96d2685a662cac7cda69601fd551df",
+      "count": 2,
+      "folders": [
+        "R&b",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B Remixes/REMIXES & EDITS/_GENRE NEEDS CHECK/slippery flip draft - omoidé.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/slippery flip draft - omoidé.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "640c61abac250731cc255a61090da0e9b0b5a2618872c01815744b96ac619b5c",
+      "count": 2,
+      "folders": [
+        "R&b",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B Remixes/_NEEDS CHECK/Amapiano/Golden Livin'.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Golden Livin'.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "098143f1a514729083ee3eac97d14374860ff4dbc1832f80654007a2ff26ee67",
+      "count": 2,
+      "folders": [
+        "R&b",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B Remixes/_NEEDS CHECK/_GENRE NEEDS CHECK/I Aint Mad At HER.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/I Aint Mad At HER.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "3b2c03f829aebead231fad70f31cf674434bea1e1f2f8ef461ecd4fad2ff563a",
+      "count": 2,
+      "folders": [
+        "R&b",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/R&B Remixes/_NEEDS CHECK/_GENRE NEEDS CHECK/SUA - imbabyyy.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/SUA - imbabyyy.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "4e4d2ca0ed09f41c667ead574f03173e25d00f3632301be8743fa9abbc4468e6",
+      "count": 2,
+      "folders": [
+        "R&b",
+        "oLD Head Party"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/_NEEDS CHECK/_GENRE NEEDS CHECK/Justin Timberlake - Strawberry Bubblegum.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/oLD Head Party/_NEEDS CHECK/_GENRE NEEDS CHECK/Justin Timberlake - Strawberry Bubblegum.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "24f25284d2dc01e81d6536d56817e41e1107d6cd3f62bb35ddcea2583f5119d7",
+      "count": 2,
+      "folders": [
+        "R&b",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/afro_r&b/_NEEDS CHECK/_GENRE NEEDS CHECK/Love Me JeJe.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Love Me JeJe.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "1536d1e6349b8998bd8cef920f87097dc12d8d47f09087c36425e9ed441f6375",
+      "count": 2,
+      "folders": [
+        "R&b",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/afro_r&b/_NEEDS CHECK/_GENRE NEEDS CHECK/Me & U.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Me & U.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "bcc9b3eb03c4fac43fdd002475d2b793c22bb9245414f40450bdcdb927a0aedf",
+      "count": 2,
+      "folders": [
+        "R&b",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/afro_r&b/_NEEDS CHECK/_GENRE NEEDS CHECK/Turn Me Up.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Turn Me Up.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "4e5763579eb6bebc2e1d0a436fbb3c8ecced2ef78611abe149b94fcc2230618e",
+      "count": 2,
+      "folders": [
+        "R&b",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/alternative_r&b/REMIXES & EDITS/_GENRE NEEDS CHECK/VanJess - Through Enough (feat. Goldlink) Jarreau Vandal Remix.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/VanJess - Through Enough (feat. Goldlink) Jarreau Vandal Remix.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "4de0acb20f709ab5c1d075321e882e9e831b0dc2fb2e91cfb3a32163cfc8ca03",
+      "count": 2,
+      "folders": [
+        "R&b",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/neo_soul/_NEEDS CHECK/_GENRE NEEDS CHECK/SANTA MUERTE_BLUFF_94 BPM.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/SANTA MUERTE_BLUFF_94 BPM.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "ef5aec5d411dd58c328b9be6907cb1f9b8aca57f479b9f581f5672a0d1d1d133",
+      "count": 2,
+      "folders": [
+        "Reggae",
+        "oLD Head Party"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Reggae/(When You Gonna) Give It Up To Me (featuring Keyshia Cole) (radio version).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/oLD Head Party/_NEEDS CHECK/_GENRE NEEDS CHECK/(When You Gonna) Give It Up To Me (featuring Keyshia Cole) (radio version).mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "424992b831bd92f9c31c172132ec9c982103d12c686bd39f014f590248911e8d",
+      "count": 2,
+      "folders": [
+        "Reggae",
+        "oLD Head Party"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Reggae/Heads High (Kill 'Em With It Re-Mix).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/oLD Head Party/REMIXES & EDITS/_GENRE NEEDS CHECK/Heads High (Kill 'Em With It Re-Mix).mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "13ba9e867238e8dd898aeb8efb811e32d1a973d179775ff8e0de088d215d1f24",
+      "count": 2,
+      "folders": [
+        "Reggae",
+        "oLD Head Party"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Reggae/Like Glue.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/oLD Head Party/_NEEDS CHECK/_GENRE NEEDS CHECK/Like Glue.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "f051f304e3ca9748a64ddc4c6eb031d2980f5e19c53285e24d5f0bb30cadd9f1",
+      "count": 2,
+      "folders": [
+        "Reggae",
+        "oLD Head Party"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Reggae/Lovers Rock/Is This Love.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/oLD Head Party/_NEEDS CHECK/_GENRE NEEDS CHECK/Is This Love.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "c885babab586964183641a0a6dfaa9164bfb0c7933b65273027b24f260e03b97",
+      "count": 2,
+      "folders": [
+        "Reggae",
+        "oLD Head Party"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Reggae/Lovers Rock/Train To Skaville.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/oLD Head Party/_NEEDS CHECK/_GENRE NEEDS CHECK/Train To Skaville.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "ea2aa34ab196daf45997652ca0818965c5ba0dafad1ad4e1f7e962f2da45030d",
+      "count": 2,
+      "folders": [
+        "Reggae",
+        "oLD Head Party"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Reggae/No Letting Go ( Remix ) ( Diwali Riddim ).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/oLD Head Party/REMIXES & EDITS/_GENRE NEEDS CHECK/No Letting Go ( Remix ) ( Diwali Riddim ).mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "6c7749aa93245678d363190f029b2082326a110b562ea84efd1c3419236bc513",
+      "count": 2,
+      "folders": [
+        "Reggae",
+        "oLD Head Party"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Reggae/Pum Pum Phat.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/oLD Head Party/_NEEDS CHECK/_GENRE NEEDS CHECK/Pum Pum Phat.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "b56548c8b7654dc3c3c18ce0e53de674144b7d8415d135e21bf86d0f92da4f54",
+      "count": 2,
+      "folders": [
+        "Reggae",
+        "oLD Head Party"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Reggae/Punkie.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/oLD Head Party/_NEEDS CHECK/_GENRE NEEDS CHECK/Punkie.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "0b2a577066cc68410b0fbdad711c1f0bc9594013379af130624c50cd203e2586",
+      "count": 2,
+      "folders": [
+        "Reggae",
+        "oLD Head Party"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Reggae/Romping Shop.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/oLD Head Party/_NEEDS CHECK/_GENRE NEEDS CHECK/Romping Shop.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "205797033cff36bc5814444109ca7cdf08eadd8674f91d8d49a5490653e6dd9b",
+      "count": 2,
+      "folders": [
+        "Reggae",
+        "oLD Head Party"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Reggae/Shake that thing.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/oLD Head Party/_NEEDS CHECK/_GENRE NEEDS CHECK/Shake that thing.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "7a834a2d9371818676f0087591cf208cda276e8ca0d2c71f8a7fcfa93eb0bb2d",
+      "count": 2,
+      "folders": [
+        "Soca",
+        "oLD Head Party"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Soca/Bicycle (Radio Mix).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/oLD Head Party/_NEEDS CHECK/_GENRE NEEDS CHECK/Bicycle (Radio Mix).mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "76223dae2ca4268ce4aabaeae58d8a80fcc3dc21ee0628af75b1b64c3f317bf8",
+      "count": 2,
+      "folders": [
+        "alternative",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/alternative/CHE ECRU, DRAFTRAW - I MISS YOU GIRL.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/CHE ECRU, DRAFTRAW - I MISS YOU GIRL.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "29a1bc86e1c7268357d2dc58474588afbed184ef7a257919790499ee7f066b3a",
+      "count": 2,
+      "folders": [
+        "alternative",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/alternative/CHE ECRU, Never Lose Me - KOALA FATHER (Never Lose Me Remix).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/CHE ECRU, Never Lose Me - KOALA FATHER (Never Lose Me Remix).mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "4e22195e2491ae61d3f2e92156485d10dedab9ce77082caf0ff0485636ab2354",
+      "count": 2,
+      "folders": [
+        "alternative",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/alternative/Tommy Richman - LAST NITE.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Tommy Richman - LAST NITE.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "5580c18001eddf5c310fd9a8ef72c4c482147ada710092375e5f5baa14fa1f13",
+      "count": 2,
+      "folders": [
+        "alternative",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/alternative/Tommy Richman - MESSY.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Tommy Richman - MESSY.mp3"
+      ],
+      "total_bytes": null
+    },
+    {
+      "sha256": "ac9f26651353e95f6ffa14b6d8890da4eba42bb5e5641a5976e1cc9abc13b749",
+      "count": 2,
+      "folders": [
+        "alternative",
+        "edit"
+      ],
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/alternative/Tommy Richman, Zachary Moon - GLOCK 25.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/edit/Tommy Richman, Zachary Moon - GLOCK 25.mp3"
+      ],
+      "total_bytes": null
+    }
+  ],
+  "same_folder_groups": [
+    {
+      "sha256": "ddd87fd5537ef1faf3f2e8c646a8166a8522c17900fe8d68884c8185b27a39bc",
+      "count": 8,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/Slow Jams/_NEEDS CHECK/R&B/Princess.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/Slow Jams/_NEEDS CHECK/R&B/Princess_1.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/Slow Jams/_NEEDS CHECK/R&B/Princess_2.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/Slow Jams/_NEEDS CHECK/R&B/Princess_3.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/Slow Jams/_NEEDS CHECK/R&B/Princess_4.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/Slow Jams/_NEEDS CHECK/R&B/Princess_5.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/Slow Jams/_NEEDS CHECK/R&B/Princess_6.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/Slow Jams/_NEEDS CHECK/R&B/Princess_7.mp3"
+      ]
+    },
+    {
+      "sha256": "470e9d1ea0b9334f6022966937c5da70d42d499ce193f64a495aab9bc38336be",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/80's R&B /_NEEDS CHECK/Pop & R&B/If It Isn't Love.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/R&B Brunch/_NEEDS CHECK/Pop & R&B/If It Isn't Love.mp3"
+      ]
+    },
+    {
+      "sha256": "9d13fbb6142f3c3079eba332a7b06702054f8204dc536bbda820e4f8dd5dfcc4",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/80's R&B /_NEEDS CHECK/R&B & Soul/Never Too Much.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/R&B Brunch/_NEEDS CHECK/R&B & Soul/Never Too Much.mp3"
+      ]
+    },
+    {
+      "sha256": "acb49045e8bfb114f88b36104f8fc26b94606d2c4a77213e5bd607c2ff846480",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/80's R&B /_NEEDS CHECK/R&B & Soul/Rock with You - Single Version.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/R&B Brunch/_NEEDS CHECK/R&B & Soul/Rock with You - Single Version.mp3"
+      ]
+    },
+    {
+      "sha256": "47ad71e920f634ded1076b598bd0f0028f45b32644ea9499379c622fdb1c47a8",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/CLEAN R&B/Hip-Hop & R&B/Zhane - Sending My Love (HH Clean Intro).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop & R&B/Sending My Love (HH Clean Intro).mp3"
+      ]
+    },
+    {
+      "sha256": "a6cceb5cb65c512b3263690b9b6900a5ad00e38b11a5c58c05b54057ce9e98af",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/21 Savage - redrum (Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/redrum (Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "c115d4a6cd99fef31e9784c544cf050bd8d7a38486ae9063b165d9258bb7bb20",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/21 Savage - redrum (Intro Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/redrum (Intro Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "4abbb74086222ca5fb1d03ca5774c82eb82324232c5db02df73f02bf9ac2b65e",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/21 Savage - sneaky (Intro Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/sneaky (Intro Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "a91494c336fa6e2c4e4b726ca477089beee097c4e9e32aeedc398404cbbcac08",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Agora Hills (Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Doja Cat - Agora Hills (Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "0c94c6ed9b3a79afe25d9f1253b0cab07bf59b4090dd5e3cbf54b0a92242434a",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Agora Hills (Intro Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Doja Cat - Agora Hills (Intro Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "57ad53f72fc52698cadef1b6d1f00f96b56c0e58429c67deda2ff0fd92038de6",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Always On Time (Intro Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Ja Rule ft Ashanti - Always On Time (Intro Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "4628c56f0d38f43ad34312deb5f0cfce6d4efd1d22827320e29ec51497a1e8e6",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Beatking - Outside (Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Outside (Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "7e361d836687e7a793cdfa10d2a329106605fd364ebbbeb5d8ec37a1226be9a4",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Beatking - Outside (Intro Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Outside (Intro Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "fba6057a07446aee9fe42124dfd63b0d9d3d3eec0eee8598764ed4372cbbc94b",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Burna Boy ft 21 Savage - Sittin' On Top Of The World (Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Sittin' On Top Of The World (Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "84361b3bc5f4c941a149c8ace1c2e87d376eea80870cf14b476a4ba8090f32ee",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Cardi B - Like What (Freestyle) (Clean) (1).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Cardi B - Like What (Freestyle) (Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "26d37962726540c013da2a61f0c1452c01449ae3319823595327608450e1e627",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Drake ft Yeat - IDGAF (Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/IDGAF (Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "2d3cfbe1daebba378da48f1dfe509fdd390f8a3bea86b291f01df50e0e5cf2da",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Drake ft Yeat - IDGAF (Intro Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/IDGAF (Intro Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "2b0708719d8ae0b5756e0d25bb96cf20e44b77fd8e5c7c6c2c9ba1d40a7853c0",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Everybody (Intro Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Nicki Minaj ft Lil Uzi Vert - Everybody (Intro Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "f702414976803e8e7489ec0e9ce9a6bfbdde6f5599b5040be6576605701a9478",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Flo Milli - Never Lose Me (Intro Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Never Lose Me (Intro Clean) 2.mp3"
+      ]
+    },
+    {
+      "sha256": "67feed42adc2df231714cdc1f85b4630be9229370b9379c23495160dc3106f90",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Flo Milli ft Lil Yachty - Never Lose Me (Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Never Lose Me (Clean) 2.mp3"
+      ]
+    },
+    {
+      "sha256": "08365b16d727116cc98c2bd880c743ef16589a3baf0db20e90e5d2ee8c8e4d27",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Good Good (Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Usher, 21 Savage & Summer Walker - Good Good (Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "a2b3b243e735f570e2550d0905f52c3de31c243275217a51462e9f018085819a",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Jack Harlow - Lovin On Me (Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Lovin on Me (Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "fc643fa147bd9025bea86cedf0d16399cd992f8d1e184363e6ad3e057b18bc55",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Nicki Minaj - Pink Friday Girls (Intro Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/Pink Friday Girls (Intro Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "6fae6675d934b929f8f626044aa64ee5773aa2d74232ce3178ac148f4848add0",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/P. Diddy ft Usher & Loon - I Need A Girl (Part 1) (Intro Clean)(1).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/P. Diddy ft Usher & Loon - I Need A Girl (Part 1) (Intro Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "cfba64104878b69070363f0efc0ba533257ff26669b69886ce7da2ec3743f135",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/REMIXES & EDITS/310babii ft Mustard, Blueface, Tyga, BlueBucksClan & Ohgeesy - Soak City (Remix) (Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/REMIXES & EDITS/Soak City (Remix) (Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "e2c861f08d02ea15890b57228910079cd4627dcb537d6cf2b564b51703fffc76",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/REMIXES & EDITS/310babii ft Mustard, Blueface, Tyga, BlueBucksClan & Ohgeesy - Soak City (Remix) (Intro Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/REMIXES & EDITS/Soak City (Remix) (Intro Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "eed8a72c26ef7bd457007a8798fe4cce5a487f19f188b4d043ce13ad0b09621a",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/REMIXES & EDITS/JT & Jeezy - OKAY (Remix) (Clean)(1).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Hip-Hop/REMIXES & EDITS/JT & Jeezy - OKAY (Remix) (Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "f1661ce1761c2d799b11845f7a0ba830922f58f1292e587ac094e3d9a7c184d8",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Pop/Alright (Clean) (Extended).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Pop/Janet Jackson - Alright (Clean) (Extended).mp3"
+      ]
+    },
+    {
+      "sha256": "0d88eea0b45bf60bd016f6730f272e2ba4f78b6b69f2f10ab974d39ef539f0db",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Pop/Go Deep (Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Pop/Janet Jackson - Go Deep (Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "3ea45ef5b60eb4fe8d2f5f2dde03ec06f93fe9c0ebdef79993d3e4a45f40e4e0",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Pop/Go Deep (Intro Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/Pop/Janet Jackson - Go Deep (Intro Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "668130a60f482e0fee5cecb9ae9e425e552ea81e2b9da129d55f15af1888c64f",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/R&B/Chris Brown ft Davido & Lojay - Sensational (Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/R&B/Sensational (Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "24ec98d534f909a0f3804b926f871b1ae1b8c2ad37e1116fb164d46e3223dc3d",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/R&B/I'll Be Lovin' U Long Time (Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/R&B/Mariah Carey - I'll Be Lovin' U Long Time (Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "4a788d2095536d0d9535299ed12fada6812fa5a08079465bc261b7db55baa9fc",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/R&B/I'll Be Lovin' U Long Time (Intro Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/R&B/Mariah Carey - I'll Be Lovin' U Long Time (Intro Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "eee2aa816122a92454415603687510235a9f6a530793619c452747ae6bdaf023",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/R&B/On And On (Clean).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/CLEAN/R&B/Tyla - On And On (Clean).mp3"
+      ]
+    },
+    {
+      "sha256": "d6937a5192ef31c8a3a90cb7248df0702d453a80c2339232330952002395d44b",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/R&B Brunch/_NEEDS CHECK/Hip-Hop/Power Trip (feat. Miguel).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/Slow Jams/_NEEDS CHECK/Hip-Hop/Power Trip (feat. Miguel).mp3"
+      ]
+    },
+    {
+      "sha256": "85f8cfda2af5fb471c738bde5e23553abd7e8c29e2308862da9500b65b49aa0e",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/R&B Brunch/_NEEDS CHECK/Pop & R&B/He Wasn't Man Enough.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/Slow Jams/_NEEDS CHECK/Pop & R&B/He Wasn't Man Enough.mp3"
+      ]
+    },
+    {
+      "sha256": "6a20c160cbe05ecdbea9bfd3aebecf66b8c6e70cb0af015270c2d118d756b6e2",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/R&B Brunch/_NEEDS CHECK/Pop & R&B/Honey.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/Slow Jams/_NEEDS CHECK/Pop & R&B/Honey.mp3"
+      ]
+    },
+    {
+      "sha256": "e3c62b3425e6d9dbbbd9d88be933580837aee4e7c63718716db16a737685a71c",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/R&B Brunch/_NEEDS CHECK/Pop & R&B/Sweet Lady.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/Slow Jams/_NEEDS CHECK/Pop & R&B/Sweet Lady.mp3"
+      ]
+    },
+    {
+      "sha256": "dd57c7081f639290779158b43a79b82c6ac6f93a34728195094168a1edbc9dee",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/R&B Brunch/_NEEDS CHECK/Pop & R&B/The Boy Is Mine.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/Slow Jams/_NEEDS CHECK/Pop & R&B/The Boy Is Mine.mp3"
+      ]
+    },
+    {
+      "sha256": "cf55703ff61f34b5e55032cba79630e691fb5889611d36c61466eb30d1d512c0",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/R&B Brunch/_NEEDS CHECK/Pop & R&B/Too Close.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/Slow Jams/_NEEDS CHECK/Pop & R&B/Too Close.mp3"
+      ]
+    },
+    {
+      "sha256": "8c6a4f10743f5491b8fd95723dd05ff4ba7e07bec1cb6b8f84cf770a9abeb38a",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/R&B Brunch/_NEEDS CHECK/Pop & R&B/We Gonna Take U Back (Lude) _ Don't Leave Me.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/Slow Jams/_NEEDS CHECK/Pop & R&B/We Gonna Take U Back (Lude) _ Don't Leave Me.mp3"
+      ]
+    },
+    {
+      "sha256": "937a37ef27daa62938017585e4acf8418c4d60e3afedf287fae7bf80072d91a2",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/R&B Brunch/_NEEDS CHECK/R&B/In My Bed - So So Def Mix.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/Slow Jams/_NEEDS CHECK/R&B/In My Bed - So So Def Mix.mp3"
+      ]
+    },
+    {
+      "sha256": "4e099d065e3951c40fcd66ac00a4fa5088fa5312bdbc0be17bf2275089c53f36",
+      "count": 2,
+      "folder": "Events",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/R&B Brunch/_NEEDS CHECK/R&B/Someone To Love You.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/Events/LIKE SUGAR ON MY TONGUE/Slow Jams/_NEEDS CHECK/R&B/Someone To Love You.mp3"
+      ]
+    },
+    {
+      "sha256": "9e0a308462f110caa73ad072eff172e25e70df3dd811b6754015b3b7cc2c1637",
+      "count": 2,
+      "folder": "House",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/REMIXES & EDITS/_GENRE NEEDS CHECK/Premiere B3 - ICTV, Nephews, DimSum, Trent Voyage, APRH008 - Elevated Workout (Trent Voyage Remix) (2).mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/House/REMIXES & EDITS/_GENRE NEEDS CHECK/Premiere B3 - ICTV, Nephews, DimSum, Trent Voyage, APRH008 - Elevated Workout (Trent Voyage Remix).mp3"
+      ]
+    },
+    {
+      "sha256": "779709eb9ead9723a3f88c7286b8aeae6291fd4d7c34a1a3ae2f2a4dc5e1f305",
+      "count": 2,
+      "folder": "R&b",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/2025/_NEEDS CHECK/R&B/coco jones, london on da track, future - most beautiful design.mp3",
+        "/Users/djb.a.e/Music/DJ-Music/Music/R&b/_NEEDS CHECK/R&B/coco jones, london on da track, future - most beautiful design.mp3"
+      ]
+    },
+    {
+      "sha256": "dc05b1d7a767036953f8d5c78180f5aa239bcd0cc5d9aaf4bb1fd4f285b1df56",
+      "count": 2,
+      "folder": "music to move",
+      "paths": [
+        "/Users/djb.a.e/Music/DJ-Music/Music/music to move/Music/TMHoarder/_NEEDS CHECK/Hip-Hop/1-01. The Way (2).flac",
+        "/Users/djb.a.e/Music/DJ-Music/Music/music to move/_NEEDS CHECK/Hip-Hop/1-01. The Way.flac"
+      ]
+    }
+  ]
+}
