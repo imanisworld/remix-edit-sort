@@ -84,7 +84,9 @@ This walks both trees, hashes every file, and computes PASS or FAIL from what it
 There is deliberately no flag that stamps PASS onto a directory without hashing it. Every
 apply engine refuses to run without a manifest that says PASS, covers the exact source root
 it is about to mutate, is unaltered since it was written, and carries per-file evidence for
-each file it touches.
+each file it touches. Immediately before each mutation, the shared engine also verifies that
+the actual backup file still exists and still hashes to the source state recorded in the
+manifest; the concrete backup path is written into the recovery intent.
 
 ## Recovering from an interrupted run
 

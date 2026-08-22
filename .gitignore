@@ -30,6 +30,7 @@ _Serato_/
 **/*-tag-file-backups/
 /survey/
 /output/
+/outputs/
 /local/
 /.locks/
 /*.jsonl

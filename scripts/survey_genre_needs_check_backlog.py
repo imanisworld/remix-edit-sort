@@ -20,6 +20,7 @@ from __future__ import annotations
 SAFETY_CLASSIFICATION = "read-only"
 
 import argparse
+import hashlib
 import json
 import sys
 from collections import Counter
@@ -32,6 +33,14 @@ from mutagen.easyid3 import EasyID3
 from mutagen.flac import FLAC
 from mutagen.id3 import ID3NoHeaderError
 from mutagen.mp4 import MP4
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        while chunk := handle.read(4 * 1024 * 1024):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def read_genre_artist(path: Path) -> tuple[str, str]:
@@ -84,6 +93,7 @@ def main() -> None:
             results.append(
                 {
                     "path": str(file_path),
+                    "sha256": sha256_file(file_path),
                     "version": version,
                     "current_genre": genre,
                     "artist": artist,

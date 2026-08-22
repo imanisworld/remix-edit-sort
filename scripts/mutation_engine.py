@@ -72,8 +72,9 @@ GROUPING = "grouping"
 ARTIST_TITLE = "artist_title"
 YEAR_BPM = "year_bpm"
 DELETE = "delete"
+METADATA = "metadata"
 
-MUTATION_CLASSES = frozenset({RELOCATE, GENRE, GROUPING, ARTIST_TITLE, YEAR_BPM, DELETE})
+MUTATION_CLASSES = frozenset({RELOCATE, GENRE, GROUPING, ARTIST_TITLE, YEAR_BPM, DELETE, METADATA})
 
 JOURNAL_VERSION = 1
 
@@ -228,8 +229,10 @@ class MutationEngine:
         self.source_root = Path(source_root) if source_root else None
         self.label = label
         self.run_id = run_id or datetime.now().astimezone().strftime("%Y%m%d-%H%M%S-") + os.urandom(4).hex()
-        # allow_unbacked exists ONLY for synthetic tests of engine mechanics.
-        # Production callers must pass a manifest; run_preflight() enforces it.
+        # allow_unbacked exists only for undo/recovery paths that independently
+        # re-verify the apply run's recorded backup hash, plus synthetic engine
+        # tests. Production APPLY callers must pass a manifest; run_preflight()
+        # enforces that gate.
         self.allow_unbacked = allow_unbacked
         self.completed: list[dict] = []
         self._started = False
@@ -308,6 +311,24 @@ class MutationEngine:
                         f"verified backup for {source} records {backup_sha}, but the file on disk "
                         f"is now {actual} -- it changed after the backup was taken"
                     )
+                # A PASS manifest proves that this copy existed and matched
+                # when verification ran. Re-check the real copy immediately
+                # before this mutation as well: the backup may have been
+                # moved, removed, or damaged after the manifest was written.
+                # Recording the concrete path also makes crash recovery
+                # actionable instead of merely naming a backup id/hash.
+                manifest_backup = (
+                    Path(self.manifest["backup_root"])
+                    / source.resolve().relative_to(self.source_root.resolve())
+                )
+                if not manifest_backup.is_file():
+                    raise MutationRefused(f"per-item backup copy missing: {manifest_backup}")
+                if sha256_file(manifest_backup) != actual:
+                    raise MutationRefused(
+                        f"per-item backup copy no longer matches manifest evidence: {manifest_backup}"
+                    )
+                if backup_path is None:
+                    backup_path = manifest_backup
             elif not self.allow_unbacked:
                 raise MutationRefused(
                     f"no backup manifest available to authorize mutating {source}"
@@ -316,8 +337,13 @@ class MutationEngine:
             backup_path = Path(backup_path)
             if not backup_path.is_file():
                 raise MutationRefused(f"per-item backup copy missing: {backup_path}")
-            if sha256_file(backup_path) != actual:
+            backup_path_sha = sha256_file(backup_path)
+            if backup_path_sha != actual:
                 raise MutationRefused(f"per-item backup copy hash mismatch: {backup_path}")
+            if backup_sha is not None and backup_path_sha != backup_sha:
+                raise MutationRefused(
+                    f"per-item backup copy no longer matches manifest evidence: {backup_path}"
+                )
 
         intent = {
             "type": "intent",

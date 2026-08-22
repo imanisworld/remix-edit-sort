@@ -32,6 +32,7 @@ from datetime import datetime
 from pathlib import Path
 
 from mutagen.id3 import ID3, ID3NoHeaderError, TPE1, TIT2
+from mutagen.wave import WAVE
 
 import backup_manifest
 import lock_guard
@@ -50,8 +51,30 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _wav_data_chunk(data: bytes) -> bytes:
+    """Return the raw PCM bytes from a WAV's 'data' RIFF chunk, ignoring
+    every other chunk (fmt , LIST/INFO, id3 , cue , etc.) -- those carry
+    metadata, not audio, and are exactly what an Artist/Title write touches."""
+    if data[:4] != b"RIFF" or data[8:12] != b"WAVE":
+        raise RuntimeError("not a RIFF/WAVE file")
+    pos, end = 12, len(data)
+    while pos + 8 <= end:
+        chunk_id = data[pos:pos + 4]
+        size = int.from_bytes(data[pos + 4:pos + 8], "little")
+        body_start = pos + 8
+        body_end = body_start + size
+        if body_end > end:
+            raise RuntimeError(f"truncated WAV chunk {chunk_id!r}")
+        if chunk_id == b"data":
+            return data[body_start:body_end]
+        pos = body_end + (size & 1)  # chunks are word-aligned
+    raise RuntimeError("no data chunk found")
+
+
 def audio_payload(path: Path) -> bytes:
     data = path.read_bytes()
+    if path.suffix.casefold() == ".wav":
+        return _wav_data_chunk(data)
     start, end = 0, len(data)
     if data[:3] == b"ID3" and len(data) >= 10:
         size = ((data[6] & 127) << 21) | ((data[7] & 127) << 14) | ((data[8] & 127) << 7) | (data[9] & 127)
@@ -120,7 +143,39 @@ class SeratoEncodingOnlyChange(Exception):
     pass
 
 
+def _load_tags(path: Path) -> tuple[ID3, int]:
+    """Return (tags, id3_version) for either a bare-ID3 file (mp3) or a
+    RIFF-wrapped one (wav), always as a real ID3 object so serato_digest()/
+    serato_payload_digest() (which iterate tags.values()) work unchanged.
+    An untagged file gets a fresh empty ID3() -- nothing to iterate, and
+    version defaults to 4 (matches read_artist_title's untagged default)."""
+    if path.suffix.casefold() == ".wav":
+        w = WAVE(path)
+        if w.tags is None:
+            return ID3(), 4
+        return w.tags, w.tags.version[1]
+    try:
+        tags = ID3(path)
+        return tags, tags.version[1]
+    except ID3NoHeaderError:
+        return ID3(), 4
+
+
 def read_artist_title(path: Path) -> tuple[str, str, int]:
+    # .wav is RIFF-wrapped: its ID3 chunk lives inside the RIFF container, not
+    # at byte 0. mutagen.id3.ID3(path) doesn't know that -- for an untagged
+    # WAV it raises, but for a TAGGED one it can misread the RIFF header as
+    # garbage. mutagen.wave.WAVE(path) understands the container and exposes
+    # the same ID3-shaped .tags either way.
+    if path.suffix.casefold() == ".wav":
+        w = WAVE(path)
+        if w.tags is None:
+            return "", "", 4
+        artist_frames = w.tags.getall("TPE1")
+        title_frames = w.tags.getall("TIT2")
+        artist = str(artist_frames[0]).strip() if artist_frames else ""
+        title = str(title_frames[0]).strip() if title_frames else ""
+        return artist, title, w.tags.version[1]
     try:
         tags = ID3(path)
     except ID3NoHeaderError:
@@ -133,11 +188,30 @@ def read_artist_title(path: Path) -> tuple[str, str, int]:
 
 
 def write_artist_title(path: Path, artist: str, title: str, version: int) -> None:
+    if version not in {3, 4}:
+        raise RuntimeError(
+            f"ID3v2.{version} is not writable without an upgrade; refusing to change {path}"
+        )
+    encoding = 3 if version == 4 else 1
+    if path.suffix.casefold() == ".wav":
+        # Writing via a bare mutagen.id3.ID3() and calling .save(path) treats
+        # the file as a raw ID3 stream and PREPENDS the tag at byte 0 --
+        # clobbering the "RIFF....WAVE" header a WAV file requires. The WAVE
+        # wrapper knows to embed the tag as a proper RIFF "id3 " sub-chunk
+        # instead, leaving the container structure intact.
+        w = WAVE(path)
+        if w.tags is None:
+            w.add_tags()
+        w.tags.delall("TPE1")
+        w.tags.add(TPE1(encoding=encoding, text=[artist]))
+        w.tags.delall("TIT2")
+        w.tags.add(TIT2(encoding=encoding, text=[title]))
+        w.save(path, v2_version=version)
+        return
     try:
         tags = ID3(path)
     except ID3NoHeaderError:
         tags = ID3()
-    encoding = 3 if version == 4 else 1
     tags.delall("TPE1")
     tags.add(TPE1(encoding=encoding, text=[artist]))
     tags.delall("TIT2")
@@ -152,18 +226,32 @@ def load_and_validate(plan_path: Path) -> tuple[dict, list[dict]]:
     items = plan["items"]
 
     errors = []
+    seen_paths = set()
     for item in items:
-        path = Path(item["path"])
+        missing = [key for key in (
+            "path", "sha256", "current_artist", "current_title",
+            "proposed_artist", "proposed_title",
+        ) if key not in item]
+        if missing:
+            errors.append(f"plan item missing required field(s): {', '.join(missing)}")
+            continue
+        path = Path(item["path"]).resolve()
+        item["path"] = str(path)
+        if path in seen_paths:
+            errors.append(f"duplicate path in plan: {path}")
+            continue
+        seen_paths.add(path)
+        if path.suffix.casefold() not in {".mp3", ".wav"}:
+            errors.append(f"unsupported Artist/Title format: {path}")
+            continue
         if not path.is_file():
             errors.append(f"missing file: {path}")
             continue
-        if path.suffix.casefold() == ".mp3" and item.get("id3_version") is None:
-            try:
-                tags = ID3(path)
-                item["id3_version"] = tags.version[1]
-            except ID3NoHeaderError:
-                item["id3_version"] = 4
-        current_artist, current_title, _ = read_artist_title(path)
+        if sha256_file(path) != item["sha256"]:
+            errors.append(f"file hash changed since preview: {path}")
+            continue
+        current_artist, current_title, id3_version = read_artist_title(path)
+        item["id3_version"] = id3_version
         if current_artist != item["current_artist"] or current_title != item["current_title"]:
             errors.append(
                 f"Artist/Title changed since preview: {path}: "
@@ -185,6 +273,7 @@ def apply(plan_path: Path, manifest: dict, backup: Path, backup_relative_to: Pat
     )
     engine.start({"plan": str(plan_path), "items": len(items)})
     completed = []
+    skipped_id3v22 = []
     skipped_encoding_only = []
 
     for index, item in enumerate(items, start=1):
@@ -200,6 +289,7 @@ def apply(plan_path: Path, manifest: dict, backup: Path, backup_relative_to: Pat
             index,
             kind=mutation_engine.ARTIST_TITLE,
             source=path,
+            expected_sha256=item["sha256"],
             backup_path=backup_copy,
             extra_intent={
                 "current_artist": item["current_artist"], "current_title": item["current_title"],
@@ -212,10 +302,15 @@ def apply(plan_path: Path, manifest: dict, backup: Path, backup_relative_to: Pat
                 mutation_engine.restore_from_backup(b, p, h)
             )
             before_audio = sha256_bytes(audio_payload(path))
-            before_tags = ID3(path)
+            before_tags, version = _load_tags(path)
             before_serato = serato_digest(before_tags)
             before_serato_payload = serato_payload_digest(before_tags)
-            version = before_tags.version[1]
+
+            if version == 2:
+                reason = "ID3v2.2 preserved; Artist/Title metadata write skipped"
+                skipped_id3v22.append({"path": str(path), "reason": reason})
+                txn.record(tag_skipped=True, reason=reason)
+                continue
 
             try:
                 write_artist_title(path, item["proposed_artist"], item["proposed_title"], version)
@@ -227,7 +322,7 @@ def apply(plan_path: Path, manifest: dict, backup: Path, backup_relative_to: Pat
                     raise RuntimeError("ID3 version changed")
                 if sha256_bytes(audio_payload(path)) != before_audio:
                     raise RuntimeError("audio payload changed")
-                after_tags = ID3(path)
+                after_tags, _ = _load_tags(path)
                 if serato_digest(after_tags) != before_serato:
                     if serato_payload_digest(after_tags) == before_serato_payload:
                         raise SeratoEncodingOnlyChange(
@@ -270,11 +365,14 @@ def apply(plan_path: Path, manifest: dict, backup: Path, backup_relative_to: Pat
         "verified_backup": str(backup),
         "tracks_in_plan": len(items),
         "tags_changed": len(completed),
+        "tags_skipped_id3v22": skipped_id3v22,
         "skipped_serato_encoding_only": skipped_encoding_only,
         "audio_payloads_changed": 0,
         "serato_frames_changed": 0,
         "undo_log": str(undo_path),
+        "recovery_journal": str(journal_path),
     }
+    engine.finish(result)
     result_path.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(json.dumps({**result, "result_path": str(result_path)}, indent=2))
 
@@ -390,15 +488,15 @@ def main() -> None:
             raise SystemExit(f"REFUSING TO MUTATE: {exc}") from exc
         apply(args.plan, manifest, args.backup.resolve(), args.backup_relative_to.resolve(), out_dir, args.label, heartbeat)
     else:
-        plan, items = load_and_validate(args.plan, args.backup.resolve()) if args.backup else (
-            json.loads(args.plan.read_text(encoding="utf-8")), None
-        )
-        items = items if items is not None else plan["items"]
+        plan, items = load_and_validate(args.plan)
         print(
             json.dumps(
                 {
                     "mode": "dry-run",
                     "tracks": len(items),
+                    "id3v22_tag_writes_would_be_skipped": sum(
+                        item.get("id3_version") == 2 for item in items
+                    ),
                     "backup_gate": _dry_run_backup_gate(args.backup_manifest, args.backup_relative_to.resolve() if args.backup_relative_to else None),
                     "changes_made": 0,
                 },

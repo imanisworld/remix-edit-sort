@@ -46,6 +46,8 @@ import os, re, sys, json, argparse, collections
 
 try:
     from mutagen.id3 import ID3, ID3NoHeaderError, TIT2, TPE1
+    from mutagen.flac import FLAC
+    from mutagen.mp4 import MP4
 except ImportError:
     sys.exit("mutagen is required:  python3 -m pip install --user mutagen")
 
@@ -182,12 +184,35 @@ def rebuild(stem):
 
 
 def read_tag_pair(path):
+    """-> (title, artist), both always strings (never None) so downstream
+    boolean logic never has to deal with tri-state truthiness. Supports the
+    three formats this library actually holds; anything else / anything
+    unreadable comes back as ("", "") -- indistinguishable from "no tags",
+    which is the correct, conservative read for a field we can't inspect."""
+    suffix = os.path.splitext(path)[1].lower()
+
+    def first_text(values):
+        if not values:
+            return ""
+        value = values[0]
+        if value is None:
+            return ""
+        return str(value)
+
     try:
-        t = ID3(path)
+        if suffix == ".mp3":
+            t = ID3(path)
+            g = lambda k: (str(t.getall(k)[0]) if t.getall(k) else "")
+            return g("TIT2"), g("TPE1")
+        if suffix == ".flac":
+            t = FLAC(path)
+            return first_text(t.get("title", [])), first_text(t.get("artist", []))
+        if suffix == ".m4a":
+            t = MP4(path)
+            return first_text(t.get("\xa9nam", [])), first_text(t.get("\xa9ART", []))
     except Exception:
-        return None, None, None
-    g = lambda k: (str(t.getall(k)[0]) if t.getall(k) else "")
-    return t, g("TIT2"), g("TPE1")
+        return "", ""
+    return "", ""
 
 
 def main():
@@ -218,7 +243,7 @@ def main():
             stem, ext = os.path.splitext(f)
             new_stem, new_title, new_artist = rebuild(stem)
             src = os.path.join(dirpath, f)
-            _, cur_title, cur_artist = read_tag_pair(src)
+            cur_title, cur_artist = read_tag_pair(src)
             name_changed = new_stem != stem
             # keep the remix credit in the title tag; only clean it. Same guard
             # as rebuild(): never reduce a title to a bare "(X Edit)".
@@ -228,8 +253,8 @@ def main():
             tag_artist = clean_field(cur_artist, is_title=False) if cur_artist else ""
             if not tag_artist:
                 tag_artist = cur_artist
-            tag_changed = (tag_title and tag_title != cur_title) or \
-                          (tag_artist and tag_artist != cur_artist)
+            tag_changed = bool((tag_title and tag_title != cur_title) or
+                                (tag_artist and tag_artist != cur_artist))
             if name_changed or tag_changed:
                 changes.append({
                     "path": src, "old_name": f, "new_name": new_stem + ext,

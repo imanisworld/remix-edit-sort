@@ -155,6 +155,39 @@ class PreconditionTests(EngineTestCase):
                 self.fail("body must not run")
         self.assertIn("hash mismatch", str(ctx.exception))
 
+    def test_manifest_backup_is_rechecked_immediately_before_each_mutation(self):
+        """A once-valid manifest cannot authorize a vanished live backup."""
+        engine = self.engine()
+        engine.start({})
+        path = self.paths["one.mp3"]
+        (self.backup / "one.mp3").unlink()
+        with self.assertRaises(mutation_engine.MutationRefused) as ctx:
+            with engine.item(1, kind=mutation_engine.GENRE, source=path):
+                self.fail("body must not run without the real backup copy")
+        self.assertIn("backup copy missing", str(ctx.exception))
+
+    def test_manifest_backup_changed_after_verification_is_refused(self):
+        engine = self.engine()
+        engine.start({})
+        path = self.paths["one.mp3"]
+        (self.backup / "one.mp3").write_bytes(b"damaged after manifest verification")
+        with self.assertRaises(mutation_engine.MutationRefused) as ctx:
+            with engine.item(1, kind=mutation_engine.GENRE, source=path):
+                self.fail("body must not run with a damaged backup copy")
+        self.assertIn("no longer matches manifest evidence", str(ctx.exception))
+
+    def test_manifest_backup_path_is_written_into_recovery_intent(self):
+        engine = self.engine()
+        engine.start({})
+        path = self.paths["one.mp3"]
+        with engine.item(1, kind=mutation_engine.METADATA, source=path) as txn:
+            txn.record(noop=True)
+        intent = next(r for r in self.journal_records() if r.get("type") == "intent")
+        self.assertEqual(
+            Path(intent["backup_path"]).resolve(), (self.backup / "one.mp3").resolve()
+        )
+        self.assertEqual(intent["backup_sha256"], mutation_engine.sha256_file(path))
+
 
 class HeartbeatTests(EngineTestCase):
     def test_every_item_heartbeats(self):

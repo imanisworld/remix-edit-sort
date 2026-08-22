@@ -426,6 +426,10 @@ def apply(
 
             if item["move"]:
                 destination.parent.mkdir(parents=True, exist_ok=True)
+                # A tag save and relocation are two physical production
+                # mutations when both are requested. The engine heartbeats
+                # at item entry; renew immediately before this second one.
+                heartbeat.beat()
                 os.rename(source, destination)
                 moved = True
                 txn.mark_mutated()
@@ -537,6 +541,7 @@ def undo(undo_path: Path, label: str, heartbeat: lock_guard.LockHeartbeat) -> No
                 backup = Path(record["tag_backup"])
                 if sha256_file(backup) != record["before_sha256"]:
                     raise RuntimeError(f"tag backup mismatch: {backup}")
+                heartbeat.beat()
                 shutil.copy2(backup, source)
                 txn.mark_mutated()
             if sha256_file(source) != record["before_sha256"]:

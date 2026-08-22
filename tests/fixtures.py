@@ -81,7 +81,14 @@ def _synchsafe(value: int) -> bytes:
                   (value >> 7) & 0x7F, value & 0x7F))
 
 
-def write_id3v22_mp3(path: Path, seed: int = 0, genre: str = "", title: str = "", grouping: str = "") -> Path:
+def write_id3v22_mp3(
+    path: Path,
+    seed: int = 0,
+    genre: str = "",
+    title: str = "",
+    artist: str = "",
+    grouping: str = "",
+) -> Path:
     """Write a real ID3v2.2 file by hand.
 
     mutagen refuses to SAVE v2.2 ("Only 3 or 4 allowed for v2_version"), which
@@ -95,7 +102,9 @@ def write_id3v22_mp3(path: Path, seed: int = 0, genre: str = "", title: str = ""
     4-byte sizes.
     """
     frames = bytearray()
-    for frame_id, text in (("TCO", genre), ("TT2", title), ("TT1", grouping)):
+    for frame_id, text in (
+        ("TCO", genre), ("TT2", title), ("TP1", artist), ("TT1", grouping),
+    ):
         if not text:
             continue
         body = b"\x00" + text.encode("latin-1", "replace")

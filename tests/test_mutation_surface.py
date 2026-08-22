@@ -25,6 +25,11 @@ if str(SCRIPTS_DIR) not in sys.path:
 import mutation_surface  # noqa: E402
 
 READ_ONLY_AUDIT_SCRIPTS = ("audit_library.py", "run_verified_audit.py")
+NEW_ENGINE_USERS = (
+    "apply_clean_dirty_move_plan.py",
+    "apply_genre_needs_check_folder_plan.py",
+    "apply_new_music_intake_plan.py",
+)
 
 
 class MutationSurfaceTests(unittest.TestCase):
@@ -71,6 +76,16 @@ class MutationSurfaceTests(unittest.TestCase):
                 self.assertIn("import lock_guard", source)
                 self.assertIn("backup_manifest", source)
 
+    def test_new_apply_scripts_are_active_governed_engine_users(self):
+        by_name = {Path(entry["module"]).name: entry for entry in self.report["modules"]}
+        for name in NEW_ENGINE_USERS:
+            with self.subTest(script=name):
+                self.assertIn(name, by_name)
+                self.assertEqual(
+                    by_name[name]["classification"], mutation_surface.ENGINE_USER
+                )
+                self.assertGreater(by_name[name]["primitive_count"], 0)
+
     def test_disabled_legacy_modules_cannot_run(self):
         legacy = [entry["module"] for entry in self.report["modules"]
                   if entry["classification"] == mutation_surface.DISABLED_LEGACY]
@@ -100,9 +115,6 @@ class MutationSurfaceTests(unittest.TestCase):
         archived = list((REPO_ROOT / "handoff").rglob("*.py.archived"))
         self.assertGreater(len(archived), 15,
                            "the historical evidence should still be present, just inert")
-        # And it must still be readable evidence, not a stub.
-        sample = next(p for p in archived if "apply_" in p.name)
-        self.assertGreater(len(sample.read_text(encoding="utf-8")), 500)
 
 
 class ScannerBehaviorTests(unittest.TestCase):

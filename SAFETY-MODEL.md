@@ -16,16 +16,22 @@ any of them.
 2. **Lock is mandatory.** The run must own a non-stale `folder_lock.py` lock on
    the named library folder, verified atomically inside the folder mutex.
 3. **Heartbeat before every mutation.** Ownership is re-verified before each
-   individual item, not once at startup. Losing the lock stops the run before
-   its next write.
+   individual item, not once at startup. A compound tag+move item renews again
+   before its second physical production mutation. Losing the lock stops the
+   run before its next write.
 4. **Backup manifest is mandatory.** A `backup_manifest.py` manifest that says
    PASS, covers this exact source root, is unaltered, and contains per-file
-   evidence for the specific file about to be mutated.
+   evidence for the specific file about to be mutated. The engine also
+   re-hashes the actual backup copy immediately before that item and records
+   its concrete path in the recovery journal.
 5. **Write-ahead recovery.** A durable, fsync'd intent record is on disk before
    the mutation, and a completion record after it. A crash in between is
    recoverable.
 
-Undo paths are mutations. All five apply to them too.
+Undo paths are mutations too: they require the lock, per-operation heartbeat,
+write-ahead journal, and a recorded backup whose SHA-256 is rechecked before
+restore. They consume the verified per-item backup recorded by the apply run;
+they do not fabricate or trust an unverified restore path.
 
 ## Non-negotiable content rules
 
@@ -63,6 +69,9 @@ Undo paths are mutations. All five apply to them too.
 | `apply_year_bpm_plan.py` | engine-user | Year/BPM. |
 | `apply_genre_refinement_plan.py` | engine-user | Genre refinement. |
 | `apply_needs_check_recheck_genre_plan.py` | engine-user | Genre recheck across several locked folders. |
+| `apply_genre_needs_check_folder_plan.py` | engine-user | Folder-scoped Genre recheck from a hashed survey. |
+| `apply_clean_dirty_move_plan.py` | engine-user | Clean/Dirty relocation plus additive Grouping. |
+| `apply_new_music_intake_plan.py` | engine-user | One-save Genre/Grouping intake metadata transaction. |
 | `delete_verified_duplicates.py` | engine-user | Manual EXACT_DUPLICATE deletion. |
 | `apply_plan.py` | disabled-legacy | Hard-disabled. Read-only `--report` only. |
 | `merge_events_duplicates.py` | disabled-legacy | Hard-disabled completed one-off. |
