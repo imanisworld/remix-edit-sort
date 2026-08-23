@@ -553,6 +553,102 @@ class IntakeLaneTests(_LaneCase):
         self.assertEqual(item["grouping_fix"]["add_terms"], ["Dirty"])
 
 
+class ScopeConstructionTests(_LaneCase):
+    """Scope roots must be disjoint folder subtrees (regression for the
+    nested S011/S012 scopes found in metadata-mp3-cleandirty-20260823-174725,
+    where a candidate folder contained another candidate folder)."""
+
+    def assert_disjoint(self, scopes):
+        roots = [Path(scope["source_root"]).resolve() for scope in scopes]
+        for i, left in enumerate(roots):
+            for right in roots[i + 1:]:
+                self.assertNotEqual(left, right)
+                self.assertFalse(right.is_relative_to(left), (left, right))
+                self.assertFalse(left.is_relative_to(right), (left, right))
+
+    def test_parent_and_child_candidate_folders_coalesce_into_one_scope(self):
+        make_library(self.library, [
+            {"relative": "Events/Funk/DIRTY/Funk & Soul/one.mp3",
+             "genre": "Funk", "title": "One", "v2_version": 3},
+            {"relative": "Events/Funk/DIRTY/Funk & Soul/REMIXES/two.mp3",
+             "genre": "Funk", "title": "Two", "v2_version": 3},
+        ])
+        master = prepare_metadata_batch.prepare(
+            self.library, self.serato, self.handoff, 150, "mp3", lane="clean-dirty"
+        )
+        self.assertEqual(master["candidate_count"], 2)
+        self.assertEqual(len(master["scopes"]), 1)
+        self.assert_disjoint(master["scopes"])
+        scope = master["scopes"][0]
+        self.assertEqual(
+            Path(scope["source_root"]).resolve(),
+            (self.library / "Events/Funk/DIRTY/Funk & Soul").resolve(),
+        )
+        plan = json.loads(Path(scope["plan_path"]).read_text(encoding="utf-8"))
+        self.assertEqual(len(plan["items"]), 2)
+        # The recorded candidate order must still follow the selection key.
+        key = lambda row: (row["preference"], row["scope_root"].casefold(), row["path"].casefold())
+        keys = [key(row) for row in master["candidates"]]
+        self.assertEqual(keys, sorted(keys))
+
+    def test_three_level_nesting_anchors_to_the_shallowest_folder(self):
+        make_library(self.library, [
+            {"relative": "Hip Hop/DIRTY/a.mp3", "genre": "Hip-Hop", "v2_version": 3},
+            {"relative": "Hip Hop/DIRTY/SUB/b.mp3", "genre": "Hip-Hop", "v2_version": 3},
+            {"relative": "Hip Hop/DIRTY/SUB/DEEPER/c.mp3", "genre": "Hip-Hop", "v2_version": 3},
+        ])
+        master = prepare_metadata_batch.prepare(
+            self.library, self.serato, self.handoff, 150, "mp3", lane="clean-dirty"
+        )
+        self.assertEqual(master["candidate_count"], 3)
+        self.assertEqual(len(master["scopes"]), 1)
+        self.assert_disjoint(master["scopes"])
+        self.assertEqual(
+            Path(master["scopes"][0]["source_root"]).resolve(),
+            (self.library / "Hip Hop/DIRTY").resolve(),
+        )
+
+    def test_genre_lane_nested_needs_check_folders_coalesce(self):
+        make_library(self.library, [
+            {"relative": "Juke/_GENRE NEEDS CHECK/a.mp3",
+             "genre": "house", "v2_version": 3},
+            {"relative": "Juke/_GENRE NEEDS CHECK/SUB/b.mp3",
+             "genre": "house", "v2_version": 3},
+        ])
+        master = prepare_metadata_batch.prepare(
+            self.library, self.serato, self.handoff, 150, "mp3", genre_only=True,
+        )
+        self.assertEqual(master["candidate_count"], 2)
+        self.assertEqual(len(master["scopes"]), 1)
+        self.assert_disjoint(master["scopes"])
+
+    def test_disjoint_sibling_folders_stay_separate_scopes(self):
+        make_library(self.library, [
+            {"relative": "Hip Hop/DIRTY/a.mp3", "genre": "Hip-Hop", "v2_version": 3},
+            {"relative": "R&B/DIRTY/b.mp3", "genre": "R&B", "v2_version": 3},
+        ])
+        master = prepare_metadata_batch.prepare(
+            self.library, self.serato, self.handoff, 150, "mp3", lane="clean-dirty"
+        )
+        self.assertEqual(master["candidate_count"], 2)
+        self.assertEqual(len(master["scopes"]), 2)
+        self.assert_disjoint(master["scopes"])
+
+    def test_fail_closed_check_refuses_surviving_overlap(self):
+        with self.assertRaises(metadata_batch.BatchRefused):
+            prepare_metadata_batch._refuse_overlapping_scope_roots(
+                [str(self.library / "X"), str(self.library / "X" / "SUB")]
+            )
+        with self.assertRaises(metadata_batch.BatchRefused):
+            prepare_metadata_batch._refuse_overlapping_scope_roots(
+                [str(self.library / "X"), str(self.library / "X")]
+            )
+        # Disjoint siblings pass untouched.
+        prepare_metadata_batch._refuse_overlapping_scope_roots(
+            [str(self.library / "X"), str(self.library / "Y")]
+        )
+
+
 class LaneGovernanceTests(unittest.TestCase):
     def test_lane_discovery_added_no_mutation_primitives(self):
         report = mutation_surface.audit(REPO_ROOT)

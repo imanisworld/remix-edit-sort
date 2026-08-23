@@ -230,6 +230,41 @@ def _select_stable(candidates: list[dict], exclusions: Counter, maximum: int) ->
     return selected, exclusions
 
 
+def _coalesce_nested_scope_roots(rows: list[dict]) -> list[dict]:
+    """Scope roots must be disjoint folder subtrees.
+
+    A scope's backup and post-apply verification walk its source root
+    recursively, so a scope root nested inside another scope's root would
+    place the same subtree under two scopes. Reassign every candidate to
+    the shallowest selected ancestor folder, then re-sort with the
+    selection key so the recorded candidate order stays deterministic.
+    """
+    roots = {row["scope_root"] for row in rows}
+    anchors: dict[str, str] = {}
+    for root in roots:
+        anchor = root
+        for ancestor in Path(root).parents:
+            if str(ancestor) in roots:
+                # parents iterate upward, so the last match is the shallowest.
+                anchor = str(ancestor)
+        anchors[root] = anchor
+    for row in rows:
+        row["scope_root"] = anchors[row["scope_root"]]
+    rows.sort(key=lambda row: (row["preference"], row["scope_root"].casefold(), row["path"].casefold()))
+    return rows
+
+
+def _refuse_overlapping_scope_roots(scope_roots: list[str]) -> None:
+    """Fail closed: refuse PREPARE if any scope root equals or contains another."""
+    resolved = [(Path(root).resolve(), root) for root in scope_roots]
+    for i, (left, left_raw) in enumerate(resolved):
+        for right, right_raw in resolved[i + 1:]:
+            if left == right or right.is_relative_to(left) or left.is_relative_to(right):
+                raise metadata_batch.BatchRefused(
+                    f"scope roots overlap: {left_raw!r} and {right_raw!r} are not disjoint"
+                )
+
+
 def discover(library_root: Path, serato_root: Path, maximum: int,
             genre_only: bool = False) -> tuple[list[dict], Counter]:
     rules = classifier.load_genre_rules(None)
@@ -713,9 +748,11 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
             rows, exclusions = discover(library_root, serato_root, maximum, genre_only=genre_only)
         if not rows:
             raise metadata_batch.BatchRefused("no eligible deterministic MP3 candidates were found")
+        rows = _coalesce_nested_scope_roots(rows)
         grouped: dict[str, list[dict]] = defaultdict(list)
         for row in rows:
             grouped[row["scope_root"]].append(row)
+        _refuse_overlapping_scope_roots(list(grouped))
         scopes: dict[str, dict] = {}
         plans_dir = batch_dir / "plans"
         plans_dir.mkdir()
