@@ -100,6 +100,8 @@ INFRASTRUCTURE_ALLOWLIST = {
         "unlink() targets only the temporary .wav it decoded for analysis",
     "scripts/lock_guard.py":
         "no primitives of its own; renews coordination locks via folder_lock",
+    "scripts/metadata_batch.py":
+        "atomically writes only repo handoff/T5 evidence and copies full scopes only to confined T5 backups",
 }
 
 # Attribute-style primitives: matched on the attribute name of the call.

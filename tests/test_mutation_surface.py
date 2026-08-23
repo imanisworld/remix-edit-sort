@@ -29,6 +29,7 @@ NEW_ENGINE_USERS = (
     "apply_clean_dirty_move_plan.py",
     "apply_genre_needs_check_folder_plan.py",
     "apply_new_music_intake_plan.py",
+    "apply_approved_batch.py",
 )
 
 
@@ -84,7 +85,16 @@ class MutationSurfaceTests(unittest.TestCase):
                 self.assertEqual(
                     by_name[name]["classification"], mutation_surface.ENGINE_USER
                 )
-                self.assertGreater(by_name[name]["primitive_count"], 0)
+                if name != "apply_approved_batch.py":
+                    self.assertGreater(by_name[name]["primitive_count"], 0)
+
+    def test_batch_storage_is_allowlisted_infrastructure(self):
+        by_name = {Path(entry["module"]).name: entry for entry in self.report["modules"]}
+        self.assertEqual(
+            by_name["metadata_batch.py"]["classification"],
+            mutation_surface.INFRASTRUCTURE,
+        )
+        self.assertGreater(by_name["metadata_batch.py"]["primitive_count"], 0)
 
     def test_disabled_legacy_modules_cannot_run(self):
         legacy = [entry["module"] for entry in self.report["modules"]
@@ -102,6 +112,7 @@ class MutationSurfaceTests(unittest.TestCase):
             "scripts/delete_verified_duplicates.py",  # manual, EXACT_DUPLICATE only
             "scripts/folder_lock.py",                 # removes its own lock files
             "scripts/detect_bpm.py",                  # removes its own temp wav
+            "scripts/metadata_batch.py",              # removes only a failed owned atomic-write temp file
         }
         offenders = sorted({entry["module"] for entry in self.report["deletion_primitives"]}
                            - allowed)

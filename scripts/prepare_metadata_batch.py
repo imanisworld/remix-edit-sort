@@ -1,0 +1,520 @@
+#!/usr/bin/env python3
+"""Prepare or durably approve a fail-closed MP3 metadata batch.
+
+Preparation is read-only against music and Serato.  It writes review evidence,
+an immutable master manifest, and inert per-scope plans under ``handoff/``.
+Approval is a separate explicit command bound to the reported master SHA.
+"""
+from __future__ import annotations
+
+SAFETY_CLASSIFICATION = "preview-only"
+
+import argparse
+import csv
+import json
+import os
+import re
+from collections import Counter, defaultdict
+from datetime import datetime
+from pathlib import Path
+
+from mutagen.id3 import ID3, ID3NoHeaderError
+
+import apply_new_music_intake_plan as intake
+import build_version_genre_plan as classifier
+import metadata_batch
+
+DEFAULT_LIBRARY = Path("/Users/djb.a.e/Music/DJ-Music/Music")
+DEFAULT_SERATO = Path("/Users/djb.a.e/Music/_Serato_")
+HOLD_WORDS = {
+    "Radio Edit": re.compile(r"\bradio\s+edit\b", re.I),
+    "Flip": re.compile(r"\bflip\b", re.I),
+    "ReWork": re.compile(r"\bre[- ]?work\b", re.I),
+}
+NEW_TERM_ORDER = {
+    "Old Head": 10, "Plex": 10, "Lounge": 10, "Kids": 10,
+    "Line Dance": 10, "Holiday": 10, "Christmas": 10, "Halloween": 10,
+    "Top 40": 10, "Clean": 20, "Dirty": 20, "Acapella": 30,
+    "Instrumental": 30, "Original": 30, "Remix": 40, "Edit": 40,
+    "Mashup": 40, "Blend": 40, "Re-Drum": 40, "Transition Edit": 40,
+    "Intro Edit": 40, "Outro Edit": 40, "Extended": 40, "Bootleg": 40,
+}
+FIELD_NAMES = {9: "Genre", 19: "Grouping"}
+
+
+def _text_frame(tags: ID3, frame_id: str) -> str:
+    frames = tags.getall(frame_id)
+    if not frames:
+        return ""
+    values = getattr(frames[0], "text", [])
+    return str(values[0]).strip() if values else ""
+
+
+def read_track(path: Path) -> dict:
+    try:
+        tags = ID3(path)
+    except ID3NoHeaderError as exc:
+        raise metadata_batch.BatchRefused(f"MP3 has no ID3 header: {path}") from exc
+    grouping, major = intake.read_grouping(path)
+    return {
+        "path": str(path.resolve()),
+        "sha256": intake.sha256_file(path),
+        "bytes": path.stat().st_size,
+        "mtime_ns": path.stat().st_mtime_ns,
+        "id3_version": f"2.{major}",
+        "id3_major": major,
+        "artist": _text_frame(tags, "TPE1"),
+        "title": _text_frame(tags, "TIT2"),
+        "genre": intake.read_genre(path),
+        "grouping": grouping,
+        "audio_payload_sha256": intake.sha256_bytes(intake.audio_payload(path)),
+        "serato_frames_sha256": intake.serato_digest(path),
+    }
+
+
+def _meaning_tokens(value: str) -> list[str]:
+    text = value.casefold()
+    text = re.sub(r"r\s*&\s*b", "rnb", text)
+    parts = re.split(r"\s*[;,]\s*|\s+&\s+", text)
+    return [re.sub(r"[^a-z0-9]+", "", part) for part in parts if re.sub(r"[^a-z0-9]+", "", part)]
+
+
+def formatting_only(old: str, new: str) -> bool:
+    """True only when serialization/case/spacing changed, not musical meaning."""
+    return _meaning_tokens(old) == _meaning_tokens(new)
+
+
+def _tlvs(data: bytes):
+    pos = 0
+    while pos + 8 <= len(data):
+        key = data[pos:pos + 4].decode("ascii", "replace")
+        size = int.from_bytes(data[pos + 4:pos + 8], "big")
+        end = pos + 8 + size
+        if size < 0 or end > len(data):
+            break
+        yield key, data[pos + 8:end]
+        pos = end
+
+
+def _utf16(payload: bytes) -> str:
+    try:
+        return payload.decode("utf-16-be").rstrip("\x00")
+    except UnicodeDecodeError:
+        return ""
+
+
+def parse_smart_crates(serato_root: Path) -> list[dict]:
+    """Read just the Genre/Grouping string rules from production .scrate files."""
+    result = []
+    smart_root = Path(serato_root) / "SmartCrates"
+    if not smart_root.is_dir():
+        raise metadata_batch.BatchRefused(f"Smart Crate directory is missing: {smart_root}")
+    for crate in sorted(smart_root.glob("*.scrate")):
+        top = list(_tlvs(crate.read_bytes()))
+        bools = [payload[-1] for key, payload in top if key == "rart" and payload]
+        match_all = bool(bools and bools[0])
+        for key, payload in top:
+            if key != "rurt":
+                continue
+            children = {child_key: child for child_key, child in _tlvs(payload)}
+            # Serato container keys lose their leading type byte inside rurt:
+            # the on-disk field key is exactly ``urkt`` (not ``rurkt``).
+            field_payload = children.get("urkt", b"")
+            field_id = int.from_bytes(field_payload, "big") if field_payload else -1
+            if field_id not in FIELD_NAMES:
+                continue
+            operator_raw = _utf16(children.get("trft", b""))
+            operator = {
+                "cond_con_str": "contains",
+                "cond_ncon_str": "does not contain",
+                "cond_is_str": "is",
+                "cond_is_not_str": "is not",
+            }.get(operator_raw, operator_raw or "unknown")
+            result.append({
+                "crate": crate.stem,
+                "path": str(crate.resolve()),
+                "field": FIELD_NAMES[field_id],
+                "operator": operator,
+                "value": _utf16(children.get("trpt", b"")),
+                "match_all": match_all,
+            })
+    return result
+
+
+def _matches(value: str, operator: str, needle: str) -> bool | None:
+    value, needle = value.casefold(), needle.casefold()
+    if operator == "contains":
+        return needle in value
+    if operator == "does not contain":
+        return needle not in value
+    if operator == "is":
+        return value == needle
+    if operator == "is not":
+        return value != needle
+    return None
+
+
+def smart_effects(current_genre: str, proposed_genre: str, current_grouping: str,
+                  proposed_grouping: str, rules: list[dict]) -> tuple[list[dict], bool]:
+    effects, genre_changed_membership = [], False
+    for rule in rules:
+        if rule["field"] == "Genre":
+            before, after = current_genre, proposed_genre
+        else:
+            before, after = current_grouping, proposed_grouping
+        old_match = _matches(before, rule["operator"], rule["value"])
+        new_match = _matches(after, rule["operator"], rule["value"])
+        if old_match is None or old_match == new_match:
+            continue
+        effect = "enters rule" if new_match else "exits rule"
+        effects.append({**rule, "effect": effect})
+        if rule["field"] == "Genre":
+            genre_changed_membership = True
+    return effects, genre_changed_membership
+
+
+def _folder_stats(root: Path) -> tuple[int, int]:
+    count = size = 0
+    for dirpath, _, filenames in os.walk(root):
+        for name in filenames:
+            path = Path(dirpath) / name
+            if path.is_file() and not path.is_symlink() and not name.startswith("._") and name != ".DS_Store":
+                count += 1
+                size += path.stat().st_size
+    return count, size
+
+
+def discover(library_root: Path, serato_root: Path, maximum: int) -> tuple[list[dict], Counter]:
+    rules = classifier.load_genre_rules(None)
+    crate_rules = parse_smart_crates(serato_root)
+    exclusions: Counter = Counter()
+    candidates = []
+    for path in sorted(Path(library_root).rglob("*.mp3")):
+        if "_GENRE NEEDS CHECK" not in path.parts:
+            continue
+        try:
+            current = read_track(path)
+        except Exception:
+            exclusions["unreadable MP3/tag"] += 1
+            continue
+        label_text = f"{path.stem} {current['title']}"
+        held = next((label for label, pattern in HOLD_WORDS.items() if pattern.search(label_text)), None)
+        if held:
+            exclusions[held] += 1
+            continue
+        if current["id3_major"] == 2:
+            exclusions["ID3v2.2"] += 1
+            continue
+        if current["id3_major"] not in {3, 4}:
+            exclusions["unsupported ID3 version"] += 1
+            continue
+        if current["genre"].strip().casefold() == "other":
+            exclusions["Other"] += 1
+            continue
+        genre_analysis = classifier.analyze_genre(
+            {"filename": "", "genre": current["genre"]}, rules
+        )
+        if genre_analysis["resolution_status"] != "RESOLVED" or not genre_analysis["proposed_genre"]:
+            exclusions[genre_analysis.get("category", "unknown/unmapped Genre")] += 1
+            continue
+        proposed_genre = genre_analysis["proposed_genre"]
+        genre_change = proposed_genre != current["genre"]
+        if genre_change and not formatting_only(current["genre"], proposed_genre):
+            exclusions["semantic alias mapping held"] += 1
+            continue
+
+        grouping_analysis = classifier.classify_grouping(
+            path.name, current["title"], current["grouping"], rules
+        )
+        if grouping_analysis["review_reasons"]:
+            exclusions[grouping_analysis["review_reasons"][0]] += 1
+            continue
+        additions = sorted(
+            grouping_analysis["add_terms"],
+            key=lambda value: (NEW_TERM_ORDER.get(value, 999), value.casefold()),
+        )
+        specific_edit = {"Intro Edit", "Outro Edit", "Transition Edit"}.intersection(additions)
+        if "Edit" in additions and specific_edit:
+            exclusions["overlapping generic/specific Edit evidence"] += 1
+            continue
+        proposed_grouping_parts = [*current["grouping"], *additions]
+        proposed_grouping = "; ".join(proposed_grouping_parts)
+        current_grouping = "; ".join(current["grouping"])
+        grouping_change = bool(additions)
+        if not genre_change and not grouping_change:
+            exclusions["already normalized / no approved change"] += 1
+            continue
+        effects, genre_dependency = smart_effects(
+            current["genre"], proposed_genre, current_grouping, proposed_grouping, crate_rules
+        )
+        if genre_dependency:
+            exclusions["Smart Crate-dependent Genre spelling held"] += 1
+            continue
+        scope = path.parent.resolve()
+        try:
+            relative = path.resolve().relative_to(Path(library_root).resolve())
+        except ValueError:
+            exclusions["outside library root"] += 1
+            continue
+        top_folder = relative.parts[0]
+        candidates.append({
+            **current,
+            "proposed_genre": proposed_genre,
+            "proposed_grouping": proposed_grouping,
+            "grouping_add_terms": additions,
+            "genre_evidence": genre_analysis["evidence"],
+            "grouping_evidence": grouping_analysis["evidence"],
+            "smart_crate_effects": effects,
+            "scope_root": str(scope),
+            "lock_folder": top_folder,
+            "preference": 0 if genre_change and not grouping_change and len(genre_analysis["recognized_genres"]) == 1 else
+                          1 if genre_change and not grouping_change else
+                          2 if genre_change and grouping_change else 3,
+        })
+
+    candidates.sort(key=lambda row: (row["preference"], row["scope_root"].casefold(), row["path"].casefold()))
+    selected = []
+    for row in candidates:
+        if len(selected) >= maximum:
+            exclusions["eligible but deferred by batch cap"] += 1
+            continue
+        # A second complete read binds only stable live state into the batch.
+        reread = read_track(Path(row["path"]))
+        stable_fields = (
+            "sha256", "bytes", "mtime_ns", "id3_version", "genre", "grouping",
+            "audio_payload_sha256", "serato_frames_sha256",
+        )
+        if any(reread[field] != row[field] for field in stable_fields):
+            exclusions["live state changed during preparation"] += 1
+            continue
+        selected.append(row)
+    return selected, exclusions
+
+
+def _write_preview(batch_dir: Path, batch_id: str, rows: list[dict], exclusions: Counter,
+                   scopes: dict[str, dict]) -> tuple[Path, Path]:
+    md_path = batch_dir / "BATCH-PREVIEW.md"
+    csv_path = batch_dir / "batch-preview.csv"
+    columns = [
+        "path", "sha256", "id3_version", "artist", "title", "current_genre",
+        "proposed_genre", "current_grouping", "proposed_grouping", "genre_evidence",
+        "grouping_evidence", "smart_crate_effects", "backup_scope",
+    ]
+    with csv_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=columns)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({
+                "path": row["path"], "sha256": row["sha256"], "id3_version": row["id3_version"],
+                "artist": row["artist"], "title": row["title"], "current_genre": row["genre"],
+                "proposed_genre": row["proposed_genre"],
+                "current_grouping": "; ".join(row["grouping"]),
+                "proposed_grouping": row["proposed_grouping"],
+                "genre_evidence": row["genre_evidence"],
+                "grouping_evidence": "; ".join(row["grouping_evidence"]) or "none",
+                "smart_crate_effects": json.dumps(row["smart_crate_effects"], ensure_ascii=False),
+                "backup_scope": row["scope_root"],
+            })
+    lines = [
+        f"# Metadata batch {batch_id}", "", "**READ-ONLY REVIEW ARTIFACT — NOT APPROVAL.**", "",
+        f"Candidates: **{len(rows)}**", "",
+        "| # | Track | Genre | Grouping | Evidence | Smart Crate effect | Backup scope |",
+        "|---:|---|---|---|---|---|---|",
+    ]
+    for index, row in enumerate(rows, 1):
+        smart = "; ".join(f"{e['crate']} ({e['field']} {e['effect']})" for e in row["smart_crate_effects"]) or "membership retained"
+        evidence = f"Genre: {row['genre_evidence']}; Grouping: " + ("; ".join(row["grouping_evidence"]) or "no change")
+        lines.append(
+            f"| {index} | `{row['path']}`<br>`{row['sha256']}` · ID3v{row['id3_version']} | "
+            f"`{row['genre'] or '[blank]'}` → `{row['proposed_genre'] or '[blank]'}` | "
+            f"`{'; '.join(row['grouping']) or '[blank]'}` → `{row['proposed_grouping'] or '[blank]'}` | "
+            f"{evidence} | {smart} | `{row['scope_root']}` |"
+        )
+    lines += ["", "## Backup scopes", ""]
+    for scope in scopes.values():
+        lines.append(
+            f"- `{scope['source_root']}` — {scope['full_folder_file_count']} files, "
+            f"{scope['full_folder_bytes'] / 1024**3:.3f} GiB; future T5: `{scope['backup_root']}`"
+        )
+    lines += ["", "## Excluded / ambiguous", ""]
+    lines.extend(f"- {reason}: {count}" for reason, count in sorted(exclusions.items()))
+    md_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return md_path, csv_path
+
+
+def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: int,
+            batch_format: str) -> dict:
+    if batch_format.casefold() != "mp3":
+        raise metadata_batch.BatchRefused("automated lane is MP3-only; FLAC requires its own proven canary")
+    if maximum < 1 or maximum > 150:
+        raise metadata_batch.BatchRefused("--max must be between 1 and 150")
+    library_root, serato_root, handoff_root = map(lambda p: Path(p).resolve(),
+                                                  (library_root, serato_root, handoff_root))
+    if not library_root.is_dir() or not serato_root.is_dir():
+        raise metadata_batch.BatchRefused("library and Serato roots must already exist")
+    batch_id = datetime.now().astimezone().strftime("metadata-mp3-%Y%m%d-%H%M%S")
+    batch_dir = handoff_root / "batches" / batch_id
+    state_path = handoff_root / "current-batch.json"
+    metadata_batch.start_batch(state_path, batch_id, batch_dir, handoff_root=handoff_root)
+    try:
+        batch_dir.mkdir(parents=True, exist_ok=False)
+        rows, exclusions = discover(library_root, serato_root, maximum)
+        if not rows:
+            raise metadata_batch.BatchRefused("no eligible deterministic MP3 candidates were found")
+        grouped: dict[str, list[dict]] = defaultdict(list)
+        for row in rows:
+            grouped[row["scope_root"]].append(row)
+        scopes: dict[str, dict] = {}
+        plans_dir = batch_dir / "plans"
+        plans_dir.mkdir()
+        for index, (scope_root, scope_rows) in enumerate(sorted(grouped.items()), 1):
+            scope_id = f"S{index:03d}"
+            file_count, byte_count = _folder_stats(Path(scope_root))
+            backup_parent = metadata_batch.T5_BACKUP_ROOT / batch_id / scope_id
+            plan_path = plans_dir / f"{scope_id}.json"
+            plan = {
+                "mode": "preview-only",
+                "generator": "prepare_metadata_batch.py",
+                "batch_id": batch_id,
+                "scope_id": scope_id,
+                "root": scope_root,
+                "rules": {"approval_required": True, "mutations_performed": 0},
+                "counts": {
+                    "items": len(scope_rows),
+                    "genre_fixes": sum(r["genre"] != r["proposed_genre"] for r in scope_rows),
+                    "grouping_fixes": sum(bool(r["grouping_add_terms"]) for r in scope_rows),
+                },
+                "items": [],
+            }
+            for row in scope_rows:
+                item = {"path": row["path"], "sha256": row["sha256"]}
+                if row["genre"] != row["proposed_genre"]:
+                    item["genre_fix"] = {"from": row["genre"], "to": row["proposed_genre"]}
+                if row["grouping_add_terms"]:
+                    item["grouping_fix"] = {
+                        "existing": row["grouping"], "add_terms": row["grouping_add_terms"]
+                    }
+                plan["items"].append(item)
+                row["scope_id"] = scope_id
+            plan_path.write_text(json.dumps(plan, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+            validated, _ = intake.load_and_validate(plan_path, Path(scope_root))
+            if len(validated) != len(scope_rows):
+                raise metadata_batch.BatchRefused(f"real validator did not accept every item in {scope_id}")
+            scopes[scope_id] = {
+                "scope_id": scope_id,
+                "source_root": scope_root,
+                "lock_folder": scope_rows[0]["lock_folder"],
+                "plan_path": str(plan_path.resolve()),
+                "plan_sha256": metadata_batch.sha256_file(plan_path),
+                "item_count": len(scope_rows),
+                "full_folder_file_count": file_count,
+                "full_folder_bytes": byte_count,
+                "backup_root": str((backup_parent / "source").resolve()),
+                "backup_manifest": str((backup_parent / "backup-manifest.json").resolve()),
+                "evidence_root": str((backup_parent / "evidence").resolve()),
+            }
+        md_path, csv_path = _write_preview(batch_dir, batch_id, rows, exclusions, scopes)
+        master_path = batch_dir / "master-manifest.json"
+        master = {
+            "schema_version": 1,
+            "mode": "durable-metadata-batch",
+            "batch_id": batch_id,
+            "created_at": metadata_batch.now(),
+            "repo_commit": metadata_batch.repo_head(),
+            "format": "mp3",
+            "library_root": str(library_root),
+            "serato_root": str(serato_root),
+            "candidate_count": len(rows),
+            "genre_changes": sum(r["genre"] != r["proposed_genre"] for r in rows),
+            "grouping_changes": sum(bool(r["grouping_add_terms"]) for r in rows),
+            "backup_bytes": sum(s["full_folder_bytes"] for s in scopes.values()),
+            "preview": {
+                "md_path": str(md_path.resolve()), "md_sha256": metadata_batch.sha256_file(md_path),
+                "csv_path": str(csv_path.resolve()), "csv_sha256": metadata_batch.sha256_file(csv_path),
+            },
+            "scopes": list(scopes.values()),
+            "candidates": rows,
+            "exclusions": dict(exclusions),
+            "ready_for_human_approval": bool(rows),
+        }
+        master["master_sha"] = metadata_batch.canonical_sha(master)
+        master_path.write_text(json.dumps(master, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        metadata_batch.transition(
+            state_path, "PREVIEWED", handoff_root=handoff_root,
+            updates={"master_path": str(master_path.resolve()), "master_sha": master["master_sha"]},
+        )
+        return master
+    except BaseException as exc:
+        metadata_batch.transition(state_path, "BLOCKED", reason=f"preparation failed: {exc}",
+                                  handoff_root=handoff_root)
+        raise
+
+
+def approve(master_sha: str, approved_by: str, handoff_root: Path) -> dict:
+    handoff_root = Path(handoff_root).resolve()
+    state_path = handoff_root / "current-batch.json"
+    state = metadata_batch.read_json(state_path)
+    if state.get("state") != "PREVIEWED":
+        raise metadata_batch.BatchRefused(f"approval requires PREVIEWED, found {state.get('state')}")
+    if not approved_by.strip():
+        raise metadata_batch.BatchRefused("--approved-by must be explicit and non-blank")
+    master_path = metadata_batch.require_handoff_path(Path(state["master_path"]), handoff_root)
+    master = metadata_batch.verify_master(master_path, master_sha)
+    if not master.get("ready_for_human_approval"):
+        raise metadata_batch.BatchRefused("batch is not marked ready for human approval")
+    approval = {
+        "schema_version": 1,
+        "batch_id": master["batch_id"],
+        "master_sha": master_sha,
+        "approved_by": approved_by.strip(),
+        "approved_at": metadata_batch.now(),
+        "repo_commit": master["repo_commit"],
+        "candidate_count": master["candidate_count"],
+        "statement": "I approve exactly the immutable master manifest identified by master_sha.",
+    }
+    approval_path = Path(state["batch_dir"]) / "approval.json"
+    metadata_batch.atomic_write_json(approval_path, approval, handoff_root=handoff_root)
+    metadata_batch.transition(
+        state_path, "HUMAN_APPROVED", handoff_root=handoff_root,
+        updates={"approval_path": str(approval_path.resolve()), "approved_by": approved_by.strip()},
+    )
+    return approval
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--format", default="mp3")
+    parser.add_argument("--max", type=int, default=150)
+    parser.add_argument("--library-root", type=Path, default=DEFAULT_LIBRARY)
+    parser.add_argument("--serato-root", type=Path, default=DEFAULT_SERATO)
+    parser.add_argument("--approve", metavar="MASTER_SHA")
+    parser.add_argument("--approved-by")
+    args = parser.parse_args()
+    try:
+        if args.approve:
+            if not args.approved_by:
+                raise metadata_batch.BatchRefused("--approved-by is required with --approve")
+            result = approve(args.approve, args.approved_by, metadata_batch.HANDOFF_ROOT)
+            print(json.dumps({"HUMAN_APPROVED": True, **result}, indent=2))
+            return 0
+        if args.approved_by:
+            raise metadata_batch.BatchRefused("--approved-by is only valid with --approve")
+        result = prepare(args.library_root, args.serato_root, metadata_batch.HANDOFF_ROOT,
+                         args.max, args.format)
+        smart_count = sum(len(row["smart_crate_effects"]) for row in result["candidates"])
+        print(f"BATCH ID: {result['batch_id']}")
+        print(f"CANDIDATES: {result['candidate_count']}")
+        print(f"GENRE CHANGES: {result['genre_changes']}")
+        print(f"GROUPING CHANGES: {result['grouping_changes']}")
+        print(f"BACKUP SIZE: {result['backup_bytes'] / 1024**3:.3f} GiB")
+        print(f"SMART CRATE CHANGES: {smart_count}")
+        print(f"MASTER SHA: {result['master_sha']}")
+        print("READY FOR HUMAN APPROVAL" if result["ready_for_human_approval"] else "NOT READY FOR HUMAN APPROVAL")
+        return 0 if result["ready_for_human_approval"] else 2
+    except metadata_batch.BatchRefused as exc:
+        print(f"REFUSED: {exc}")
+        return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

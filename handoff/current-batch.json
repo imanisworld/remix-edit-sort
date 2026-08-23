@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "batch_id": null,
+  "state": "COMPLETE",
+  "reason": "No active batch",
+  "updated_at": "2026-08-23T00:00:00-04:00",
+  "history": []
+}
