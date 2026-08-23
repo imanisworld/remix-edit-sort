@@ -167,6 +167,30 @@ class TranscriptEvidenceCleanDirtyTests(_LaneCase):
         self.assertEqual(rows[0]["proposed_grouping"], "Old Head; Dirty")
         self.assertIn("faster-whisper transcript", rows[0]["grouping_evidence"][0])
 
+    def test_transcript_evidence_is_not_crowded_out_by_the_cap(self):
+        # A confirmed transcript hit must survive a batch cap even when a
+        # much larger folder-evidence backlog would otherwise win every slot
+        # on alphabetical tie-break -- it's the explicit deliverable of a
+        # listening-check batch, not incidental extra evidence.
+        rows_spec = [{
+            "relative": f"Hip Hop/CLEAN/aaa-song-{i}.mp3", "genre": "Hip-Hop",
+            "title": f"Song {i}", "v2_version": 3,
+        } for i in range(3)]
+        rows_spec.append({
+            "relative": "Zzz Folder/Random Set/zzz-transcript-song.mp3",
+            "genre": "Hip-Hop", "title": "Zzz Song", "v2_version": 3,
+        })
+        make_library(self.library, rows_spec)
+        path = str((self.library / "Zzz Folder/Random Set/zzz-transcript-song.mp3").resolve())
+        sha = prepare_metadata_batch.read_track(Path(path))["sha256"]
+        evidence = self._write_evidence([
+            {"path": path, "sha256": sha, "classification": "Dirty"},
+        ])
+        rows, exclusions = self.discover(evidence, maximum=1)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["path"], path)
+        self.assertEqual(exclusions["eligible but deferred by batch cap"], 3)
+
     def test_transcript_silence_alone_does_not_prove_clean(self):
         make_library(self.library, [{
             "relative": "Hip Hop/Random Set/song.mp3", "genre": "Hip-Hop",

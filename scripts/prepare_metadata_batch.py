@@ -515,7 +515,10 @@ def discover_clean_dirty(library_root: Path, serato_root: Path, maximum: int,
             "smart_crate_effects": effects,
             "scope_root": scope_root,
             "lock_folder": lock_folder,
-            "preference": 0 if (folder_terms or transcript_terms) else 1,
+            # Transcript-confirmed evidence is the explicit deliverable of a
+            # listening-check batch and must not be crowded out of the cap by
+            # the much larger folder/bracket backlog competing at tie-break.
+            "preference": 0 if transcript_terms else (1 if folder_terms else 2),
         })
     return _select_stable(candidates, exclusions, maximum)
 
