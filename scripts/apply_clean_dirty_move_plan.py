@@ -272,6 +272,7 @@ def load_and_validate(root: Path, plan_path: Path) -> tuple[dict, list[dict]]:
 
     errors = []
     destinations: dict[str, str] = {}
+    root_resolved = root.resolve()
     for item in items:
         missing = [key for key in (
             "source", "destination", "sha256", "decision", "existing_grouping",
@@ -280,11 +281,12 @@ def load_and_validate(root: Path, plan_path: Path) -> tuple[dict, list[dict]]:
         if missing:
             errors.append(f"plan item missing required field(s): {', '.join(missing)}")
             continue
-        source = Path(item["source"]).resolve()
-        destination = Path(item["destination"]).resolve()
-        item["source"] = str(source)
-        item["destination"] = str(destination)
-        if root not in source.parents or root not in destination.parents:
+        source = Path(item["source"]).absolute()
+        destination = Path(item["destination"]).absolute()
+        try:
+            source.resolve().relative_to(root_resolved)
+            destination.parent.resolve().relative_to(root_resolved)
+        except ValueError:
             errors.append(f"outside target root: {source} -> {destination}")
             continue
         if item["decision"] not in {"CLEAN", "DIRTY"}:
@@ -300,11 +302,11 @@ def load_and_validate(root: Path, plan_path: Path) -> tuple[dict, list[dict]]:
         if actual_hash != item["sha256"]:
             errors.append(f"source hash changed since plan built: {source}")
             continue
-        destination_key = str(destination).casefold()
+        destination_key = mutation_engine.path_collision_key(destination)
         if destination_key in destinations:
             errors.append(f"destination collision: {destination}")
         destinations[destination_key] = str(source)
-        if destination.exists():
+        if mutation_engine.destination_conflicts(source, destination):
             errors.append(f"destination already exists: {destination}")
             continue
         current_grouping, _ = read_grouping(source)
@@ -354,15 +356,18 @@ def apply(root: Path, plan_path: Path, manifest: dict, out_dir: Path, label: str
             skip_reason = "ID3v2.2 preserved; Grouping metadata write skipped" if item["tag_change"] and is_id3v22(source) else None
 
             def rollback():
-                if moved and destination.exists():
-                    os.rename(destination, source)
+                if moved and mutation_engine.literal_path_is_file(destination):
+                    txn.rename_no_overwrite(destination, source, purpose="apply-rollback")
                 if tag_was_changed and tag_backup is not None:
                     mutation_engine.restore_from_backup(tag_backup, source, before_hash)
 
             txn.on_rollback(rollback)
 
             if item["tag_change"] and not skip_reason:
-                tag_backup = tag_backup_root / Path(item["source"]).relative_to(root)
+                tag_backup = (
+                    tag_backup_root
+                    / Path(item["source"]).resolve().relative_to(root.resolve())
+                )
                 tag_backup.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(source, tag_backup)
                 if sha256_file(tag_backup) != before_hash:
@@ -390,13 +395,10 @@ def apply(root: Path, plan_path: Path, manifest: dict, out_dir: Path, label: str
                     skip_reason = str(exc)
 
             destination.parent.mkdir(parents=True, exist_ok=True)
-            # This item can contain two production mutations (tag save, then
-            # relocation). The engine heartbeats at item entry; re-check lock
-            # ownership immediately before the second physical mutation too.
-            heartbeat.beat()
-            os.rename(source, destination)
+            # The shared rename helper journals and heartbeats every
+            # physical rename, including both case-only rename steps.
+            txn.rename_no_overwrite(source, destination)
             moved = True
-            txn.mark_mutated()
 
             after_hash = sha256_file(destination)
             if sha256_bytes(audio_payload(destination)) != before_audio:
@@ -472,11 +474,18 @@ def undo(undo_path: Path, root: Path, label: str, heartbeat) -> None:
             require_backup=False,
             extra_intent={"undoing_index": record.get("index"), "restore_to_sha256": record["before_sha256"]},
         ) as txn:
-            if source.exists():
+            if mutation_engine.destination_conflicts(destination, source):
                 raise RuntimeError(f"undo source already exists: {source}")
             source.parent.mkdir(parents=True, exist_ok=True)
-            os.rename(destination, source)
-            txn.mark_mutated()
+            undo_moved = False
+
+            def rollback_undo_move():
+                if undo_moved and mutation_engine.literal_path_is_file(source):
+                    txn.rename_no_overwrite(source, destination, purpose="undo-rollback")
+
+            txn.on_rollback(rollback_undo_move)
+            txn.rename_no_overwrite(destination, source, purpose="undo")
+            undo_moved = True
             if record["tag_changed"]:
                 backup = Path(record["tag_backup"])
                 if sha256_file(backup) != record["before_sha256"]:

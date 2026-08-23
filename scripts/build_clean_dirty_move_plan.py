@@ -40,6 +40,8 @@ import json
 from collections import Counter
 from pathlib import Path
 
+import mutation_engine
+
 from mutagen.flac import FLAC
 from mutagen.id3 import ID3, ID3NoHeaderError
 from mutagen.mp4 import MP4
@@ -168,7 +170,7 @@ def main() -> None:
         if destination is None:
             errors.append(f"no _NEEDS CHECK segment in path, cannot place: {source}")
             continue
-        if destination.exists():
+        if mutation_engine.destination_conflicts(source, destination):
             errors.append(f"destination already exists: {destination}")
             continue
 

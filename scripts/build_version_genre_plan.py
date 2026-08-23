@@ -19,8 +19,11 @@ import argparse
 import collections
 import csv
 import json
+import os
 import re
 from pathlib import Path
+
+import mutation_engine
 
 NEEDS_VERSION = "_NEEDS CHECK"
 NEEDS_GENRE = "_GENRE NEEDS CHECK"
@@ -216,7 +219,7 @@ def main() -> None:
         genre_counts[genre_folder] += 1
         if tag_change:
             tag_change_counts[f"{current_genre or '(blank)'} -> {genre}"] += 1
-        destinations[str(dest).casefold()].append(str(source))
+        destinations[mutation_engine.path_collision_key(dest)].append(str(source))
 
         items.append(
             {
@@ -263,15 +266,21 @@ def main() -> None:
             collisions_resolved.append({"original_destination": dest_key, "sources": [i["source"] for i in group]})
         destinations = collections.defaultdict(list)
         for item in items:
-            destinations[item["destination"].casefold()].append(item["source"])
+            destinations[mutation_engine.path_collision_key(Path(item["destination"]))].append(item["source"])
         collisions = {k: v for k, v in destinations.items() if len(v) > 1}
 
-    source_set = {item["source"] for item in items}
+    source_paths = [Path(item["source"]) for item in items]
     existing_conflicts = []
     for item in items:
         dest = Path(item["destination"])
-        if item["move"] and dest.exists() and str(dest) not in source_set:
-            existing_conflicts.append({"destination": item["destination"], "source": item["source"]})
+        source = Path(item["source"])
+        if item["move"] and mutation_engine.destination_conflicts(source, dest):
+            occupied_by_plan_source = any(
+                candidate.exists() and os.path.samefile(dest, candidate)
+                for candidate in source_paths
+            )
+            if not occupied_by_plan_source:
+                existing_conflicts.append({"destination": item["destination"], "source": item["source"]})
 
     plan = {
         "mode": "preview-only",

@@ -138,6 +138,35 @@ class NewApplyScriptsEndToEndTests(unittest.TestCase):
         self.assertEqual(clean_apply.serato_digest(destination), before_serato)
         self.assertTrue(mutation_engine.recover(Path(payload["recovery_journal"]))["clean"])
 
+    def test_clean_dirty_apply_supports_a_case_only_move_without_tag_write(self):
+        source = fixtures.make_library(self.root, [{
+            "relative": "bt005.mp3", "grouping": "Clean",
+        }])["bt005.mp3"]
+        destination = self.root / "BT005.mp3"
+        original_hash = backup_manifest.sha256_file(source)
+        _, manifest = self.backup()
+        plan = {
+            "mode": "preview-only", "rules": {"approval_required": True},
+            "items": [{
+                "source": str(source), "destination": str(destination),
+                "sha256": original_hash, "decision": "CLEAN",
+                "existing_grouping": ["Clean"], "proposed_grouping": "Clean",
+                "tag_change": False, "move": True,
+            }],
+        }
+        plan_path = self.tmp / "clean-case-plan.json"
+        plan_path.write_text(json.dumps(plan), encoding="utf-8")
+
+        result = run(
+            CLEAN_APPLY, "--root", self.root, "--plan", plan_path,
+            "--backup-manifest", manifest, "--apply", *self.locked_args(),
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        literal_names = {entry.name for entry in self.root.iterdir()}
+        self.assertIn("BT005.mp3", literal_names)
+        self.assertNotIn("bt005.mp3", literal_names)
+        self.assertEqual(backup_manifest.sha256_file(destination), original_hash)
+
     def test_intake_writes_genre_and_grouping_in_one_transaction_then_undoes(self):
         path = fixtures.make_library(self.root, [{
             "relative": "track (Clean Remix).mp3", "genre": "Other",

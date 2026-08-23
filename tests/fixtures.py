@@ -128,11 +128,17 @@ def add_serato_frame(path: Path, payload: bytes = b"SERATO-TEST-PAYLOAD") -> Pat
 
     try:
         tags = ID3(path)
+        original_v2_version = tags.version[1]
     except ID3NoHeaderError:
         tags = ID3()
+        original_v2_version = 4
+    if original_v2_version not in {3, 4}:
+        raise ValueError(
+            f"add_serato_frame refuses to upgrade ID3v2.{original_v2_version}: {path}"
+        )
     tags.add(GEOB(encoding=0, mime="application/octet-stream",
                   filename="", desc="Serato Markers2", data=payload))
-    tags.save(path)
+    tags.save(path, v2_version=original_v2_version)
     return Path(path)
 
 

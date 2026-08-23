@@ -50,6 +50,8 @@ class ApplyEndToEndTests(unittest.TestCase):
             {"relative": "Song (Dirty).mp3", "genre": "Unsorted", "serato": True},
             {"relative": "21 Savage - 112 (2016).mp3", "genre": "Unsorted"},
             {"relative": "old.mp3", "genre": "Unsorted", "title": "Old", "v2_version": 2},
+            {"relative": "bt005.mp3", "genre": "Unsorted"},
+            {"relative": "mix — 日本語.mp3", "genre": "Unsorted"},
         ])
         self.backup = fixtures.mirror_backup(self.root, self.tmp / "backup")
         self.manifest_path = fixtures.passing_manifest(
@@ -147,6 +149,50 @@ class ApplyEndToEndTests(unittest.TestCase):
         self.assertIn("21 Savage", moved.name)
         self.assertIn("112", moved.name)
         self.assertIn("2016", moved.name)
+
+    def test_case_only_rename_applies_with_literal_casing_and_undo_restores_it(self):
+        source_name = "bt005.mp3"
+        destination_name = "BT005.mp3"
+        original_hash = backup_manifest.sha256_file(self.paths[source_name])
+        plan = self.build_plan([
+            self.item(source_name, "Unsorted", move_to=destination_name, tag_change=False),
+        ])
+
+        result = self.apply_plan(plan)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        payload = json.loads(result.stdout)
+        literal_names = {entry.name for entry in self.root.iterdir()}
+        self.assertIn(destination_name, literal_names)
+        self.assertNotIn(source_name, literal_names)
+        self.assertEqual(
+            backup_manifest.sha256_file(self.root / destination_name), original_hash
+        )
+
+        undone = run(
+            APPLY, "--root", self.root, "--plan", plan,
+            "--undo", payload["undo_log"], "--lock-folder", LOCK_FOLDER,
+            "--session", SESSION,
+        )
+        self.assertEqual(undone.returncode, 0, undone.stdout + undone.stderr)
+        literal_names = {entry.name for entry in self.root.iterdir()}
+        self.assertIn(source_name, literal_names)
+        self.assertNotIn(destination_name, literal_names)
+        self.assertEqual(backup_manifest.sha256_file(self.root / source_name), original_hash)
+
+    def test_case_only_rename_preserves_unicode_filename_content(self):
+        source_name = "mix — 日本語.mp3"
+        destination_name = "MIX — 日本語.mp3"
+        original_hash = backup_manifest.sha256_file(self.paths[source_name])
+        result = self.apply_plan(self.build_plan([
+            self.item(source_name, "Unsorted", move_to=destination_name, tag_change=False),
+        ]))
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        literal_names = {entry.name for entry in self.root.iterdir()}
+        self.assertIn(destination_name, literal_names)
+        self.assertNotIn(source_name, literal_names)
+        self.assertEqual(
+            backup_manifest.sha256_file(self.root / destination_name), original_hash
+        )
 
     # ------------------------------------------------------------------
     def test_a_write_ahead_recovery_journal_is_produced(self):

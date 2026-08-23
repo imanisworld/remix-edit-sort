@@ -43,6 +43,7 @@ for path in (str(TESTS_DIR), str(SCRIPTS_DIR)):
 
 import backup_manifest  # noqa: E402
 import fixtures  # noqa: E402
+from mutagen.id3 import ID3  # noqa: E402
 
 
 def filesystem_is_case_insensitive(directory: Path) -> bool:
@@ -130,9 +131,18 @@ class CaseLogicTests(unittest.TestCase):
         self.assertEqual(len(collisions), 1)
 
     def test_the_apply_engine_folds_case_when_detecting_destination_collisions(self):
-        """apply_version_genre_plan.py's validator must use a casefolded key."""
+        """The validator must use the shared case/Unicode-normalized key."""
         source = (SCRIPTS_DIR / "apply_version_genre_plan.py").read_text(encoding="utf-8")
-        self.assertIn("destination_key = str(destination).casefold()", source)
+        self.assertIn("destination_key = mutation_engine.path_collision_key(destination)", source)
+
+    def test_shared_collision_key_handles_case_and_unicode_normalization(self):
+        import mutation_engine
+        nfc = Path("/lib/Beyonc\u00e9.mp3")
+        nfd_lower = Path("/lib/beyonce\u0301.mp3")
+        self.assertEqual(
+            mutation_engine.path_collision_key(nfc),
+            mutation_engine.path_collision_key(nfd_lower),
+        )
 
 
 class UnicodeNormalizationTests(unittest.TestCase):
@@ -209,6 +219,24 @@ class HostFilesystemTests(unittest.TestCase):
             self.skipTest("host filesystem is case-insensitive (macOS/APFS)")
         fixtures.write_mp3(self.tmp / "Track.mp3", seed=2)
         self.assertFalse((self.tmp / "track.mp3").exists())
+
+
+class SeratoFixtureVersionTests(unittest.TestCase):
+    def test_adding_serato_frame_preserves_id3v23(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = fixtures.write_mp3(Path(tmp) / "v23.mp3")
+            fixtures.tag_mp3(path, genre="House", v2_version=3)
+            self.assertEqual(ID3(path).version[1], 3)
+            fixtures.add_serato_frame(path)
+            self.assertEqual(ID3(path).version[1], 3)
+
+    def test_adding_serato_frame_preserves_id3v24(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = fixtures.write_mp3(Path(tmp) / "v24.mp3")
+            fixtures.tag_mp3(path, genre="House", v2_version=4)
+            self.assertEqual(ID3(path).version[1], 4)
+            fixtures.add_serato_frame(path)
+            self.assertEqual(ID3(path).version[1], 4)
 
 
 class MacCanaryGateTests(unittest.TestCase):

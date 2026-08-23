@@ -9,6 +9,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 TESTS_DIR = Path(__file__).resolve().parent
 SCRIPTS_DIR = TESTS_DIR.parent / "scripts"
@@ -219,8 +220,96 @@ class HeartbeatTests(EngineTestCase):
         intents = [r for r in self.journal_records() if r.get("type") == "intent"]
         self.assertEqual([r["index"] for r in intents], [1])
 
+    def test_case_only_rename_heartbeats_each_physical_step(self):
+        source = self.source_root / "bt007.mp3"
+        fixtures.write_mp3(source, seed=57)
+        backup = fixtures.mirror_backup(self.source_root, self.backup)
+        self.manifest_path = fixtures.passing_manifest(
+            self.source_root, backup, self.tmp / "case-heartbeat-manifest.json"
+        )
+        self.manifest = backup_manifest.require_pass(self.manifest_path, self.source_root)
+        heartbeat = FakeHeartbeat()
+        engine = self.engine(heartbeat)
+        engine.start({})
+        destination = self.source_root / "BT007.mp3"
+        with engine.item(
+            1, kind=mutation_engine.RELOCATE, source=source,
+            destination=destination,
+        ) as txn:
+            txn.rename_no_overwrite(source, destination)
+        self.assertEqual(heartbeat.beats, 3)  # item entry + two physical renames
+
 
 class RollbackTests(EngineTestCase):
+    def test_case_only_second_step_failure_self_restores_and_is_recoverable(self):
+        source = self.source_root / "bt006.mp3"
+        fixtures.write_mp3(source, seed=56)
+        backup = fixtures.mirror_backup(self.source_root, self.backup)
+        self.manifest_path = fixtures.passing_manifest(
+            self.source_root, backup, self.tmp / "case-failure-manifest.json"
+        )
+        self.manifest = backup_manifest.require_pass(self.manifest_path, self.source_root)
+        destination = self.source_root / "BT006.mp3"
+        engine = self.engine()
+        engine.start({})
+        real_rename = mutation_engine.os.rename
+
+        def fail_final_case_step(rename_source, rename_destination):
+            if Path(rename_destination) == destination:
+                raise OSError("simulated second rename failure")
+            return real_rename(rename_source, rename_destination)
+
+        with self.assertRaises(OSError):
+            with engine.item(
+                1, kind=mutation_engine.RELOCATE, source=source,
+                destination=destination,
+            ) as txn:
+                with mock.patch.object(
+                    mutation_engine.os, "rename", side_effect=fail_final_case_step
+                ):
+                    txn.rename_no_overwrite(source, destination)
+
+        literal_names = {entry.name for entry in self.source_root.iterdir()}
+        self.assertIn("bt006.mp3", literal_names)
+        self.assertNotIn("BT006.mp3", literal_names)
+        self.assertFalse(any(".mutation-" in name for name in literal_names))
+        self.assertTrue(mutation_engine.recover(self.journal)["clean"])
+
+    def test_case_only_rename_rollback_restores_original_literal_casing(self):
+        source = self.source_root / "bt005.mp3"
+        fixtures.write_mp3(source, seed=55)
+        backup = fixtures.mirror_backup(self.source_root, self.backup)
+        self.manifest_path = fixtures.passing_manifest(
+            self.source_root, backup, self.tmp / "case-manifest.json"
+        )
+        self.manifest = backup_manifest.require_pass(self.manifest_path, self.source_root)
+        destination = self.source_root / "BT005.mp3"
+        before = mutation_engine.sha256_file(source)
+        engine = self.engine()
+        engine.start({})
+
+        with self.assertRaises(RuntimeError):
+            with engine.item(
+                1, kind=mutation_engine.RELOCATE, source=source,
+                destination=destination,
+            ) as txn:
+                moved = False
+
+                def rollback_move():
+                    if moved and mutation_engine.literal_path_is_file(destination):
+                        txn.rename_no_overwrite(destination, source, purpose="test-rollback")
+
+                txn.on_rollback(rollback_move)
+                txn.rename_no_overwrite(source, destination)
+                moved = True
+                raise RuntimeError("force verification failure")
+
+        literal_names = {entry.name for entry in self.source_root.iterdir()}
+        self.assertIn("bt005.mp3", literal_names)
+        self.assertNotIn("BT005.mp3", literal_names)
+        self.assertEqual(mutation_engine.sha256_file(source), before)
+        self.assertTrue(mutation_engine.recover(self.journal)["clean"])
+
     def test_failed_verification_restores_the_file_and_journals_the_rollback(self):
         engine = self.engine()
         engine.start({})
@@ -375,6 +464,31 @@ class RollbackTests(EngineTestCase):
 
 
 class RecoveryTests(EngineTestCase):
+    def test_interrupted_case_rename_reports_its_temporary_path(self):
+        temporary = self.source_root / ".bt005.mp3.mutation-test.tmp"
+        journal = mutation_engine.RecoveryJournal(self.journal)
+        journal.append({"type": "run_start", "run_id": "case-run"})
+        journal.append({
+            "type": "intent", "run_id": "case-run", "index": 1,
+            "kind": mutation_engine.RELOCATE,
+            "source": str(self.source_root / "bt005.mp3"),
+            "destination": str(self.source_root / "BT005.mp3"),
+            "before_sha256": "a" * 64,
+        })
+        journal.append({
+            "type": "case_rename_intent", "run_id": "case-run", "index": 1,
+            "source": str(self.source_root / "bt005.mp3"),
+            "temporary": str(temporary),
+            "destination": str(self.source_root / "BT005.mp3"),
+        })
+        journal.append({"type": "mutated", "run_id": "case-run", "index": 1})
+
+        report = mutation_engine.recover(self.journal)
+        self.assertFalse(report["clean"])
+        self.assertEqual(
+            report["in_flight"][0]["case_rename_temporary_path"], str(temporary)
+        )
+
     def test_a_clean_run_reports_nothing_in_flight(self):
         engine = self.engine()
         engine.start({})

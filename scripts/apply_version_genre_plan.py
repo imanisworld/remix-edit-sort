@@ -292,11 +292,18 @@ def load_and_validate(root: Path, plan_path: Path) -> tuple[dict, list[dict]]:
 
     errors = []
     destinations: dict[str, str] = {}
-    source_paths = {item["source"] for item in items}
+    root_resolved = root.resolve()
+    source_paths = [Path(item["source"]).absolute() for item in items]
     for item in items:
-        source = Path(item["source"]).resolve()
-        destination = Path(item["destination"]).resolve()
-        if root not in source.parents or root not in destination.parents:
+        # Preserve the literal final path component. On case-insensitive APFS,
+        # resolve() can replace the requested destination spelling with the
+        # source's existing spelling and erase the very rename being checked.
+        source = Path(item["source"]).absolute()
+        destination = Path(item["destination"]).absolute()
+        try:
+            source.resolve().relative_to(root_resolved)
+            destination.parent.resolve().relative_to(root_resolved)
+        except ValueError:
             errors.append(f"outside target root: {source} -> {destination}")
             continue
         if not source.is_file():
@@ -305,12 +312,17 @@ def load_and_validate(root: Path, plan_path: Path) -> tuple[dict, list[dict]]:
         actual_hash = sha256_file(source)
         if actual_hash != item["sha256"]:
             errors.append(f"source hash changed since preview: {source}")
-        destination_key = str(destination).casefold()
+        destination_key = mutation_engine.path_collision_key(destination)
         if destination_key in destinations:
             errors.append(f"destination collision: {destination}")
         destinations[destination_key] = str(source)
-        if item["move"] and destination.exists() and str(destination) not in source_paths:
-            errors.append(f"destination already exists: {destination}")
+        if item["move"] and mutation_engine.destination_conflicts(source, destination):
+            occupied_by_plan_source = any(
+                candidate.exists() and os.path.samefile(destination, candidate)
+                for candidate in source_paths
+            )
+            if not occupied_by_plan_source:
+                errors.append(f"destination already exists: {destination}")
         if item["tag_change"]:
             if source.suffix.casefold() not in {".mp3", ".flac", ".m4a"}:
                 errors.append(f"unsupported tag target: {source}")
@@ -386,8 +398,8 @@ def apply(
             def rollback():
                 # Ordered to undo the mutations in reverse: put the file back
                 # where it was first, then restore its pre-write bytes.
-                if moved and destination.exists():
-                    os.rename(destination, source)
+                if moved and mutation_engine.literal_path_is_file(destination):
+                    txn.rename_no_overwrite(destination, source, purpose="apply-rollback")
                 if tag_was_changed and tag_backup is not None:
                     mutation_engine.restore_from_backup(tag_backup, source, before_hash)
 
@@ -426,13 +438,10 @@ def apply(
 
             if item["move"]:
                 destination.parent.mkdir(parents=True, exist_ok=True)
-                # A tag save and relocation are two physical production
-                # mutations when both are requested. The engine heartbeats
-                # at item entry; renew immediately before this second one.
-                heartbeat.beat()
-                os.rename(source, destination)
+                # The shared rename helper journals and heartbeats every
+                # physical rename, including both case-only rename steps.
+                txn.rename_no_overwrite(source, destination)
                 moved = True
-                txn.mark_mutated()
             else:
                 destination = source
 
@@ -468,8 +477,14 @@ def apply(
                 os.fsync(handle.fileno())
             completed.append(record)
 
-    missing_destinations = [r["destination"] for r in completed if not Path(r["destination"]).is_file()]
-    surviving_sources = [r["source"] for r in completed if r["moved"] and Path(r["source"]).exists()]
+    missing_destinations = [
+        r["destination"] for r in completed
+        if not mutation_engine.literal_path_is_file(Path(r["destination"]))
+    ]
+    surviving_sources = [
+        r["source"] for r in completed
+        if r["moved"] and mutation_engine.literal_path_is_file(Path(r["source"]))
+    ]
     result = {
         "mode": f"{label}-apply",
         "plan": str(plan_path),
@@ -532,11 +547,18 @@ def undo(undo_path: Path, label: str, heartbeat: lock_guard.LockHeartbeat) -> No
             },
         ) as txn:
             if record["moved"]:
-                if source.exists():
+                if mutation_engine.destination_conflicts(destination, source):
                     raise RuntimeError(f"undo source already exists: {source}")
                 source.parent.mkdir(parents=True, exist_ok=True)
-                os.rename(destination, source)
-                txn.mark_mutated()
+                undo_moved = False
+
+                def rollback_undo_move():
+                    if undo_moved and mutation_engine.literal_path_is_file(source):
+                        txn.rename_no_overwrite(source, destination, purpose="undo-rollback")
+
+                txn.on_rollback(rollback_undo_move)
+                txn.rename_no_overwrite(destination, source, purpose="undo")
+                undo_moved = True
             if record["tag_changed"]:
                 backup = Path(record["tag_backup"])
                 if sha256_file(backup) != record["before_sha256"]:

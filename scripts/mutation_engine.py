@@ -15,7 +15,8 @@ safety code is not safety; it is five chances to get it wrong once.
     SHA-256 still matches what the preview recorded        (abort if drifted)
  3. prove verified backup evidence for THIS file           (abort if absent)
  4. write a durable write-ahead INTENT record and fsync it (before any write)
- 5. perform exactly one mutation
+ 5. perform the logical mutation (a case-only rename is two journaled physical
+    renames through a unique temporary name)
  6. verify: expected metadata, audio payload unchanged,
     Serato payload/frames unchanged where applicable
  7. on any verification failure: restore immediately from backup, journal the
@@ -55,6 +56,8 @@ import json
 import os
 import shutil
 import sys
+import unicodedata
+import uuid
 from datetime import datetime
 from pathlib import Path
 
@@ -76,7 +79,7 @@ METADATA = "metadata"
 
 MUTATION_CLASSES = frozenset({RELOCATE, GENRE, GROUPING, ARTIST_TITLE, YEAR_BPM, DELETE, METADATA})
 
-JOURNAL_VERSION = 1
+JOURNAL_VERSION = 2
 
 
 class MutationRefused(Exception):
@@ -97,6 +100,54 @@ def sha256_file(path: Path) -> str:
         while chunk := handle.read(4 * 1024 * 1024):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _comparison_path(path: Path) -> str:
+    """Model a case-insensitive, normalization-insensitive path comparison.
+
+    ``os.path.normcase`` is intentionally not used: it is the identity on
+    macOS. NFC + casefold models the aliases APFS can expose while the
+    subsequent ``samefile`` check proves identity from the filesystem.
+    """
+    return unicodedata.normalize("NFC", os.path.abspath(os.fspath(path))).casefold()
+
+
+def path_collision_key(path: Path) -> str:
+    """Return the APFS-safe key used to find case/Unicode path aliases."""
+    return _comparison_path(Path(path))
+
+
+def is_case_or_normalization_only_rename(source: Path, destination: Path) -> bool:
+    source_text = os.path.abspath(os.fspath(source))
+    destination_text = os.path.abspath(os.fspath(destination))
+    return source_text != destination_text and _comparison_path(source) == _comparison_path(destination)
+
+
+def destination_is_source_alias(source: Path, destination: Path) -> bool:
+    """True only when destination names this source with different spelling."""
+    source, destination = Path(source), Path(destination)
+    if not is_case_or_normalization_only_rename(source, destination):
+        return False
+    try:
+        return destination.exists() and os.path.samefile(source, destination)
+    except OSError:
+        return False
+
+
+def destination_conflicts(source: Path, destination: Path) -> bool:
+    """Refuse a real occupant, but not this source's APFS case alias."""
+    destination = Path(destination)
+    return destination.exists() and not destination_is_source_alias(source, destination)
+
+
+def literal_path_is_file(path: Path) -> bool:
+    """Check the directory entry's literal spelling, not APFS alias lookup."""
+    path = Path(path)
+    try:
+        with os.scandir(path.parent) as entries:
+            return any(entry.name == path.name and entry.is_file(follow_symlinks=False) for entry in entries)
+    except OSError:
+        return False
 
 
 class RecoveryJournal:
@@ -146,15 +197,15 @@ class _ItemTransaction:
         self.index = index
         self.intent = intent
         self.mutated = False
-        self._rollback = None
+        self._rollbacks = []
         self.outcome: dict = {}
 
     def on_rollback(self, callback) -> None:
         """Register how to restore this item if verification fails."""
-        self._rollback = callback
+        self._rollbacks.append(callback)
 
     def mark_mutated(self) -> None:
-        """Call immediately after the single physical mutation succeeds.
+        """Call immediately after each physical mutation succeeds.
 
         This is what tells the engine that a failure from here on needs a
         rollback rather than a plain abort, and it is recorded in the journal
@@ -173,15 +224,103 @@ class _ItemTransaction:
         """Attach result fields to the completion record."""
         self.outcome.update(fields)
 
+    def _rename_step(self, source: Path, destination: Path, purpose: str) -> None:
+        """Journal and heartbeat one physical rename before performing it."""
+        self.engine.journal.append({
+            "type": "rename_step_intent",
+            "run_id": self.engine.run_id,
+            "index": self.index,
+            "source": str(source),
+            "destination": str(destination),
+            "purpose": purpose,
+        })
+        if self.engine.heartbeat is not None:
+            self.engine.heartbeat.beat()
+        os.rename(source, destination)
+        self.mark_mutated()
+        self.engine.journal.append({
+            "type": "rename_step_completed",
+            "run_id": self.engine.run_id,
+            "index": self.index,
+            "source": str(source),
+            "destination": str(destination),
+            "purpose": purpose,
+        })
+
+    def rename_no_overwrite(self, source: Path, destination: Path, *, purpose: str = "relocate") -> None:
+        """Rename without mistaking an APFS case alias for a collision.
+
+        Case/normalization-only changes always go through a unique temporary
+        directory entry, on both Linux and macOS. If the second step fails,
+        the helper restores the source spelling before propagating the error.
+        A genuinely different destination is never overwritten.
+        """
+        source, destination = Path(source), Path(destination)
+        if os.path.abspath(os.fspath(source)) == os.path.abspath(os.fspath(destination)):
+            raise MutationRefused(f"source and destination are identical: {source}")
+        if not source.is_file():
+            raise MutationRefused(f"missing rename source: {source}")
+        if destination_conflicts(source, destination):
+            raise MutationRefused(f"destination already exists: {destination}")
+
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        if not is_case_or_normalization_only_rename(source, destination):
+            # Repeat immediately before os.rename so a preflight performed
+            # earlier in the run is not the only collision guard.
+            if destination.exists():
+                raise MutationRefused(f"destination already exists: {destination}")
+            self._rename_step(source, destination, purpose)
+            return
+
+        temporary = source.with_name(f".{source.name}.mutation-{uuid.uuid4().hex}.tmp")
+        while temporary.exists():
+            temporary = source.with_name(f".{source.name}.mutation-{uuid.uuid4().hex}.tmp")
+        self.engine.journal.append({
+            "type": "case_rename_intent",
+            "run_id": self.engine.run_id,
+            "index": self.index,
+            "source": str(source),
+            "temporary": str(temporary),
+            "destination": str(destination),
+            "purpose": purpose,
+        })
+
+        def restore_interrupted_case_step() -> None:
+            if not literal_path_is_file(temporary):
+                return
+            if destination_conflicts(temporary, source):
+                raise MutationVerificationError(
+                    f"cannot restore interrupted case-only rename; original path is occupied: {source}"
+                )
+            self._rename_step(temporary, source, f"{purpose}:rollback-temp-to-source")
+
+        # If the process remains alive but step two fails, the transaction's
+        # normal rollback must know about the temporary entry as well as the
+        # caller's tag/move rollback. Callbacks run in reverse registration
+        # order so this repair happens before the caller restores metadata.
+        self.on_rollback(restore_interrupted_case_step)
+        self._rename_step(source, temporary, f"{purpose}:case-to-temp")
+        try:
+            if destination.exists():
+                raise MutationRefused(f"destination became occupied during case-only rename: {destination}")
+            self._rename_step(temporary, destination, f"{purpose}:temp-to-case")
+        except BaseException:
+            restore_interrupted_case_step()
+            raise
+
     def do_rollback(self, reason: str) -> None:
         restored = False
         error = None
-        if self._rollback is not None and self.mutated:
-            try:
-                self._rollback()
-                restored = True
-            except Exception as exc:  # noqa: BLE001 - recorded, then re-surfaced
-                error = f"{type(exc).__name__}: {exc}"
+        if self._rollbacks and self.mutated:
+            restored = True
+            errors = []
+            for callback in reversed(self._rollbacks):
+                try:
+                    callback()
+                except Exception as exc:  # noqa: BLE001 - all failures recorded
+                    restored = False
+                    errors.append(f"{type(exc).__name__}: {exc}")
+            error = "; ".join(errors) or None
         self.engine.journal.append({
             "type": "rolled_back",
             "run_id": self.engine.run_id,
@@ -422,6 +561,7 @@ def recover(journal_path: Path) -> dict:
     mutated: set[tuple] = set()
     settled: set[tuple] = set()
     failed_rollbacks: dict[tuple, dict] = {}
+    case_renames: dict[tuple, dict] = {}
     torn = 0
     runs: dict[str, dict] = {}
 
@@ -439,6 +579,8 @@ def recover(journal_path: Path) -> dict:
         key = (record.get("run_id"), record.get("index"))
         if kind == "intent":
             intents[key] = record
+        elif kind == "case_rename_intent":
+            case_renames[key] = record
         elif kind == "mutated":
             mutated.add(key)
         elif kind == "completed":
@@ -479,6 +621,13 @@ def recover(journal_path: Path) -> dict:
             "rollback_error": failed.get("rollback_error") if failed else None,
             "failure_reason": failed.get("reason") if failed else None,
         }
+        case_rename = case_renames.get(key)
+        if case_rename is not None:
+            # A crash between the two physical renames can leave the file at
+            # this unique temporary path. Surface it explicitly so recovery
+            # never asks a human to guess where the bytes went.
+            entry["case_rename_temporary_path"] = case_rename.get("temporary")
+            entry["case_rename_final_path"] = case_rename.get("destination")
         if failed is not None:
             entry["state"] = "ROLLBACK_FAILED"
             entry["action_required"] = (
