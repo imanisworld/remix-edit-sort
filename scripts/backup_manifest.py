@@ -131,6 +131,11 @@ def canonical_digest(manifest: dict) -> str:
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
+def _comparison_key(value: str) -> str:
+    """Canonical filesystem-comparison key used throughout the project."""
+    return unicodedata.normalize("NFC", value).casefold()
+
+
 def _identity(path: Path) -> str:
     """Normalized absolute path used to compare roots.
 
@@ -148,7 +153,7 @@ def _identity(path: Path) -> str:
       "Beyoncé" -- same directory, different bytes.
     """
     resolved = str(Path(path).resolve())
-    return unicodedata.normalize("NFC", resolved).casefold()
+    return _comparison_key(resolved)
 
 
 def _walk_audio(root: Path) -> dict[str, Path]:
@@ -163,6 +168,32 @@ def _walk_audio(root: Path) -> dict[str, Path]:
                 continue
             found[str(full.relative_to(root))] = full
     return found
+
+
+def _canonical_file_index(
+    files: dict[str, Path],
+    tree_name: str,
+) -> tuple[dict[str, tuple[str, Path]], list[str]]:
+    """Index raw relative paths by the project's collision semantics.
+
+    A backup filesystem may serialize the same filename with different case or
+    Unicode normalization.  Matching through this index handles that safely,
+    while retaining both raw names so an ambiguous many-to-one mapping is a
+    hard failure rather than a silent overwrite.
+    """
+    index: dict[str, tuple[str, Path]] = {}
+    problems: list[str] = []
+    for relative in sorted(files):
+        key = _comparison_key(relative)
+        previous = index.get(key)
+        if previous is not None:
+            problems.append(
+                f"canonical path collision in {tree_name}: "
+                f"{previous[0]!r} and {relative!r}"
+            )
+            continue
+        index[key] = (relative, files[relative])
+    return index, problems
 
 
 def build_manifest(
@@ -185,11 +216,20 @@ def build_manifest(
     files: list[dict] = []
     total_bytes = 0
     if not problems:
-        source_files = _walk_audio(source_root)
-        backup_files = _walk_audio(backup_root)
-        for relative in sorted(source_files):
-            source_path = source_files[relative]
-            backup_path = backup_files.get(relative)
+        source_files_raw = _walk_audio(source_root)
+        backup_files_raw = _walk_audio(backup_root)
+        source_files, source_collisions = _canonical_file_index(
+            source_files_raw, "source tree"
+        )
+        backup_files, backup_collisions = _canonical_file_index(
+            backup_files_raw, "backup tree"
+        )
+        problems.extend(source_collisions)
+        problems.extend(backup_collisions)
+        for key in sorted(source_files):
+            relative, source_path = source_files[key]
+            backup_entry = backup_files.get(key)
+            backup_path = backup_entry[1] if backup_entry is not None else None
             source_hash = sha256_file(source_path)
             size = source_path.stat().st_size
             total_bytes += size
@@ -329,28 +369,39 @@ def require_pass(
                 f"this run requires Serato backup evidence, but the manifest records "
                 f"{serato!r}: {manifest_path}"
             )
+    # A canonical collision would make per-item evidence ambiguous even if a
+    # manifest body had otherwise been made internally consistent.
+    backed_up_hashes(manifest)
     return manifest
 
 
 def _relative_key(relative: str) -> str:
     """Lookup key for a per-file manifest entry.
 
-    NFC-normalized so a manifest written on a decomposing filesystem still
-    matches a path presented in composed form (and vice versa). Case is NOT
-    folded here: unlike the root-identity check, two entries differing only by
-    case are two distinct plan targets whose collision must be caught by the
-    apply engine's validator, not silently merged here.
+    Uses the same NFC + casefold collision semantics as production-path
+    validation. Distinct raw entries that collapse to this key are refused by
+    `backed_up_hashes()` rather than silently merged.
     """
-    return unicodedata.normalize("NFC", relative)
+    return _comparison_key(relative)
 
 
 def backed_up_hashes(manifest: dict) -> dict[str, str]:
     """{relative path -> sha256} for every file the manifest proves is backed up."""
-    return {
-        _relative_key(entry["path"]): entry["sha256"]
-        for entry in manifest.get("files", [])
-        if entry.get("backed_up") and entry.get("matched", True)
-    }
+    hashes: dict[str, str] = {}
+    raw_paths: dict[str, str] = {}
+    for entry in manifest.get("files", []):
+        if not entry.get("backed_up") or not entry.get("matched", True):
+            continue
+        raw_path = entry["path"]
+        key = _relative_key(raw_path)
+        if key in hashes:
+            raise BackupGateError(
+                "backup manifest contains a canonical path collision: "
+                f"{raw_paths[key]!r} and {raw_path!r}"
+            )
+        hashes[key] = entry["sha256"]
+        raw_paths[key] = raw_path
+    return hashes
 
 
 def require_item_backed_up(manifest: dict, source_root: Path, path: Path) -> str:

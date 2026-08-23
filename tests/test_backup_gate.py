@@ -9,8 +9,10 @@ can assert.
 import json
 import sys
 import tempfile
+import unicodedata
 import unittest
 from pathlib import Path
+from unittest import mock
 
 TESTS_DIR = Path(__file__).resolve().parent
 SCRIPTS_DIR = TESTS_DIR.parent / "scripts"
@@ -74,6 +76,79 @@ class BackupGateTests(unittest.TestCase):
         self.assertTrue(any("differs from source" in problem for problem in raw["problems"]))
         with self.assertRaises(backup_manifest.BackupGateError):
             backup_manifest.require_pass(manifest_path, self.source)
+
+    def test_nfc_source_matches_nfd_backup_when_bytes_are_identical(self):
+        """exFAT may decompose a copied filename without changing the file."""
+        backup = self.tmp / "backup"
+        backup.mkdir()
+        source_file = self.source / "a.mp3"
+        backup_file = backup / "copy.mp3"
+        backup_file.write_bytes(source_file.read_bytes())
+        nfc = "Beyoncé - PURE_HONEY - Beyoncé.mp3"
+        nfd = unicodedata.normalize("NFD", nfc)
+        self.assertNotEqual(nfc, nfd)
+
+        with mock.patch.object(
+            backup_manifest,
+            "_walk_audio",
+            side_effect=[{nfc: source_file}, {nfd: backup_file}],
+        ):
+            manifest = backup_manifest.build_manifest(self.source, backup)
+
+        self.assertEqual(manifest["status"], "PASS")
+        self.assertEqual(manifest["file_count"], 1)
+        self.assertEqual(manifest["files"][0]["path"], nfc)
+        self.assertTrue(manifest["files"][0]["matched"])
+        self.assertEqual(
+            manifest["files"][0]["sha256"],
+            manifest["files"][0]["backup_sha256"],
+        )
+        manifest_path = self.tmp / "unicode-manifest.json"
+        backup_manifest.write_manifest(manifest, manifest_path)
+        loaded = backup_manifest.require_pass(manifest_path, self.source)
+        self.assertEqual(
+            backup_manifest.require_item_backed_up(
+                loaded, self.source, self.source / nfd
+            ),
+            manifest["files"][0]["sha256"],
+        )
+
+    def test_canonical_path_collisions_fail_closed_in_either_tree(self):
+        backup = self.tmp / "backup"
+        backup.mkdir()
+        source_file = self.source / "a.mp3"
+        other_source = self.source / "Clean/b (Clean).mp3"
+        backup_file = backup / "copy.mp3"
+        backup_file.write_bytes(source_file.read_bytes())
+        nfc = "Beyoncé.mp3"
+        nfd = unicodedata.normalize("NFD", nfc)
+
+        cases = (
+            (
+                {nfc: source_file, nfd: other_source},
+                {nfc: backup_file},
+                "source tree",
+            ),
+            (
+                {nfc: source_file},
+                {nfc: backup_file, nfd: backup_file},
+                "backup tree",
+            ),
+        )
+        for source_files, backup_files, tree_name in cases:
+            with self.subTest(tree=tree_name), mock.patch.object(
+                backup_manifest,
+                "_walk_audio",
+                side_effect=[source_files, backup_files],
+            ):
+                manifest = backup_manifest.build_manifest(self.source, backup)
+            self.assertEqual(manifest["status"], "FAIL")
+            self.assertTrue(
+                any(
+                    f"canonical path collision in {tree_name}" in problem
+                    for problem in manifest["problems"]
+                )
+            )
 
     def test_manifest_for_a_different_folder_is_refused(self):
         """Yesterday's Events backup must not authorize a Hip Hop apply."""
