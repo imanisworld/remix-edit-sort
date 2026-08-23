@@ -44,6 +44,27 @@ REMIX_EDIT_RE = re.compile(
     re.I,
 )
 
+GENRE_TOKEN_SPLIT_RE = re.compile(r"\s*[;,]\s*")
+RADIO_EDIT_RE = re.compile(r"\bradio\s+edit\b", re.I)
+AMBIGUOUS_TRANSFORMATION_PATTERNS = {
+    "Flip": re.compile(r"\bflip\b", re.I),
+    "ReWork": re.compile(r"\bre[- ]?work\b", re.I),
+}
+GROUPING_EVIDENCE_PATTERNS = (
+    ("Intro Edit", re.compile(r"\bintro\s+(?:clean|edit)\b", re.I)),
+    ("Outro Edit", re.compile(r"\boutro\s+edit\b", re.I)),
+    ("Transition Edit", re.compile(r"\btransition\s+edit\b", re.I)),
+    ("Extended", re.compile(r"\bextended(?:\s+mix)?\b", re.I)),
+    ("Instrumental", re.compile(r"\binstrumental\b", re.I)),
+    ("Acapella", re.compile(r"\b(?:acapella|a\s*cappella)\b", re.I)),
+    ("Bootleg", re.compile(r"\bbootleg\b", re.I)),
+    ("Remix", re.compile(r"\b(?:remix|re[- ]?mix|rmx)\b", re.I)),
+)
+DJ_STYLE_EDIT_RE = re.compile(
+    r"(?:[\[(][^\])]*\bedit\b[^\])]*[\])]|\bdj\b.{0,40}\bedit\b)",
+    re.I,
+)
+
 
 def classify_version(stem: str, title: str) -> tuple[str, str]:
     text = " ".join((stem, title)).casefold()
@@ -68,25 +89,164 @@ def load_genre_rules(path: Path | None) -> dict:
     return json.loads(target.read_text(encoding="utf-8"))
 
 
-def classify_genre(row: dict, rules: dict, assume_genre: str | None) -> tuple[str | None, str, str]:
+def _dedupe(values: list[str]) -> list[str]:
+    result: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        key = value.strip().casefold()
+        if key and key not in seen:
+            result.append(value.strip())
+            seen.add(key)
+    return result
+
+
+def analyze_genre(row: dict, rules: dict, assume_genre: str | None = None) -> dict:
+    """Classify Genre components without guessing unknown compound text."""
     if assume_genre:
-        return assume_genre, f"source folder is a confirmed single genre: {assume_genre}", "assumed"
+        return {
+            "resolution_status": "RESOLVED", "category": "valid_single_genre",
+            "proposed_genre": assume_genre, "recognized_genres": [assume_genre],
+            "known_contexts": [], "unknown_tokens": [],
+            "evidence": f"source folder is a confirmed single genre: {assume_genre}",
+            "confidence": "assumed",
+        }
 
-    lower_name = row["filename"].casefold()
+    lower_name = row.get("filename", "").casefold()
     for rule in rules.get("filename_keywords", []):
-        if rule["contains"] in lower_name:
-            return rule["genre"], rule["evidence"], "high"
+        if rule["contains"].casefold() in lower_name:
+            return {
+                "resolution_status": "RESOLVED", "category": "valid_single_genre",
+                "proposed_genre": rule["genre"], "recognized_genres": [rule["genre"]],
+                "known_contexts": [], "unknown_tokens": [],
+                "evidence": rule["evidence"], "confidence": "high",
+            }
 
-    genre = row["genre"].strip()
-    canonical = rules.get("tag_aliases", {}).get(genre.casefold())
-    if canonical:
-        return canonical, f"existing genre tag: {genre}", "tag"
+    raw = (row.get("genre") or "").strip()
+    if not raw:
+        return {
+            "resolution_status": "REVIEW", "category": "blank",
+            "proposed_genre": None, "recognized_genres": [], "known_contexts": [],
+            "unknown_tokens": [], "evidence": "no genre tag and no explicit genre evidence",
+            "confidence": "review",
+        }
+    if raw.casefold() == "other":
+        return {
+            "resolution_status": "REVIEW", "category": "other",
+            "proposed_genre": None, "recognized_genres": [], "known_contexts": [],
+            "unknown_tokens": [raw], "evidence": "generic Other tag is not genre evidence",
+            "confidence": "review",
+        }
 
-    if not genre:
-        return None, "no genre tag and no explicit genre evidence", "review"
-    if genre.casefold() == "other":
-        return None, "generic Other tag is not genre evidence", "review"
-    return None, f"ambiguous or compound genre tag: {genre}", "review"
+    tokens = [token.strip() for token in GENRE_TOKEN_SPLIT_RE.split(raw) if token.strip()]
+    aliases = rules.get("tag_aliases", {})
+    contexts = rules.get("context_aliases", {})
+    recognized: list[str] = []
+    known_contexts: list[str] = []
+    unknown: list[str] = []
+    for token in tokens:
+        folded = token.casefold()
+        if folded in contexts:
+            known_contexts.append(contexts[folded])
+        elif folded in aliases:
+            recognized.append(aliases[folded])
+        else:
+            unknown.append(token)
+    recognized = _dedupe(recognized)
+    known_contexts = _dedupe(known_contexts)
+
+    if recognized and not known_contexts and not unknown:
+        proposed = "; ".join(recognized)
+        category = "valid_multi_genre" if len(tokens) > 1 or len(recognized) > 1 else "valid_single_genre"
+        return {
+            "resolution_status": "RESOLVED", "category": category,
+            "proposed_genre": proposed, "recognized_genres": recognized,
+            "known_contexts": [], "unknown_tokens": [],
+            "evidence": f"all Genre components recognized independently: {', '.join(recognized)}",
+            "confidence": "tag",
+        }
+
+    if recognized:
+        details = []
+        if known_contexts:
+            details.append(f"known Grouping/context in legacy Genre: {', '.join(known_contexts)}")
+        if unknown:
+            details.append(f"unknown token(s): {', '.join(unknown)}")
+        return {
+            "resolution_status": "PARTIALLY_RESOLVED",
+            "category": "valid_genre_plus_context" if known_contexts and not unknown else "unknown_token_remains",
+            "proposed_genre": None, "recognized_genres": recognized,
+            "known_contexts": known_contexts, "unknown_tokens": unknown,
+            "evidence": f"recognized Genre(s): {', '.join(recognized)}; " + "; ".join(details),
+            "confidence": "partial",
+        }
+
+    context_note = f"; known context only: {', '.join(known_contexts)}" if known_contexts else ""
+    unknown_note = ", ".join(unknown) if unknown else "none"
+    return {
+        "resolution_status": "REVIEW", "category": "unknown_token_remains",
+        "proposed_genre": None, "recognized_genres": [], "known_contexts": known_contexts,
+        "unknown_tokens": unknown,
+        "evidence": f"no recognized musical Genre{context_note}; unknown token(s): {unknown_note}",
+        "confidence": "review",
+    }
+
+
+def classify_genre(row: dict, rules: dict, assume_genre: str | None) -> tuple[str | None, str, str]:
+    result = analyze_genre(row, rules, assume_genre)
+    return result["proposed_genre"], result["evidence"], result["confidence"]
+
+
+def classify_grouping(filename: str, title: str, current_grouping, rules: dict) -> dict:
+    """Return deterministic plain Grouping additions and fail-closed reviews."""
+    raw_values = [current_grouping] if isinstance(current_grouping, str) else list(current_grouping or [])
+    existing = _dedupe([
+        part.strip()
+        for value in raw_values
+        for part in str(value).split(";")
+        if part.strip()
+    ])
+    controlled = rules.get("grouping_terms", {})
+    recognized_existing = [controlled[value.casefold()] for value in existing if value.casefold() in controlled]
+    unknown_existing = [value for value in existing if value.casefold() not in controlled]
+    text = " ".join((filename, title))
+    additions: list[str] = []
+    evidence: list[str] = []
+    review_reasons: list[str] = []
+
+    for label, pattern in AMBIGUOUS_TRANSFORMATION_PATTERNS.items():
+        if pattern.search(text):
+            review_reasons.append(f"{label} requires a separate transformation decision")
+    if RADIO_EDIT_RE.search(text):
+        review_reasons.append("Radio Edit is not automatically mapped to Edit")
+    for term, pattern in GROUPING_EVIDENCE_PATTERNS:
+        if pattern.search(text):
+            additions.append(term)
+            evidence.append(f"explicit {term} wording in filename/title")
+    if re.search(r"\bintro\s+clean\b", text, re.I):
+        additions.append("Clean")
+        evidence.append("explicit Clean wording in Intro Clean")
+    elif CLEAN_RE.search(text):
+        additions.append("Clean")
+        evidence.append("explicit bracketed Clean wording")
+    if DIRTY_RE.search(text):
+        additions.append("Dirty")
+        evidence.append("explicit bracketed Dirty wording")
+
+    edit_text = RADIO_EDIT_RE.sub("", text)
+    if DJ_STYLE_EDIT_RE.search(edit_text):
+        additions.append("Edit")
+        evidence.append("explicit DJ-style Edit wording in filename/title")
+    additions = [term for term in _dedupe(additions) if term.casefold() not in {v.casefold() for v in existing}]
+    proposed_parts = _dedupe([*existing, *additions])
+    return {
+        "resolution_status": "REVIEW" if review_reasons else "RESOLVED",
+        "recognized_existing": _dedupe(recognized_existing),
+        "unknown_existing": unknown_existing,
+        "add_terms": additions,
+        "proposed_grouping": "; ".join(proposed_parts),
+        "evidence": evidence,
+        "review_reasons": review_reasons,
+    }
 
 
 def main() -> None:

@@ -4,8 +4,11 @@ mechanical, deterministic fixes established during the 2026-08-16 library
 cleanup, so they can run automatically on future downloads instead of by
 hand each time:
 
-  - remix/edit type detection from filename (Remix/Flip/Mashup/Rework/
-    Bootleg/VIP/Edit) -> Grouping tag, plus a shared "Edit" umbrella
+  - deterministic transformation/version detection from explicit filename
+    wording -> plain Grouping terms (Remix, Edit, Bootleg, Extended,
+    Instrumental, Acapella, Clean, Dirty, and approved edit forms)
+  - Radio Edit, Flip, and ReWork remain reviewable rather than being silently
+    collapsed into Edit
   - Clean/Dirty detection from an explicit "(Clean)"/"(Dirty)" filename
     label -> Grouping tag (never inferred from absence of a label)
   - Genre-from-folder: ONLY when every other already-tagged file in the
@@ -26,7 +29,6 @@ import argparse
 import hashlib
 import json
 import os
-import re
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -34,22 +36,11 @@ from mutagen.flac import FLAC
 from mutagen.id3 import ID3, ID3NoHeaderError
 from mutagen.mp4 import MP4
 
+from build_version_genre_plan import classify_grouping, load_genre_rules
+
 AUDIO_EXTS = {".mp3", ".flac", ".m4a"}
 PLACEHOLDER_GENRES = {"", "other", "unknown", "n/a"}
 BACKLOG_MARKERS = ("needs check", "genre needs check")
-
-TERM_PATTERNS = [
-    ("Remix", re.compile(r"\bremix\b", re.I)),
-    ("Flip", re.compile(r"\bflip\b", re.I)),
-    ("Mashup", re.compile(r"\bmash ?up\b", re.I)),
-    ("Rework", re.compile(r"\brework\b", re.I)),
-    ("Bootleg", re.compile(r"\bbootleg\b", re.I)),
-    ("VIP", re.compile(r"\bvip\b", re.I)),
-    ("Edit", re.compile(r"\bedit\b", re.I)),
-]
-CLEAN_PATTERN = re.compile(r"\bclean\b", re.I)
-DIRTY_PATTERN = re.compile(r"\bdirty\b", re.I)
-
 
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
@@ -140,6 +131,7 @@ def main() -> None:
 
     root = args.root.resolve()
     library_root = args.library_root.resolve()
+    metadata_rules = load_genre_rules(None)
     try:
         root.relative_to(library_root)
     except ValueError as exc:
@@ -173,7 +165,6 @@ def main() -> None:
         rel = str(path.relative_to(root))
         genre = read_genre(path)
         grouping = read_grouping(path)
-        grouping_lower = " ".join(grouping).lower()
 
         fix = {"path": str(path), "relative_path": rel, "sha256": sha256_file(path)}
         review_reasons = []
@@ -190,24 +181,11 @@ def main() -> None:
                 review_reasons.append("genre placeholder, no tagged siblings in this folder to infer from")
 
         # --- remix/edit type + clean/dirty grouping terms ---
-        terms_to_add = []
-        for term, pattern in TERM_PATTERNS:
-            if pattern.search(path.name) and term.casefold() not in grouping_lower:
-                terms_to_add.append(term)
+        grouping_analysis = classify_grouping(path.name, "", grouping, metadata_rules)
+        terms_to_add = grouping_analysis["add_terms"]
+        review_reasons.extend(grouping_analysis["review_reasons"])
         if terms_to_add:
-            terms_to_add.append("Edit")
-        if CLEAN_PATTERN.search(path.name) and "clean" not in grouping_lower and "dirty" not in grouping_lower:
-            terms_to_add.append("Clean")
-        elif DIRTY_PATTERN.search(path.name) and "clean" not in grouping_lower and "dirty" not in grouping_lower:
-            terms_to_add.append("Dirty")
-        if terms_to_add:
-            seen = set()
-            deduped = []
-            for t in terms_to_add:
-                if t.casefold() not in seen:
-                    deduped.append(t)
-                    seen.add(t.casefold())
-            fix["grouping_fix"] = {"add_terms": deduped, "existing": grouping}
+            fix["grouping_fix"] = {"add_terms": terms_to_add, "existing": grouping}
 
         # --- duplicate detection (info only, never auto-deleted) ---
         if live_index is not None:

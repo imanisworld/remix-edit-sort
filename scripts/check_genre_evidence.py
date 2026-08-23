@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Read-only genre evidence checker for unresolved DJ tracks.
+"""Read-only Genre/Grouping evidence checker for unresolved DJ tracks.
 
-Reuses the existing trusted `classify_genre()` implementation and
-version-genre-rules.json. It never adds aliases, moves files, or writes tags.
+Reuses the shared metadata classifiers and version-genre-rules.json. It never
+moves files or writes tags.
 """
 
 from __future__ import annotations
@@ -18,7 +18,11 @@ from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build_version_genre_plan import classify_genre, load_genre_rules  # noqa: E402
+from build_version_genre_plan import (  # noqa: E402
+    analyze_genre,
+    classify_grouping,
+    load_genre_rules,
+)
 
 OUTPUT_COLUMNS = [
     "full_path",
@@ -31,6 +35,17 @@ OUTPUT_COLUMNS = [
     "genre_status",
     "genre_confidence",
     "genre_evidence",
+    "genre_resolution_status",
+    "genre_category",
+    "recognized_genres",
+    "known_contexts",
+    "unknown_tokens",
+    "current_grouping",
+    "proposed_grouping",
+    "grouping_resolution_status",
+    "grouping_add_terms",
+    "grouping_evidence",
+    "grouping_review_reasons",
     "needs_check_path",
 ]
 
@@ -40,8 +55,15 @@ def is_needs_check_path(path: str) -> bool:
 
 
 def evaluate_genre_row(row: dict[str, str], rules: dict) -> dict[str, str]:
-    proposed, evidence, confidence = classify_genre(row, rules, assume_genre=None)
+    analysis = analyze_genre(row, rules, assume_genre=None)
+    proposed = analysis["proposed_genre"]
+    evidence = analysis["evidence"]
+    confidence = analysis["confidence"]
     current = (row.get("genre") or "").strip()
+    current_grouping = (row.get("grouping") or "").strip()
+    grouping = classify_grouping(
+        row.get("filename", ""), row.get("title", ""), current_grouping, rules
+    )
 
     if proposed is None:
         status = "REVIEW"
@@ -64,6 +86,17 @@ def evaluate_genre_row(row: dict[str, str], rules: dict) -> dict[str, str]:
         "genre_status": status,
         "genre_confidence": confidence,
         "genre_evidence": evidence,
+        "genre_resolution_status": analysis["resolution_status"],
+        "genre_category": analysis["category"],
+        "recognized_genres": "; ".join(analysis["recognized_genres"]),
+        "known_contexts": "; ".join(analysis["known_contexts"]),
+        "unknown_tokens": "; ".join(analysis["unknown_tokens"]),
+        "current_grouping": current_grouping,
+        "proposed_grouping": grouping["proposed_grouping"],
+        "grouping_resolution_status": grouping["resolution_status"],
+        "grouping_add_terms": "; ".join(grouping["add_terms"]),
+        "grouping_evidence": "; ".join(grouping["evidence"]),
+        "grouping_review_reasons": "; ".join(grouping["review_reasons"]),
         "needs_check_path": "yes" if is_needs_check_path(row.get("full_path", "")) else "no",
     }
 
@@ -89,6 +122,8 @@ def main() -> None:
 
     results = [evaluate_genre_row(row, rules) for row in rows]
     status_counts = Counter(result["genre_status"] for result in results)
+    resolution_counts = Counter(result["genre_resolution_status"] for result in results)
+    category_counts = Counter(result["genre_category"] for result in results)
     proposal_counts = Counter(
         result["proposed_genre"] for result in results
         if result["genre_status"] == "HIGH_CONFIDENCE_PROPOSAL" and result["proposed_genre"]
@@ -106,12 +141,14 @@ def main() -> None:
         "source_mutation": False,
         "tracks_checked": len(results),
         "status_counts": dict(sorted(status_counts.items())),
+        "resolution_counts": dict(sorted(resolution_counts.items())),
+        "category_counts": dict(sorted(category_counts.items())),
         "proposal_counts": dict(sorted(proposal_counts.items())),
         "rules": {
-            "classifier": "build_version_genre_plan.classify_genre",
-            "new_aliases_added": False,
-            "new_heuristics_added": False,
-            "review_on_ambiguous_or_compound": True,
+            "classifier": "build_version_genre_plan.analyze_genre + classify_grouping",
+            "multi_genre_components_supported": True,
+            "known_context_contamination_is_partial": True,
+            "unknown_compound_tokens_fail_closed": True,
             "no_moves": True,
             "no_tag_writes": True,
         },
@@ -141,7 +178,7 @@ def main() -> None:
         lines.append("None.")
     lines.extend([
         "",
-        "Ambiguous, blank, compound, or unmapped tags remain `REVIEW`; this tool does not invent aliases.",
+        "Known multi-Genre values resolve component-by-component. Context contamination and mixed unknown tokens fail closed without a writable proposal.",
         "",
     ])
     (args.out_dir / "GENRE-EVIDENCE-PREVIEW.md").write_text("\n".join(lines), encoding="utf-8")

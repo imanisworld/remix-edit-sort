@@ -27,7 +27,7 @@ Outputs:
 - `genre-evidence-summary.json`
 - `GENRE-EVIDENCE-PREVIEW.md`
 
-`HIGH_CONFIDENCE_PROPOSAL` means an existing filename keyword or tag alias resolved through the same classifier used by the version+genre pipeline. Blank, compound, ambiguous, and unmapped tags remain `REVIEW`. This checker never adds aliases or new genre heuristics.
+`HIGH_CONFIDENCE_PROPOSAL` means existing deterministic evidence resolved through the same classifier used by the version+genre pipeline. Known comma/semicolon-separated musical Genre components are normalized independently without requiring a primary Genre. A known Genre mixed with legacy context or an unknown token is `PARTIALLY_RESOLVED` and receives no writable proposal; blank, `Other`, and wholly unknown values remain `REVIEW`.
 
 ## 3. Clean/Dirty checker from existing labels
 

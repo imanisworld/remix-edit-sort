@@ -95,9 +95,35 @@ class NewPlanBuilderTests(unittest.TestCase):
             self.assertEqual(row["sha256"], backup_manifest.sha256_file(target))
             self.assertEqual(row["genre_fix"]["to"], "House")
             self.assertEqual(
-                row["grouping_fix"]["add_terms"], ["Remix", "Edit", "Clean"]
+                row["grouping_fix"]["add_terms"], ["Remix", "Clean"]
             )
             self.assertEqual(target.read_bytes(), before)
+
+    def test_intake_radio_edit_flip_and_rework_stay_in_review(self):
+        with tempfile.TemporaryDirectory() as tmp_name:
+            tmp = Path(tmp_name)
+            library = tmp / "library"
+            intake = library / "music to move" / "batch"
+            fixtures.make_library(intake, [
+                {"relative": "one (Radio Edit).mp3", "genre": "House"},
+                {"relative": "two (Flip).mp3", "genre": "House"},
+                {"relative": "three (ReWork).mp3", "genre": "House"},
+            ])
+            out = tmp / "intake-plan.json"
+            result = run(
+                SURVEY_INTAKE, "--root", library / "music to move",
+                "--library-root", library, "--skip-duplicate-check", "--out", out,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            plan = json.loads(out.read_text(encoding="utf-8"))
+            self.assertEqual(plan["items"], [])
+            self.assertEqual(len(plan["needs_review"]), 3)
+            reasons = " ".join(
+                reason for row in plan["needs_review"] for reason in row["reasons"]
+            )
+            self.assertIn("Radio Edit", reasons)
+            self.assertIn("Flip", reasons)
+            self.assertIn("ReWork", reasons)
 
     def test_genre_needs_check_survey_records_source_hash_without_mutation(self):
         with tempfile.TemporaryDirectory() as tmp_name:

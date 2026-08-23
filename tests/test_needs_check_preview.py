@@ -91,13 +91,97 @@ class GenreEvidenceTests(unittest.TestCase):
     def test_filename_keyword_can_resolve_blank_tag(self):
         result = genre_checker.evaluate_genre_row(self.row("Artist - Track Ghettotech Edit.mp3", ""), self.rules)
         self.assertEqual(result["genre_status"], "HIGH_CONFIDENCE_PROPOSAL")
-        self.assertEqual(result["proposed_genre"], "Ghettotech")
+        self.assertEqual(result["proposed_genre"], "Ghetto Tech")
         self.assertEqual(result["genre_confidence"], "high")
 
-    def test_ambiguous_compound_tag_remains_review(self):
-        result = genre_checker.evaluate_genre_row(self.row("song.mp3", "Hip Hop, pop"), self.rules)
-        self.assertEqual(result["genre_status"], "REVIEW")
+    def assert_resolved(self, genre, expected):
+        result = genre_checker.evaluate_genre_row(self.row("song.mp3", genre), self.rules)
+        self.assertEqual(result["genre_resolution_status"], "RESOLVED")
+        self.assertEqual(result["proposed_genre"], expected)
+
+    def test_established_single_and_multi_genres(self):
+        for raw, expected in [
+            ("House; Techno", "House; Techno"),
+            ("house, techno", "House; Techno"),
+            ("Techno; Electronic", "Techno; Electronic"),
+            ("Techno, Electronic", "Techno; Electronic"),
+            ("R&B; Pop", "R&B; Pop"),
+            ("R&B, pop", "R&B; Pop"),
+            ("Pop; Pop Rock; Rock; Soft Rock", "Pop; Pop Rock; Rock; Soft Rock"),
+            ("Trap", "Hip-Hop"),
+            ("Southern Hip-Hop", "Hip-Hop"),
+        ]:
+            with self.subTest(raw=raw):
+                self.assert_resolved(raw, expected)
+
+    def test_unknown_token_mixed_with_known_genre_is_partial_and_not_proposed(self):
+        result = genre_checker.evaluate_genre_row(self.row("song.mp3", "House; Mystery Style"), self.rules)
+        self.assertEqual(result["genre_resolution_status"], "PARTIALLY_RESOLVED")
+        self.assertEqual(result["recognized_genres"], "House")
+        self.assertEqual(result["unknown_tokens"], "Mystery Style")
         self.assertEqual(result["proposed_genre"], "")
+
+    def test_blank_and_other_remain_review(self):
+        for raw, category in [("", "blank"), ("Other", "other")]:
+            with self.subTest(raw=raw):
+                result = genre_checker.evaluate_genre_row(self.row("song.mp3", raw), self.rules)
+                self.assertEqual(result["genre_resolution_status"], "REVIEW")
+                self.assertEqual(result["genre_category"], category)
+
+    def test_post_canary_betty_is_partial_not_wholly_unknown(self):
+        row = self.row("After The Pain (Intro Clean).mp3", "R&B, pop, old head party")
+        row["grouping"] = "Clean; Old Head; Intro Edit"
+        result = genre_checker.evaluate_genre_row(row, self.rules)
+        self.assertEqual(result["genre_resolution_status"], "PARTIALLY_RESOLVED")
+        self.assertEqual(result["recognized_genres"], "R&B; Pop")
+        self.assertEqual(result["known_contexts"], "Old Head")
+        self.assertEqual(result["grouping_resolution_status"], "RESOLVED")
+
+    def test_post_canary_ballin_flossin(self):
+        self.assert_resolved("Electronic; Footwork; Ghetto House; Juke", "Electronic; Footwork; Ghetto House; Juke")
+
+    def test_post_canary_field_trip(self):
+        row = self.row("FIELD TRIP.mp3", "Jungle; Ghetto Tech; Jersey Club")
+        row["grouping"] = "Plex; Edit"
+        result = genre_checker.evaluate_genre_row(row, self.rules)
+        self.assertEqual(result["genre_resolution_status"], "RESOLVED")
+        self.assertEqual(result["proposed_genre"], "Jungle; Ghetto Tech; Jersey Club")
+        self.assertEqual(result["grouping_resolution_status"], "RESOLVED")
+
+    def test_post_canary_beautiful_liar(self):
+        row = self.row("Beautiful Liar (DJ Edit).mp3", "Baile")
+        row["grouping"] = "Edit"
+        result = genre_checker.evaluate_genre_row(row, self.rules)
+        self.assertEqual(result["genre_resolution_status"], "RESOLVED")
+        self.assertEqual(result["grouping_resolution_status"], "RESOLVED")
+
+    def test_remaining_post_canary_states(self):
+        cases = [
+            ("Essence (Instrumental).mp3", "Dancehall", "Instrumental"),
+            ("Jazzy Belle (Swift C's Remix) (Dirty Acapella).mp3", "Hip-Hop", "Remix; Edit; Dirty; Acapella"),
+            ("Already Best Friends (Dennis Blaze Afro Reggae Remix) (Clean Extended).mp3", "Afrobeat", "Clean; Remix; Edit; Extended"),
+            ("Freak Like Me (Bootleg Remix) Extended Mix.mp3", "Groovy Bounce", "Remix; Bootleg; Edit; Extended"),
+        ]
+        for filename, genre, grouping in cases:
+            with self.subTest(filename=filename):
+                row = self.row(filename, genre)
+                row["grouping"] = grouping
+                result = genre_checker.evaluate_genre_row(row, self.rules)
+                self.assertEqual(result["genre_resolution_status"], "RESOLVED")
+                self.assertEqual(result["grouping_resolution_status"], "RESOLVED")
+                self.assertEqual(result["proposed_grouping"], grouping)
+
+    def test_radio_edit_flip_and_rework_remain_reviewable(self):
+        for filename, reason in [
+            ("Song (Radio Edit).mp3", "Radio Edit"),
+            ("Song (Flip).mp3", "Flip"),
+            ("Song (ReWork).mp3", "ReWork"),
+        ]:
+            with self.subTest(filename=filename):
+                analysis = version_genre.classify_grouping(filename, "", "", self.rules)
+                self.assertEqual(analysis["resolution_status"], "REVIEW")
+                self.assertNotIn("Edit", analysis["add_terms"])
+                self.assertTrue(any(reason in item for item in analysis["review_reasons"]))
 
     def test_needs_check_path_detection(self):
         self.assertTrue(genre_checker.is_needs_check_path("/x/_GENRE NEEDS CHECK/song.mp3"))
