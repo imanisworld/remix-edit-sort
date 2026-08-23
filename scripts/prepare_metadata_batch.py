@@ -230,7 +230,8 @@ def _select_stable(candidates: list[dict], exclusions: Counter, maximum: int) ->
     return selected, exclusions
 
 
-def discover(library_root: Path, serato_root: Path, maximum: int) -> tuple[list[dict], Counter]:
+def discover(library_root: Path, serato_root: Path, maximum: int,
+            genre_only: bool = False) -> tuple[list[dict], Counter]:
     rules = classifier.load_genre_rules(None)
     crate_rules = parse_smart_crates(serato_root)
     exclusions: Counter = Counter()
@@ -271,20 +272,25 @@ def discover(library_root: Path, serato_root: Path, maximum: int) -> tuple[list[
             exclusions["semantic alias mapping held"] += 1
             continue
 
-        grouping_analysis = classifier.classify_grouping(
-            path.name, current["title"], current["grouping"], rules
-        )
-        if grouping_analysis["review_reasons"]:
-            exclusions[grouping_analysis["review_reasons"][0]] += 1
-            continue
-        additions = sorted(
-            grouping_analysis["add_terms"],
-            key=lambda value: (NEW_TERM_ORDER.get(value, 999), value.casefold()),
-        )
-        specific_edit = SPECIFIC_EDIT_TERMS.intersection(additions)
-        if "Edit" in additions and specific_edit:
-            exclusions["overlapping generic/specific Edit evidence"] += 1
-            continue
+        if genre_only:
+            additions: list[str] = []
+            grouping_evidence = ["Genre-only batch: Grouping intentionally left unchanged"]
+        else:
+            grouping_analysis = classifier.classify_grouping(
+                path.name, current["title"], current["grouping"], rules
+            )
+            if grouping_analysis["review_reasons"]:
+                exclusions[grouping_analysis["review_reasons"][0]] += 1
+                continue
+            additions = sorted(
+                grouping_analysis["add_terms"],
+                key=lambda value: (NEW_TERM_ORDER.get(value, 999), value.casefold()),
+            )
+            specific_edit = SPECIFIC_EDIT_TERMS.intersection(additions)
+            if "Edit" in additions and specific_edit:
+                exclusions["overlapping generic/specific Edit evidence"] += 1
+                continue
+            grouping_evidence = grouping_analysis["evidence"]
         proposed_grouping_parts = [*current["grouping"], *additions]
         proposed_grouping = "; ".join(proposed_grouping_parts)
         current_grouping = "; ".join(current["grouping"])
@@ -311,7 +317,7 @@ def discover(library_root: Path, serato_root: Path, maximum: int) -> tuple[list[
             "proposed_grouping": proposed_grouping,
             "grouping_add_terms": additions,
             "genre_evidence": genre_analysis["evidence"],
-            "grouping_evidence": grouping_analysis["evidence"],
+            "grouping_evidence": grouping_evidence,
             "smart_crate_effects": effects,
             "scope_root": str(scope),
             "lock_folder": top_folder,
@@ -614,11 +620,13 @@ def _write_preview(batch_dir: Path, batch_id: str, rows: list[dict], exclusions:
 
 def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: int,
             batch_format: str, lane: str = "genre", intake_root: Path | None = None,
-            confirmed_maximum: int | None = None) -> dict:
+            confirmed_maximum: int | None = None, genre_only: bool = False) -> dict:
     if batch_format.casefold() != "mp3":
         raise metadata_batch.BatchRefused("automated lane is MP3-only; FLAC requires its own proven canary")
     if lane not in LANES:
         raise metadata_batch.BatchRefused(f"unknown lane {lane!r}; expected one of {LANES}")
+    if genre_only and lane != "genre":
+        raise metadata_batch.BatchRefused("--genre-only is only valid with --lane genre")
     if maximum < 1:
         raise metadata_batch.BatchRefused("--max must be at least 1")
     if maximum > DEFAULT_MAX_CANDIDATES and confirmed_maximum != maximum:
@@ -660,7 +668,7 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
         elif lane == "intake":
             rows, exclusions = discover_intake(library_root, serato_root, intake_root, maximum)
         else:
-            rows, exclusions = discover(library_root, serato_root, maximum)
+            rows, exclusions = discover(library_root, serato_root, maximum, genre_only=genre_only)
         if not rows:
             raise metadata_batch.BatchRefused("no eligible deterministic MP3 candidates were found")
         grouped: dict[str, list[dict]] = defaultdict(list)
@@ -726,6 +734,7 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
             "safety_file_sha256": metadata_batch.safety_file_hashes(),
             "format": "mp3",
             "lane": lane,
+            "genre_only": genre_only,
             "intake_root": str(intake_root) if intake_root is not None else None,
             "batch_limit": maximum,
             "library_root": str(library_root),
@@ -798,6 +807,8 @@ def main() -> int:
     parser.add_argument("--confirm-max", type=int,
                         help=f"Required, and must equal --max, for any limit above {DEFAULT_MAX_CANDIDATES}")
     parser.add_argument("--lane", choices=LANES, default="genre")
+    parser.add_argument("--genre-only", action="store_true",
+                        help="Genre lane only: propose Genre changes and hold Grouping unchanged (0 additions)")
     parser.add_argument("--intake-root", type=Path,
                         help="Where new downloads land (intake lane only; must be inside the library root)")
     parser.add_argument("--library-root", type=Path, default=DEFAULT_LIBRARY)
@@ -809,9 +820,9 @@ def main() -> int:
         if args.approve:
             if not args.approved_by:
                 raise metadata_batch.BatchRefused("--approved-by is required with --approve")
-            if args.lane != "genre" or args.intake_root or args.confirm_max is not None:
+            if args.lane != "genre" or args.intake_root or args.confirm_max is not None or args.genre_only:
                 raise metadata_batch.BatchRefused(
-                    "--lane/--intake-root/--confirm-max are only valid when preparing"
+                    "--lane/--intake-root/--confirm-max/--genre-only are only valid when preparing"
                 )
             result = approve(args.approve, args.approved_by, metadata_batch.HANDOFF_ROOT)
             print(json.dumps({"HUMAN_APPROVED": True, **result}, indent=2))
@@ -820,10 +831,11 @@ def main() -> int:
             raise metadata_batch.BatchRefused("--approved-by is only valid with --approve")
         result = prepare(args.library_root, args.serato_root, metadata_batch.HANDOFF_ROOT,
                          args.max, args.format, lane=args.lane, intake_root=args.intake_root,
-                         confirmed_maximum=args.confirm_max)
+                         confirmed_maximum=args.confirm_max, genre_only=args.genre_only)
         smart_count = sum(len(row["smart_crate_effects"]) for row in result["candidates"])
         print(f"BATCH ID: {result['batch_id']}")
         print(f"LANE: {result['lane']}")
+        print(f"GENRE ONLY: {result['genre_only']}")
         print(f"CANDIDATES: {result['candidate_count']}")
         print(f"GENRE CHANGES: {result['genre_changes']}")
         print(f"GROUPING CHANGES: {result['grouping_changes']}")

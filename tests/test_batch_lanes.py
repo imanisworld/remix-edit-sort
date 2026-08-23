@@ -197,6 +197,69 @@ class VersionLabelBatchTests(_LaneCase):
         )
 
 
+class GenreOnlyBatchTests(_LaneCase):
+    """--genre-only: propose Genre changes, hold Grouping unchanged (0 additions)."""
+
+    def discover(self, maximum=150, genre_only=True):
+        return prepare_metadata_batch.discover(
+            self.library, self.serato, maximum, genre_only=genre_only
+        )
+
+    def test_grouping_addition_is_suppressed_while_genre_change_survives(self):
+        make_library(self.library, [{
+            "relative": "House/_GENRE NEEDS CHECK/a (Flip).mp3",
+            "genre": "house, techno", "title": "A (Flip)",
+            "grouping": "Holiday", "v2_version": 3,
+        }])
+        rows, _ = self.discover()
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["proposed_genre"], "House; Techno")
+        self.assertEqual(rows[0]["grouping_add_terms"], [])
+        self.assertEqual(rows[0]["proposed_grouping"], "Holiday")
+
+    def test_grouping_only_candidate_is_excluded_not_written_as_noop(self):
+        make_library(self.library, [{
+            "relative": "House/_GENRE NEEDS CHECK/a (Clean).mp3",
+            "genre": "House", "title": "A (Clean)",
+            "grouping": "Holiday", "v2_version": 3,
+        }])
+        rows, exclusions = self.discover()
+        self.assertEqual(rows, [])
+        self.assertEqual(exclusions["already normalized / no approved change"], 1)
+
+    def test_semantic_alias_genre_change_still_held(self):
+        make_library(self.library, [{
+            "relative": "House/_GENRE NEEDS CHECK/a.mp3",
+            "genre": "Trap", "title": "A", "v2_version": 3,
+        }])
+        rows, exclusions = self.discover()
+        self.assertEqual(rows, [])
+        self.assertEqual(exclusions["semantic alias mapping held"], 1)
+
+    def test_plan_item_carries_no_grouping_fix_key(self):
+        make_library(self.library, [{
+            "relative": "House/_GENRE NEEDS CHECK/a (Flip).mp3",
+            "genre": "house, techno", "title": "A (Flip)",
+            "grouping": "Holiday", "v2_version": 3,
+        }])
+        master = prepare_metadata_batch.prepare(
+            self.library, self.serato, self.handoff, 150, "mp3", genre_only=True,
+        )
+        self.assertTrue(master["genre_only"])
+        self.assertEqual(master["grouping_changes"], 0)
+        plan = json.loads(Path(master["scopes"][0]["plan_path"]).read_text(encoding="utf-8"))
+        self.assertNotIn("grouping_fix", plan["items"][0])
+        self.assertEqual(plan["counts"]["grouping_fixes"], 0)
+        self.assertIn("genre_fix", plan["items"][0])
+
+    def test_genre_only_rejected_outside_genre_lane(self):
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "--genre-only is only valid"):
+            prepare_metadata_batch.prepare(
+                self.library, self.serato, self.handoff, 150, "mp3",
+                lane="clean-dirty", genre_only=True,
+            )
+
+
 class BatchScalingTests(_LaneCase):
     def _seed_one_candidate(self):
         make_library(self.library, [{
