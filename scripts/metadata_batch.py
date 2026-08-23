@@ -30,7 +30,7 @@ T5_BACKUP_ROOT = T5_VOLUME / "DJ/Backups/remix-edit-sort"
 STATES = (
     "DISCOVERED", "PREVIEWED", "HUMAN_APPROVED", "PLANNED",
     "PREFLIGHT_PASS", "BACKED_UP", "APPLIED", "VERIFIED",
-    "SERATO_SPOTCHECK", "COMPLETE", "BLOCKED",
+    "SERATO_SPOTCHECK", "COMPLETE", "BLOCKED", "ROLLBACK_FAILED",
 )
 FORWARD = {
     "DISCOVERED": "PREVIEWED",
@@ -47,6 +47,25 @@ FORWARD = {
 
 class BatchRefused(RuntimeError):
     """A safety gate refused the requested operation."""
+
+
+class RollbackFailed(BatchRefused):
+    """A mutation began and its automatic restore also failed."""
+
+
+GATED_SAFETY_FILES = (
+    "scripts/apply_approved_batch.py",
+    "scripts/apply_new_music_intake_plan.py",
+    "scripts/backup_manifest.py",
+    "scripts/build_version_genre_plan.py",
+    "scripts/folder_lock.py",
+    "scripts/lock_guard.py",
+    "scripts/metadata_batch.py",
+    "scripts/mutation_engine.py",
+    "scripts/mutation_surface.py",
+    "scripts/prepare_metadata_batch.py",
+    "references/version-genre-rules.json",
+)
 
 
 def now() -> str:
@@ -73,6 +92,18 @@ def repo_head() -> str:
         text=True, capture_output=True, check=True, timeout=10,
     )
     return result.stdout.strip()
+
+
+def safety_file_hashes(repo_root: Path = REPO_ROOT) -> dict[str, str]:
+    """Content binding for code and rules that affect approval or execution."""
+    repo_root = Path(repo_root).resolve()
+    result = {}
+    for relative in GATED_SAFETY_FILES:
+        path = repo_root / relative
+        if not path.is_file():
+            raise BatchRefused(f"gated safety file is missing: {path}")
+        result[relative] = sha256_file(path)
+    return result
 
 
 def _is_within(path: Path, root: Path) -> bool:
@@ -178,9 +209,9 @@ def transition(state_path: Path, new_state: str, *, reason: str | None = None,
     state_path = require_handoff_path(state_path, handoff_root)
     state = read_json(state_path)
     old = state.get("state")
-    if new_state != "BLOCKED" and FORWARD.get(old) != new_state:
+    if new_state not in {"BLOCKED", "ROLLBACK_FAILED"} and FORWARD.get(old) != new_state:
         raise BatchRefused(f"invalid batch transition {old} -> {new_state}")
-    if old == "COMPLETE" and new_state == "BLOCKED":
+    if old == "COMPLETE" and new_state in {"BLOCKED", "ROLLBACK_FAILED"}:
         raise BatchRefused("a completed batch cannot be retroactively blocked")
     stamp = now()
     state["state"] = new_state
@@ -201,7 +232,7 @@ def update_scope(state_path: Path, scope_id: str, scope_state: str, *, details: 
     state = read_json(state_path)
     scopes = state.setdefault("scopes", {})
     prior = scopes.get(scope_id, {}).get("state", "PREFLIGHT_PASS")
-    if scope_state != "BLOCKED" and FORWARD.get(prior) != scope_state:
+    if scope_state not in {"BLOCKED", "ROLLBACK_FAILED"} and FORWARD.get(prior) != scope_state:
         raise BatchRefused(f"invalid scope transition {scope_id}: {prior} -> {scope_state}")
     entry = scopes.setdefault(scope_id, {"history": []})
     entry["state"] = scope_state

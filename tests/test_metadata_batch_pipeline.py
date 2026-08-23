@@ -5,6 +5,7 @@ All media is synthetic and all writable roots are TemporaryDirectory paths.
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -17,8 +18,11 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import apply_approved_batch  # noqa: E402
+import backup_manifest  # noqa: E402
 import folder_lock  # noqa: E402
+import lock_guard  # noqa: E402
 import metadata_batch  # noqa: E402
+import mutation_engine  # noqa: E402
 import prepare_metadata_batch  # noqa: E402
 from fixtures import make_library  # noqa: E402
 
@@ -64,6 +68,16 @@ class StateMachineTests(unittest.TestCase):
         with self.assertRaisesRegex(metadata_batch.BatchRefused, "is BLOCKED"):
             metadata_batch.start_batch(self.state_path, "b2", self.handoff / "b2",
                                        handoff_root=self.handoff)
+
+    def test_rollback_failed_is_distinct_from_blocked(self):
+        metadata_batch.start_batch(self.state_path, "b1", self.batch_dir,
+                                   handoff_root=self.handoff)
+        metadata_batch.transition(self.state_path, "PREVIEWED", handoff_root=self.handoff)
+        metadata_batch.transition(
+            self.state_path, "ROLLBACK_FAILED", reason="restore failed",
+            handoff_root=self.handoff,
+        )
+        self.assertEqual(metadata_batch.read_json(self.state_path)["state"], "ROLLBACK_FAILED")
 
     def test_owned_writes_are_path_confined(self):
         with self.assertRaisesRegex(metadata_batch.BatchRefused, "must resolve under"):
@@ -115,6 +129,28 @@ class BackupConfinementTests(unittest.TestCase):
                 t5_volume=self.t5,
             )
         self.assertFalse(destination.exists())
+
+    def test_corrupted_backup_after_manifest_is_refused_by_engine(self):
+        destination = self.t5 / "Backups" / "b1" / "source"
+        manifest_path = destination.parent / "manifest.json"
+        metadata_batch.create_verified_backup(
+            self.source, destination, manifest_path, t5_volume=self.t5
+        )
+        manifest = backup_manifest.require_pass(manifest_path, self.source)
+        (destination / "track.bin").write_bytes(b"corrupted after PASS")
+        journal = self.root / "recovery.jsonl"
+        engine = mutation_engine.MutationEngine(
+            journal, heartbeat=None, manifest=manifest,
+            source_root=self.source, label="corrupt-backup-test",
+        )
+        engine.start({"items": 1})
+        with self.assertRaisesRegex(mutation_engine.MutationRefused, "backup copy"):
+            with engine.item(
+                1, kind=mutation_engine.METADATA,
+                source=self.source / "track.bin",
+                expected_sha256=metadata_batch.sha256_file(self.source / "track.bin"),
+            ):
+                self.fail("mutation body must never be entered")
 
 
 class PreparationEligibilityTests(unittest.TestCase):
@@ -234,6 +270,7 @@ class ApprovalAndPreflightTests(unittest.TestCase):
         self.preview_csv.write_text("synthetic,csv\n", encoding="utf-8")
         self.master = {
             "schema_version": 1, "batch_id": "b1", "repo_commit": metadata_batch.repo_head(),
+            "safety_file_sha256": metadata_batch.safety_file_hashes(),
             "candidate_count": 1, "ready_for_human_approval": True,
             "preview": {
                 "md_path": str(self.preview_md.resolve()),
@@ -291,6 +328,10 @@ class ApprovalAndPreflightTests(unittest.TestCase):
         master, loaded_approval = self._preflight()
         self.assertEqual(master["master_sha"], self.master["master_sha"])
         self.assertEqual(loaded_approval, approval)
+        self.assertEqual(
+            approval["plan_sha256"],
+            {"S001": self.master["scopes"][0]["plan_sha256"]},
+        )
 
     def test_plan_tamper_is_refused(self):
         self._approve()
@@ -316,6 +357,59 @@ class ApprovalAndPreflightTests(unittest.TestCase):
         with mock.patch.object(metadata_batch, "repo_head", return_value="different"):
             with self.assertRaisesRegex(metadata_batch.BatchRefused, "repo HEAD differs"):
                 self._preflight()
+
+    def test_gated_safety_file_drift_is_refused(self):
+        self._approve()
+        changed = dict(self.master["safety_file_sha256"])
+        changed["scripts/mutation_engine.py"] = "0" * 64
+        with mock.patch.object(metadata_batch, "safety_file_hashes", return_value=changed):
+            with self.assertRaisesRegex(metadata_batch.BatchRefused, "safety files changed"):
+                self._preflight()
+
+    def test_explicit_metadata_drift_gate(self):
+        row = dict(self.master["candidates"][0])
+        row["genre"] = "different approved value"
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "live genre drift"):
+            apply_approved_batch._validate_live({"candidates": [row]})
+
+    def test_explicit_id3_version_drift_gate(self):
+        row = dict(self.master["candidates"][0])
+        row["id3_major"] = 4
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "live id3_major drift"):
+            apply_approved_batch._validate_live({"candidates": [row]})
+
+    def test_duplicate_path_across_two_scope_plans_is_refused(self):
+        second = self.plans / "S002.json"
+        second.write_text(self.plan_path.read_text(encoding="utf-8"), encoding="utf-8")
+        master = dict(self.master)
+        master["scopes"] = [
+            self.master["scopes"][0],
+            {**self.master["scopes"][0], "scope_id": "S002",
+             "plan_path": str(second.resolve()),
+             "plan_sha256": metadata_batch.sha256_file(second)},
+        ]
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "plan union differs"):
+            apply_approved_batch._validate_plans(master, self.handoff)
+
+    def test_real_validator_failure_is_refused_even_with_matching_plan_hash(self):
+        plan = json.loads(self.plan_path.read_text(encoding="utf-8"))
+        plan["root"] = str(self.library.resolve())
+        self.plan_path.write_text(json.dumps(plan), encoding="utf-8")
+        master = dict(self.master)
+        master["scopes"] = [{
+            **self.master["scopes"][0],
+            "plan_sha256": metadata_batch.sha256_file(self.plan_path),
+        }]
+        with self.assertRaisesRegex(RuntimeError, "plan root"):
+            apply_approved_batch._validate_plans(master, self.handoff)
+
+    def test_backup_path_outside_t5_is_refused_in_preflight(self):
+        scope = {**self.master["scopes"][0],
+                 "backup_root": str((self.root / "outside/source").resolve())}
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "must resolve under"):
+            apply_approved_batch._validate_t5(
+                {"scopes": [scope]}, self.t5, mount_checker=lambda _: True
+            )
 
     def test_missing_t5_mount_is_refused(self):
         self._approve()
@@ -343,6 +437,145 @@ class ApprovalAndPreflightTests(unittest.TestCase):
                     self.master["master_sha"], self.handoff, self.t5,
                     mount_checker=lambda _: True,
                 )
+
+    def test_fresh_held_lock_is_refused(self):
+        self._approve()
+        lock_root = self.root / "locks"
+        lock_root.mkdir()
+        lock_path = lock_root / "unit-test-unique-folder.lock.json"
+        timestamp = metadata_batch.now()
+        lock_path.write_text(json.dumps({
+            "folder": "unit-test-unique-folder", "session": "active",
+            "started_at": timestamp, "last_renewed_at": timestamp,
+        }), encoding="utf-8")
+        with mock.patch.object(folder_lock, "LOCKS_DIR", lock_root):
+            with self.assertRaisesRegex(metadata_batch.BatchRefused,
+                                        "existing mutation lock blocks batch"):
+                apply_approved_batch.preflight(
+                    self.master["master_sha"], self.handoff, self.t5,
+                    mount_checker=lambda _: True,
+                )
+
+
+class FailedApplyClassificationTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.t5 = Path(self.temp.name) / "T5"
+        self.evidence = self.t5 / "evidence"
+        self.evidence.mkdir(parents=True)
+
+    def _write_journal(self, records):
+        path = self.evidence / "fixture-recovery-1.jsonl"
+        path.write_text(
+            "".join(json.dumps(record) + "\n" for record in records),
+            encoding="utf-8",
+        )
+        return path
+
+    def test_interrupted_apply_is_blocked_not_treated_as_clean(self):
+        self._write_journal([
+            {"type": "run_start", "run_id": "r1"},
+            {"type": "intent", "run_id": "r1", "index": 1,
+             "kind": "metadata", "source": "/synthetic/song.mp3"},
+        ])
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "interrupted apply"):
+            apply_approved_batch.inspect_failed_run(self.evidence, self.t5)
+
+    def test_failed_rollback_raises_distinct_severe_condition(self):
+        self._write_journal([
+            {"type": "run_start", "run_id": "r1"},
+            {"type": "intent", "run_id": "r1", "index": 1,
+             "kind": "metadata", "source": "/synthetic/song.mp3",
+             "backup_path": "/synthetic/backup.mp3"},
+            {"type": "mutated", "run_id": "r1", "index": 1},
+            {"type": "rolled_back", "run_id": "r1", "index": 1,
+             "restored": False, "rollback_error": "forced restore failure"},
+        ])
+        with self.assertRaisesRegex(metadata_batch.RollbackFailed, "ROLLBACK_FAILED"):
+            apply_approved_batch.inspect_failed_run(self.evidence, self.t5)
+
+    def test_first_scope_failure_prevents_every_later_scope(self):
+        scopes = []
+        for index in (1, 2):
+            root = self.t5 / f"scope-{index}"
+            root.mkdir()
+            scopes.append({
+                "scope_id": f"S00{index}", "source_root": str(root),
+                "backup_root": str(self.t5 / f"backup-{index}"),
+                "backup_manifest": str(self.t5 / f"manifest-{index}.json"),
+                "evidence_root": str(self.t5 / f"evidence-{index}"),
+                "plan_path": str(self.t5 / f"plan-{index}.json"),
+                "lock_folder": f"Folder {index}",
+            })
+        master = {"batch_id": "b1", "repo_commit": "abc", "scopes": scopes}
+        failed_child = mock.Mock(returncode=2, stdout="", stderr="forced interruption")
+        lock_result = {"acquired": True, "released": True, "lock": {"run_id": "r1"}}
+        with (
+            mock.patch.object(apply_approved_batch, "preflight", return_value=(master, {})),
+            mock.patch.object(metadata_batch, "transition") as transition,
+            mock.patch.object(metadata_batch, "update_scope"),
+            mock.patch.object(metadata_batch, "read_json", return_value={"state": "PREFLIGHT_PASS"}),
+            mock.patch.object(metadata_batch, "create_verified_backup",
+                              return_value={"status": "PASS", "manifest_sha256": "m"}),
+            mock.patch.object(apply_approved_batch, "_validate_t5"),
+            mock.patch.object(apply_approved_batch, "_lock_command", return_value=lock_result),
+            mock.patch.object(lock_guard, "LockHeartbeat"),
+            mock.patch.object(subprocess, "run", return_value=failed_child) as child_run,
+            mock.patch.object(apply_approved_batch, "inspect_failed_run",
+                              side_effect=metadata_batch.BatchRefused("interrupted apply")),
+        ):
+            with self.assertRaisesRegex(metadata_batch.BatchRefused, "interrupted apply"):
+                apply_approved_batch.apply_batch(
+                    "approved", self.t5 / "handoff", self.t5,
+                    mount_checker=lambda _: True,
+                )
+        self.assertEqual(child_run.call_count, 1, "scope 2 must never start")
+        self.assertTrue(any(call.args[1] == "BLOCKED" for call in transition.call_args_list))
+
+    def test_rollback_failure_sets_scope_and_batch_to_distinct_severe_state(self):
+        scopes = []
+        for index in (1, 2):
+            root = self.t5 / f"scope-{index}"
+            root.mkdir()
+            scopes.append({
+                "scope_id": f"S00{index}", "source_root": str(root),
+                "backup_root": str(self.t5 / f"backup-{index}"),
+                "backup_manifest": str(self.t5 / f"manifest-{index}.json"),
+                "evidence_root": str(self.t5 / f"evidence-{index}"),
+                "plan_path": str(self.t5 / f"plan-{index}.json"),
+                "lock_folder": f"Folder {index}",
+            })
+        master = {"batch_id": "b1", "repo_commit": "abc", "scopes": scopes}
+        failed_child = mock.Mock(returncode=2, stdout="", stderr="forced rollback failure")
+        lock_result = {"acquired": True, "released": True, "lock": {"run_id": "r1"}}
+        with (
+            mock.patch.object(apply_approved_batch, "preflight", return_value=(master, {})),
+            mock.patch.object(metadata_batch, "transition") as transition,
+            mock.patch.object(metadata_batch, "update_scope") as update_scope,
+            mock.patch.object(metadata_batch, "read_json", return_value={"state": "PREFLIGHT_PASS"}),
+            mock.patch.object(metadata_batch, "create_verified_backup",
+                              return_value={"status": "PASS", "manifest_sha256": "m"}),
+            mock.patch.object(apply_approved_batch, "_validate_t5"),
+            mock.patch.object(apply_approved_batch, "_lock_command", return_value=lock_result),
+            mock.patch.object(lock_guard, "LockHeartbeat"),
+            mock.patch.object(subprocess, "run", return_value=failed_child) as child_run,
+            mock.patch.object(apply_approved_batch, "inspect_failed_run",
+                              side_effect=metadata_batch.RollbackFailed("restore failed")),
+        ):
+            with self.assertRaisesRegex(metadata_batch.RollbackFailed, "restore failed"):
+                apply_approved_batch.apply_batch(
+                    "approved", self.t5 / "handoff", self.t5,
+                    mount_checker=lambda _: True,
+                )
+        self.assertEqual(child_run.call_count, 1, "scope 2 must never start")
+        self.assertTrue(any(
+            call.args[1:3] == ("S001", "ROLLBACK_FAILED")
+            for call in update_scope.call_args_list
+        ))
+        self.assertTrue(any(
+            call.args[1] == "ROLLBACK_FAILED" for call in transition.call_args_list
+        ))
 
 
 if __name__ == "__main__":

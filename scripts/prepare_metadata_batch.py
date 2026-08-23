@@ -421,6 +421,7 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
             "batch_id": batch_id,
             "created_at": metadata_batch.now(),
             "repo_commit": metadata_batch.repo_head(),
+            "safety_file_sha256": metadata_batch.safety_file_hashes(),
             "format": "mp3",
             "library_root": str(library_root),
             "serato_root": str(serato_root),
@@ -469,6 +470,10 @@ def approve(master_sha: str, approved_by: str, handoff_root: Path) -> dict:
         "approved_by": approved_by.strip(),
         "approved_at": metadata_batch.now(),
         "repo_commit": master["repo_commit"],
+        "safety_file_sha256": master["safety_file_sha256"],
+        "plan_sha256": {
+            scope["scope_id"]: scope["plan_sha256"] for scope in master["scopes"]
+        },
         "candidate_count": master["candidate_count"],
         "statement": "I approve exactly the immutable master manifest identified by master_sha.",
     }

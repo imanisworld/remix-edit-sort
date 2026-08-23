@@ -53,6 +53,17 @@ def _approval(master: dict, state: dict, handoff_root: Path) -> dict:
             raise metadata_batch.BatchRefused(
                 f"approval {field} does not bind approved master: {approval.get(field)!r} != {expected!r}"
             )
+    expected_plans = {
+        scope["scope_id"]: scope["plan_sha256"] for scope in master["scopes"]
+    }
+    if approval.get("plan_sha256") != expected_plans:
+        raise metadata_batch.BatchRefused(
+            "durable approval does not explicitly bind every approved per-scope plan SHA"
+        )
+    if approval.get("safety_file_sha256") != master.get("safety_file_sha256"):
+        raise metadata_batch.BatchRefused(
+            "durable approval does not bind the approved gated safety-file contents"
+        )
     if not str(approval.get("approved_by", "")).strip():
         raise metadata_batch.BatchRefused("durable approval has no explicit approver")
     return approval
@@ -148,6 +159,16 @@ def preflight(master_sha: str, handoff_root: Path = metadata_batch.HANDOFF_ROOT,
     approval = _approval(master, state, handoff_root)
     if metadata_batch.repo_head() != master["repo_commit"]:
         raise metadata_batch.BatchRefused("repo HEAD differs from approved commit")
+    current_safety = metadata_batch.safety_file_hashes()
+    approved_safety = master.get("safety_file_sha256")
+    if not isinstance(approved_safety, dict) or current_safety != approved_safety:
+        changed = sorted(
+            relative for relative in set(current_safety).union(approved_safety or {})
+            if current_safety.get(relative) != (approved_safety or {}).get(relative)
+        )
+        raise metadata_batch.BatchRefused(
+            f"gated safety files changed after approval: {changed}"
+        )
     _validate_plans(master, handoff_root)
     _validate_live(master)
     _validate_t5(master, Path(t5_volume).resolve(), mount_checker)
@@ -214,11 +235,44 @@ def _verify_scope(master: dict, scope: dict, result: dict) -> dict:
 
     journal = metadata_batch.require_t5_path(Path(result["recovery_journal"]), metadata_batch.T5_VOLUME)
     recovery = mutation_engine.recover(journal)
+    if recovery["rollback_failures"]:
+        raise metadata_batch.RollbackFailed(
+            f"ROLLBACK_FAILED in {scope['scope_id']}: {recovery['in_flight']}"
+        )
     if not recovery["clean"] or not recovery["runs"] or not all(
         run.get("complete") for run in recovery["runs"].values()
     ):
         raise metadata_batch.BatchRefused(f"recovery journal is not clean and complete: {recovery}")
     return {"files": len(scope_rows), "unauthorized_changes": 0, "recovery": recovery}
+
+
+def inspect_failed_run(evidence_root: Path, t5_volume: Path) -> None:
+    """Classify a failed child apply from its durable recovery journals."""
+    evidence_root = metadata_batch.require_t5_path(evidence_root, t5_volume)
+    journals = sorted(evidence_root.glob("*-recovery-*.jsonl"))
+    if not journals:
+        raise metadata_batch.BatchRefused(
+            f"apply failed before producing a recovery journal: {evidence_root}"
+        )
+    reports = [mutation_engine.recover(path) for path in journals]
+    failed_rollbacks = [report for report in reports if report.get("rollback_failures")]
+    if failed_rollbacks:
+        raise metadata_batch.RollbackFailed(
+            f"ROLLBACK_FAILED; manual restore required: {failed_rollbacks}"
+        )
+    interrupted = [
+        report for report in reports
+        if not report.get("clean")
+        or not report.get("runs")
+        or not all(run.get("complete") for run in report["runs"].values())
+    ]
+    if interrupted:
+        raise metadata_batch.BatchRefused(
+            f"interrupted apply; recovery inspection required: {interrupted}"
+        )
+    raise metadata_batch.BatchRefused(
+        f"child apply failed despite clean journals; inspect stdout/stderr: {evidence_root}"
+    )
 
 
 def _write_spotcheck(master: dict, handoff_root: Path) -> Path:
@@ -245,6 +299,7 @@ def apply_batch(master_sha: str, handoff_root: Path = metadata_batch.HANDOFF_ROO
                 t5_volume: Path = metadata_batch.T5_VOLUME, mount_checker=os.path.ismount) -> dict:
     handoff_root, t5_volume = Path(handoff_root).resolve(), Path(t5_volume).resolve()
     state_path = handoff_root / "current-batch.json"
+    active_scope_id = None
     try:
         master, _ = preflight(master_sha, handoff_root, t5_volume, mount_checker)
         scope_states = {
@@ -261,8 +316,10 @@ def apply_batch(master_sha: str, handoff_root: Path = metadata_batch.HANDOFF_ROO
         evidence_roots = []
         for scope in master["scopes"]:
             scope_id = scope["scope_id"]
+            active_scope_id = scope_id
             session = f"batch-{master['batch_id']}-{scope_id}"
             acquired = False
+            scope_failure = None
             try:
                 # Refuse a mount disappearance or lock race immediately before this scope.
                 _validate_t5({"scopes": [scope]}, t5_volume, mount_checker)
@@ -297,9 +354,7 @@ def apply_batch(master_sha: str, handoff_root: Path = metadata_batch.HANDOFF_ROO
                 ]
                 run = subprocess.run(cmd, text=True, capture_output=True)
                 if run.returncode != 0:
-                    raise metadata_batch.BatchRefused(
-                        f"scope apply failed {scope_id}: stdout={run.stdout} stderr={run.stderr}"
-                    )
+                    inspect_failed_run(evidence_root, t5_volume)
                 result = json.loads(run.stdout)
                 metadata_batch.update_scope(state_path, scope_id, "APPLIED",
                                             details={"result_path": result.get("result_path")},
@@ -312,6 +367,9 @@ def apply_batch(master_sha: str, handoff_root: Path = metadata_batch.HANDOFF_ROO
                                             handoff_root=handoff_root)
                 verified += proof["files"]
                 evidence_roots.append(str(evidence_root))
+            except BaseException as exc:
+                scope_failure = exc
+                raise
             finally:
                 if acquired:
                     try:
@@ -319,7 +377,9 @@ def apply_batch(master_sha: str, handoff_root: Path = metadata_batch.HANDOFF_ROO
                         locks_released = locks_released and bool(released.get("released"))
                     except Exception:
                         locks_released = False
-                        raise
+                        # Never mask the more severe fact that rollback failed.
+                        if scope_failure is None:
+                            raise
         metadata_batch.transition(state_path, "VERIFIED", handoff_root=handoff_root)
         spotcheck = _write_spotcheck(master, handoff_root)
         summary = {
@@ -340,6 +400,24 @@ def apply_batch(master_sha: str, handoff_root: Path = metadata_batch.HANDOFF_ROO
             summary, handoff_root=handoff_root,
         )
         return summary
+    except metadata_batch.RollbackFailed as exc:
+        try:
+            state = metadata_batch.read_json(state_path)
+            if active_scope_id and state.get("scopes", {}).get(active_scope_id, {}).get("state") not in {
+                "ROLLBACK_FAILED", "VERIFIED"
+            }:
+                metadata_batch.update_scope(
+                    state_path, active_scope_id, "ROLLBACK_FAILED",
+                    details={"failure": str(exc)}, handoff_root=handoff_root,
+                )
+            state = metadata_batch.read_json(state_path)
+            if state.get("state") not in {"ROLLBACK_FAILED", "COMPLETE"}:
+                metadata_batch.transition(
+                    state_path, "ROLLBACK_FAILED", reason=str(exc), handoff_root=handoff_root
+                )
+        except Exception:
+            pass
+        raise
     except BaseException as exc:
         try:
             state = metadata_batch.read_json(state_path)

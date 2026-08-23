@@ -9,7 +9,9 @@ ID3v2.2 writes, Serato-file changes, or automatic backup cleanup.
 
 `DISCOVERED → PREVIEWED → HUMAN_APPROVED → PLANNED → PREFLIGHT_PASS → BACKED_UP → APPLIED → VERIFIED → SERATO_SPOTCHECK → COMPLETE`
 
-Any failure becomes `BLOCKED` with a reason in `handoff/current-batch.json`.
+Any ordinary refusal/failure becomes `BLOCKED` with a reason in
+`handoff/current-batch.json`. A failed automatic restore becomes the distinct,
+more severe `ROLLBACK_FAILED` state; it must never be flattened into `BLOCKED`.
 There is no automatic transition out of `BLOCKED`; a human must inspect the T5
 evidence and resolve the failed run. A new batch is refused unless the current
 batch is `COMPLETE`.
@@ -61,7 +63,10 @@ python3 scripts/prepare_metadata_batch.py \
 This creates `approval.json`. Its SHA reference binds the exact candidate
 paths, source hashes, current/proposed metadata, repository commit, preview
 hashes, plan hashes, backup scopes, audio-payload digests, Serato-frame digests,
-and ID3 versions recorded in the master manifest.
+ID3 versions, and the content hashes of every gated safety script/rule recorded
+in the master manifest. The approval record also lists every per-scope plan SHA
+explicitly. Plans exist and pass the real validator before approval, so approval
+binds the executable plan bytes rather than an earlier abstract preview.
 
 ## 3. Apply the exact approved batch
 
@@ -74,6 +79,7 @@ Before any production write, the command refuses unless:
 - state is exactly `HUMAN_APPROVED` and the durable approval matches;
 - master SHA and embedded SHA match;
 - repository HEAD equals the approved commit;
+- every gated safety script/rule still has its approved content hash;
 - all preview and plan hashes match, plan union is exact, and every plan passes
   the real existing validator;
 - all live paths, file hashes, tags, ID3 versions, audio-payload digests, and
@@ -116,3 +122,25 @@ journal under `/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/<batch-id>/`.
 `mutation_engine.py recover --journal <path>` reports in-flight and failed
 rollback state. Backup cleanup is always a separate, explicit human-authorized
 operation; this pipeline has no cleanup command.
+
+## Disposable acceptance matrix
+
+`tests/test_metadata_batch_pipeline.py` exercises the pipeline on generated
+fixtures only. Together with the existing mutation-engine suite it proves:
+
+1. stale file SHA is refused;
+2. stale metadata is refused independently;
+3. wrong repository commit is refused;
+4. modified plan and preview bytes are refused;
+5. missing T5 mount is refused;
+6. any backup/evidence path outside T5 is refused;
+7. backup corruption after manifest creation is caught before mutation;
+8. held, stale, and corrupt locks are not reclaimed by the orchestrator;
+9. one path appearing in two per-scope plans is refused;
+10. the real plan validator can independently veto an otherwise hash-bound plan;
+11. an interrupted apply remains unclean and blocks later work;
+12. a failed rollback raises `ROLLBACK_FAILED` and records manual-restore urgency.
+
+The mutation-surface gate separately proves PREPARE has zero recognized
+mutation primitives and the apply entry point remains an engine user. The
+full test suite must pass before this workflow is trusted against production.
