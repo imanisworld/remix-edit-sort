@@ -221,7 +221,27 @@ def _lock_command(command: str, folder: str, session: str, master: dict) -> dict
     return payload
 
 
-def _verify_scope(master: dict, scope: dict, result: dict) -> dict:
+def _canonical_index(files: dict[str, Path], tree_name: str, scope_id: str) -> dict[str, tuple[str, Path]]:
+    """Index a _walk() result by APFS-safe (NFC+casefold) path identity.
+
+    Reuses mutation_engine.path_collision_key rather than duplicating its
+    normalization rule; a source file stored in NFC and its backup copy
+    silently re-normalized to NFD by exFAT must resolve to the same key.
+    """
+    index: dict[str, tuple[str, Path]] = {}
+    for relative, path in files.items():
+        key = mutation_engine.path_collision_key(Path(relative))
+        previous = index.get(key)
+        if previous is not None:
+            raise metadata_batch.BatchRefused(
+                f"canonical path collision in {tree_name} of scope {scope_id}: "
+                f"{previous[0]!r} and {relative!r}"
+            )
+        index[key] = (relative, path)
+    return index
+
+
+def _verify_scope(master: dict, scope: dict, result: dict, *, t5_volume: Path) -> dict:
     scope_rows = [row for row in master["candidates"] if row["scope_id"] == scope["scope_id"]]
     candidate_paths = {Path(row["path"]).resolve() for row in scope_rows}
     for row in scope_rows:
@@ -241,17 +261,20 @@ def _verify_scope(master: dict, scope: dict, result: dict) -> dict:
 
     source_root, backup_root = Path(scope["source_root"]), Path(scope["backup_root"])
     source_files, backup_files = _walk(source_root), _walk(backup_root)
-    if set(source_files) != set(backup_files):
+    source_index = _canonical_index(source_files, "source", scope["scope_id"])
+    backup_index = _canonical_index(backup_files, "backup", scope["scope_id"])
+    if set(source_index) != set(backup_index):
         raise metadata_batch.BatchRefused(f"unauthorized missing/extra file in scope {scope['scope_id']}")
     unauthorized = []
-    for relative, source in source_files.items():
+    for key, (relative, source) in source_index.items():
         if source.resolve() not in candidate_paths:
-            if metadata_batch.sha256_file(source) != metadata_batch.sha256_file(backup_files[relative]):
+            backup_path = backup_index[key][1]
+            if metadata_batch.sha256_file(source) != metadata_batch.sha256_file(backup_path):
                 unauthorized.append(str(source))
     if unauthorized:
         raise metadata_batch.BatchRefused(f"unauthorized non-candidate changes: {unauthorized}")
 
-    journal = metadata_batch.require_t5_path(Path(result["recovery_journal"]), metadata_batch.T5_VOLUME)
+    journal = metadata_batch.require_t5_path(Path(result["recovery_journal"]), t5_volume)
     recovery = mutation_engine.recover(journal)
     if recovery["rollback_failures"]:
         raise metadata_batch.RollbackFailed(
@@ -386,7 +409,7 @@ def apply_batch(master_sha: str, handoff_root: Path = metadata_batch.HANDOFF_ROO
                 if batch_phase == "BACKED_UP":
                     metadata_batch.transition(state_path, "APPLIED", handoff_root=handoff_root)
                     batch_phase = "APPLIED"
-                proof = _verify_scope(master, scope, result)
+                proof = _verify_scope(master, scope, result, t5_volume=t5_volume)
                 metadata_batch.update_scope(
                     state_path, scope_id, "VERIFIED",
                     details={**proof, "execution": "COMPLETED"},

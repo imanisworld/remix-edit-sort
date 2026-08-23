@@ -610,7 +610,7 @@ class FailedApplyClassificationTests(unittest.TestCase):
         return {"released": True, "lock": {"run_id": f"{folder}-run"}}
 
     @staticmethod
-    def _scope_proof(master, scope, result):
+    def _scope_proof(master, scope, result, *, t5_volume=None):
         files = sum(row["scope_id"] == scope["scope_id"] for row in master["candidates"])
         return {
             "files": files,
@@ -841,6 +841,82 @@ class FailedApplyClassificationTests(unittest.TestCase):
         self.assertTrue(any(
             call.args[1] == "ROLLBACK_FAILED" for call in transition.call_args_list
         ))
+
+
+class VerifyScopeCanonicalPathTests(unittest.TestCase):
+    """_verify_scope's post-apply source/backup comparison must use the same
+    NFC+casefold canonical identity as backup_manifest.py, not raw strings —
+    otherwise the exact bug that failed S009 (an NFC source file matched
+    against an NFD-renormalized exFAT backup copy) recurs at verify time."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.t5 = Path(self.temp.name) / "T5"
+        self.t5.mkdir()
+        self.clean_recovery = {
+            "clean": True, "rollback_failures": [], "runs": {"r": {"complete": True}},
+        }
+
+    def _empty_scope_master(self, source_root, backup_root):
+        return (
+            {"candidates": []},
+            {"scope_id": "S001", "source_root": str(source_root), "backup_root": str(backup_root)},
+            {"recovery_journal": str(self.t5 / "unused-recovery.jsonl")},
+        )
+
+    def test_nfc_source_matches_nfd_backup_copy(self):
+        source_root, backup_root = self.t5 / "source", self.t5 / "backup"
+        name_nfc = unicodedata.normalize("NFC", "Beyoncé - PURE_HONEY.mp3")
+        name_nfd = unicodedata.normalize("NFD", "Beyoncé - PURE_HONEY.mp3")
+        make_library(source_root, [{"relative": name_nfc}])
+        make_library(backup_root, [{"relative": name_nfd}])
+        # Same content on both sides: a real backup copy of the same file.
+        (backup_root / name_nfd).write_bytes((source_root / name_nfc).read_bytes())
+        master, scope, result = self._empty_scope_master(source_root, backup_root)
+        with mock.patch.object(mutation_engine, "recover", return_value=self.clean_recovery):
+            proof = apply_approved_batch._verify_scope(master, scope, result, t5_volume=self.t5)
+        self.assertEqual(proof["unauthorized_changes"], 0)
+
+    def test_genuinely_missing_backup_file_is_still_refused(self):
+        source_root, backup_root = self.t5 / "source", self.t5 / "backup"
+        make_library(source_root, [{"relative": "track.mp3"}])
+        backup_root.mkdir()
+        master, scope, result = self._empty_scope_master(source_root, backup_root)
+        with mock.patch.object(mutation_engine, "recover", return_value=self.clean_recovery):
+            with self.assertRaisesRegex(metadata_batch.BatchRefused, "missing/extra file"):
+                apply_approved_batch._verify_scope(master, scope, result, t5_volume=self.t5)
+
+    def test_canonical_collision_within_backup_tree_is_refused(self):
+        # Real APFS lookups are already normalization- and case-insensitive,
+        # so two on-disk files whose names differ only by Unicode form or
+        # case can never coexist in one real directory to reproduce this
+        # from actual files — _canonical_index's own collision guard is what
+        # would fire if that constraint were ever violated (e.g. a manifest
+        # built on a case-sensitive filesystem, or a hand-built input), so
+        # it's exercised directly against a synthetic dict instead.
+        name_nfc = unicodedata.normalize("NFC", "Beyoncé.mp3")
+        name_nfd = unicodedata.normalize("NFD", "Beyoncé.mp3")
+        files = {name_nfc: self.t5 / name_nfc, name_nfd: self.t5 / name_nfd}
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "canonical path collision"):
+            apply_approved_batch._canonical_index(files, "backup", "S001")
+
+    def test_passed_t5_volume_is_used_not_module_constant(self):
+        source_root, backup_root = self.t5 / "source", self.t5 / "backup"
+        make_library(source_root, [{"relative": "track.mp3"}])
+        make_library(backup_root, [{"relative": "track.mp3"}])
+        (backup_root / "track.mp3").write_bytes((source_root / "track.mp3").read_bytes())
+        master, scope, result = self._empty_scope_master(source_root, backup_root)
+        wrong_constant = self.t5 / "not-the-real-t5-volume"
+        with (
+            mock.patch.object(metadata_batch, "T5_VOLUME", wrong_constant),
+            mock.patch.object(mutation_engine, "recover", return_value=self.clean_recovery) as recover,
+        ):
+            proof = apply_approved_batch._verify_scope(master, scope, result, t5_volume=self.t5)
+        self.assertEqual(proof["unauthorized_changes"], 0)
+        recover.assert_called_once()
+        journal_arg = recover.call_args.args[0]
+        self.assertTrue(str(journal_arg).startswith(str(self.t5.resolve())))
 
 
 if __name__ == "__main__":
