@@ -1,69 +1,58 @@
 {
   "schema_version": 1,
-  "batch_id": "metadata-mp3-20260823-134641",
-  "batch_dir": "/Volumes/T5 EVO/DJ/Tools/remix-edit-sort/handoff/batches/metadata-mp3-20260823-134641",
+  "batch_id": "metadata-mp3-20260823-160355",
+  "batch_dir": "/Volumes/T5 EVO/DJ/Tools/remix-edit-sort/handoff/batches/metadata-mp3-20260823-160355",
   "state": "COMPLETE",
   "reason": null,
-  "updated_at": "2026-08-23T15:36:52-04:00",
+  "updated_at": "2026-08-23T16:44:16-04:00",
   "history": [
     {
       "state": "DISCOVERED",
-      "at": "2026-08-23T13:46:41-04:00"
+      "at": "2026-08-23T16:03:55-04:00"
     },
     {
       "state": "PREVIEWED",
-      "at": "2026-08-23T13:47:39-04:00",
+      "at": "2026-08-23T16:05:05-04:00",
       "reason": null
     },
     {
       "state": "HUMAN_APPROVED",
-      "at": "2026-08-23T14:02:10-04:00",
+      "at": "2026-08-23T16:08:27-04:00",
       "reason": null
     },
     {
       "state": "PLANNED",
-      "at": "2026-08-23T14:02:39-04:00",
+      "at": "2026-08-23T16:08:46-04:00",
       "reason": null
     },
     {
       "state": "PREFLIGHT_PASS",
-      "at": "2026-08-23T14:02:39-04:00",
+      "at": "2026-08-23T16:08:46-04:00",
       "reason": null
     },
     {
       "state": "BACKED_UP",
-      "at": "2026-08-23T14:02:43-04:00",
+      "at": "2026-08-23T16:08:51-04:00",
       "reason": null
     },
     {
       "state": "APPLIED",
-      "at": "2026-08-23T14:02:43-04:00",
+      "at": "2026-08-23T16:08:55-04:00",
       "reason": null
-    },
-    {
-      "state": "BLOCKED",
-      "at": "2026-08-23T14:06:15-04:00",
-      "reason": "backup manifest status is 'FAIL', not PASS: /Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S009/backup-manifest.json\nFirst problems: ['missing from backup: Beyoncé - PURE_HONEY - Beyoncé.mp3']"
-    },
-    {
-      "state": "APPLIED",
-      "at": "2026-08-23T15:12:38-04:00",
-      "reason": "recovery reopen bound to recovery-approval sha256 a7706abe62de3eeedd074f5187f9ecad41b6df998055ba968535f72c48dd8dfb",
-      "recovery_bypass": true
     },
     {
       "state": "VERIFIED",
-      "at": "2026-08-23T15:26:52-04:00",
+      "at": "2026-08-23T16:39:27-04:00",
       "reason": null
     },
     {
       "state": "SERATO_SPOTCHECK",
-      "at": "2026-08-23T15:36:52-04:00",
+      "at": "2026-08-23T16:44:16-04:00",
       "reason": null
     },
     {
       "state": "COMPLETE",
-      "at": "2026-08-23T15:36:52-04:00",
+      "at": "2026-08-23T16:44:16-04:00",
       "reason": null
     }
   ],
@@ -74,38 +63,38 @@
       "history": [
         {
           "state": "PREFLIGHT_PASS",
-          "at": "2026-08-23T14:02:39-04:00"
+          "at": "2026-08-23T16:08:46-04:00"
         },
         {
           "state": "BACKED_UP",
-          "at": "2026-08-23T14:02:43-04:00"
+          "at": "2026-08-23T16:08:51-04:00"
         },
         {
           "state": "APPLIED",
-          "at": "2026-08-23T14:02:43-04:00"
+          "at": "2026-08-23T16:08:55-04:00"
         },
         {
           "state": "VERIFIED",
-          "at": "2026-08-23T14:02:44-04:00"
+          "at": "2026-08-23T16:08:55-04:00"
         }
       ],
-      "updated_at": "2026-08-23T14:02:44-04:00",
-      "backup_manifest_sha256": "df7d09e0d77665c4b2fc33da4ae73aced8f1b3283c550c769349f22e4058ee0e",
-      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S001/evidence/metadata-metadata-mp3-20260823-134641-S001-result-20260823-140243.json",
-      "files": 1,
+      "updated_at": "2026-08-23T16:08:55-04:00",
+      "backup_manifest_sha256": "1401dd87293fb03df0dc6fb72b96af47c1d52455cf1dd8b0d04abe526dad34a3",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S001/evidence/metadata-metadata-mp3-20260823-160355-S001-result-20260823-160851.json",
+      "files": 8,
       "unauthorized_changes": 0,
       "recovery": {
-        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S001/evidence/metadata-metadata-mp3-20260823-134641-S001-recovery-20260823-140243.jsonl",
-        "records": 5,
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S001/evidence/metadata-metadata-mp3-20260823-160355-S001-recovery-20260823-160851.jsonl",
+        "records": 26,
         "torn_records": 0,
         "runs": {
-          "20260823-140243-d6ad165c": {
-            "started": "2026-08-23T14:02:43-04:00",
+          "20260823-160851-77a862ab": {
+            "started": "2026-08-23T16:08:51-04:00",
             "complete": true
           }
         },
-        "items_intended": 1,
-        "items_settled": 1,
+        "items_intended": 8,
+        "items_settled": 8,
         "in_flight": [],
         "rollback_failures": 0,
         "clean": true
@@ -117,33 +106,33 @@
       "history": [
         {
           "state": "PREFLIGHT_PASS",
-          "at": "2026-08-23T14:02:39-04:00"
+          "at": "2026-08-23T16:08:46-04:00"
         },
         {
           "state": "BACKED_UP",
-          "at": "2026-08-23T14:02:48-04:00"
+          "at": "2026-08-23T16:08:56-04:00"
         },
         {
           "state": "APPLIED",
-          "at": "2026-08-23T14:02:49-04:00"
+          "at": "2026-08-23T16:08:56-04:00"
         },
         {
           "state": "VERIFIED",
-          "at": "2026-08-23T14:02:49-04:00"
+          "at": "2026-08-23T16:08:56-04:00"
         }
       ],
-      "updated_at": "2026-08-23T14:02:49-04:00",
-      "backup_manifest_sha256": "30d957ed901590aa0ca64136552569227a75f6999cccc2442e86a0761b4e4602",
-      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S002/evidence/metadata-metadata-mp3-20260823-134641-S002-result-20260823-140249.json",
+      "updated_at": "2026-08-23T16:08:56-04:00",
+      "backup_manifest_sha256": "785fd802fca765964ab19ee498a668c0a01a93b514b8b294df193eca2bfed1c6",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S002/evidence/metadata-metadata-mp3-20260823-160355-S002-result-20260823-160856.json",
       "files": 1,
       "unauthorized_changes": 0,
       "recovery": {
-        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S002/evidence/metadata-metadata-mp3-20260823-134641-S002-recovery-20260823-140249.jsonl",
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S002/evidence/metadata-metadata-mp3-20260823-160355-S002-recovery-20260823-160856.jsonl",
         "records": 5,
         "torn_records": 0,
         "runs": {
-          "20260823-140249-1778ee47": {
-            "started": "2026-08-23T14:02:49-04:00",
+          "20260823-160856-2c675876": {
+            "started": "2026-08-23T16:08:56-04:00",
             "complete": true
           }
         },
@@ -160,33 +149,33 @@
       "history": [
         {
           "state": "PREFLIGHT_PASS",
-          "at": "2026-08-23T14:02:39-04:00"
+          "at": "2026-08-23T16:08:46-04:00"
         },
         {
           "state": "BACKED_UP",
-          "at": "2026-08-23T14:03:23-04:00"
+          "at": "2026-08-23T16:09:00-04:00"
         },
         {
           "state": "APPLIED",
-          "at": "2026-08-23T14:03:23-04:00"
+          "at": "2026-08-23T16:09:01-04:00"
         },
         {
           "state": "VERIFIED",
-          "at": "2026-08-23T14:03:25-04:00"
+          "at": "2026-08-23T16:09:01-04:00"
         }
       ],
-      "updated_at": "2026-08-23T14:03:25-04:00",
-      "backup_manifest_sha256": "61c852f32488cf74ad69aa7b93d5ddb5d0b04f9f835356e5ccab3925c4d7f5b0",
-      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S003/evidence/metadata-metadata-mp3-20260823-134641-S003-result-20260823-140323.json",
+      "updated_at": "2026-08-23T16:09:01-04:00",
+      "backup_manifest_sha256": "51e72753aba959630d5c55f494a8c56070fb839f12fda13484ee3594fa005ca5",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S003/evidence/metadata-metadata-mp3-20260823-160355-S003-result-20260823-160900.json",
       "files": 1,
       "unauthorized_changes": 0,
       "recovery": {
-        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S003/evidence/metadata-metadata-mp3-20260823-134641-S003-recovery-20260823-140323.jsonl",
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S003/evidence/metadata-metadata-mp3-20260823-160355-S003-recovery-20260823-160900.jsonl",
         "records": 5,
         "torn_records": 0,
         "runs": {
-          "20260823-140323-f057a6e0": {
-            "started": "2026-08-23T14:03:23-04:00",
+          "20260823-160900-e76b1c00": {
+            "started": "2026-08-23T16:09:00-04:00",
             "complete": true
           }
         },
@@ -203,33 +192,33 @@
       "history": [
         {
           "state": "PREFLIGHT_PASS",
-          "at": "2026-08-23T14:02:39-04:00"
+          "at": "2026-08-23T16:08:46-04:00"
         },
         {
           "state": "BACKED_UP",
-          "at": "2026-08-23T14:03:26-04:00"
+          "at": "2026-08-23T16:09:05-04:00"
         },
         {
           "state": "APPLIED",
-          "at": "2026-08-23T14:03:26-04:00"
+          "at": "2026-08-23T16:09:05-04:00"
         },
         {
           "state": "VERIFIED",
-          "at": "2026-08-23T14:03:26-04:00"
+          "at": "2026-08-23T16:09:05-04:00"
         }
       ],
-      "updated_at": "2026-08-23T14:03:26-04:00",
-      "backup_manifest_sha256": "cec6b84030a57cbf33668886eb17f75681ee3d61f88dbe3ce49385b1dc4a4d1e",
-      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S004/evidence/metadata-metadata-mp3-20260823-134641-S004-result-20260823-140326.json",
+      "updated_at": "2026-08-23T16:09:05-04:00",
+      "backup_manifest_sha256": "7ec9e5f3b23d2da45d13302de99243f041fc17020be4ff7ee867da0e8c136563",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S004/evidence/metadata-metadata-mp3-20260823-160355-S004-result-20260823-160905.json",
       "files": 1,
       "unauthorized_changes": 0,
       "recovery": {
-        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S004/evidence/metadata-metadata-mp3-20260823-134641-S004-recovery-20260823-140326.jsonl",
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S004/evidence/metadata-metadata-mp3-20260823-160355-S004-recovery-20260823-160905.jsonl",
         "records": 5,
         "torn_records": 0,
         "runs": {
-          "20260823-140326-6a5b7af9": {
-            "started": "2026-08-23T14:03:26-04:00",
+          "20260823-160905-a29e1143": {
+            "started": "2026-08-23T16:09:05-04:00",
             "complete": true
           }
         },
@@ -246,38 +235,38 @@
       "history": [
         {
           "state": "PREFLIGHT_PASS",
-          "at": "2026-08-23T14:02:39-04:00"
+          "at": "2026-08-23T16:08:46-04:00"
         },
         {
           "state": "BACKED_UP",
-          "at": "2026-08-23T14:03:50-04:00"
+          "at": "2026-08-23T16:09:07-04:00"
         },
         {
           "state": "APPLIED",
-          "at": "2026-08-23T14:03:51-04:00"
+          "at": "2026-08-23T16:09:08-04:00"
         },
         {
           "state": "VERIFIED",
-          "at": "2026-08-23T14:03:57-04:00"
+          "at": "2026-08-23T16:09:08-04:00"
         }
       ],
-      "updated_at": "2026-08-23T14:03:57-04:00",
-      "backup_manifest_sha256": "70acba95f2a27edea3ee1848e59505208f493a6ab3f5a11f5bb215b7f4092e34",
-      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S005/evidence/metadata-metadata-mp3-20260823-134641-S005-result-20260823-140350.json",
-      "files": 1,
+      "updated_at": "2026-08-23T16:09:08-04:00",
+      "backup_manifest_sha256": "7826f727fac137de8e874bb052df4d99932ff1c0d1f3c2b9fab21a6a1686020b",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S005/evidence/metadata-metadata-mp3-20260823-160355-S005-result-20260823-160907.json",
+      "files": 2,
       "unauthorized_changes": 0,
       "recovery": {
-        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S005/evidence/metadata-metadata-mp3-20260823-134641-S005-recovery-20260823-140350.jsonl",
-        "records": 5,
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S005/evidence/metadata-metadata-mp3-20260823-160355-S005-recovery-20260823-160907.jsonl",
+        "records": 8,
         "torn_records": 0,
         "runs": {
-          "20260823-140350-88f7e514": {
-            "started": "2026-08-23T14:03:50-04:00",
+          "20260823-160907-60ae0107": {
+            "started": "2026-08-23T16:09:07-04:00",
             "complete": true
           }
         },
-        "items_intended": 1,
-        "items_settled": 1,
+        "items_intended": 2,
+        "items_settled": 2,
         "in_flight": [],
         "rollback_failures": 0,
         "clean": true
@@ -289,33 +278,33 @@
       "history": [
         {
           "state": "PREFLIGHT_PASS",
-          "at": "2026-08-23T14:02:39-04:00"
+          "at": "2026-08-23T16:08:46-04:00"
         },
         {
           "state": "BACKED_UP",
-          "at": "2026-08-23T14:03:58-04:00"
+          "at": "2026-08-23T16:09:08-04:00"
         },
         {
           "state": "APPLIED",
-          "at": "2026-08-23T14:03:58-04:00"
+          "at": "2026-08-23T16:09:09-04:00"
         },
         {
           "state": "VERIFIED",
-          "at": "2026-08-23T14:03:58-04:00"
+          "at": "2026-08-23T16:09:09-04:00"
         }
       ],
-      "updated_at": "2026-08-23T14:03:58-04:00",
-      "backup_manifest_sha256": "a94c6d3f4b941183fd722e61a32b6be1ae2738a16296dc4f591e1105fe8a2942",
-      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S006/evidence/metadata-metadata-mp3-20260823-134641-S006-result-20260823-140358.json",
+      "updated_at": "2026-08-23T16:09:09-04:00",
+      "backup_manifest_sha256": "e265a06322d04446bfd31bfedf7af01daadffa6ace7d70542cf19c53ef5ce9e2",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S006/evidence/metadata-metadata-mp3-20260823-160355-S006-result-20260823-160909.json",
       "files": 1,
       "unauthorized_changes": 0,
       "recovery": {
-        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S006/evidence/metadata-metadata-mp3-20260823-134641-S006-recovery-20260823-140358.jsonl",
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S006/evidence/metadata-metadata-mp3-20260823-160355-S006-recovery-20260823-160909.jsonl",
         "records": 5,
         "torn_records": 0,
         "runs": {
-          "20260823-140358-f51065a1": {
-            "started": "2026-08-23T14:03:58-04:00",
+          "20260823-160909-9a04e2b6": {
+            "started": "2026-08-23T16:09:09-04:00",
             "complete": true
           }
         },
@@ -332,38 +321,38 @@
       "history": [
         {
           "state": "PREFLIGHT_PASS",
-          "at": "2026-08-23T14:02:39-04:00"
+          "at": "2026-08-23T16:08:46-04:00"
         },
         {
           "state": "BACKED_UP",
-          "at": "2026-08-23T14:04:43-04:00"
+          "at": "2026-08-23T16:09:09-04:00"
         },
         {
           "state": "APPLIED",
-          "at": "2026-08-23T14:04:44-04:00"
+          "at": "2026-08-23T16:09:10-04:00"
         },
         {
           "state": "VERIFIED",
-          "at": "2026-08-23T14:04:55-04:00"
+          "at": "2026-08-23T16:09:10-04:00"
         }
       ],
-      "updated_at": "2026-08-23T14:04:55-04:00",
-      "backup_manifest_sha256": "04b8c9ca8df420337b8ba032f58a5698cdd0e814b276101a7b05480ce99bd988",
-      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S007/evidence/metadata-metadata-mp3-20260823-134641-S007-result-20260823-140444.json",
-      "files": 2,
+      "updated_at": "2026-08-23T16:09:10-04:00",
+      "backup_manifest_sha256": "02ef258bb60301755818e596c090028b00e1f290027b8430d6873328ab954a1f",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S007/evidence/metadata-metadata-mp3-20260823-160355-S007-result-20260823-160909.json",
+      "files": 1,
       "unauthorized_changes": 0,
       "recovery": {
-        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S007/evidence/metadata-metadata-mp3-20260823-134641-S007-recovery-20260823-140444.jsonl",
-        "records": 8,
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S007/evidence/metadata-metadata-mp3-20260823-160355-S007-recovery-20260823-160909.jsonl",
+        "records": 5,
         "torn_records": 0,
         "runs": {
-          "20260823-140444-b5023a91": {
-            "started": "2026-08-23T14:04:44-04:00",
+          "20260823-160909-7f63a2e2": {
+            "started": "2026-08-23T16:09:09-04:00",
             "complete": true
           }
         },
-        "items_intended": 2,
-        "items_settled": 2,
+        "items_intended": 1,
+        "items_settled": 1,
         "in_flight": [],
         "rollback_failures": 0,
         "clean": true
@@ -375,33 +364,33 @@
       "history": [
         {
           "state": "PREFLIGHT_PASS",
-          "at": "2026-08-23T14:02:39-04:00"
+          "at": "2026-08-23T16:08:46-04:00"
         },
         {
           "state": "BACKED_UP",
-          "at": "2026-08-23T14:04:55-04:00"
+          "at": "2026-08-23T16:09:10-04:00"
         },
         {
           "state": "APPLIED",
-          "at": "2026-08-23T14:04:55-04:00"
+          "at": "2026-08-23T16:09:11-04:00"
         },
         {
           "state": "VERIFIED",
-          "at": "2026-08-23T14:04:56-04:00"
+          "at": "2026-08-23T16:09:11-04:00"
         }
       ],
-      "updated_at": "2026-08-23T14:04:56-04:00",
-      "backup_manifest_sha256": "36cd3354148251995cf02517b4ea29d9e3a32e6bd2ff9e5133779ae4f0198a33",
-      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S008/evidence/metadata-metadata-mp3-20260823-134641-S008-result-20260823-140455.json",
+      "updated_at": "2026-08-23T16:09:11-04:00",
+      "backup_manifest_sha256": "b0e0146e322ab49b943d839971f1915d5edff79d7998c1370ab5fb1b4eb20f07",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S008/evidence/metadata-metadata-mp3-20260823-160355-S008-result-20260823-160910.json",
       "files": 1,
       "unauthorized_changes": 0,
       "recovery": {
-        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S008/evidence/metadata-metadata-mp3-20260823-134641-S008-recovery-20260823-140455.jsonl",
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S008/evidence/metadata-metadata-mp3-20260823-160355-S008-recovery-20260823-160910.jsonl",
         "records": 5,
         "torn_records": 0,
         "runs": {
-          "20260823-140455-6a2041d9": {
-            "started": "2026-08-23T14:04:55-04:00",
+          "20260823-160910-9607b627": {
+            "started": "2026-08-23T16:09:10-04:00",
             "complete": true
           }
         },
@@ -418,49 +407,38 @@
       "history": [
         {
           "state": "PREFLIGHT_PASS",
-          "at": "2026-08-23T14:02:39-04:00"
-        },
-        {
-          "state": "BLOCKED",
-          "at": "2026-08-23T14:06:15-04:00"
-        },
-        {
-          "state": "PREFLIGHT_PASS",
-          "at": "2026-08-23T15:12:38-04:00",
-          "reason": "recovery reopen bound to recovery-approval sha256 a7706abe62de3eeedd074f5187f9ecad41b6df998055ba968535f72c48dd8dfb",
-          "recovery_bypass": true
+          "at": "2026-08-23T16:08:46-04:00"
         },
         {
           "state": "BACKED_UP",
-          "at": "2026-08-23T15:12:38-04:00"
+          "at": "2026-08-23T16:09:25-04:00"
         },
         {
           "state": "APPLIED",
-          "at": "2026-08-23T15:12:40-04:00"
+          "at": "2026-08-23T16:09:26-04:00"
         },
         {
           "state": "VERIFIED",
-          "at": "2026-08-23T15:13:18-04:00"
+          "at": "2026-08-23T16:09:30-04:00"
         }
       ],
-      "updated_at": "2026-08-23T15:13:18-04:00",
-      "failure": "backup manifest status is 'FAIL', not PASS: /Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S009/backup-manifest.json\nFirst problems: ['missing from backup: Beyoncé - PURE_HONEY - Beyoncé.mp3']",
-      "backup_manifest_sha256": "d31d092255f27d0735cb392d42026d472f77785e6c84ce65351f050fd6a79ebe",
-      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S009/evidence/metadata-metadata-mp3-20260823-134641-S009-recovery-result-20260823-151238.json",
-      "files": 5,
+      "updated_at": "2026-08-23T16:09:30-04:00",
+      "backup_manifest_sha256": "3d4c5a02a917e4121495223cfc6ddcc6c096ac02dddde76c043e03bf103759af",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S009/evidence/metadata-metadata-mp3-20260823-160355-S009-result-20260823-160925.json",
+      "files": 3,
       "unauthorized_changes": 0,
       "recovery": {
-        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S009/evidence/metadata-metadata-mp3-20260823-134641-S009-recovery-recovery-20260823-151238.jsonl",
-        "records": 17,
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S009/evidence/metadata-metadata-mp3-20260823-160355-S009-recovery-20260823-160925.jsonl",
+        "records": 11,
         "torn_records": 0,
         "runs": {
-          "20260823-151238-ef6bf0fb": {
-            "started": "2026-08-23T15:12:38-04:00",
+          "20260823-160925-e63291b7": {
+            "started": "2026-08-23T16:09:25-04:00",
             "complete": true
           }
         },
-        "items_intended": 5,
-        "items_settled": 5,
+        "items_intended": 3,
+        "items_settled": 3,
         "in_flight": [],
         "rollback_failures": 0,
         "clean": true
@@ -472,38 +450,38 @@
       "history": [
         {
           "state": "PREFLIGHT_PASS",
-          "at": "2026-08-23T14:02:39-04:00"
+          "at": "2026-08-23T16:08:46-04:00"
         },
         {
           "state": "BACKED_UP",
-          "at": "2026-08-23T15:13:22-04:00"
+          "at": "2026-08-23T16:16:42-04:00"
         },
         {
           "state": "APPLIED",
-          "at": "2026-08-23T15:13:22-04:00"
+          "at": "2026-08-23T16:16:51-04:00"
         },
         {
           "state": "VERIFIED",
-          "at": "2026-08-23T15:13:23-04:00"
+          "at": "2026-08-23T16:20:20-04:00"
         }
       ],
-      "updated_at": "2026-08-23T15:13:23-04:00",
-      "backup_manifest_sha256": "063b9541d6fb67483f78799fa5419b95fcc9626418f2ad6d8f45fada484fa91c",
-      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S010/evidence/metadata-metadata-mp3-20260823-134641-S010-recovery-result-20260823-151322.json",
-      "files": 2,
+      "updated_at": "2026-08-23T16:20:20-04:00",
+      "backup_manifest_sha256": "a1def693f1942ca063cacacc796b0382ed4b566b7db5084db12bb1e2a7f1c0ca",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S010/evidence/metadata-metadata-mp3-20260823-160355-S010-result-20260823-161643.json",
+      "files": 26,
       "unauthorized_changes": 0,
       "recovery": {
-        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S010/evidence/metadata-metadata-mp3-20260823-134641-S010-recovery-recovery-20260823-151322.jsonl",
-        "records": 8,
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S010/evidence/metadata-metadata-mp3-20260823-160355-S010-recovery-20260823-161643.jsonl",
+        "records": 80,
         "torn_records": 0,
         "runs": {
-          "20260823-151322-a8d8068d": {
-            "started": "2026-08-23T15:13:22-04:00",
+          "20260823-161643-df70dfe3": {
+            "started": "2026-08-23T16:16:43-04:00",
             "complete": true
           }
         },
-        "items_intended": 2,
-        "items_settled": 2,
+        "items_intended": 26,
+        "items_settled": 26,
         "in_flight": [],
         "rollback_failures": 0,
         "clean": true
@@ -515,38 +493,38 @@
       "history": [
         {
           "state": "PREFLIGHT_PASS",
-          "at": "2026-08-23T14:02:39-04:00"
+          "at": "2026-08-23T16:08:46-04:00"
         },
         {
           "state": "BACKED_UP",
-          "at": "2026-08-23T15:20:33-04:00"
+          "at": "2026-08-23T16:22:07-04:00"
         },
         {
           "state": "APPLIED",
-          "at": "2026-08-23T15:21:16-04:00"
+          "at": "2026-08-23T16:22:09-04:00"
         },
         {
           "state": "VERIFIED",
-          "at": "2026-08-23T15:24:37-04:00"
+          "at": "2026-08-23T16:23:01-04:00"
         }
       ],
-      "updated_at": "2026-08-23T15:24:37-04:00",
-      "backup_manifest_sha256": "c128713e8697a0d3fa08c6fd94cc3c94828a74989882af239031a3ca835146b6",
-      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S011/evidence/metadata-metadata-mp3-20260823-134641-S011-recovery-result-20260823-152034.json",
-      "files": 132,
+      "updated_at": "2026-08-23T16:23:01-04:00",
+      "backup_manifest_sha256": "097d1e9515c973e42cd35d6a894df402bde1adda0b12bbaa50bb69706af9c1e9",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S011/evidence/metadata-metadata-mp3-20260823-160355-S011-result-20260823-162208.json",
+      "files": 4,
       "unauthorized_changes": 0,
       "recovery": {
-        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S011/evidence/metadata-metadata-mp3-20260823-134641-S011-recovery-recovery-20260823-152034.jsonl",
-        "records": 398,
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S011/evidence/metadata-metadata-mp3-20260823-160355-S011-recovery-20260823-162208.jsonl",
+        "records": 14,
         "torn_records": 0,
         "runs": {
-          "20260823-152034-eb72d7d5": {
-            "started": "2026-08-23T15:20:34-04:00",
+          "20260823-162208-e003e59e": {
+            "started": "2026-08-23T16:22:08-04:00",
             "complete": true
           }
         },
-        "items_intended": 132,
-        "items_settled": 132,
+        "items_intended": 4,
+        "items_settled": 4,
         "in_flight": [],
         "rollback_failures": 0,
         "clean": true
@@ -558,33 +536,33 @@
       "history": [
         {
           "state": "PREFLIGHT_PASS",
-          "at": "2026-08-23T14:02:39-04:00"
+          "at": "2026-08-23T16:08:46-04:00"
         },
         {
           "state": "BACKED_UP",
-          "at": "2026-08-23T15:24:38-04:00"
+          "at": "2026-08-23T16:23:21-04:00"
         },
         {
           "state": "APPLIED",
-          "at": "2026-08-23T15:24:38-04:00"
+          "at": "2026-08-23T16:23:22-04:00"
         },
         {
           "state": "VERIFIED",
-          "at": "2026-08-23T15:24:38-04:00"
+          "at": "2026-08-23T16:23:26-04:00"
         }
       ],
-      "updated_at": "2026-08-23T15:24:38-04:00",
-      "backup_manifest_sha256": "fc66e7a5a42fe7b93f8a15833ed5f772d7bea57f3f26e3cecc06057a6e37f66b",
-      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S012/evidence/metadata-metadata-mp3-20260823-134641-S012-recovery-result-20260823-152438.json",
+      "updated_at": "2026-08-23T16:23:26-04:00",
+      "backup_manifest_sha256": "1b1e6f0cdc16ee108a436f51a65e387fec4607d20a923f14e86dea8b40dccf50",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S012/evidence/metadata-metadata-mp3-20260823-160355-S012-result-20260823-162321.json",
       "files": 1,
       "unauthorized_changes": 0,
       "recovery": {
-        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S012/evidence/metadata-metadata-mp3-20260823-134641-S012-recovery-recovery-20260823-152438.jsonl",
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S012/evidence/metadata-metadata-mp3-20260823-160355-S012-recovery-20260823-162321.jsonl",
         "records": 5,
         "torn_records": 0,
         "runs": {
-          "20260823-152438-c139dd5c": {
-            "started": "2026-08-23T15:24:38-04:00",
+          "20260823-162321-e2ef4970": {
+            "started": "2026-08-23T16:23:21-04:00",
             "complete": true
           }
         },
@@ -601,33 +579,1194 @@
       "history": [
         {
           "state": "PREFLIGHT_PASS",
-          "at": "2026-08-23T14:02:39-04:00"
+          "at": "2026-08-23T16:08:46-04:00"
         },
         {
           "state": "BACKED_UP",
-          "at": "2026-08-23T15:26:09-04:00"
+          "at": "2026-08-23T16:23:29-04:00"
         },
         {
           "state": "APPLIED",
-          "at": "2026-08-23T15:26:10-04:00"
+          "at": "2026-08-23T16:23:29-04:00"
         },
         {
           "state": "VERIFIED",
-          "at": "2026-08-23T15:26:51-04:00"
+          "at": "2026-08-23T16:23:30-04:00"
         }
       ],
-      "updated_at": "2026-08-23T15:26:51-04:00",
-      "backup_manifest_sha256": "37ad42591d99414aa509f575e063ba95a56f9fd2e9b1e782ccca3e2b12b53f34",
-      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S013/evidence/metadata-metadata-mp3-20260823-134641-S013-recovery-result-20260823-152609.json",
+      "updated_at": "2026-08-23T16:23:30-04:00",
+      "backup_manifest_sha256": "82515e1cd7b72019233db4318c877f10a3716b55904abeaf990d340bbb86b660",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S013/evidence/metadata-metadata-mp3-20260823-160355-S013-result-20260823-162329.json",
       "files": 1,
       "unauthorized_changes": 0,
       "recovery": {
-        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-134641/S013/evidence/metadata-metadata-mp3-20260823-134641-S013-recovery-recovery-20260823-152609.jsonl",
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S013/evidence/metadata-metadata-mp3-20260823-160355-S013-recovery-20260823-162329.jsonl",
         "records": 5,
         "torn_records": 0,
         "runs": {
-          "20260823-152609-091b86a0": {
-            "started": "2026-08-23T15:26:09-04:00",
+          "20260823-162329-c581257b": {
+            "started": "2026-08-23T16:23:29-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 1,
+        "items_settled": 1,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S014": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:24:33-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:24:34-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:25:04-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:25:04-04:00",
+      "backup_manifest_sha256": "fa400b41bf77be45e23e94197387878dc029930b3b49e9ec4c402a80ab111494",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S014/evidence/metadata-metadata-mp3-20260823-160355-S014-result-20260823-162433.json",
+      "files": 1,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S014/evidence/metadata-metadata-mp3-20260823-160355-S014-recovery-20260823-162433.jsonl",
+        "records": 5,
+        "torn_records": 0,
+        "runs": {
+          "20260823-162433-de816e0f": {
+            "started": "2026-08-23T16:24:33-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 1,
+        "items_settled": 1,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S015": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:25:05-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:25:06-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:25:06-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:25:06-04:00",
+      "backup_manifest_sha256": "3e14826c401964de6f0a1e1fbb4137cb0668d19b4db7c2a60b2a69fc9f945a1f",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S015/evidence/metadata-metadata-mp3-20260823-160355-S015-result-20260823-162505.json",
+      "files": 1,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S015/evidence/metadata-metadata-mp3-20260823-160355-S015-recovery-20260823-162505.jsonl",
+        "records": 5,
+        "torn_records": 0,
+        "runs": {
+          "20260823-162505-9af080d3": {
+            "started": "2026-08-23T16:25:05-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 1,
+        "items_settled": 1,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S016": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:25:07-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:25:07-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:25:07-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:25:07-04:00",
+      "backup_manifest_sha256": "87a506f51d3ab1e2e94e4cde308063b58b400b5a70f533c33c1fa51e883947aa",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S016/evidence/metadata-metadata-mp3-20260823-160355-S016-result-20260823-162507.json",
+      "files": 2,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S016/evidence/metadata-metadata-mp3-20260823-160355-S016-recovery-20260823-162507.jsonl",
+        "records": 8,
+        "torn_records": 0,
+        "runs": {
+          "20260823-162507-9de16137": {
+            "started": "2026-08-23T16:25:07-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 2,
+        "items_settled": 2,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S017": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:25:08-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:25:08-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:25:08-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:25:08-04:00",
+      "backup_manifest_sha256": "8a656b653a84ab3a4c753c8a16e669c135e97ae592e9dd4c06db9a10305d2bfe",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S017/evidence/metadata-metadata-mp3-20260823-160355-S017-result-20260823-162508.json",
+      "files": 1,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S017/evidence/metadata-metadata-mp3-20260823-160355-S017-recovery-20260823-162508.jsonl",
+        "records": 5,
+        "torn_records": 0,
+        "runs": {
+          "20260823-162508-6b81ab0d": {
+            "started": "2026-08-23T16:25:08-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 1,
+        "items_settled": 1,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S018": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:25:23-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:25:24-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:25:26-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:25:26-04:00",
+      "backup_manifest_sha256": "c8c8928c025b5258721f4b68c5cd25f630785f8f226b426468726d08075b0126",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S018/evidence/metadata-metadata-mp3-20260823-160355-S018-result-20260823-162523.json",
+      "files": 4,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S018/evidence/metadata-metadata-mp3-20260823-160355-S018-recovery-20260823-162523.jsonl",
+        "records": 14,
+        "torn_records": 0,
+        "runs": {
+          "20260823-162523-7ce3479b": {
+            "started": "2026-08-23T16:25:23-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 4,
+        "items_settled": 4,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S019": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:25:27-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:25:27-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:25:27-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:25:27-04:00",
+      "backup_manifest_sha256": "7da8e860aea310d0cdf7cc9be4488623bbac07e84f67c18b99bdf8a1965c44e0",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S019/evidence/metadata-metadata-mp3-20260823-160355-S019-result-20260823-162527.json",
+      "files": 1,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S019/evidence/metadata-metadata-mp3-20260823-160355-S019-recovery-20260823-162527.jsonl",
+        "records": 5,
+        "torn_records": 0,
+        "runs": {
+          "20260823-162527-71439ca0": {
+            "started": "2026-08-23T16:25:27-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 1,
+        "items_settled": 1,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S020": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:25:28-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:25:28-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:25:28-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:25:28-04:00",
+      "backup_manifest_sha256": "dcf23218f9483600809f2ce8121a221e7dc707dbe5c1a6483442ca750390e832",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S020/evidence/metadata-metadata-mp3-20260823-160355-S020-result-20260823-162528.json",
+      "files": 1,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S020/evidence/metadata-metadata-mp3-20260823-160355-S020-recovery-20260823-162528.jsonl",
+        "records": 5,
+        "torn_records": 0,
+        "runs": {
+          "20260823-162528-b23c6c90": {
+            "started": "2026-08-23T16:25:28-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 1,
+        "items_settled": 1,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S021": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:25:29-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:25:29-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:25:29-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:25:29-04:00",
+      "backup_manifest_sha256": "34e1d4d539fb9e2e906c48dc34c536347765a716782c7535190abb2b2c19b53e",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S021/evidence/metadata-metadata-mp3-20260823-160355-S021-result-20260823-162529.json",
+      "files": 1,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S021/evidence/metadata-metadata-mp3-20260823-160355-S021-recovery-20260823-162529.jsonl",
+        "records": 5,
+        "torn_records": 0,
+        "runs": {
+          "20260823-162529-d767a359": {
+            "started": "2026-08-23T16:25:29-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 1,
+        "items_settled": 1,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S022": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:25:31-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:25:31-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:25:31-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:25:31-04:00",
+      "backup_manifest_sha256": "85e5dc5aa96004a7a0e210d46ee4265eb827d80d42760e25bd97e234e9de46e4",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S022/evidence/metadata-metadata-mp3-20260823-160355-S022-result-20260823-162531.json",
+      "files": 2,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S022/evidence/metadata-metadata-mp3-20260823-160355-S022-recovery-20260823-162531.jsonl",
+        "records": 8,
+        "torn_records": 0,
+        "runs": {
+          "20260823-162531-45c6bdbb": {
+            "started": "2026-08-23T16:25:31-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 2,
+        "items_settled": 2,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S023": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:27:30-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:29:23-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:29:34-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:29:34-04:00",
+      "backup_manifest_sha256": "43bf59a312cafd76333c9b10828d15a3b5830c102f6521fecc26559320f68dd3",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S023/evidence/metadata-metadata-mp3-20260823-160355-S023-result-20260823-162731.json",
+      "files": 185,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S023/evidence/metadata-metadata-mp3-20260823-160355-S023-recovery-20260823-162731.jsonl",
+        "records": 557,
+        "torn_records": 0,
+        "runs": {
+          "20260823-162731-9bf966bd": {
+            "started": "2026-08-23T16:27:31-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 185,
+        "items_settled": 185,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S024": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:30:19-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:30:20-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:30:24-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:30:24-04:00",
+      "backup_manifest_sha256": "2c3426a69eaeeeb973cd8c14a15186a698b15f0b7373b971ad2c5cbcb2415cfc",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S024/evidence/metadata-metadata-mp3-20260823-160355-S024-result-20260823-163019.json",
+      "files": 1,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S024/evidence/metadata-metadata-mp3-20260823-160355-S024-recovery-20260823-163019.jsonl",
+        "records": 5,
+        "torn_records": 0,
+        "runs": {
+          "20260823-163019-cef6e136": {
+            "started": "2026-08-23T16:30:19-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 1,
+        "items_settled": 1,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S025": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:30:25-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:30:26-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:30:26-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:30:26-04:00",
+      "backup_manifest_sha256": "7c4ac444f6f033dae5c6d9bfdffff1598958a43671127b248d2ed1e1e670010a",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S025/evidence/metadata-metadata-mp3-20260823-160355-S025-result-20260823-163025.json",
+      "files": 2,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S025/evidence/metadata-metadata-mp3-20260823-160355-S025-recovery-20260823-163025.jsonl",
+        "records": 8,
+        "torn_records": 0,
+        "runs": {
+          "20260823-163025-7db438fe": {
+            "started": "2026-08-23T16:30:25-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 2,
+        "items_settled": 2,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S026": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:30:49-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:30:52-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:31:01-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:31:01-04:00",
+      "backup_manifest_sha256": "3ea94f71d810a5fd0ec9e344d6b94e9fd93009d36ab0253f673fe6b400ffdb66",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S026/evidence/metadata-metadata-mp3-20260823-160355-S026-result-20260823-163049.json",
+      "files": 12,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S026/evidence/metadata-metadata-mp3-20260823-160355-S026-recovery-20260823-163049.jsonl",
+        "records": 38,
+        "torn_records": 0,
+        "runs": {
+          "20260823-163049-b74233b4": {
+            "started": "2026-08-23T16:30:49-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 12,
+        "items_settled": 12,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S027": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:31:02-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:31:02-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:31:02-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:31:02-04:00",
+      "backup_manifest_sha256": "ab450f8d6f18d065195145cf4b8b949d9cbbe5a7a8afc94f7806575cee9d82ae",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S027/evidence/metadata-metadata-mp3-20260823-160355-S027-result-20260823-163102.json",
+      "files": 1,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S027/evidence/metadata-metadata-mp3-20260823-160355-S027-recovery-20260823-163102.jsonl",
+        "records": 5,
+        "torn_records": 0,
+        "runs": {
+          "20260823-163102-159be880": {
+            "started": "2026-08-23T16:31:02-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 1,
+        "items_settled": 1,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S028": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:31:04-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:31:04-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:31:04-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:31:04-04:00",
+      "backup_manifest_sha256": "6971e3e5973978fe7fe347a5b3c18d2359a42a0fa92566e1820198e367ebb730",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S028/evidence/metadata-metadata-mp3-20260823-160355-S028-result-20260823-163104.json",
+      "files": 2,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S028/evidence/metadata-metadata-mp3-20260823-160355-S028-recovery-20260823-163104.jsonl",
+        "records": 8,
+        "torn_records": 0,
+        "runs": {
+          "20260823-163104-37de1a03": {
+            "started": "2026-08-23T16:31:04-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 2,
+        "items_settled": 2,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S029": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:33:02-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:33:07-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:34:01-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:34:01-04:00",
+      "backup_manifest_sha256": "c81d5d9c04883dd47e8fdcd796583b3f0ebfe9ab4326b3edf754c4e0ec9ff34c",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S029/evidence/metadata-metadata-mp3-20260823-160355-S029-result-20260823-163302.json",
+      "files": 11,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S029/evidence/metadata-metadata-mp3-20260823-160355-S029-recovery-20260823-163302.jsonl",
+        "records": 35,
+        "torn_records": 0,
+        "runs": {
+          "20260823-163302-00946bc1": {
+            "started": "2026-08-23T16:33:02-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 11,
+        "items_settled": 11,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S030": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:34:02-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:34:02-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:34:02-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:34:02-04:00",
+      "backup_manifest_sha256": "c66e5490814119bcfee1230d674b6b3e89f69c4c81dee3a832a740dd978a2800",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S030/evidence/metadata-metadata-mp3-20260823-160355-S030-result-20260823-163402.json",
+      "files": 1,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S030/evidence/metadata-metadata-mp3-20260823-160355-S030-recovery-20260823-163402.jsonl",
+        "records": 5,
+        "torn_records": 0,
+        "runs": {
+          "20260823-163402-2ed83710": {
+            "started": "2026-08-23T16:34:02-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 1,
+        "items_settled": 1,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S031": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:34:25-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:34:26-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:34:31-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:34:31-04:00",
+      "backup_manifest_sha256": "20c8f971d7cce9f1ce5564391b49eab8f87020cebc456d29ad22934e41108ea9",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S031/evidence/metadata-metadata-mp3-20260823-160355-S031-result-20260823-163425.json",
+      "files": 8,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S031/evidence/metadata-metadata-mp3-20260823-160355-S031-recovery-20260823-163425.jsonl",
+        "records": 26,
+        "torn_records": 0,
+        "runs": {
+          "20260823-163425-3ea3ecfc": {
+            "started": "2026-08-23T16:34:25-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 8,
+        "items_settled": 8,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S032": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:34:31-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:34:32-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:34:32-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:34:32-04:00",
+      "backup_manifest_sha256": "768d43c2745b8b7c959eda871f21cceb7ce0ce40e730c52b241e0c94459466db",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S032/evidence/metadata-metadata-mp3-20260823-160355-S032-result-20260823-163431.json",
+      "files": 1,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S032/evidence/metadata-metadata-mp3-20260823-160355-S032-recovery-20260823-163431.jsonl",
+        "records": 5,
+        "torn_records": 0,
+        "runs": {
+          "20260823-163431-bdcc54a6": {
+            "started": "2026-08-23T16:34:31-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 1,
+        "items_settled": 1,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S033": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:34:35-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:34:37-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:34:37-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:34:37-04:00",
+      "backup_manifest_sha256": "418a72251dc171286d50eeb99b0cdaa1cdd67f1068b3d1adb15f8f4dce007a7e",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S033/evidence/metadata-metadata-mp3-20260823-160355-S033-result-20260823-163435.json",
+      "files": 4,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S033/evidence/metadata-metadata-mp3-20260823-160355-S033-recovery-20260823-163435.jsonl",
+        "records": 14,
+        "torn_records": 0,
+        "runs": {
+          "20260823-163435-bd9e0166": {
+            "started": "2026-08-23T16:34:35-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 4,
+        "items_settled": 4,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S034": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:34:39-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:34:40-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:34:40-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:34:40-04:00",
+      "backup_manifest_sha256": "10153fda485c796785b7455c811a985070adcf5544c48f7a8355963029b54bea",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S034/evidence/metadata-metadata-mp3-20260823-160355-S034-result-20260823-163439.json",
+      "files": 2,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S034/evidence/metadata-metadata-mp3-20260823-160355-S034-recovery-20260823-163439.jsonl",
+        "records": 8,
+        "torn_records": 0,
+        "runs": {
+          "20260823-163439-c01d5117": {
+            "started": "2026-08-23T16:34:39-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 2,
+        "items_settled": 2,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S035": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:34:43-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:34:44-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:34:44-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:34:44-04:00",
+      "backup_manifest_sha256": "bf72d8aff6c746a124ebca1b2c7bd0132ecdbce9102906d8e66e81c79b5fbec0",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S035/evidence/metadata-metadata-mp3-20260823-160355-S035-result-20260823-163443.json",
+      "files": 1,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S035/evidence/metadata-metadata-mp3-20260823-160355-S035-recovery-20260823-163443.jsonl",
+        "records": 5,
+        "torn_records": 0,
+        "runs": {
+          "20260823-163443-2943d24e": {
+            "started": "2026-08-23T16:34:43-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 1,
+        "items_settled": 1,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S036": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:34:47-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:34:48-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:34:48-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:34:48-04:00",
+      "backup_manifest_sha256": "9ce1e3e24263a60efb7d8b1a46323585325dfc7eb5aae4e984aeea60851e7876",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S036/evidence/metadata-metadata-mp3-20260823-160355-S036-result-20260823-163447.json",
+      "files": 2,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S036/evidence/metadata-metadata-mp3-20260823-160355-S036-recovery-20260823-163447.jsonl",
+        "records": 8,
+        "torn_records": 0,
+        "runs": {
+          "20260823-163447-e98eb01d": {
+            "started": "2026-08-23T16:34:47-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 2,
+        "items_settled": 2,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S037": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:35:26-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:35:45-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:35:56-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:35:56-04:00",
+      "backup_manifest_sha256": "d7898ed7c564799ca2927ab04c187c292c0eac4aebe2ed959b0014b4278f8a05",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S037/evidence/metadata-metadata-mp3-20260823-160355-S037-result-20260823-163526.json",
+      "files": 45,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S037/evidence/metadata-metadata-mp3-20260823-160355-S037-recovery-20260823-163526.jsonl",
+        "records": 137,
+        "torn_records": 0,
+        "runs": {
+          "20260823-163526-b5b264de": {
+            "started": "2026-08-23T16:35:26-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 45,
+        "items_settled": 45,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S038": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:36:04-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:36:05-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:36:05-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:36:05-04:00",
+      "backup_manifest_sha256": "f3f7f2175646ca095db524adedfe5f6658c30cf375c61081d289ec08ac404846",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S038/evidence/metadata-metadata-mp3-20260823-160355-S038-result-20260823-163604.json",
+      "files": 2,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S038/evidence/metadata-metadata-mp3-20260823-160355-S038-recovery-20260823-163604.jsonl",
+        "records": 8,
+        "torn_records": 0,
+        "runs": {
+          "20260823-163604-5f88b4ed": {
+            "started": "2026-08-23T16:36:04-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 2,
+        "items_settled": 2,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S039": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:37:47-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:37:48-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:38:34-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:38:34-04:00",
+      "backup_manifest_sha256": "bf5da97f755f24331a0bc38ed51cafc3d87604bdf4c1a1b808e24637120aecba",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S039/evidence/metadata-metadata-mp3-20260823-160355-S039-result-20260823-163747.json",
+      "files": 1,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S039/evidence/metadata-metadata-mp3-20260823-160355-S039-recovery-20260823-163747.jsonl",
+        "records": 5,
+        "torn_records": 0,
+        "runs": {
+          "20260823-163747-ab37a29f": {
+            "started": "2026-08-23T16:37:47-04:00",
+            "complete": true
+          }
+        },
+        "items_intended": 1,
+        "items_settled": 1,
+        "in_flight": [],
+        "rollback_failures": 0,
+        "clean": true
+      }
+    },
+    "S040": {
+      "state": "VERIFIED",
+      "execution": "COMPLETED",
+      "history": [
+        {
+          "state": "PREFLIGHT_PASS",
+          "at": "2026-08-23T16:08:46-04:00"
+        },
+        {
+          "state": "BACKED_UP",
+          "at": "2026-08-23T16:39:12-04:00"
+        },
+        {
+          "state": "APPLIED",
+          "at": "2026-08-23T16:39:13-04:00"
+        },
+        {
+          "state": "VERIFIED",
+          "at": "2026-08-23T16:39:27-04:00"
+        }
+      ],
+      "updated_at": "2026-08-23T16:39:27-04:00",
+      "backup_manifest_sha256": "a512d2144fb0c0062c7977d8952034d9a2328e3ffd241682778fcb5e4c6b24be",
+      "result_path": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S040/evidence/metadata-metadata-mp3-20260823-160355-S040-result-20260823-163912.json",
+      "files": 1,
+      "unauthorized_changes": 0,
+      "recovery": {
+        "journal": "/Volumes/T5 EVO/DJ/Backups/remix-edit-sort/metadata-mp3-20260823-160355/S040/evidence/metadata-metadata-mp3-20260823-160355-S040-recovery-20260823-163912.jsonl",
+        "records": 5,
+        "torn_records": 0,
+        "runs": {
+          "20260823-163912-a4cfa473": {
+            "started": "2026-08-23T16:39:12-04:00",
             "complete": true
           }
         },
@@ -639,8 +1778,8 @@
       }
     }
   },
-  "master_path": "/Volumes/T5 EVO/DJ/Tools/remix-edit-sort/handoff/batches/metadata-mp3-20260823-134641/master-manifest.json",
-  "master_sha": "93994dda2c23497e34ee96141eb067fe03b4192342fbe315e6253d777cba87eb",
-  "approval_path": "/Volumes/T5 EVO/DJ/Tools/remix-edit-sort/handoff/batches/metadata-mp3-20260823-134641/approval.json",
+  "master_path": "/Volumes/T5 EVO/DJ/Tools/remix-edit-sort/handoff/batches/metadata-mp3-20260823-160355/master-manifest.json",
+  "master_sha": "03d158c401a0cf675f4edf48def2d373d2a7649ad42ba848570249f822cf6654",
+  "approval_path": "/Volumes/T5 EVO/DJ/Tools/remix-edit-sort/handoff/batches/metadata-mp3-20260823-160355/approval.json",
   "approved_by": "djb.a.e (human operator)"
 }
