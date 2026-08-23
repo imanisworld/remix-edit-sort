@@ -106,16 +106,34 @@ def _validate_plans(master: dict, handoff_root: Path) -> None:
         if not preview_path.is_file() or metadata_batch.sha256_file(preview_path) != preview.get(f"{kind}_sha256"):
             raise metadata_batch.BatchRefused(f"approved {kind.upper()} preview hash mismatch: {preview_path}")
     union = []
+    collision_owners = {}
     for scope in master["scopes"]:
         plan_path = metadata_batch.require_handoff_path(Path(scope["plan_path"]), handoff_root)
         if metadata_batch.sha256_file(plan_path) != scope["plan_sha256"]:
             raise metadata_batch.BatchRefused(f"approved plan hash mismatch: {plan_path}")
-        validated, _ = intake.load_and_validate(plan_path, Path(scope["source_root"]))
+        try:
+            validated, _ = intake.load_and_validate(plan_path, Path(scope["source_root"]))
+        except RuntimeError as exc:
+            raise metadata_batch.BatchRefused(
+                f"plan validation refused for {scope['scope_id']}: {exc}"
+            ) from exc
         if len(validated) != scope["item_count"]:
             raise metadata_batch.BatchRefused(f"real validator count mismatch: {scope['scope_id']}")
-        union.extend(row["path"] for row in validated)
+        for row in validated:
+            path = row["path"]
+            collision_key = mutation_engine.path_collision_key(Path(path))
+            prior = collision_owners.get(collision_key)
+            if prior is not None:
+                raise metadata_batch.BatchRefused(
+                    "cross-plan effective filesystem path collision: "
+                    f"{prior['scope_id']}:{prior['path']} and {scope['scope_id']}:{path}"
+                )
+            collision_owners[collision_key] = {
+                "scope_id": scope["scope_id"], "path": path,
+            }
+            union.append(path)
     approved = [row["path"] for row in master["candidates"]]
-    if len(union) != len(set(union)) or sorted(union) != sorted(approved):
+    if sorted(union) != sorted(approved):
         raise metadata_batch.BatchRefused("per-scope plan union differs from approved candidate set")
 
 
@@ -303,7 +321,7 @@ def apply_batch(master_sha: str, handoff_root: Path = metadata_batch.HANDOFF_ROO
     try:
         master, _ = preflight(master_sha, handoff_root, t5_volume, mount_checker)
         scope_states = {
-            scope["scope_id"]: {"state": "PREFLIGHT_PASS", "history": [
+            scope["scope_id"]: {"state": "PREFLIGHT_PASS", "execution": "NOT_STARTED", "history": [
                 {"state": "PREFLIGHT_PASS", "at": metadata_batch.now()}
             ]} for scope in master["scopes"]
         }
@@ -336,7 +354,10 @@ def apply_batch(master_sha: str, handoff_root: Path = metadata_batch.HANDOFF_ROO
                     raise metadata_batch.BatchRefused(f"backup manifest did not PASS: {scope_id}")
                 metadata_batch.update_scope(
                     state_path, scope_id, "BACKED_UP",
-                    details={"backup_manifest_sha256": manifest["manifest_sha256"]},
+                    details={
+                        "backup_manifest_sha256": manifest["manifest_sha256"],
+                        "execution": "IN_PROGRESS",
+                    },
                     handoff_root=handoff_root,
                 )
                 if batch_phase == "PREFLIGHT_PASS":
@@ -357,14 +378,20 @@ def apply_batch(master_sha: str, handoff_root: Path = metadata_batch.HANDOFF_ROO
                     inspect_failed_run(evidence_root, t5_volume)
                 result = json.loads(run.stdout)
                 metadata_batch.update_scope(state_path, scope_id, "APPLIED",
-                                            details={"result_path": result.get("result_path")},
+                                            details={
+                                                "result_path": result.get("result_path"),
+                                                "execution": "IN_PROGRESS",
+                                            },
                                             handoff_root=handoff_root)
                 if batch_phase == "BACKED_UP":
                     metadata_batch.transition(state_path, "APPLIED", handoff_root=handoff_root)
                     batch_phase = "APPLIED"
                 proof = _verify_scope(master, scope, result)
-                metadata_batch.update_scope(state_path, scope_id, "VERIFIED", details=proof,
-                                            handoff_root=handoff_root)
+                metadata_batch.update_scope(
+                    state_path, scope_id, "VERIFIED",
+                    details={**proof, "execution": "COMPLETED"},
+                    handoff_root=handoff_root,
+                )
                 verified += proof["files"]
                 evidence_roots.append(str(evidence_root))
             except BaseException as exc:
@@ -380,11 +407,26 @@ def apply_batch(master_sha: str, handoff_root: Path = metadata_batch.HANDOFF_ROO
                         # Never mask the more severe fact that rollback failed.
                         if scope_failure is None:
                             raise
-        metadata_batch.transition(state_path, "VERIFIED", handoff_root=handoff_root)
+        final_state = metadata_batch.transition(
+            state_path, "VERIFIED", handoff_root=handoff_root
+        )
+        scope_results = {
+            scope_id: {
+                "state": entry["state"],
+                "execution": entry.get("execution"),
+                "files_verified": entry.get("files", 0),
+            }
+            for scope_id, entry in final_state.get("scopes", {}).items()
+        }
         spotcheck = _write_spotcheck(master, handoff_root)
         summary = {
             "BATCH RESULT": "PASS",
             "FILES VERIFIED": verified,
+            "SCOPES VERIFIED": sum(
+                result["state"] == "VERIFIED" and result["execution"] == "COMPLETED"
+                for result in scope_results.values()
+            ),
+            "SCOPE RESULTS": scope_results,
             "AUDIO PAYLOAD": "PASS",
             "SERATO FRAMES": "PASS",
             "ID3 PRESERVATION": "PASS",
@@ -408,7 +450,8 @@ def apply_batch(master_sha: str, handoff_root: Path = metadata_batch.HANDOFF_ROO
             }:
                 metadata_batch.update_scope(
                     state_path, active_scope_id, "ROLLBACK_FAILED",
-                    details={"failure": str(exc)}, handoff_root=handoff_root,
+                    details={"failure": str(exc), "execution": "FAILED"},
+                    handoff_root=handoff_root,
                 )
             state = metadata_batch.read_json(state_path)
             if state.get("state") not in {"ROLLBACK_FAILED", "COMPLETE"}:
@@ -421,6 +464,15 @@ def apply_batch(master_sha: str, handoff_root: Path = metadata_batch.HANDOFF_ROO
     except BaseException as exc:
         try:
             state = metadata_batch.read_json(state_path)
+            if active_scope_id and state.get("scopes", {}).get(active_scope_id, {}).get("state") not in {
+                "BLOCKED", "ROLLBACK_FAILED", "VERIFIED"
+            }:
+                metadata_batch.update_scope(
+                    state_path, active_scope_id, "BLOCKED",
+                    details={"failure": str(exc), "execution": "FAILED"},
+                    handoff_root=handoff_root,
+                )
+                state = metadata_batch.read_json(state_path)
             if state.get("state") not in {"BLOCKED", "COMPLETE"}:
                 metadata_batch.transition(state_path, "BLOCKED", reason=str(exc), handoff_root=handoff_root)
         except Exception:

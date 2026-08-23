@@ -4,11 +4,13 @@ All media is synthetic and all writable roots are TemporaryDirectory paths.
 """
 from __future__ import annotations
 
+import io
 import json
 import subprocess
 import sys
 import tempfile
 import unittest
+import unicodedata
 from pathlib import Path
 from unittest import mock
 
@@ -378,7 +380,7 @@ class ApprovalAndPreflightTests(unittest.TestCase):
         with self.assertRaisesRegex(metadata_batch.BatchRefused, "live id3_major drift"):
             apply_approved_batch._validate_live({"candidates": [row]})
 
-    def test_duplicate_path_across_two_scope_plans_is_refused(self):
+    def _assert_cross_plan_alias_refused_before_mutation(self, first_path, second_path):
         second = self.plans / "S002.json"
         second.write_text(self.plan_path.read_text(encoding="utf-8"), encoding="utf-8")
         master = dict(self.master)
@@ -388,8 +390,59 @@ class ApprovalAndPreflightTests(unittest.TestCase):
              "plan_path": str(second.resolve()),
              "plan_sha256": metadata_batch.sha256_file(second)},
         ]
-        with self.assertRaisesRegex(metadata_batch.BatchRefused, "plan union differs"):
-            apply_approved_batch._validate_plans(master, self.handoff)
+        master["candidate_count"] = 2
+        master["candidates"] = [
+            {**self.master["candidates"][0], "path": first_path, "scope_id": "S001"},
+            {**self.master["candidates"][0], "path": second_path, "scope_id": "S002"},
+        ]
+        master.pop("master_sha", None)
+        master["master_sha"] = metadata_batch.canonical_sha(master)
+        self.master = master
+        self.master_path.write_text(json.dumps(master), encoding="utf-8")
+        state = metadata_batch.read_json(self.handoff / "current-batch.json")
+        state["master_sha"] = master["master_sha"]
+        metadata_batch.atomic_write_json(
+            self.handoff / "current-batch.json", state, handoff_root=self.handoff
+        )
+        self._approve()
+
+        validated = [
+            ([{"path": first_path}], []),
+            ([{"path": second_path}], []),
+        ]
+        with (
+            mock.patch.object(apply_approved_batch.intake, "load_and_validate",
+                              side_effect=validated),
+            mock.patch.object(apply_approved_batch, "_lock_command") as lock_command,
+            mock.patch.object(metadata_batch, "create_verified_backup") as backup,
+        ):
+            with self.assertRaisesRegex(metadata_batch.BatchRefused,
+                                        "effective filesystem path collision"):
+                apply_approved_batch.apply_batch(
+                    master["master_sha"], self.handoff, self.t5,
+                    mount_checker=lambda _: True,
+                )
+        lock_command.assert_not_called()
+        backup.assert_not_called()
+        self.assertEqual(
+            metadata_batch.read_json(self.handoff / "current-batch.json")["state"],
+            "BLOCKED",
+        )
+
+    def test_cross_plan_exact_duplicate_collision_refused_before_mutation(self):
+        path = "/synthetic/Music/Track.mp3"
+        self._assert_cross_plan_alias_refused_before_mutation(path, path)
+
+    def test_cross_plan_case_alias_collision_refused_before_mutation(self):
+        self._assert_cross_plan_alias_refused_before_mutation(
+            "/synthetic/Music/Track.mp3", "/synthetic/music/track.MP3"
+        )
+
+    def test_cross_plan_unicode_alias_collision_refused_before_mutation(self):
+        composed = "/synthetic/Music/Café.mp3"
+        decomposed = unicodedata.normalize("NFD", composed)
+        self.assertNotEqual(composed, decomposed)
+        self._assert_cross_plan_alias_refused_before_mutation(composed, decomposed)
 
     def test_real_validator_failure_is_refused_even_with_matching_plan_hash(self):
         plan = json.loads(self.plan_path.read_text(encoding="utf-8"))
@@ -400,8 +453,47 @@ class ApprovalAndPreflightTests(unittest.TestCase):
             **self.master["scopes"][0],
             "plan_sha256": metadata_batch.sha256_file(self.plan_path),
         }]
-        with self.assertRaisesRegex(RuntimeError, "plan root"):
+        with self.assertRaisesRegex(metadata_batch.BatchRefused,
+                                    "plan validation refused.*plan root"):
             apply_approved_batch._validate_plans(master, self.handoff)
+
+    def test_cli_known_validator_runtime_error_is_clean_refusal_and_durable_block(self):
+        plan = json.loads(self.plan_path.read_text(encoding="utf-8"))
+        plan["root"] = str(self.library.resolve())
+        self.plan_path.write_text(json.dumps(plan), encoding="utf-8")
+        master = dict(self.master)
+        master["scopes"] = [{
+            **self.master["scopes"][0],
+            "plan_sha256": metadata_batch.sha256_file(self.plan_path),
+        }]
+        master.pop("master_sha", None)
+        master["master_sha"] = metadata_batch.canonical_sha(master)
+        self.master = master
+        self.master_path.write_text(json.dumps(master), encoding="utf-8")
+        state_path = self.handoff / "current-batch.json"
+        state = metadata_batch.read_json(state_path)
+        state["master_sha"] = master["master_sha"]
+        metadata_batch.atomic_write_json(state_path, state, handoff_root=self.handoff)
+        self._approve()
+
+        output = io.StringIO()
+        with (
+            mock.patch.object(metadata_batch, "HANDOFF_ROOT", self.handoff),
+            mock.patch.object(sys, "argv", [
+                "apply_approved_batch.py", "--master-sha", master["master_sha"],
+            ]),
+            mock.patch("sys.stdout", output),
+            mock.patch.object(apply_approved_batch, "_lock_command") as lock_command,
+        ):
+            return_code = apply_approved_batch.main()
+        self.assertEqual(return_code, 2)
+        self.assertTrue(output.getvalue().startswith("REFUSED:"))
+        self.assertNotIn("Traceback", output.getvalue())
+        self.assertIn("plan validation refused", output.getvalue())
+        lock_command.assert_not_called()
+        state = metadata_batch.read_json(state_path)
+        self.assertEqual(state["state"], "BLOCKED")
+        self.assertIn("plan validation refused", state["reason"])
 
     def test_backup_path_outside_t5_is_refused_in_preflight(self):
         scope = {**self.master["scopes"][0],
@@ -473,6 +565,59 @@ class FailedApplyClassificationTests(unittest.TestCase):
         )
         return path
 
+    def _stateful_batch(self, scope_item_counts):
+        handoff = self.t5 / "handoff"
+        batch_dir = handoff / "batches" / "b1"
+        batch_dir.mkdir(parents=True)
+        state_path = handoff / "current-batch.json"
+        metadata_batch.start_batch(
+            state_path, "b1", batch_dir, handoff_root=handoff
+        )
+        metadata_batch.transition(state_path, "PREVIEWED", handoff_root=handoff)
+        metadata_batch.transition(state_path, "HUMAN_APPROVED", handoff_root=handoff)
+
+        scopes = []
+        candidates = []
+        for index, item_count in enumerate(scope_item_counts, start=1):
+            scope_id = f"S{index:03d}"
+            source_root = self.t5 / f"scope-{index}"
+            source_root.mkdir()
+            scopes.append({
+                "scope_id": scope_id,
+                "source_root": str(source_root),
+                "backup_root": str(self.t5 / f"backup-{index}"),
+                "backup_manifest": str(self.t5 / f"manifest-{index}.json"),
+                "evidence_root": str(self.t5 / f"evidence-{index}"),
+                "plan_path": str(self.t5 / f"plan-{index}.json"),
+                "lock_folder": f"Folder {index}",
+                "item_count": item_count,
+            })
+            for item_index in range(item_count):
+                candidates.append({
+                    "scope_id": scope_id,
+                    "path": f"/synthetic/{scope_id}/track-{item_index}.mp3",
+                    "smart_crate_effects": [],
+                })
+        return handoff, state_path, {
+            "batch_id": "b1", "repo_commit": "abc",
+            "scopes": scopes, "candidates": candidates,
+        }
+
+    @staticmethod
+    def _successful_lock(command, folder, session, master):
+        if command == "acquire":
+            return {"acquired": True, "lock": {"run_id": f"{folder}-run"}}
+        return {"released": True, "lock": {"run_id": f"{folder}-run"}}
+
+    @staticmethod
+    def _scope_proof(master, scope, result):
+        files = sum(row["scope_id"] == scope["scope_id"] for row in master["candidates"])
+        return {
+            "files": files,
+            "unauthorized_changes": 0,
+            "recovery": {"clean": True, "runs": {"fixture": {"complete": True}}},
+        }
+
     def test_interrupted_apply_is_blocked_not_treated_as_clean(self):
         self._write_journal([
             {"type": "run_start", "run_id": "r1"},
@@ -532,6 +677,126 @@ class FailedApplyClassificationTests(unittest.TestCase):
                 )
         self.assertEqual(child_run.call_count, 1, "scope 2 must never start")
         self.assertTrue(any(call.args[1] == "BLOCKED" for call in transition.call_args_list))
+
+    def test_real_three_scope_run_records_failed_scope_and_leaves_later_scope_not_started(self):
+        handoff, state_path, master = self._stateful_batch([1, 1, 1])
+        calls = []
+
+        def child_run(command, **kwargs):
+            calls.append(command)
+            out_dir = Path(command[command.index("--out-dir") + 1])
+            if len(calls) == 1:
+                return subprocess.CompletedProcess(
+                    command, 0,
+                    stdout=json.dumps({
+                        "result_path": str(out_dir / "result.json"),
+                        "recovery_journal": str(out_dir / "unused-recovery-1.jsonl"),
+                    }),
+                    stderr="",
+                )
+            journal = out_dir / "forced-recovery-1.jsonl"
+            journal.write_text(
+                json.dumps({"type": "run_start", "run_id": "r2"}) + "\n" +
+                json.dumps({
+                    "type": "intent", "run_id": "r2", "index": 1,
+                    "kind": "metadata", "source": "/synthetic/S002/track-0.mp3",
+                }) + "\n",
+                encoding="utf-8",
+            )
+            return subprocess.CompletedProcess(
+                command, 2, stdout="", stderr="forced interruption"
+            )
+
+        with (
+            mock.patch.object(apply_approved_batch, "preflight", return_value=(master, {})),
+            mock.patch.object(metadata_batch, "create_verified_backup",
+                              return_value={"status": "PASS", "manifest_sha256": "m"}),
+            mock.patch.object(apply_approved_batch, "_lock_command",
+                              side_effect=self._successful_lock),
+            mock.patch.object(lock_guard, "LockHeartbeat"),
+            mock.patch.object(subprocess, "run", side_effect=child_run),
+            mock.patch.object(apply_approved_batch, "_verify_scope",
+                              side_effect=self._scope_proof),
+        ):
+            with self.assertRaisesRegex(metadata_batch.BatchRefused, "interrupted apply"):
+                apply_approved_batch.apply_batch(
+                    "approved", handoff, self.t5, mount_checker=lambda _: True
+                )
+
+        self.assertEqual(len(calls), 2, "scope 3 must never be invoked")
+        state = metadata_batch.read_json(state_path)
+        self.assertEqual(state["state"], "BLOCKED")
+        self.assertEqual(
+            (state["scopes"]["S001"]["state"], state["scopes"]["S001"]["execution"]),
+            ("VERIFIED", "COMPLETED"),
+        )
+        self.assertEqual(
+            (state["scopes"]["S002"]["state"], state["scopes"]["S002"]["execution"]),
+            ("BLOCKED", "FAILED"),
+        )
+        self.assertEqual(
+            (state["scopes"]["S003"]["state"], state["scopes"]["S003"]["execution"]),
+            ("PREFLIGHT_PASS", "NOT_STARTED"),
+        )
+        self.assertFalse((handoff / "batches/b1/apply-summary.json").exists())
+
+    def test_real_two_scope_success_summary_matches_completed_scope_state_and_counts(self):
+        handoff, state_path, master = self._stateful_batch([1, 2])
+        calls = []
+
+        def child_run(command, **kwargs):
+            calls.append(command)
+            out_dir = Path(command[command.index("--out-dir") + 1])
+            return subprocess.CompletedProcess(
+                command, 0,
+                stdout=json.dumps({
+                    "result_path": str(out_dir / "result.json"),
+                    "recovery_journal": str(out_dir / "unused-recovery-1.jsonl"),
+                }),
+                stderr="",
+            )
+
+        with (
+            mock.patch.object(apply_approved_batch, "preflight", return_value=(master, {})),
+            mock.patch.object(metadata_batch, "create_verified_backup",
+                              return_value={"status": "PASS", "manifest_sha256": "m"}),
+            mock.patch.object(apply_approved_batch, "_lock_command",
+                              side_effect=self._successful_lock),
+            mock.patch.object(lock_guard, "LockHeartbeat"),
+            mock.patch.object(subprocess, "run", side_effect=child_run),
+            mock.patch.object(apply_approved_batch, "_verify_scope",
+                              side_effect=self._scope_proof),
+        ):
+            summary = apply_approved_batch.apply_batch(
+                "approved", handoff, self.t5, mount_checker=lambda _: True
+            )
+
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(summary["BATCH RESULT"], "PASS")
+        self.assertEqual(summary["FILES VERIFIED"], 3)
+        self.assertEqual(summary["SCOPES VERIFIED"], 2)
+        self.assertEqual(summary["SCOPE RESULTS"], {
+            "S001": {
+                "state": "VERIFIED", "execution": "COMPLETED", "files_verified": 1,
+            },
+            "S002": {
+                "state": "VERIFIED", "execution": "COMPLETED", "files_verified": 2,
+            },
+        })
+        state = metadata_batch.read_json(state_path)
+        self.assertEqual(state["state"], "VERIFIED")
+        self.assertEqual(
+            {scope_id: (entry["state"], entry["execution"], entry["files"])
+             for scope_id, entry in state["scopes"].items()},
+            {
+                "S001": ("VERIFIED", "COMPLETED", 1),
+                "S002": ("VERIFIED", "COMPLETED", 2),
+            },
+        )
+        self.assertEqual(
+            metadata_batch.read_json(handoff / "batches/b1/apply-summary.json"),
+            summary,
+        )
 
     def test_rollback_failure_sets_scope_and_batch_to_distinct_severe_state(self):
         scopes = []
