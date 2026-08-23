@@ -173,7 +173,11 @@
     "intro edit": "Intro Edit",
     "outro edit": "Outro Edit",
     "extended": "Extended",
-    "bootleg": "Bootleg"
+    "bootleg": "Bootleg",
+    "radio edit": "Radio Edit",
+    "flip": "Flip",
+    "rework": "ReWork",
+    "re-work": "ReWork"
   },
   "filename_keywords": [
     {"contains": "ghettotech", "genre": "Ghetto Tech", "evidence": "filename explicitly says Ghettotech"},

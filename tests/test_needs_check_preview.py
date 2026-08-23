@@ -171,11 +171,28 @@ class GenreEvidenceTests(unittest.TestCase):
                 self.assertEqual(result["grouping_resolution_status"], "RESOLVED")
                 self.assertEqual(result["proposed_grouping"], grouping)
 
-    def test_radio_edit_flip_and_rework_remain_reviewable(self):
-        for filename, reason in [
+    def test_bracketed_radio_edit_flip_and_rework_write_their_exact_terms(self):
+        # An explicit bracketed label is exact evidence for that exact term.
+        # None of these is ever collapsed into the generic "Edit" term.
+        for filename, term in [
             ("Song (Radio Edit).mp3", "Radio Edit"),
             ("Song (Flip).mp3", "Flip"),
             ("Song (ReWork).mp3", "ReWork"),
+        ]:
+            with self.subTest(filename=filename):
+                analysis = version_genre.classify_grouping(filename, "", "", self.rules)
+                self.assertEqual(analysis["resolution_status"], "RESOLVED")
+                self.assertIn(term, analysis["add_terms"])
+                self.assertNotIn("Edit", analysis["add_terms"])
+                self.assertEqual(analysis["review_reasons"], [])
+
+    def test_unbracketed_radio_edit_flip_and_rework_remain_reviewable(self):
+        # A plain word match is not proof of a version label: "Flip" may be
+        # an artist and unbracketed "radio edit" may be title text.
+        for filename, reason in [
+            ("My Radio Edit.mp3", "Radio Edit"),
+            ("Flip Dinero - Song.mp3", "Flip"),
+            ("Total Rework Of It.mp3", "ReWork"),
         ]:
             with self.subTest(filename=filename):
                 analysis = version_genre.classify_grouping(filename, "", "", self.rules)

@@ -7,8 +7,9 @@ hand each time:
   - deterministic transformation/version detection from explicit filename
     wording -> plain Grouping terms (Remix, Edit, Bootleg, Extended,
     Instrumental, Acapella, Clean, Dirty, and approved edit forms)
-  - Radio Edit, Flip, and ReWork remain reviewable rather than being silently
-    collapsed into Edit
+  - Radio Edit, Flip, and ReWork are never collapsed into Edit: an explicit
+    bracketed label writes that exact term, and a plain word match stays
+    reviewable (see TRANSFORMATION_LABEL_RULES in build_version_genre_plan.py)
   - Clean/Dirty detection from an explicit "(Clean)"/"(Dirty)" filename
     label -> Grouping tag (never inferred from absence of a label)
   - Genre-from-folder: ONLY when every other already-tagged file in the
@@ -100,6 +101,33 @@ def in_backlog_path(path_str: str) -> bool:
     return any(marker in lower for marker in BACKLOG_MARKERS)
 
 
+def index_genre_siblings(root: Path) -> dict[str, Counter]:
+    """Per immediate parent folder, count already-tagged sibling genre values.
+
+    Shared with prepare_metadata_batch.py's intake lane so both automations
+    apply the identical consensus evidence, not two competing rules.
+    """
+    siblings_by_dir: dict[str, Counter] = defaultdict(Counter)
+    for dirpath, _, filenames in os.walk(root):
+        if in_backlog_path(dirpath):
+            continue
+        for fn in filenames:
+            if not fn.lower().endswith(tuple(AUDIO_EXTS)) or fn.startswith("._"):
+                continue
+            genre = read_genre(Path(dirpath) / fn)
+            if genre.strip().lower() not in PLACEHOLDER_GENRES:
+                siblings_by_dir[dirpath][genre.strip()] += 1
+    return siblings_by_dir
+
+
+def unanimous_sibling_genre(counts: Counter) -> str | None:
+    """The established consensus rule: exactly one value, at least two
+    agreeing tagged siblings, zero disagreement. Anything else is None."""
+    if len(counts) == 1 and sum(counts.values()) >= 2:
+        return next(iter(counts))
+    return None
+
+
 def build_live_library_index(library_root: Path, exclude_root: Path) -> dict[str, list[str]]:
     """filename -> [full paths], across the whole live library EXCLUDING
     exclude_root itself (so intake files don't just match themselves)."""
@@ -138,7 +166,7 @@ def main() -> None:
         raise SystemExit(f"--root must be inside --library-root: {root} vs {library_root}") from exc
 
     print("indexing genre siblings within the intake root...", flush=True)
-    siblings_by_dir: dict[str, Counter] = defaultdict(Counter)
+    siblings_by_dir = index_genre_siblings(root)
     all_files: list[Path] = []
     for dirpath, dirnames, filenames in os.walk(root):
         if in_backlog_path(dirpath):
@@ -146,11 +174,7 @@ def main() -> None:
         for fn in filenames:
             if not fn.lower().endswith(tuple(AUDIO_EXTS)) or fn.startswith("._"):
                 continue
-            full = Path(dirpath) / fn
-            all_files.append(full)
-            genre = read_genre(full)
-            if genre.strip().lower() not in PLACEHOLDER_GENRES:
-                siblings_by_dir[dirpath][genre.strip()] += 1
+            all_files.append(Path(dirpath) / fn)
 
     live_index = None
     if not args.skip_duplicate_check:
@@ -172,8 +196,8 @@ def main() -> None:
         # --- genre-from-sibling-consensus (high confidence only) ---
         if genre.strip().lower() in PLACEHOLDER_GENRES:
             counts = siblings_by_dir.get(str(path.parent), Counter())
-            if len(counts) == 1 and sum(counts.values()) >= 2:
-                proposed = next(iter(counts))
+            proposed = unanimous_sibling_genre(counts)
+            if proposed is not None:
                 fix["genre_fix"] = {"from": genre, "to": proposed, "basis": f"{counts[proposed]} sibling(s) agree"}
             elif counts:
                 review_reasons.append(f"genre placeholder, siblings disagree: {dict(counts)}")

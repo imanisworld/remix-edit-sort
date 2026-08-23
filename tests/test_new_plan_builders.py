@@ -99,7 +99,7 @@ class NewPlanBuilderTests(unittest.TestCase):
             )
             self.assertEqual(target.read_bytes(), before)
 
-    def test_intake_radio_edit_flip_and_rework_stay_in_review(self):
+    def test_intake_bracketed_version_labels_write_exact_terms_and_plain_words_stay_in_review(self):
         with tempfile.TemporaryDirectory() as tmp_name:
             tmp = Path(tmp_name)
             library = tmp / "library"
@@ -108,6 +108,8 @@ class NewPlanBuilderTests(unittest.TestCase):
                 {"relative": "one (Radio Edit).mp3", "genre": "House"},
                 {"relative": "two (Flip).mp3", "genre": "House"},
                 {"relative": "three (ReWork).mp3", "genre": "House"},
+                {"relative": "four - flip dinero.mp3", "genre": "House"},
+                {"relative": "five radio edit.mp3", "genre": "House"},
             ])
             out = tmp / "intake-plan.json"
             result = run(
@@ -116,14 +118,23 @@ class NewPlanBuilderTests(unittest.TestCase):
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             plan = json.loads(out.read_text(encoding="utf-8"))
-            self.assertEqual(plan["items"], [])
-            self.assertEqual(len(plan["needs_review"]), 3)
+            added = {
+                Path(row["path"]).name: row["grouping_fix"]["add_terms"]
+                for row in plan["items"]
+            }
+            # Bracketed labels are exact evidence for their own controlled
+            # terms -- never collapsed into the generic "Edit".
+            self.assertEqual(added, {
+                "one (Radio Edit).mp3": ["Radio Edit"],
+                "two (Flip).mp3": ["Flip"],
+                "three (ReWork).mp3": ["ReWork"],
+            })
+            self.assertEqual(len(plan["needs_review"]), 2)
             reasons = " ".join(
                 reason for row in plan["needs_review"] for reason in row["reasons"]
             )
-            self.assertIn("Radio Edit", reasons)
             self.assertIn("Flip", reasons)
-            self.assertIn("ReWork", reasons)
+            self.assertIn("Radio Edit", reasons)
 
     def test_genre_needs_check_survey_records_source_hash_without_mutation(self):
         with tempfile.TemporaryDirectory() as tmp_name:

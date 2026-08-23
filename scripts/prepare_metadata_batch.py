@@ -24,12 +24,21 @@ import apply_new_music_intake_plan as intake
 import build_version_genre_plan as classifier
 import metadata_batch
 
+import survey_new_music_intake as intake_survey
+
 DEFAULT_LIBRARY = Path("/Users/djb.a.e/Music/DJ-Music/Music")
 DEFAULT_SERATO = Path("/Users/djb.a.e/Music/_Serato_")
-HOLD_WORDS = {
-    "Radio Edit": re.compile(r"\bradio\s+edit\b", re.I),
-    "Flip": re.compile(r"\bflip\b", re.I),
-    "ReWork": re.compile(r"\bre[- ]?work\b", re.I),
+# 150 stays the no-questions-asked ceiling. A larger batch is legal only when
+# the operator states the exact limit twice (--max N --confirm-max N); there
+# is no uncapped mode.
+DEFAULT_MAX_CANDIDATES = 150
+LANES = ("genre", "clean-dirty", "intake")
+# A transformation label is held only when its plain word match has no
+# explicit bracketed form; a bracketed label is exact evidence and becomes
+# its own controlled Grouping term via classifier.TRANSFORMATION_LABEL_RULES.
+HOLD_RULES = {
+    label: (plain, bracketed)
+    for label, plain, bracketed, _ in classifier.TRANSFORMATION_LABEL_RULES
 }
 NEW_TERM_ORDER = {
     "Old Head": 10, "Plex": 10, "Lounge": 10, "Kids": 10,
@@ -38,7 +47,14 @@ NEW_TERM_ORDER = {
     "Instrumental": 30, "Original": 30, "Remix": 40, "Edit": 40,
     "Mashup": 40, "Blend": 40, "Re-Drum": 40, "Transition Edit": 40,
     "Intro Edit": 40, "Outro Edit": 40, "Extended": 40, "Bootleg": 40,
+    "Radio Edit": 40, "Flip": 40, "ReWork": 40,
 }
+SPECIFIC_EDIT_TERMS = {"Intro Edit", "Outro Edit", "Transition Edit", "Radio Edit"}
+CLEAN_DIRTY_FOLDER_TERMS = {"clean": "Clean", "dirty": "Dirty"}
+INTRO_CLEAN_RE = re.compile(r"\bintro\s+clean\b", re.I)
+NEEDS_CHECK_FOLDERS = {"_GENRE NEEDS CHECK", "_NEEDS CHECK"}
+# Explicitly out of scope for every automated lane (see CLAUDE.md).
+OUT_OF_SCOPE_FOLDERS = {"Imani Drops"}
 FIELD_NAMES = {9: "Genre", 19: "Grouping"}
 
 
@@ -184,6 +200,36 @@ def _folder_stats(root: Path) -> tuple[int, int]:
     return count, size
 
 
+def _held_transformation_label(label_text: str) -> str | None:
+    """The label to hold on, when a plain match has no explicit bracketed form."""
+    return next(
+        (label for label, (plain, bracketed) in HOLD_RULES.items()
+         if plain.search(label_text) and not bracketed.search(label_text)),
+        None,
+    )
+
+
+def _select_stable(candidates: list[dict], exclusions: Counter, maximum: int) -> tuple[list[dict], Counter]:
+    """Deterministically order, cap, and re-read the shared candidate pool."""
+    candidates.sort(key=lambda row: (row["preference"], row["scope_root"].casefold(), row["path"].casefold()))
+    selected = []
+    for row in candidates:
+        if len(selected) >= maximum:
+            exclusions["eligible but deferred by batch cap"] += 1
+            continue
+        # A second complete read binds only stable live state into the batch.
+        reread = read_track(Path(row["path"]))
+        stable_fields = (
+            "sha256", "bytes", "mtime_ns", "id3_version", "genre", "grouping",
+            "audio_payload_sha256", "serato_frames_sha256",
+        )
+        if any(reread[field] != row[field] for field in stable_fields):
+            exclusions["live state changed during preparation"] += 1
+            continue
+        selected.append(row)
+    return selected, exclusions
+
+
 def discover(library_root: Path, serato_root: Path, maximum: int) -> tuple[list[dict], Counter]:
     rules = classifier.load_genre_rules(None)
     crate_rules = parse_smart_crates(serato_root)
@@ -192,13 +238,15 @@ def discover(library_root: Path, serato_root: Path, maximum: int) -> tuple[list[
     for path in sorted(Path(library_root).rglob("*.mp3")):
         if "_GENRE NEEDS CHECK" not in path.parts:
             continue
+        if OUT_OF_SCOPE_FOLDERS.intersection(path.parts):
+            continue
         try:
             current = read_track(path)
         except Exception:
             exclusions["unreadable MP3/tag"] += 1
             continue
         label_text = f"{path.stem} {current['title']}"
-        held = next((label for label, pattern in HOLD_WORDS.items() if pattern.search(label_text)), None)
+        held = _held_transformation_label(label_text)
         if held:
             exclusions[held] += 1
             continue
@@ -233,7 +281,7 @@ def discover(library_root: Path, serato_root: Path, maximum: int) -> tuple[list[
             grouping_analysis["add_terms"],
             key=lambda value: (NEW_TERM_ORDER.get(value, 999), value.casefold()),
         )
-        specific_edit = {"Intro Edit", "Outro Edit", "Transition Edit"}.intersection(additions)
+        specific_edit = SPECIFIC_EDIT_TERMS.intersection(additions)
         if "Edit" in additions and specific_edit:
             exclusions["overlapping generic/specific Edit evidence"] += 1
             continue
@@ -272,23 +320,245 @@ def discover(library_root: Path, serato_root: Path, maximum: int) -> tuple[list[
                           2 if genre_change and grouping_change else 3,
         })
 
-    candidates.sort(key=lambda row: (row["preference"], row["scope_root"].casefold(), row["path"].casefold()))
-    selected = []
-    for row in candidates:
-        if len(selected) >= maximum:
-            exclusions["eligible but deferred by batch cap"] += 1
+    return _select_stable(candidates, exclusions, maximum)
+
+
+def _scope_fields(path: Path, library_root: Path) -> tuple[str, str] | None:
+    """(scope_root, lock_folder) for a candidate, or None when unusable."""
+    try:
+        relative = path.resolve().relative_to(Path(library_root).resolve())
+    except ValueError:
+        return None
+    if len(relative.parts) < 2:
+        return None
+    return str(path.parent.resolve()), relative.parts[0]
+
+
+def discover_clean_dirty(library_root: Path, serato_root: Path, maximum: int) -> tuple[list[dict], Counter]:
+    """Deterministic Clean/Dirty Grouping backfill across the sorted library.
+
+    Evidence is a literal CLEAN/DIRTY folder component (the canonical unit
+    apply_clean_dirty_grouping.py established) and/or an explicit bracketed
+    Clean/Dirty label. Genre is never changed, existing Grouping is only
+    appended to, and any conflicting or ambiguous evidence is held.
+    """
+    rules = classifier.load_genre_rules(None)
+    crate_rules = parse_smart_crates(serato_root)
+    exclusions: Counter = Counter()
+    candidates = []
+    library_root = Path(library_root).resolve()
+    for path in sorted(library_root.rglob("*.mp3")):
+        try:
+            relative_parts = path.resolve().relative_to(library_root).parts
+        except ValueError:
             continue
-        # A second complete read binds only stable live state into the batch.
-        reread = read_track(Path(row["path"]))
-        stable_fields = (
-            "sha256", "bytes", "mtime_ns", "id3_version", "genre", "grouping",
-            "audio_payload_sha256", "serato_frames_sha256",
+        if OUT_OF_SCOPE_FOLDERS.intersection(relative_parts):
+            continue
+        folder_terms = {
+            CLEAN_DIRTY_FOLDER_TERMS[part.casefold()]
+            for part in relative_parts[:-1]
+            if part.casefold() in CLEAN_DIRTY_FOLDER_TERMS
+        }
+        stem_has_label = bool(
+            classifier.CLEAN_RE.search(path.stem)
+            or classifier.DIRTY_RE.search(path.stem)
+            or INTRO_CLEAN_RE.search(path.stem)
         )
-        if any(reread[field] != row[field] for field in stable_fields):
-            exclusions["live state changed during preparation"] += 1
+        if not folder_terms and not stem_has_label:
             continue
-        selected.append(row)
-    return selected, exclusions
+        if NEEDS_CHECK_FOLDERS.intersection(relative_parts):
+            exclusions["left to the needs-check lanes"] += 1
+            continue
+        scope_fields = _scope_fields(path, library_root)
+        if scope_fields is None:
+            exclusions["outside library root or directly at its top level"] += 1
+            continue
+        try:
+            current = read_track(path)
+        except Exception:
+            exclusions["unreadable MP3/tag"] += 1
+            continue
+        if current["id3_major"] == 2:
+            exclusions["ID3v2.2"] += 1
+            continue
+        if current["id3_major"] not in {3, 4}:
+            exclusions["unsupported ID3 version"] += 1
+            continue
+        label_text = f"{path.stem} {current['title']}"
+        held = _held_transformation_label(label_text)
+        if held:
+            exclusions[held] += 1
+            continue
+        grouping_analysis = classifier.classify_grouping(
+            path.name, current["title"], current["grouping"], rules
+        )
+        if grouping_analysis["review_reasons"]:
+            exclusions[grouping_analysis["review_reasons"][0]] += 1
+            continue
+        label_terms = set()
+        if INTRO_CLEAN_RE.search(label_text) or classifier.CLEAN_RE.search(label_text):
+            label_terms.add("Clean")
+        if classifier.DIRTY_RE.search(label_text):
+            label_terms.add("Dirty")
+        evident = folder_terms | label_terms
+        existing_status = {
+            term for term in ("Clean", "Dirty")
+            if any(value.casefold() == term.casefold() for value in current["grouping"])
+        }
+        if not evident:
+            exclusions["no deterministic Clean/Dirty evidence"] += 1
+            continue
+        if len(evident | existing_status) > 1:
+            exclusions["conflicting Clean/Dirty evidence"] += 1
+            continue
+        additions = sorted(evident - existing_status)
+        if not additions:
+            exclusions["already carries its Clean/Dirty status"] += 1
+            continue
+        evidence = []
+        for term in additions:
+            sources = []
+            if term in folder_terms:
+                sources.append(f"literal {term.upper()}/ folder component")
+            if term in label_terms:
+                sources.append(f"explicit bracketed {term} label in filename/title")
+            evidence.append(f"{term}: " + " and ".join(sources))
+        proposed_grouping_parts = [*current["grouping"], *additions]
+        proposed_grouping = "; ".join(proposed_grouping_parts)
+        current_grouping = "; ".join(current["grouping"])
+        effects, genre_dependency = smart_effects(
+            current["genre"], current["genre"], current_grouping, proposed_grouping, crate_rules
+        )
+        if genre_dependency:
+            exclusions["Smart Crate-dependent Genre spelling held"] += 1
+            continue
+        scope_root, lock_folder = scope_fields
+        candidates.append({
+            **current,
+            "proposed_genre": current["genre"],
+            "proposed_grouping": proposed_grouping,
+            "grouping_add_terms": additions,
+            "genre_evidence": "Clean/Dirty lane leaves Genre unchanged",
+            "grouping_evidence": evidence,
+            "smart_crate_effects": effects,
+            "scope_root": scope_root,
+            "lock_folder": lock_folder,
+            "preference": 0 if folder_terms else 1,
+        })
+    return _select_stable(candidates, exclusions, maximum)
+
+
+def discover_intake(library_root: Path, serato_root: Path, intake_root: Path,
+                    maximum: int) -> tuple[list[dict], Counter]:
+    """New-download intake through the same fail-closed batch model.
+
+    Reuses the survey's established deterministic rules: controlled Grouping
+    terms from explicit wording, and Genre only from unanimous tagged-sibling
+    consensus that also resolves to a recognized canonical value. Anything
+    else is held.
+    """
+    rules = classifier.load_genre_rules(None)
+    crate_rules = parse_smart_crates(serato_root)
+    exclusions: Counter = Counter()
+    candidates = []
+    library_root = Path(library_root).resolve()
+    intake_root = Path(intake_root).resolve()
+    siblings = intake_survey.index_genre_siblings(intake_root)
+    for path in sorted(intake_root.rglob("*.mp3")):
+        if OUT_OF_SCOPE_FOLDERS.intersection(path.parts):
+            continue
+        if intake_survey.in_backlog_path(str(path.relative_to(intake_root))):
+            exclusions["needs-check backlog inside intake root"] += 1
+            continue
+        scope_fields = _scope_fields(path, library_root)
+        if scope_fields is None:
+            exclusions["outside library root or directly at its top level"] += 1
+            continue
+        try:
+            current = read_track(path)
+        except Exception:
+            exclusions["unreadable MP3/tag"] += 1
+            continue
+        if current["id3_major"] == 2:
+            exclusions["ID3v2.2"] += 1
+            continue
+        if current["id3_major"] not in {3, 4}:
+            exclusions["unsupported ID3 version"] += 1
+            continue
+        label_text = f"{path.stem} {current['title']}"
+        held = _held_transformation_label(label_text)
+        if held:
+            exclusions[held] += 1
+            continue
+        grouping_analysis = classifier.classify_grouping(
+            path.name, current["title"], current["grouping"], rules
+        )
+        if grouping_analysis["review_reasons"]:
+            exclusions[grouping_analysis["review_reasons"][0]] += 1
+            continue
+        additions = sorted(
+            grouping_analysis["add_terms"],
+            key=lambda value: (NEW_TERM_ORDER.get(value, 999), value.casefold()),
+        )
+        specific_edit = SPECIFIC_EDIT_TERMS.intersection(additions)
+        if "Edit" in additions and specific_edit:
+            exclusions["overlapping generic/specific Edit evidence"] += 1
+            continue
+
+        proposed_genre = current["genre"]
+        genre_evidence = "existing Genre left unchanged by the intake lane"
+        if current["genre"].strip().casefold() in intake_survey.PLACEHOLDER_GENRES:
+            genre_hold = None
+            consensus = intake_survey.unanimous_sibling_genre(
+                siblings.get(str(path.parent), Counter())
+            )
+            if consensus is None:
+                genre_hold = "Genre placeholder without unanimous tagged-sibling consensus"
+            else:
+                consensus_analysis = classifier.analyze_genre(
+                    {"filename": "", "genre": consensus}, rules
+                )
+                if (consensus_analysis["resolution_status"] == "RESOLVED"
+                        and consensus_analysis["proposed_genre"]):
+                    proposed_genre = consensus_analysis["proposed_genre"]
+                    agreeing = siblings[str(path.parent)][consensus]
+                    genre_evidence = (
+                        f"unanimous sibling Genre consensus: {agreeing} tagged "
+                        f"sibling(s) agree on {consensus!r}"
+                    )
+                else:
+                    genre_hold = f"sibling consensus Genre is not a recognized canonical value: {consensus!r}"
+            if genre_hold is not None and not additions:
+                exclusions[genre_hold] += 1
+                continue
+        genre_change = proposed_genre != current["genre"]
+        if not genre_change and not additions:
+            exclusions["already normalized / no approved change"] += 1
+            continue
+        proposed_grouping_parts = [*current["grouping"], *additions]
+        proposed_grouping = "; ".join(proposed_grouping_parts)
+        current_grouping = "; ".join(current["grouping"])
+        effects, genre_dependency = smart_effects(
+            current["genre"], proposed_genre, current_grouping, proposed_grouping, crate_rules
+        )
+        if genre_dependency:
+            exclusions["Smart Crate-dependent Genre spelling held"] += 1
+            continue
+        scope_root, lock_folder = scope_fields
+        candidates.append({
+            **current,
+            "proposed_genre": proposed_genre,
+            "proposed_grouping": proposed_grouping,
+            "grouping_add_terms": additions,
+            "genre_evidence": genre_evidence,
+            "grouping_evidence": grouping_analysis["evidence"],
+            "smart_crate_effects": effects,
+            "scope_root": scope_root,
+            "lock_folder": lock_folder,
+            "preference": 0 if genre_change and not additions else
+                          1 if genre_change else 2,
+        })
+    return _select_stable(candidates, exclusions, maximum)
 
 
 def _write_preview(batch_dir: Path, batch_id: str, rows: list[dict], exclusions: Counter,
@@ -343,22 +613,54 @@ def _write_preview(batch_dir: Path, batch_id: str, rows: list[dict], exclusions:
 
 
 def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: int,
-            batch_format: str) -> dict:
+            batch_format: str, lane: str = "genre", intake_root: Path | None = None,
+            confirmed_maximum: int | None = None) -> dict:
     if batch_format.casefold() != "mp3":
         raise metadata_batch.BatchRefused("automated lane is MP3-only; FLAC requires its own proven canary")
-    if maximum < 1 or maximum > 150:
-        raise metadata_batch.BatchRefused("--max must be between 1 and 150")
+    if lane not in LANES:
+        raise metadata_batch.BatchRefused(f"unknown lane {lane!r}; expected one of {LANES}")
+    if maximum < 1:
+        raise metadata_batch.BatchRefused("--max must be at least 1")
+    if maximum > DEFAULT_MAX_CANDIDATES and confirmed_maximum != maximum:
+        raise metadata_batch.BatchRefused(
+            f"--max above {DEFAULT_MAX_CANDIDATES} is an explicit operator decision; "
+            f"repeat the exact limit with --confirm-max {maximum}"
+        )
+    if confirmed_maximum is not None and maximum <= DEFAULT_MAX_CANDIDATES:
+        raise metadata_batch.BatchRefused(
+            f"--confirm-max is only valid with --max above {DEFAULT_MAX_CANDIDATES}"
+        )
     library_root, serato_root, handoff_root = map(lambda p: Path(p).resolve(),
                                                   (library_root, serato_root, handoff_root))
     if not library_root.is_dir() or not serato_root.is_dir():
         raise metadata_batch.BatchRefused("library and Serato roots must already exist")
-    batch_id = datetime.now().astimezone().strftime("metadata-mp3-%Y%m%d-%H%M%S")
+    if lane == "intake":
+        if intake_root is None:
+            raise metadata_batch.BatchRefused("--intake-root is required for the intake lane")
+        intake_root = Path(intake_root).resolve()
+        if not intake_root.is_dir():
+            raise metadata_batch.BatchRefused(f"intake root must already exist: {intake_root}")
+        try:
+            intake_root.relative_to(library_root)
+        except ValueError as exc:
+            raise metadata_batch.BatchRefused(
+                f"intake root must be inside the library root: {intake_root}"
+            ) from exc
+    elif intake_root is not None:
+        raise metadata_batch.BatchRefused("--intake-root is only valid with --lane intake")
+    lane_tag = {"genre": "", "clean-dirty": "cleandirty-", "intake": "intake-"}[lane]
+    batch_id = datetime.now().astimezone().strftime(f"metadata-mp3-{lane_tag}%Y%m%d-%H%M%S")
     batch_dir = handoff_root / "batches" / batch_id
     state_path = handoff_root / "current-batch.json"
     metadata_batch.start_batch(state_path, batch_id, batch_dir, handoff_root=handoff_root)
     try:
         batch_dir.mkdir(parents=True, exist_ok=False)
-        rows, exclusions = discover(library_root, serato_root, maximum)
+        if lane == "clean-dirty":
+            rows, exclusions = discover_clean_dirty(library_root, serato_root, maximum)
+        elif lane == "intake":
+            rows, exclusions = discover_intake(library_root, serato_root, intake_root, maximum)
+        else:
+            rows, exclusions = discover(library_root, serato_root, maximum)
         if not rows:
             raise metadata_batch.BatchRefused("no eligible deterministic MP3 candidates were found")
         grouped: dict[str, list[dict]] = defaultdict(list)
@@ -423,6 +725,9 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
             "repo_commit": metadata_batch.repo_head(),
             "safety_file_sha256": metadata_batch.safety_file_hashes(),
             "format": "mp3",
+            "lane": lane,
+            "intake_root": str(intake_root) if intake_root is not None else None,
+            "batch_limit": maximum,
             "library_root": str(library_root),
             "serato_root": str(serato_root),
             "candidate_count": len(rows),
@@ -489,7 +794,12 @@ def approve(master_sha: str, approved_by: str, handoff_root: Path) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--format", default="mp3")
-    parser.add_argument("--max", type=int, default=150)
+    parser.add_argument("--max", type=int, default=DEFAULT_MAX_CANDIDATES)
+    parser.add_argument("--confirm-max", type=int,
+                        help=f"Required, and must equal --max, for any limit above {DEFAULT_MAX_CANDIDATES}")
+    parser.add_argument("--lane", choices=LANES, default="genre")
+    parser.add_argument("--intake-root", type=Path,
+                        help="Where new downloads land (intake lane only; must be inside the library root)")
     parser.add_argument("--library-root", type=Path, default=DEFAULT_LIBRARY)
     parser.add_argument("--serato-root", type=Path, default=DEFAULT_SERATO)
     parser.add_argument("--approve", metavar="MASTER_SHA")
@@ -499,15 +809,21 @@ def main() -> int:
         if args.approve:
             if not args.approved_by:
                 raise metadata_batch.BatchRefused("--approved-by is required with --approve")
+            if args.lane != "genre" or args.intake_root or args.confirm_max is not None:
+                raise metadata_batch.BatchRefused(
+                    "--lane/--intake-root/--confirm-max are only valid when preparing"
+                )
             result = approve(args.approve, args.approved_by, metadata_batch.HANDOFF_ROOT)
             print(json.dumps({"HUMAN_APPROVED": True, **result}, indent=2))
             return 0
         if args.approved_by:
             raise metadata_batch.BatchRefused("--approved-by is only valid with --approve")
         result = prepare(args.library_root, args.serato_root, metadata_batch.HANDOFF_ROOT,
-                         args.max, args.format)
+                         args.max, args.format, lane=args.lane, intake_root=args.intake_root,
+                         confirmed_maximum=args.confirm_max)
         smart_count = sum(len(row["smart_crate_effects"]) for row in result["candidates"])
         print(f"BATCH ID: {result['batch_id']}")
+        print(f"LANE: {result['lane']}")
         print(f"CANDIDATES: {result['candidate_count']}")
         print(f"GENRE CHANGES: {result['genre_changes']}")
         print(f"GROUPING CHANGES: {result['grouping_changes']}")

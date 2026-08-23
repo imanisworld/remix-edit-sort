@@ -28,11 +28,28 @@ applies, and verification run sequentially while the overall batch advances.
 python3 scripts/prepare_metadata_batch.py --format mp3 --max 150
 ```
 
-The command scans only MP3 files beneath `_GENRE NEEDS CHECK`, uses current
-tag evidence and the repository classifier, holds ambiguous or unsupported
-cases, checks ID3 versions and production Smart Crate dependencies read-only,
-rereads every selected file, and writes a new directory under
-`handoff/batches/<batch-id>/` containing:
+Preparation has three discovery lanes sharing the identical preview, approval
+binding, apply orchestration, and verification:
+
+- `--lane genre` (default) scans only MP3 files beneath `_GENRE NEEDS CHECK`
+  and proposes Genre normalization plus controlled Grouping additions.
+- `--lane clean-dirty` scans the sorted library for deterministic Clean/Dirty
+  Grouping backfill. Evidence is a literal `CLEAN`/`DIRTY` folder component
+  (the unit `apply_clean_dirty_grouping.py` established) and/or an explicit
+  bracketed label in the filename/title. Genre is never changed, existing
+  Grouping is only appended to, conflicting evidence (folder vs label, or
+  either vs an existing status term) is held, and `_GENRE NEEDS CHECK` /
+  `_NEEDS CHECK` paths are left to the genre lane.
+- `--lane intake --intake-root <folder>` runs new downloads (the root must be
+  inside the library root) through the survey tooling's established
+  deterministic rules: controlled Grouping terms from explicit wording, and a
+  placeholder Genre filled only by unanimous tagged-sibling consensus that
+  also resolves to a recognized canonical value. Everything else is held.
+
+Every lane uses current tag evidence and the repository classifier, holds
+ambiguous or unsupported cases, checks ID3 versions and production Smart
+Crate dependencies read-only, rereads every selected file, and writes a new
+directory under `handoff/batches/<batch-id>/` containing:
 
 - `BATCH-PREVIEW.md`
 - `batch-preview.csv`
@@ -43,11 +60,18 @@ The real `apply_new_music_intake_plan.load_and_validate()` validator must accept
 every plan before preparation reports one `MASTER SHA`. `/private/tmp` is never
 authoritative.
 
+`--max` defaults to 150 and 150 stays the no-questions-asked ceiling. A larger
+controlled batch is an explicit operator decision: state the exact limit twice
+(`--max 400 --confirm-max 400`). There is no uncapped mode, selection ordering
+stays deterministic, and every gate below applies unchanged at any size.
+
 The automated lane is intentionally narrow: MP3 and ID3v2.3/v2.4 only. FLAC,
-ID3v2.2, blank/Other/unmapped Genre, Radio Edit, Flip, ReWork, semantic alias
-changes, conflicting evidence, listening, and external lookup remain held.
-Existing Grouping order is preserved; controlled additions are appended in
-Context → Version → Form → Transformation → Status order.
+ID3v2.2, blank/Other/unmapped Genre, semantic alias changes, conflicting
+evidence, listening, and external lookup remain held. Radio Edit, Flip, and
+ReWork with an explicit bracketed label are written as those exact controlled
+terms (never collapsed into `Edit`); their plain unbracketed word forms remain
+held. Existing Grouping order is preserved; controlled additions are appended
+in Context → Version → Form → Transformation → Status order.
 
 ## 2. Review and durably approve
 

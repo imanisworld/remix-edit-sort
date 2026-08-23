@@ -46,10 +46,18 @@ REMIX_EDIT_RE = re.compile(
 
 GENRE_TOKEN_SPLIT_RE = re.compile(r"\s*[;,]\s*")
 RADIO_EDIT_RE = re.compile(r"\bradio\s+edit\b", re.I)
-AMBIGUOUS_TRANSFORMATION_PATTERNS = {
-    "Flip": re.compile(r"\bflip\b", re.I),
-    "ReWork": re.compile(r"\bre[- ]?work\b", re.I),
-}
+# Version labels whose EXACT term is written automatically only from explicit
+# bracketed syntax. A plain word match stays reviewable: "Flip" may be an
+# artist ("Flip Dinero"), and unbracketed "radio edit" may be title text.
+# None of these is ever mapped to the generic "Edit" term.
+TRANSFORMATION_LABEL_RULES = (
+    ("Radio Edit", re.compile(r"\bradio\s+edit\b", re.I), _BRACKETED(r"radio\s+edit"),
+     "Radio Edit is not automatically mapped to Edit"),
+    ("Flip", re.compile(r"\bflip\b", re.I), _BRACKETED(r"flip"),
+     "Flip requires a separate transformation decision"),
+    ("ReWork", re.compile(r"\bre[- ]?work\b", re.I), _BRACKETED(r"re[- ]?work"),
+     "ReWork requires a separate transformation decision"),
+)
 GROUPING_EVIDENCE_PATTERNS = (
     ("Intro Edit", re.compile(r"\bintro\s+(?:clean|edit)\b", re.I)),
     ("Outro Edit", re.compile(r"\boutro\s+edit\b", re.I)),
@@ -213,11 +221,12 @@ def classify_grouping(filename: str, title: str, current_grouping, rules: dict) 
     evidence: list[str] = []
     review_reasons: list[str] = []
 
-    for label, pattern in AMBIGUOUS_TRANSFORMATION_PATTERNS.items():
-        if pattern.search(text):
-            review_reasons.append(f"{label} requires a separate transformation decision")
-    if RADIO_EDIT_RE.search(text):
-        review_reasons.append("Radio Edit is not automatically mapped to Edit")
+    for label, plain, bracketed, review_message in TRANSFORMATION_LABEL_RULES:
+        if bracketed.search(text):
+            additions.append(label)
+            evidence.append(f"explicit bracketed {label} label")
+        elif plain.search(text):
+            review_reasons.append(review_message)
     for term, pattern in GROUPING_EVIDENCE_PATTERNS:
         if pattern.search(text):
             additions.append(term)

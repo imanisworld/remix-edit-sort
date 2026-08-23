@@ -1,0 +1,390 @@
+"""Behavior tests for the Clean/Dirty lane, intake lane, exact version-label
+automation, and the confirmed larger batch limit.
+
+All media is synthetic and every writable root is a TemporaryDirectory path.
+No test touches the real library, real Serato data, or the production
+handoff state.
+"""
+from __future__ import annotations
+
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS = REPO_ROOT / "scripts"
+if str(SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS))
+
+import json  # noqa: E402
+
+import metadata_batch  # noqa: E402
+import mutation_surface  # noqa: E402
+import prepare_metadata_batch  # noqa: E402
+from fixtures import make_library  # noqa: E402
+
+
+class _LaneCase(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.library = self.root / "Music"
+        self.library.mkdir()
+        self.serato = self.root / "_Serato_"
+        (self.serato / "SmartCrates").mkdir(parents=True)
+        self.handoff = self.root / "repo-handoff"
+        self.handoff.mkdir()
+
+
+class CleanDirtyLaneTests(_LaneCase):
+    def discover(self, maximum=150):
+        return prepare_metadata_batch.discover_clean_dirty(
+            self.library, self.serato, maximum
+        )
+
+    def test_folder_evidence_appends_and_preserves_unrelated_grouping(self):
+        make_library(self.library, [{
+            "relative": "Hip Hop/CLEAN/song.mp3", "genre": "Hip-Hop",
+            "title": "Song", "grouping": "Event: Cookout; Old Head", "v2_version": 3,
+        }])
+        rows, exclusions = self.discover()
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["grouping_add_terms"], ["Clean"])
+        self.assertEqual(rows[0]["proposed_grouping"], "Event: Cookout; Old Head; Clean")
+        self.assertEqual(rows[0]["grouping"], ["Event: Cookout", "Old Head"])
+        self.assertEqual(rows[0]["proposed_genre"], rows[0]["genre"])
+        self.assertEqual(rows[0]["lock_folder"], "Hip Hop")
+
+    def test_bracketed_label_evidence_without_folder(self):
+        make_library(self.library, [{
+            "relative": "R&B/Slow Jams/song (Dirty).mp3", "genre": "R&B",
+            "title": "Song (Dirty)", "grouping": "Holiday", "v2_version": 4,
+        }])
+        rows, _ = self.discover()
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["grouping_add_terms"], ["Dirty"])
+        self.assertEqual(rows[0]["proposed_grouping"], "Holiday; Dirty")
+
+    def test_conflicting_folder_and_label_evidence_is_held(self):
+        make_library(self.library, [{
+            "relative": "Hip Hop/CLEAN/song (Dirty).mp3", "genre": "Hip-Hop",
+            "title": "Song (Dirty)", "v2_version": 3,
+        }])
+        rows, exclusions = self.discover()
+        self.assertEqual(rows, [])
+        self.assertEqual(exclusions["conflicting Clean/Dirty evidence"], 1)
+
+    def test_evidence_conflicting_with_existing_status_is_held(self):
+        make_library(self.library, [{
+            "relative": "Hip Hop/CLEAN/song.mp3", "genre": "Hip-Hop",
+            "title": "Song", "grouping": "Dirty", "v2_version": 3,
+        }])
+        rows, exclusions = self.discover()
+        self.assertEqual(rows, [])
+        self.assertEqual(exclusions["conflicting Clean/Dirty evidence"], 1)
+
+    def test_existing_status_is_not_duplicated(self):
+        make_library(self.library, [{
+            "relative": "Hip Hop/DIRTY/song.mp3", "genre": "Hip-Hop",
+            "title": "Song", "grouping": "Dirty; Old Head", "v2_version": 3,
+        }])
+        rows, exclusions = self.discover()
+        self.assertEqual(rows, [])
+        self.assertEqual(exclusions["already carries its Clean/Dirty status"], 1)
+
+    def test_needs_check_files_are_left_to_other_lanes(self):
+        make_library(self.library, [{
+            "relative": "Hip Hop/_GENRE NEEDS CHECK/song (Clean).mp3",
+            "genre": "Hip-Hop", "title": "Song (Clean)", "v2_version": 3,
+        }])
+        rows, exclusions = self.discover()
+        self.assertEqual(rows, [])
+        self.assertEqual(exclusions["left to the needs-check lanes"], 1)
+
+    def test_id3v22_is_skipped_not_upgraded(self):
+        make_library(self.library, [{
+            "relative": "Hip Hop/CLEAN/old.mp3", "genre": "Hip-Hop", "v2_version": 2,
+        }])
+        rows, exclusions = self.discover()
+        self.assertEqual(rows, [])
+        self.assertEqual(exclusions["ID3v2.2"], 1)
+
+    def test_full_prepare_never_plans_a_genre_change(self):
+        # "hip hop" is alias-mappable, but the Clean/Dirty lane must leave it.
+        make_library(self.library, [{
+            "relative": "Hip Hop/CLEAN/song.mp3", "genre": "hip hop",
+            "title": "Song", "grouping": "Old Head", "v2_version": 3,
+        }])
+        master = prepare_metadata_batch.prepare(
+            self.library, self.serato, self.handoff, 150, "mp3", lane="clean-dirty"
+        )
+        self.assertEqual(master["lane"], "clean-dirty")
+        self.assertIn("cleandirty", master["batch_id"])
+        self.assertEqual(master["candidate_count"], 1)
+        self.assertEqual(master["genre_changes"], 0)
+        self.assertEqual(master["grouping_changes"], 1)
+        plan = json.loads(Path(master["scopes"][0]["plan_path"]).read_text(encoding="utf-8"))
+        self.assertEqual(len(plan["items"]), 1)
+        self.assertNotIn("genre_fix", plan["items"][0])
+        self.assertEqual(plan["items"][0]["grouping_fix"]["add_terms"], ["Clean"])
+        self.assertEqual(plan["items"][0]["grouping_fix"]["existing"], ["Old Head"])
+        state = metadata_batch.read_json(self.handoff / "current-batch.json")
+        self.assertEqual(state["state"], "PREVIEWED")
+
+
+class VersionLabelBatchTests(_LaneCase):
+    def discover(self, maximum=150):
+        return prepare_metadata_batch.discover(self.library, self.serato, maximum)
+
+    def test_bracketed_labels_flow_as_their_exact_terms(self):
+        make_library(self.library, [{
+            "relative": "House/_GENRE NEEDS CHECK/a (Radio Edit).mp3",
+            "genre": "House", "title": "A (Radio Edit)",
+            "grouping": "Top 40", "v2_version": 3,
+        }])
+        rows, _ = self.discover()
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["grouping_add_terms"], ["Radio Edit"])
+        self.assertNotIn("Edit", rows[0]["grouping_add_terms"])
+        self.assertEqual(rows[0]["proposed_grouping"], "Top 40; Radio Edit")
+
+    def test_unbracketed_labels_stay_held(self):
+        make_library(self.library, [
+            {"relative": "House/_GENRE NEEDS CHECK/a.mp3", "genre": "house",
+             "title": "My Radio Edit", "v2_version": 3},
+            {"relative": "House/_GENRE NEEDS CHECK/b.mp3", "genre": "house",
+             "title": "Flip Dinero Anthem", "v2_version": 3},
+            {"relative": "House/_GENRE NEEDS CHECK/c.mp3", "genre": "house",
+             "title": "Total Rework", "v2_version": 3},
+        ])
+        rows, exclusions = self.discover()
+        self.assertEqual(rows, [])
+        self.assertEqual(exclusions["Radio Edit"], 1)
+        self.assertEqual(exclusions["Flip"], 1)
+        self.assertEqual(exclusions["ReWork"], 1)
+
+    def test_version_labels_never_touch_other_metadata_fields(self):
+        make_library(self.library, [{
+            "relative": "House/_GENRE NEEDS CHECK/a (Flip).mp3",
+            "genre": "House", "title": "A (Flip)", "artist": "Some Artist",
+            "grouping": "Holiday; Instrumental", "v2_version": 4,
+        }])
+        master = prepare_metadata_batch.prepare(
+            self.library, self.serato, self.handoff, 150, "mp3"
+        )
+        plan = json.loads(Path(master["scopes"][0]["plan_path"]).read_text(encoding="utf-8"))
+        self.assertEqual(len(plan["items"]), 1)
+        # The plan may carry only the two reviewed fix shapes; nothing that
+        # could rewrite Artist/Title/Year or move the file.
+        self.assertLessEqual(set(plan["items"][0]), {"path", "sha256", "genre_fix", "grouping_fix"})
+        self.assertNotIn("genre_fix", plan["items"][0])
+        fix = plan["items"][0]["grouping_fix"]
+        self.assertEqual(fix["existing"], ["Holiday", "Instrumental"])
+        self.assertEqual(fix["add_terms"], ["Flip"])
+
+    def test_multi_value_grouping_remains_intact(self):
+        make_library(self.library, [{
+            "relative": "House/_GENRE NEEDS CHECK/a (Clean).mp3",
+            "genre": "House", "title": "A (Clean)",
+            "grouping": "Holiday; Instrumental", "v2_version": 3,
+        }])
+        rows, _ = self.discover()
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(
+            rows[0]["proposed_grouping"], "Holiday; Instrumental; Clean"
+        )
+
+
+class BatchScalingTests(_LaneCase):
+    def _seed_one_candidate(self):
+        make_library(self.library, [{
+            "relative": "House/_GENRE NEEDS CHECK/good.mp3",
+            "genre": "house", "title": "Good", "v2_version": 3,
+        }])
+
+    def test_max_above_default_requires_matching_confirmation(self):
+        self._seed_one_candidate()
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "explicit operator decision"):
+            prepare_metadata_batch.prepare(
+                self.library, self.serato, self.handoff, 500, "mp3"
+            )
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "explicit operator decision"):
+            prepare_metadata_batch.prepare(
+                self.library, self.serato, self.handoff, 500, "mp3",
+                confirmed_maximum=151,
+            )
+        # The refusal happens before any batch state is created.
+        self.assertFalse((self.handoff / "current-batch.json").exists())
+
+    def test_confirmation_without_a_large_max_is_refused(self):
+        self._seed_one_candidate()
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "only valid with --max above"):
+            prepare_metadata_batch.prepare(
+                self.library, self.serato, self.handoff, 100, "mp3",
+                confirmed_maximum=100,
+            )
+
+    def test_confirmed_larger_limit_is_accepted_and_recorded(self):
+        self._seed_one_candidate()
+        master = prepare_metadata_batch.prepare(
+            self.library, self.serato, self.handoff, 500, "mp3",
+            confirmed_maximum=500,
+        )
+        self.assertEqual(master["batch_limit"], 500)
+        self.assertEqual(master["candidate_count"], 1)
+
+    def test_capped_selection_is_deterministic(self):
+        make_library(self.library, [
+            {"relative": f"House/_GENRE NEEDS CHECK/track-{index}.mp3",
+             "genre": "house", "title": f"Track {index}", "v2_version": 3}
+            for index in range(3)
+        ])
+        first_rows, first_exclusions = prepare_metadata_batch.discover(
+            self.library, self.serato, 2
+        )
+        second_rows, _ = prepare_metadata_batch.discover(self.library, self.serato, 2)
+        self.assertEqual(
+            [row["path"] for row in first_rows],
+            [row["path"] for row in second_rows],
+        )
+        self.assertEqual(len(first_rows), 2)
+        self.assertEqual(
+            [Path(row["path"]).name for row in first_rows],
+            ["track-0.mp3", "track-1.mp3"],
+        )
+        self.assertEqual(first_exclusions["eligible but deferred by batch cap"], 1)
+
+
+class IntakeLaneTests(_LaneCase):
+    def setUp(self):
+        super().setUp()
+        self.intake = self.library / "music to move"
+        self.intake.mkdir()
+
+    def discover(self, maximum=150):
+        return prepare_metadata_batch.discover_intake(
+            self.library, self.serato, self.intake, maximum
+        )
+
+    def test_unanimous_recognized_consensus_fills_placeholder_genre(self):
+        make_library(self.library, [
+            {"relative": "music to move/batch1/one.mp3", "genre": "House",
+             "title": "One", "v2_version": 3},
+            {"relative": "music to move/batch1/two.mp3", "genre": "House",
+             "title": "Two", "v2_version": 3},
+            {"relative": "music to move/batch1/blank.mp3", "title": "Blank",
+             "v2_version": 3},
+        ])
+        rows, exclusions = self.discover()
+        by_name = {Path(row["path"]).name: row for row in rows}
+        self.assertIn("blank.mp3", by_name)
+        self.assertEqual(by_name["blank.mp3"]["proposed_genre"], "House")
+        self.assertIn("unanimous sibling Genre consensus", by_name["blank.mp3"]["genre_evidence"])
+        # The already-tagged siblings have nothing to change.
+        self.assertEqual(exclusions["already normalized / no approved change"], 2)
+
+    def test_disagreeing_siblings_hold_the_placeholder(self):
+        make_library(self.library, [
+            {"relative": "music to move/batch1/one.mp3", "genre": "House",
+             "title": "One", "v2_version": 3},
+            {"relative": "music to move/batch1/two.mp3", "genre": "Jazz",
+             "title": "Two", "v2_version": 3},
+            {"relative": "music to move/batch1/blank.mp3", "title": "Blank",
+             "v2_version": 3},
+        ])
+        rows, exclusions = self.discover()
+        self.assertNotIn(
+            "blank.mp3", {Path(row["path"]).name for row in rows}
+        )
+        self.assertEqual(
+            exclusions["Genre placeholder without unanimous tagged-sibling consensus"], 1
+        )
+
+    def test_unrecognized_consensus_value_is_held(self):
+        make_library(self.library, [
+            {"relative": "music to move/batch1/one.mp3", "genre": "Zorbastep",
+             "title": "One", "v2_version": 3},
+            {"relative": "music to move/batch1/two.mp3", "genre": "Zorbastep",
+             "title": "Two", "v2_version": 3},
+            {"relative": "music to move/batch1/blank.mp3", "title": "Blank",
+             "v2_version": 3},
+        ])
+        rows, exclusions = self.discover()
+        self.assertNotIn("blank.mp3", {Path(row["path"]).name for row in rows})
+        self.assertTrue(any(
+            reason.startswith("sibling consensus Genre is not a recognized canonical value")
+            for reason in exclusions
+        ), exclusions)
+
+    def test_grouping_additions_proceed_while_genre_stays_held(self):
+        make_library(self.library, [{
+            "relative": "music to move/batch1/song (Clean).mp3",
+            "title": "Song (Clean)", "v2_version": 3,
+        }])
+        rows, _ = self.discover()
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["grouping_add_terms"], ["Clean"])
+        self.assertEqual(rows[0]["proposed_genre"], rows[0]["genre"])
+        self.assertEqual(rows[0]["genre"], "")
+
+    def test_intake_root_must_be_inside_the_library(self):
+        outside = self.root / "downloads"
+        outside.mkdir()
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "inside the library root"):
+            prepare_metadata_batch.prepare(
+                self.library, self.serato, self.handoff, 150, "mp3",
+                lane="intake", intake_root=outside,
+            )
+        self.assertFalse((self.handoff / "current-batch.json").exists())
+
+    def test_intake_root_is_required_for_the_lane_and_refused_elsewhere(self):
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "--intake-root is required"):
+            prepare_metadata_batch.prepare(
+                self.library, self.serato, self.handoff, 150, "mp3", lane="intake"
+            )
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "only valid with --lane intake"):
+            prepare_metadata_batch.prepare(
+                self.library, self.serato, self.handoff, 150, "mp3",
+                intake_root=self.intake,
+            )
+
+    def test_full_intake_prepare_binds_lane_and_validated_plans(self):
+        make_library(self.library, [
+            {"relative": "music to move/batch1/one.mp3", "genre": "House",
+             "title": "One", "v2_version": 3},
+            {"relative": "music to move/batch1/two.mp3", "genre": "House",
+             "title": "Two", "v2_version": 3},
+            {"relative": "music to move/batch1/blank (Dirty).mp3",
+             "title": "Blank (Dirty)", "v2_version": 3},
+        ])
+        master = prepare_metadata_batch.prepare(
+            self.library, self.serato, self.handoff, 150, "mp3",
+            lane="intake", intake_root=self.intake,
+        )
+        self.assertEqual(master["lane"], "intake")
+        self.assertIn("intake", master["batch_id"])
+        self.assertEqual(master["intake_root"], str(self.intake.resolve()))
+        self.assertEqual(master["candidate_count"], 1)
+        plan = json.loads(Path(master["scopes"][0]["plan_path"]).read_text(encoding="utf-8"))
+        item = plan["items"][0]
+        self.assertEqual(item["genre_fix"], {"from": "", "to": "House"})
+        self.assertEqual(item["grouping_fix"]["add_terms"], ["Dirty"])
+
+
+class LaneGovernanceTests(unittest.TestCase):
+    def test_lane_discovery_added_no_mutation_primitives(self):
+        report = mutation_surface.audit(REPO_ROOT)
+        self.assertTrue(report["ok"], report["violations"])
+        entry = next(
+            module for module in report["modules"]
+            if module["module"] == "scripts/prepare_metadata_batch.py"
+        )
+        self.assertEqual(entry["classification"], "preview-only")
+        self.assertEqual(entry["primitive_count"], 0)
+        self.assertEqual(entry["primitives"], [])
+
+
+if __name__ == "__main__":
+    unittest.main()
