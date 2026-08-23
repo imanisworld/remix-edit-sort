@@ -340,16 +340,37 @@ def _scope_fields(path: Path, library_root: Path) -> tuple[str, str] | None:
     return str(path.parent.resolve()), relative.parts[0]
 
 
-def discover_clean_dirty(library_root: Path, serato_root: Path, maximum: int) -> tuple[list[dict], Counter]:
+def load_transcript_dirty_evidence(path: Path) -> dict[str, str]:
+    """path -> sha256 for CONFIRMED Dirty transcript hits only.
+
+    Structural enforcement of the asymmetric evidence rule: Clean entries in
+    a transcript-evidence file are never read into this map, so a caller
+    that wires it into discover_clean_dirty has no way to treat transcript
+    silence as proof of Clean, even by accident.
+    """
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    return {
+        row["path"]: row["sha256"]
+        for row in payload.get("results", [])
+        if row.get("classification") == "Dirty" and row.get("path") and row.get("sha256")
+    }
+
+
+def discover_clean_dirty(library_root: Path, serato_root: Path, maximum: int,
+                         transcript_dirty_evidence: dict[str, str] | None = None) -> tuple[list[dict], Counter]:
     """Deterministic Clean/Dirty Grouping backfill across the sorted library.
 
     Evidence is a literal CLEAN/DIRTY folder component (the canonical unit
-    apply_clean_dirty_grouping.py established) and/or an explicit bracketed
-    Clean/Dirty label. Genre is never changed, existing Grouping is only
-    appended to, and any conflicting or ambiguous evidence is held.
+    apply_clean_dirty_grouping.py established), an explicit bracketed
+    Clean/Dirty label, and/or (only for Dirty) a confirmed transcript hit
+    from transcript_dirty_evidence (path -> sha256, revalidated live against
+    the current file so stale evidence is never trusted). Genre is never
+    changed, existing Grouping is only appended to, and any conflicting or
+    ambiguous evidence is held. Transcript silence never adds evidence.
     """
     rules = classifier.load_genre_rules(None)
     crate_rules = parse_smart_crates(serato_root)
+    transcript_dirty_evidence = transcript_dirty_evidence or {}
     exclusions: Counter = Counter()
     candidates = []
     library_root = Path(library_root).resolve()
@@ -370,7 +391,8 @@ def discover_clean_dirty(library_root: Path, serato_root: Path, maximum: int) ->
             or classifier.DIRTY_RE.search(path.stem)
             or INTRO_CLEAN_RE.search(path.stem)
         )
-        if not folder_terms and not stem_has_label:
+        transcript_candidate = str(path) in transcript_dirty_evidence
+        if not folder_terms and not stem_has_label and not transcript_candidate:
             continue
         if NEEDS_CHECK_FOLDERS.intersection(relative_parts):
             exclusions["left to the needs-check lanes"] += 1
@@ -406,7 +428,14 @@ def discover_clean_dirty(library_root: Path, serato_root: Path, maximum: int) ->
             label_terms.add("Clean")
         if classifier.DIRTY_RE.search(label_text):
             label_terms.add("Dirty")
-        evident = folder_terms | label_terms
+        transcript_terms = set()
+        if transcript_candidate:
+            if transcript_dirty_evidence[str(path)] == current["sha256"]:
+                transcript_terms.add("Dirty")
+            else:
+                exclusions["transcript evidence stale (sha256 drift since transcription)"] += 1
+                continue
+        evident = folder_terms | label_terms | transcript_terms
         existing_status = {
             term for term in ("Clean", "Dirty")
             if any(value.casefold() == term.casefold() for value in current["grouping"])
@@ -428,6 +457,8 @@ def discover_clean_dirty(library_root: Path, serato_root: Path, maximum: int) ->
                 sources.append(f"literal {term.upper()}/ folder component")
             if term in label_terms:
                 sources.append(f"explicit bracketed {term} label in filename/title")
+            if term in transcript_terms:
+                sources.append("faster-whisper transcript: confirmed explicit-term hit")
             evidence.append(f"{term}: " + " and ".join(sources))
         proposed_grouping_parts = [*current["grouping"], *additions]
         proposed_grouping = "; ".join(proposed_grouping_parts)
@@ -449,7 +480,7 @@ def discover_clean_dirty(library_root: Path, serato_root: Path, maximum: int) ->
             "smart_crate_effects": effects,
             "scope_root": scope_root,
             "lock_folder": lock_folder,
-            "preference": 0 if folder_terms else 1,
+            "preference": 0 if (folder_terms or transcript_terms) else 1,
         })
     return _select_stable(candidates, exclusions, maximum)
 
@@ -620,13 +651,18 @@ def _write_preview(batch_dir: Path, batch_id: str, rows: list[dict], exclusions:
 
 def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: int,
             batch_format: str, lane: str = "genre", intake_root: Path | None = None,
-            confirmed_maximum: int | None = None, genre_only: bool = False) -> dict:
+            confirmed_maximum: int | None = None, genre_only: bool = False,
+            transcript_evidence: Path | None = None) -> dict:
     if batch_format.casefold() != "mp3":
         raise metadata_batch.BatchRefused("automated lane is MP3-only; FLAC requires its own proven canary")
     if lane not in LANES:
         raise metadata_batch.BatchRefused(f"unknown lane {lane!r}; expected one of {LANES}")
     if genre_only and lane != "genre":
         raise metadata_batch.BatchRefused("--genre-only is only valid with --lane genre")
+    if transcript_evidence is not None and lane != "clean-dirty":
+        raise metadata_batch.BatchRefused("--transcript-evidence is only valid with --lane clean-dirty")
+    if transcript_evidence is not None and not Path(transcript_evidence).is_file():
+        raise metadata_batch.BatchRefused(f"--transcript-evidence file does not exist: {transcript_evidence}")
     if maximum < 1:
         raise metadata_batch.BatchRefused("--max must be at least 1")
     if maximum > DEFAULT_MAX_CANDIDATES and confirmed_maximum != maximum:
@@ -664,7 +700,13 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
     try:
         batch_dir.mkdir(parents=True, exist_ok=False)
         if lane == "clean-dirty":
-            rows, exclusions = discover_clean_dirty(library_root, serato_root, maximum)
+            transcript_dirty = (
+                load_transcript_dirty_evidence(transcript_evidence)
+                if transcript_evidence is not None else None
+            )
+            rows, exclusions = discover_clean_dirty(
+                library_root, serato_root, maximum, transcript_dirty_evidence=transcript_dirty
+            )
         elif lane == "intake":
             rows, exclusions = discover_intake(library_root, serato_root, intake_root, maximum)
         else:
@@ -735,6 +777,10 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
             "format": "mp3",
             "lane": lane,
             "genre_only": genre_only,
+            "transcript_evidence_path": str(Path(transcript_evidence).resolve()) if transcript_evidence else None,
+            "transcript_evidence_sha256": (
+                metadata_batch.sha256_file(Path(transcript_evidence)) if transcript_evidence else None
+            ),
             "intake_root": str(intake_root) if intake_root is not None else None,
             "batch_limit": maximum,
             "library_root": str(library_root),
@@ -809,6 +855,9 @@ def main() -> int:
     parser.add_argument("--lane", choices=LANES, default="genre")
     parser.add_argument("--genre-only", action="store_true",
                         help="Genre lane only: propose Genre changes and hold Grouping unchanged (0 additions)")
+    parser.add_argument("--transcript-evidence", type=Path,
+                        help="Clean-Dirty lane only: JSON with confirmed transcript Dirty hits "
+                             "(path/sha256/classification records); silence never proves Clean")
     parser.add_argument("--intake-root", type=Path,
                         help="Where new downloads land (intake lane only; must be inside the library root)")
     parser.add_argument("--library-root", type=Path, default=DEFAULT_LIBRARY)
@@ -820,9 +869,11 @@ def main() -> int:
         if args.approve:
             if not args.approved_by:
                 raise metadata_batch.BatchRefused("--approved-by is required with --approve")
-            if args.lane != "genre" or args.intake_root or args.confirm_max is not None or args.genre_only:
+            if (args.lane != "genre" or args.intake_root or args.confirm_max is not None
+                    or args.genre_only or args.transcript_evidence):
                 raise metadata_batch.BatchRefused(
-                    "--lane/--intake-root/--confirm-max/--genre-only are only valid when preparing"
+                    "--lane/--intake-root/--confirm-max/--genre-only/--transcript-evidence "
+                    "are only valid when preparing"
                 )
             result = approve(args.approve, args.approved_by, metadata_batch.HANDOFF_ROOT)
             print(json.dumps({"HUMAN_APPROVED": True, **result}, indent=2))
@@ -831,7 +882,8 @@ def main() -> int:
             raise metadata_batch.BatchRefused("--approved-by is only valid with --approve")
         result = prepare(args.library_root, args.serato_root, metadata_batch.HANDOFF_ROOT,
                          args.max, args.format, lane=args.lane, intake_root=args.intake_root,
-                         confirmed_maximum=args.confirm_max, genre_only=args.genre_only)
+                         confirmed_maximum=args.confirm_max, genre_only=args.genre_only,
+                         transcript_evidence=args.transcript_evidence)
         smart_count = sum(len(row["smart_crate_effects"]) for row in result["candidates"])
         print(f"BATCH ID: {result['batch_id']}")
         print(f"LANE: {result['lane']}")

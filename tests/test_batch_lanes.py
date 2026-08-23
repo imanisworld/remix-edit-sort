@@ -134,6 +134,123 @@ class CleanDirtyLaneTests(_LaneCase):
         self.assertEqual(state["state"], "PREVIEWED")
 
 
+class TranscriptEvidenceCleanDirtyTests(_LaneCase):
+    """--transcript-evidence: confirmed Dirty hits are evidence; silence never proves Clean."""
+
+    def _write_evidence(self, rows):
+        evidence_path = self.root / "listen-check.json"
+        evidence_path.write_text(json.dumps({"results": rows}), encoding="utf-8")
+        return evidence_path
+
+    def discover(self, evidence_path=None, maximum=150):
+        transcript_dirty = (
+            prepare_metadata_batch.load_transcript_dirty_evidence(evidence_path)
+            if evidence_path is not None else None
+        )
+        return prepare_metadata_batch.discover_clean_dirty(
+            self.library, self.serato, maximum, transcript_dirty_evidence=transcript_dirty
+        )
+
+    def test_confirmed_transcript_hit_makes_track_dirty_eligible(self):
+        make_library(self.library, [{
+            "relative": "Hip Hop/Random Set/song.mp3", "genre": "Hip-Hop",
+            "title": "Song", "grouping": "Old Head", "v2_version": 3,
+        }])
+        path = str((self.library / "Hip Hop/Random Set/song.mp3").resolve())
+        sha = prepare_metadata_batch.read_track(Path(path))["sha256"]
+        evidence = self._write_evidence([
+            {"path": path, "sha256": sha, "classification": "Dirty"},
+        ])
+        rows, _ = self.discover(evidence)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["grouping_add_terms"], ["Dirty"])
+        self.assertEqual(rows[0]["proposed_grouping"], "Old Head; Dirty")
+        self.assertIn("faster-whisper transcript", rows[0]["grouping_evidence"][0])
+
+    def test_transcript_silence_alone_does_not_prove_clean(self):
+        make_library(self.library, [{
+            "relative": "Hip Hop/Random Set/song.mp3", "genre": "Hip-Hop",
+            "title": "Song", "v2_version": 3,
+        }])
+        path = str((self.library / "Hip Hop/Random Set/song.mp3").resolve())
+        sha = prepare_metadata_batch.read_track(Path(path))["sha256"]
+        # A "Clean" classification in the evidence file must never be loaded
+        # or trusted -- load_transcript_dirty_evidence only reads Dirty rows.
+        evidence = self._write_evidence([
+            {"path": path, "sha256": sha, "classification": "Clean"},
+        ])
+        transcript_dirty = prepare_metadata_batch.load_transcript_dirty_evidence(evidence)
+        self.assertEqual(transcript_dirty, {})
+        rows, exclusions = self.discover(evidence)
+        self.assertEqual(rows, [])
+
+    def test_independent_metadata_evidence_still_proves_clean(self):
+        make_library(self.library, [{
+            "relative": "Hip Hop/CLEAN/song.mp3", "genre": "Hip-Hop",
+            "title": "Song", "grouping": "Old Head", "v2_version": 3,
+        }])
+        # No transcript evidence at all for this track -- folder evidence alone resolves it.
+        rows, _ = self.discover(evidence_path=None)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["grouping_add_terms"], ["Clean"])
+
+    def test_unrelated_grouping_preserved_alongside_transcript_dirty(self):
+        make_library(self.library, [{
+            "relative": "Hip Hop/Random Set/song.mp3", "genre": "Hip-Hop",
+            "title": "Song", "grouping": "Event: Cookout; Old Head", "v2_version": 3,
+        }])
+        path = str((self.library / "Hip Hop/Random Set/song.mp3").resolve())
+        sha = prepare_metadata_batch.read_track(Path(path))["sha256"]
+        evidence = self._write_evidence([
+            {"path": path, "sha256": sha, "classification": "Dirty"},
+        ])
+        rows, _ = self.discover(evidence)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["grouping"], ["Event: Cookout", "Old Head"])
+        self.assertEqual(rows[0]["proposed_grouping"], "Event: Cookout; Old Head; Dirty")
+
+    def test_transcript_dirty_contradicting_existing_clean_status_is_held(self):
+        make_library(self.library, [{
+            "relative": "Hip Hop/Random Set/song.mp3", "genre": "Hip-Hop",
+            "title": "Song", "grouping": "Clean", "v2_version": 3,
+        }])
+        path = str((self.library / "Hip Hop/Random Set/song.mp3").resolve())
+        sha = prepare_metadata_batch.read_track(Path(path))["sha256"]
+        evidence = self._write_evidence([
+            {"path": path, "sha256": sha, "classification": "Dirty"},
+        ])
+        rows, exclusions = self.discover(evidence)
+        self.assertEqual(rows, [])
+        self.assertEqual(exclusions["conflicting Clean/Dirty evidence"], 1)
+
+    def test_transcript_dirty_matching_existing_dirty_status_adds_nothing(self):
+        make_library(self.library, [{
+            "relative": "Hip Hop/Random Set/song.mp3", "genre": "Hip-Hop",
+            "title": "Song", "grouping": "Dirty", "v2_version": 3,
+        }])
+        path = str((self.library / "Hip Hop/Random Set/song.mp3").resolve())
+        sha = prepare_metadata_batch.read_track(Path(path))["sha256"]
+        evidence = self._write_evidence([
+            {"path": path, "sha256": sha, "classification": "Dirty"},
+        ])
+        rows, exclusions = self.discover(evidence)
+        self.assertEqual(rows, [])
+        self.assertEqual(exclusions["already carries its Clean/Dirty status"], 1)
+
+    def test_stale_transcript_evidence_is_never_trusted(self):
+        make_library(self.library, [{
+            "relative": "Hip Hop/Random Set/song.mp3", "genre": "Hip-Hop",
+            "title": "Song", "v2_version": 3,
+        }])
+        path = str((self.library / "Hip Hop/Random Set/song.mp3").resolve())
+        evidence = self._write_evidence([
+            {"path": path, "sha256": "0" * 64, "classification": "Dirty"},
+        ])
+        rows, exclusions = self.discover(evidence)
+        self.assertEqual(rows, [])
+        self.assertEqual(exclusions["transcript evidence stale (sha256 drift since transcription)"], 1)
+
+
 class VersionLabelBatchTests(_LaneCase):
     def discover(self, maximum=150):
         return prepare_metadata_batch.discover(self.library, self.serato, maximum)
