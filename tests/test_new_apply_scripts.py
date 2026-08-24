@@ -215,6 +215,74 @@ class NewApplyScriptsEndToEndTests(unittest.TestCase):
         self.assertEqual(undone.returncode, 0, undone.stdout + undone.stderr)
         self.assertEqual(path.read_bytes(), original)
 
+    def test_intake_removes_one_grouping_term_and_preserves_the_rest(self):
+        path = fixtures.make_library(self.root, [{
+            "relative": "track.mp3", "genre": "Hip-Hop",
+            "grouping": "Event: LIKE SUGAR ON MY TONGUE; Dirty; Remix", "serato": True,
+        }])["track.mp3"]
+        before_audio = intake_apply.audio_payload(path)
+        before_serato = intake_apply.serato_digest(path)
+        _, manifest = self.backup()
+        plan = {
+            "mode": "preview-only", "root": str(self.root),
+            "rules": {"approval_required": True}, "counts": {},
+            "items": [{
+                "path": str(path), "sha256": backup_manifest.sha256_file(path),
+                "grouping_fix": {
+                    "existing": ["Event: LIKE SUGAR ON MY TONGUE", "Dirty", "Remix"],
+                    "add_terms": [], "remove_terms": ["Event: LIKE SUGAR ON MY TONGUE"],
+                },
+            }],
+        }
+        plan_path = self.tmp / "remove-plan.json"
+        plan_path.write_text(json.dumps(plan), encoding="utf-8")
+
+        result = run(
+            INTAKE_APPLY, "--root", self.root, "--plan", plan_path,
+            "--backup-manifest", manifest, "--apply", *self.locked_args(),
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertEqual(payload["grouping_changed"], 1)
+        self.assertEqual(intake_apply.read_genre(path), "Hip-Hop")
+        self.assertEqual(intake_apply.read_grouping(path)[0], ["Dirty", "Remix"])
+        self.assertEqual(intake_apply.audio_payload(path), before_audio)
+        self.assertEqual(intake_apply.serato_digest(path), before_serato)
+        self.assertTrue(mutation_engine.recover(Path(payload["recovery_journal"]))["clean"])
+
+    def test_intake_removal_leaving_no_terms_still_verifies_clean(self):
+        """Removing the only Grouping term a file has must not be mistaken
+        for a verification failure -- read_grouping() on an empty/absent
+        TIT1 frame returns [] either way."""
+        path = fixtures.make_library(self.root, [{
+            "relative": "track.mp3", "genre": "Hip-Hop",
+            "grouping": "Event: LIKE SUGAR ON MY TONGUE", "serato": True,
+        }])["track.mp3"]
+        _, manifest = self.backup()
+        plan = {
+            "mode": "preview-only", "root": str(self.root),
+            "rules": {"approval_required": True}, "counts": {},
+            "items": [{
+                "path": str(path), "sha256": backup_manifest.sha256_file(path),
+                "grouping_fix": {
+                    "existing": ["Event: LIKE SUGAR ON MY TONGUE"],
+                    "add_terms": [], "remove_terms": ["Event: LIKE SUGAR ON MY TONGUE"],
+                },
+            }],
+        }
+        plan_path = self.tmp / "remove-all-plan.json"
+        plan_path.write_text(json.dumps(plan), encoding="utf-8")
+
+        result = run(
+            INTAKE_APPLY, "--root", self.root, "--plan", plan_path,
+            "--backup-manifest", manifest, "--apply", *self.locked_args(),
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertEqual(payload["grouping_changed"], 1)
+        self.assertEqual(intake_apply.read_grouping(path)[0], [])
+        self.assertTrue(mutation_engine.recover(Path(payload["recovery_journal"]))["clean"])
+
     def test_intake_preserves_id3v22_when_both_fields_were_requested(self):
         path = fixtures.write_id3v22_mp3(
             self.root / "old.mp3", genre="Other", grouping="Existing"

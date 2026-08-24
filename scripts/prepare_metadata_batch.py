@@ -32,7 +32,7 @@ DEFAULT_SERATO = Path("/Users/djb.a.e/Music/_Serato_")
 # the operator states the exact limit twice (--max N --confirm-max N); there
 # is no uncapped mode.
 DEFAULT_MAX_CANDIDATES = 150
-LANES = ("genre", "clean-dirty", "intake")
+LANES = ("genre", "clean-dirty", "intake", "strip-event-label", "strip-grouping-term")
 # A transformation label is held only when its plain word match has no
 # explicit bracketed form; a bracketed label is exact evidence and becomes
 # its own controlled Grouping term via classifier.TRANSFORMATION_LABEL_RULES.
@@ -209,6 +209,10 @@ def _held_transformation_label(label_text: str) -> str | None:
     )
 
 
+def _grouping_changed(row: dict) -> bool:
+    return bool(row["grouping_add_terms"]) or bool(row.get("grouping_remove_terms"))
+
+
 def _select_stable(candidates: list[dict], exclusions: Counter, maximum: int) -> tuple[list[dict], Counter]:
     """Deterministically order, cap, and re-read the shared candidate pool."""
     candidates.sort(key=lambda row: (row["preference"], row["scope_root"].casefold(), row["path"].casefold()))
@@ -373,6 +377,139 @@ def _scope_fields(path: Path, library_root: Path) -> tuple[str, str] | None:
     if len(relative.parts) < 2:
         return None
     return str(path.parent.resolve()), relative.parts[0]
+
+
+def discover_event_label_strip(library_root: Path, serato_root: Path, event_folders: list[str],
+                               maximum: int) -> tuple[list[dict], Counter]:
+    """Deterministic discovery for removing one specific Grouping term,
+    'Event: <folder name>', from every MP3 under an explicit list of
+    Events/<name> subfolders. No semantic classification: a candidate is
+    included only when its live Grouping already contains that exact
+    literal term (casefold-matched); only that one term is proposed for
+    removal, and every other Grouping value, Genre, and file location is
+    left untouched.
+    """
+    crate_rules = parse_smart_crates(serato_root)
+    exclusions: Counter = Counter()
+    candidates = []
+    events_root = Path(library_root) / "Events"
+    for folder_name in event_folders:
+        folder_root = events_root / folder_name
+        if not folder_root.is_dir():
+            raise metadata_batch.BatchRefused(f"event folder does not exist: {folder_root}")
+        target_term = f"Event: {folder_name}"
+        target_normalized = target_term.casefold()
+        for path in sorted(folder_root.rglob("*.mp3")):
+            if OUT_OF_SCOPE_FOLDERS.intersection(path.parts):
+                exclusions["out of scope folder"] += 1
+                continue
+            try:
+                current = read_track(path)
+            except Exception:
+                exclusions["unreadable MP3/tag"] += 1
+                continue
+            if current["id3_major"] == 2:
+                exclusions["ID3v2.2"] += 1
+                continue
+            if current["id3_major"] not in {3, 4}:
+                exclusions["unsupported ID3 version"] += 1
+                continue
+            matches = [term for term in current["grouping"] if term.strip().casefold() == target_normalized]
+            if not matches:
+                exclusions["no matching Event: label present"] += 1
+                continue
+            remaining = [term for term in current["grouping"] if term.strip().casefold() != target_normalized]
+            proposed_grouping = "; ".join(remaining)
+            current_grouping = "; ".join(current["grouping"])
+            effects, _ = smart_effects(
+                current["genre"], current["genre"], current_grouping, proposed_grouping, crate_rules
+            )
+            scope_fields = _scope_fields(path, library_root)
+            if scope_fields is None:
+                exclusions["outside library root"] += 1
+                continue
+            scope_root, lock_folder = scope_fields
+            candidates.append({
+                **current,
+                "proposed_genre": current["genre"],
+                "proposed_grouping": proposed_grouping,
+                "grouping_add_terms": [],
+                "grouping_remove_terms": matches,
+                "genre_evidence": ["Event-label-strip batch: Genre intentionally left unchanged"],
+                "grouping_evidence": [
+                    f"removing exact literal term {target_term!r}; every other Grouping value preserved"
+                ],
+                "smart_crate_effects": effects,
+                "scope_root": scope_root,
+                "lock_folder": lock_folder,
+                "preference": 0,
+            })
+    return _select_stable(candidates, exclusions, maximum)
+
+
+def discover_grouping_term_strip(library_root: Path, serato_root: Path, remove_terms: list[str],
+                                 maximum: int) -> tuple[list[dict], Counter]:
+    """Deterministic, library-wide discovery for removing an explicit list
+    of literal Grouping terms (e.g. leftover download-source labels like
+    'www.bpmsupreme.com') wherever they appear. No semantic classification,
+    no folder scoping: a candidate is included only when its live Grouping
+    already contains at least one exact literal term (casefold-matched)
+    from the given list; only those matched terms are proposed for
+    removal, and every other Grouping value, Genre, and file location is
+    left untouched.
+    """
+    crate_rules = parse_smart_crates(serato_root)
+    target_normalized = {term.strip().casefold() for term in remove_terms if term.strip()}
+    if not target_normalized:
+        raise metadata_batch.BatchRefused("--remove-terms must contain at least one non-blank term")
+    exclusions: Counter = Counter()
+    candidates = []
+    for path in sorted(Path(library_root).rglob("*.mp3")):
+        if OUT_OF_SCOPE_FOLDERS.intersection(path.parts):
+            exclusions["out of scope folder"] += 1
+            continue
+        try:
+            current = read_track(path)
+        except Exception:
+            exclusions["unreadable MP3/tag"] += 1
+            continue
+        matches = [term for term in current["grouping"] if term.strip().casefold() in target_normalized]
+        if not matches:
+            exclusions["no matching term present"] += 1
+            continue
+        if current["id3_major"] == 2:
+            exclusions["ID3v2.2"] += 1
+            continue
+        if current["id3_major"] not in {3, 4}:
+            exclusions["unsupported ID3 version"] += 1
+            continue
+        remaining = [term for term in current["grouping"] if term.strip().casefold() not in target_normalized]
+        proposed_grouping = "; ".join(remaining)
+        current_grouping = "; ".join(current["grouping"])
+        effects, _ = smart_effects(
+            current["genre"], current["genre"], current_grouping, proposed_grouping, crate_rules
+        )
+        scope_fields = _scope_fields(path, library_root)
+        if scope_fields is None:
+            exclusions["outside library root"] += 1
+            continue
+        scope_root, lock_folder = scope_fields
+        candidates.append({
+            **current,
+            "proposed_genre": current["genre"],
+            "proposed_grouping": proposed_grouping,
+            "grouping_add_terms": [],
+            "grouping_remove_terms": matches,
+            "genre_evidence": ["Grouping-term-strip batch: Genre intentionally left unchanged"],
+            "grouping_evidence": [
+                f"removing exact literal term(s) {matches!r}; every other Grouping value preserved"
+            ],
+            "smart_crate_effects": effects,
+            "scope_root": scope_root,
+            "lock_folder": lock_folder,
+            "preference": 0,
+        })
+    return _select_stable(candidates, exclusions, maximum)
 
 
 def load_transcript_dirty_evidence(path: Path) -> dict[str, str]:
@@ -690,7 +827,9 @@ def _write_preview(batch_dir: Path, batch_id: str, rows: list[dict], exclusions:
 def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: int,
             batch_format: str, lane: str = "genre", intake_root: Path | None = None,
             confirmed_maximum: int | None = None, genre_only: bool = False,
-            transcript_evidence: Path | None = None) -> dict:
+            transcript_evidence: Path | None = None,
+            event_folders: list[str] | None = None,
+            remove_terms: list[str] | None = None) -> dict:
     if batch_format.casefold() != "mp3":
         raise metadata_batch.BatchRefused("automated lane is MP3-only; FLAC requires its own proven canary")
     if lane not in LANES:
@@ -701,6 +840,14 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
         raise metadata_batch.BatchRefused("--transcript-evidence is only valid with --lane clean-dirty")
     if transcript_evidence is not None and not Path(transcript_evidence).is_file():
         raise metadata_batch.BatchRefused(f"--transcript-evidence file does not exist: {transcript_evidence}")
+    if lane == "strip-event-label" and not event_folders:
+        raise metadata_batch.BatchRefused("--event-folders is required for --lane strip-event-label")
+    if event_folders and lane != "strip-event-label":
+        raise metadata_batch.BatchRefused("--event-folders is only valid with --lane strip-event-label")
+    if lane == "strip-grouping-term" and not remove_terms:
+        raise metadata_batch.BatchRefused("--remove-terms is required for --lane strip-grouping-term")
+    if remove_terms and lane != "strip-grouping-term":
+        raise metadata_batch.BatchRefused("--remove-terms is only valid with --lane strip-grouping-term")
     if maximum < 1:
         raise metadata_batch.BatchRefused("--max must be at least 1")
     if maximum > DEFAULT_MAX_CANDIDATES and confirmed_maximum != maximum:
@@ -730,7 +877,10 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
             ) from exc
     elif intake_root is not None:
         raise metadata_batch.BatchRefused("--intake-root is only valid with --lane intake")
-    lane_tag = {"genre": "", "clean-dirty": "cleandirty-", "intake": "intake-"}[lane]
+    lane_tag = {
+        "genre": "", "clean-dirty": "cleandirty-", "intake": "intake-",
+        "strip-event-label": "stripevent-", "strip-grouping-term": "stripterm-",
+    }[lane]
     batch_id = datetime.now().astimezone().strftime(f"metadata-mp3-{lane_tag}%Y%m%d-%H%M%S")
     batch_dir = handoff_root / "batches" / batch_id
     state_path = handoff_root / "current-batch.json"
@@ -747,6 +897,14 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
             )
         elif lane == "intake":
             rows, exclusions = discover_intake(library_root, serato_root, intake_root, maximum)
+        elif lane == "strip-event-label":
+            rows, exclusions = discover_event_label_strip(
+                library_root, serato_root, event_folders, maximum
+            )
+        elif lane == "strip-grouping-term":
+            rows, exclusions = discover_grouping_term_strip(
+                library_root, serato_root, remove_terms, maximum
+            )
         else:
             rows, exclusions = discover(library_root, serato_root, maximum, genre_only=genre_only)
         if not rows:
@@ -774,7 +932,7 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
                 "counts": {
                     "items": len(scope_rows),
                     "genre_fixes": sum(r["genre"] != r["proposed_genre"] for r in scope_rows),
-                    "grouping_fixes": sum(bool(r["grouping_add_terms"]) for r in scope_rows),
+                    "grouping_fixes": sum(_grouping_changed(r) for r in scope_rows),
                 },
                 "items": [],
             }
@@ -782,9 +940,10 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
                 item = {"path": row["path"], "sha256": row["sha256"]}
                 if row["genre"] != row["proposed_genre"]:
                     item["genre_fix"] = {"from": row["genre"], "to": row["proposed_genre"]}
-                if row["grouping_add_terms"]:
+                if _grouping_changed(row):
                     item["grouping_fix"] = {
-                        "existing": row["grouping"], "add_terms": row["grouping_add_terms"]
+                        "existing": row["grouping"], "add_terms": row["grouping_add_terms"],
+                        "remove_terms": row.get("grouping_remove_terms", []),
                     }
                 plan["items"].append(item)
                 row["scope_id"] = scope_id
@@ -822,12 +981,14 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
                 metadata_batch.sha256_file(Path(transcript_evidence)) if transcript_evidence else None
             ),
             "intake_root": str(intake_root) if intake_root is not None else None,
+            "event_folders": list(event_folders) if event_folders else None,
+            "remove_terms": list(remove_terms) if remove_terms else None,
             "batch_limit": maximum,
             "library_root": str(library_root),
             "serato_root": str(serato_root),
             "candidate_count": len(rows),
             "genre_changes": sum(r["genre"] != r["proposed_genre"] for r in rows),
-            "grouping_changes": sum(bool(r["grouping_add_terms"]) for r in rows),
+            "grouping_changes": sum(_grouping_changed(r) for r in rows),
             "backup_bytes": sum(s["full_folder_bytes"] for s in scopes.values()),
             "preview": {
                 "md_path": str(md_path.resolve()), "md_sha256": metadata_batch.sha256_file(md_path),
@@ -900,20 +1061,34 @@ def main() -> int:
                              "(path/sha256/classification records); silence never proves Clean")
     parser.add_argument("--intake-root", type=Path,
                         help="Where new downloads land (intake lane only; must be inside the library root)")
+    parser.add_argument("--event-folders", type=Path,
+                        help="strip-event-label lane only: JSON file with a list of Events/<name> "
+                             "subfolder names whose 'Event: <name>' Grouping term should be removed")
+    parser.add_argument("--remove-terms", type=Path,
+                        help="strip-grouping-term lane only: JSON file with a list of literal "
+                             "Grouping terms to remove wherever they appear, library-wide")
     parser.add_argument("--library-root", type=Path, default=DEFAULT_LIBRARY)
     parser.add_argument("--serato-root", type=Path, default=DEFAULT_SERATO)
     parser.add_argument("--approve", metavar="MASTER_SHA")
     parser.add_argument("--approved-by")
     args = parser.parse_args()
     try:
+        event_folders = (
+            json.loads(args.event_folders.read_text(encoding="utf-8"))
+            if args.event_folders is not None else None
+        )
+        remove_terms = (
+            json.loads(args.remove_terms.read_text(encoding="utf-8"))
+            if args.remove_terms is not None else None
+        )
         if args.approve:
             if not args.approved_by:
                 raise metadata_batch.BatchRefused("--approved-by is required with --approve")
             if (args.lane != "genre" or args.intake_root or args.confirm_max is not None
-                    or args.genre_only or args.transcript_evidence):
+                    or args.genre_only or args.transcript_evidence or event_folders or remove_terms):
                 raise metadata_batch.BatchRefused(
-                    "--lane/--intake-root/--confirm-max/--genre-only/--transcript-evidence "
-                    "are only valid when preparing"
+                    "--lane/--intake-root/--confirm-max/--genre-only/--transcript-evidence/"
+                    "--event-folders/--remove-terms are only valid when preparing"
                 )
             result = approve(args.approve, args.approved_by, metadata_batch.HANDOFF_ROOT)
             print(json.dumps({"HUMAN_APPROVED": True, **result}, indent=2))
@@ -923,7 +1098,8 @@ def main() -> int:
         result = prepare(args.library_root, args.serato_root, metadata_batch.HANDOFF_ROOT,
                          args.max, args.format, lane=args.lane, intake_root=args.intake_root,
                          confirmed_maximum=args.confirm_max, genre_only=args.genre_only,
-                         transcript_evidence=args.transcript_evidence)
+                         transcript_evidence=args.transcript_evidence, event_folders=event_folders,
+                         remove_terms=remove_terms)
         smart_count = sum(len(row["smart_crate_effects"]) for row in result["candidates"])
         print(f"BATCH ID: {result['batch_id']}")
         print(f"LANE: {result['lane']}")

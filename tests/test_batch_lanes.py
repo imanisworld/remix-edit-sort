@@ -19,10 +19,39 @@ if str(SCRIPTS) not in sys.path:
 
 import json  # noqa: E402
 
+import apply_new_music_intake_plan as intake_apply  # noqa: E402
 import metadata_batch  # noqa: E402
 import mutation_surface  # noqa: E402
 import prepare_metadata_batch  # noqa: E402
 from fixtures import make_library  # noqa: E402
+
+
+class CombinedGroupingTests(unittest.TestCase):
+    """Unit coverage for the remove_terms addition to the intake lane's
+    grouping combiner -- the low-level string computation reused by every
+    lane's apply path."""
+
+    def test_remove_terms_filters_before_union_case_insensitively(self):
+        result = intake_apply.combined_grouping(
+            ["Event: Foo", "Dirty", "Remix"], [], ["event: foo"]
+        )
+        self.assertEqual(result, "Dirty; Remix")
+
+    def test_remove_terms_defaults_to_empty_and_behaves_like_before(self):
+        result = intake_apply.combined_grouping(["Existing"], ["Clean"])
+        self.assertEqual(result, "Existing; Clean")
+
+    def test_remove_and_add_can_be_combined(self):
+        result = intake_apply.combined_grouping(["Event: Foo", "Dirty"], ["Clean"], ["Event: Foo"])
+        self.assertEqual(result, "Dirty; Clean")
+
+    def test_removing_the_only_term_yields_empty_string(self):
+        result = intake_apply.combined_grouping(["Event: Foo"], [], ["Event: Foo"])
+        self.assertEqual(result, "")
+
+    def test_remove_terms_that_are_not_present_is_a_no_op(self):
+        result = intake_apply.combined_grouping(["Dirty"], [], ["Event: Nonexistent"])
+        self.assertEqual(result, "Dirty")
 
 
 class _LaneCase(unittest.TestCase):
@@ -575,6 +604,209 @@ class IntakeLaneTests(_LaneCase):
         item = plan["items"][0]
         self.assertEqual(item["genre_fix"], {"from": "", "to": "House"})
         self.assertEqual(item["grouping_fix"]["add_terms"], ["Dirty"])
+
+
+class EventLabelStripLaneTests(_LaneCase):
+    """--lane strip-event-label: remove exactly one literal 'Event: <name>'
+    Grouping term for an explicit list of Events/<name> folders, preserving
+    every other Grouping value, Genre, and file location."""
+
+    def discover(self, event_folders, maximum=150):
+        return prepare_metadata_batch.discover_event_label_strip(
+            self.library, self.serato, event_folders, maximum
+        )
+
+    def test_only_the_named_event_term_is_removed_others_preserved(self):
+        make_library(self.library, [{
+            "relative": "Events/LIKE SUGAR ON MY TONGUE/a.mp3",
+            "genre": "Hip-Hop", "title": "A",
+            "grouping": "Event: LIKE SUGAR ON MY TONGUE; Dirty; Remix",
+            "v2_version": 3,
+        }])
+        rows, exclusions = self.discover(["LIKE SUGAR ON MY TONGUE"])
+        self.assertEqual(len(rows), 1)
+        row = rows[0]
+        self.assertEqual(row["grouping_remove_terms"], ["Event: LIKE SUGAR ON MY TONGUE"])
+        self.assertEqual(row["grouping_add_terms"], [])
+        self.assertEqual(row["proposed_grouping"], "Dirty; Remix")
+        self.assertEqual(row["proposed_genre"], row["genre"])
+        self.assertEqual(exclusions, {})
+
+    def test_track_without_the_event_term_is_excluded(self):
+        make_library(self.library, [{
+            "relative": "Events/LIKE SUGAR ON MY TONGUE/a.mp3",
+            "genre": "Hip-Hop", "grouping": "Dirty", "v2_version": 3,
+        }])
+        rows, exclusions = self.discover(["LIKE SUGAR ON MY TONGUE"])
+        self.assertEqual(rows, [])
+        self.assertEqual(exclusions["no matching Event: label present"], 1)
+
+    def test_case_insensitive_exact_term_match(self):
+        make_library(self.library, [{
+            "relative": "Events/LIKE SUGAR ON MY TONGUE/a.mp3",
+            "genre": "Hip-Hop", "grouping": "event: like sugar on my tongue; Clean",
+            "v2_version": 3,
+        }])
+        rows, _ = self.discover(["LIKE SUGAR ON MY TONGUE"])
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["proposed_grouping"], "Clean")
+
+    def test_multiple_event_folders_scoped_independently(self):
+        make_library(self.library, [
+            {"relative": "Events/A Folder/a.mp3", "genre": "House",
+             "grouping": "Event: A Folder; Clean", "v2_version": 3},
+            {"relative": "Events/B Folder/b.mp3", "genre": "House",
+             "grouping": "Event: B Folder; Dirty", "v2_version": 3},
+            # A track sitting under A Folder must never be matched against B's term.
+            {"relative": "Events/A Folder/c.mp3", "genre": "House",
+             "grouping": "Event: B Folder", "v2_version": 3},
+        ])
+        rows, exclusions = self.discover(["A Folder", "B Folder"])
+        by_name = {Path(row["path"]).name: row for row in rows}
+        self.assertEqual(set(by_name), {"a.mp3", "b.mp3"})
+        self.assertEqual(by_name["a.mp3"]["proposed_grouping"], "Clean")
+        self.assertEqual(by_name["b.mp3"]["proposed_grouping"], "Dirty")
+        self.assertEqual(exclusions["no matching Event: label present"], 1)
+
+    def test_id3v22_is_skipped_not_upgraded(self):
+        path = self.library / "Events/LIKE SUGAR ON MY TONGUE/old.mp3"
+        from fixtures import write_id3v22_mp3
+        write_id3v22_mp3(path, genre="Hip-Hop", grouping="Event: LIKE SUGAR ON MY TONGUE")
+        rows, exclusions = self.discover(["LIKE SUGAR ON MY TONGUE"])
+        self.assertEqual(rows, [])
+        self.assertEqual(exclusions["ID3v2.2"], 1)
+
+    def test_unknown_event_folder_is_refused(self):
+        (self.library / "Events").mkdir(parents=True, exist_ok=True)
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "event folder does not exist"):
+            self.discover(["Does Not Exist"])
+
+    def test_event_folders_required_for_the_lane_and_refused_elsewhere(self):
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "--event-folders is required"):
+            prepare_metadata_batch.prepare(
+                self.library, self.serato, self.handoff, 150, "mp3",
+                lane="strip-event-label",
+            )
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "--event-folders is only valid"):
+            prepare_metadata_batch.prepare(
+                self.library, self.serato, self.handoff, 150, "mp3",
+                lane="genre", event_folders=["Anything"],
+            )
+
+    def test_full_prepare_binds_lane_and_plan_carries_remove_terms_only(self):
+        make_library(self.library, [{
+            "relative": "Events/LIKE SUGAR ON MY TONGUE/a.mp3",
+            "genre": "Hip-Hop", "grouping": "Event: LIKE SUGAR ON MY TONGUE; Dirty",
+            "v2_version": 3,
+        }])
+        master = prepare_metadata_batch.prepare(
+            self.library, self.serato, self.handoff, 150, "mp3",
+            lane="strip-event-label", event_folders=["LIKE SUGAR ON MY TONGUE"],
+        )
+        self.assertEqual(master["lane"], "strip-event-label")
+        self.assertIn("stripevent", master["batch_id"])
+        self.assertEqual(master["event_folders"], ["LIKE SUGAR ON MY TONGUE"])
+        self.assertEqual(master["candidate_count"], 1)
+        self.assertEqual(master["genre_changes"], 0)
+        self.assertEqual(master["grouping_changes"], 1)
+        plan = json.loads(Path(master["scopes"][0]["plan_path"]).read_text(encoding="utf-8"))
+        item = plan["items"][0]
+        self.assertNotIn("genre_fix", item)
+        self.assertEqual(item["grouping_fix"]["add_terms"], [])
+        self.assertEqual(item["grouping_fix"]["remove_terms"], ["Event: LIKE SUGAR ON MY TONGUE"])
+        self.assertEqual(plan["counts"]["genre_fixes"], 0)
+        self.assertEqual(plan["counts"]["grouping_fixes"], 1)
+
+
+class GroupingTermStripLaneTests(_LaneCase):
+    """--lane strip-grouping-term: remove an explicit list of literal
+    Grouping terms wherever they appear library-wide, preserving every
+    other Grouping value, Genre, and file location."""
+
+    def discover(self, remove_terms, maximum=150):
+        return prepare_metadata_batch.discover_grouping_term_strip(
+            self.library, self.serato, remove_terms, maximum
+        )
+
+    def test_matching_term_removed_others_preserved_anywhere_in_library(self):
+        make_library(self.library, [{
+            "relative": "House/a.mp3", "genre": "House", "title": "A",
+            "grouping": "www.bpmsupreme.com; Dirty; Remix", "v2_version": 3,
+        }])
+        rows, exclusions = self.discover(["www.bpmsupreme.com"])
+        self.assertEqual(len(rows), 1)
+        row = rows[0]
+        self.assertEqual(row["grouping_remove_terms"], ["www.bpmsupreme.com"])
+        self.assertEqual(row["proposed_grouping"], "Dirty; Remix")
+        self.assertEqual(row["proposed_genre"], row["genre"])
+
+    def test_case_variant_terms_all_match_one_list(self):
+        make_library(self.library, [
+            {"relative": "House/a.mp3", "genre": "House",
+             "grouping": "www.bpmsupreme.com; Clean", "v2_version": 3},
+            {"relative": "Techno/b.mp3", "genre": "Techno",
+             "grouping": "BPMsupreme.com; Dirty", "v2_version": 3},
+        ])
+        rows, _ = self.discover(["www.bpmsupreme.com", "BPMsupreme.com"])
+        by_name = {Path(row["path"]).name: row for row in rows}
+        self.assertEqual(by_name["a.mp3"]["proposed_grouping"], "Clean")
+        self.assertEqual(by_name["b.mp3"]["proposed_grouping"], "Dirty")
+
+    def test_track_without_any_target_term_is_excluded(self):
+        make_library(self.library, [{
+            "relative": "House/a.mp3", "genre": "House", "grouping": "Dirty", "v2_version": 3,
+        }])
+        rows, exclusions = self.discover(["www.bpmsupreme.com"])
+        self.assertEqual(rows, [])
+        self.assertEqual(exclusions["no matching term present"], 1)
+
+    def test_not_scoped_to_any_single_folder(self):
+        make_library(self.library, [
+            {"relative": "House/a.mp3", "genre": "House",
+             "grouping": "www.bpmsupreme.com", "v2_version": 3},
+            {"relative": "Deep/Nested/Folder/b.mp3", "genre": "House",
+             "grouping": "www.bpmsupreme.com", "v2_version": 3},
+        ])
+        rows, _ = self.discover(["www.bpmsupreme.com"])
+        self.assertEqual(len(rows), 2)
+
+    def test_blank_remove_terms_list_is_refused(self):
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "at least one non-blank term"):
+            self.discover([])
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "at least one non-blank term"):
+            self.discover(["   "])
+
+    def test_remove_terms_required_for_the_lane_and_refused_elsewhere(self):
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "--remove-terms is required"):
+            prepare_metadata_batch.prepare(
+                self.library, self.serato, self.handoff, 150, "mp3",
+                lane="strip-grouping-term",
+            )
+        with self.assertRaisesRegex(metadata_batch.BatchRefused, "--remove-terms is only valid"):
+            prepare_metadata_batch.prepare(
+                self.library, self.serato, self.handoff, 150, "mp3",
+                lane="genre", remove_terms=["Anything"],
+            )
+
+    def test_full_prepare_binds_lane_and_plan(self):
+        make_library(self.library, [{
+            "relative": "House/a.mp3", "genre": "House",
+            "grouping": "www.bpmsupreme.com; Dirty", "v2_version": 3,
+        }])
+        master = prepare_metadata_batch.prepare(
+            self.library, self.serato, self.handoff, 150, "mp3",
+            lane="strip-grouping-term", remove_terms=["www.bpmsupreme.com"],
+        )
+        self.assertEqual(master["lane"], "strip-grouping-term")
+        self.assertIn("stripterm", master["batch_id"])
+        self.assertEqual(master["remove_terms"], ["www.bpmsupreme.com"])
+        self.assertEqual(master["candidate_count"], 1)
+        self.assertEqual(master["genre_changes"], 0)
+        self.assertEqual(master["grouping_changes"], 1)
+        plan = json.loads(Path(master["scopes"][0]["plan_path"]).read_text(encoding="utf-8"))
+        item = plan["items"][0]
+        self.assertNotIn("genre_fix", item)
+        self.assertEqual(item["grouping_fix"]["remove_terms"], ["www.bpmsupreme.com"])
 
 
 class ScopeConstructionTests(_LaneCase):

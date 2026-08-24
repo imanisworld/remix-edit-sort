@@ -250,13 +250,15 @@ def read_grouping(path: Path) -> tuple[list[str], int]:
     raise RuntimeError(f"grouping read not supported for {path.suffix}: {path}")
 
 
-def combined_grouping(existing: list[str], new_terms: list[str]) -> str:
+def combined_grouping(existing: list[str], new_terms: list[str], remove_terms: list[str] = ()) -> str:
+    remove_normalized = {term.strip().casefold() for term in remove_terms if term.strip()}
     values, seen = [], set()
     for value in [*existing, *new_terms]:
         normalized = value.strip().casefold()
-        if normalized and normalized not in seen:
-            values.append(value.strip())
-            seen.add(normalized)
+        if not normalized or normalized in seen or normalized in remove_normalized:
+            continue
+        values.append(value.strip())
+        seen.add(normalized)
     return "; ".join(values)
 
 
@@ -480,7 +482,8 @@ def apply(plan_path: Path, root: Path, manifest: dict, out_dir: Path, label: str
         proposed_grouping = None
         if "grouping_fix" in row:
             proposed_grouping = combined_grouping(
-                existing_grouping, row["grouping_fix"]["add_terms"]
+                existing_grouping, row["grouping_fix"]["add_terms"],
+                row["grouping_fix"].get("remove_terms", []),
             )
         with engine.item(
             index, kind=mutation_engine.METADATA, source=path,
@@ -488,6 +491,7 @@ def apply(plan_path: Path, root: Path, manifest: dict, out_dir: Path, label: str
             extra_intent={
                 "proposed_genre": proposed_genre,
                 "add_grouping_terms": row.get("grouping_fix", {}).get("add_terms", []),
+                "remove_grouping_terms": row.get("grouping_fix", {}).get("remove_terms", []),
             },
         ) as txn:
             completed.append(_apply_one_metadata_write(
