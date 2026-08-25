@@ -44,7 +44,6 @@ SAFETY_CLASSIFICATION = "engine-user"
 import argparse
 import json
 import os
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -494,15 +493,18 @@ def _reopen_blocked_for_recovery(state_path: Path, handoff_root: Path, *,
 
 
 def _discard_stale_partial_backup(master: dict, approval: dict, t5_volume: Path) -> None:
-    """Remove exactly the bound S088 partial backup dir, nothing else."""
-    proof = _require_interrupted_scope_evidence(master, t5_volume)
-    bound = approval["interrupted_scope_proof"]["stale_partial_backup_root"]
-    if proof["stale_partial_backup_root"] != bound:
-        raise metadata_batch.BatchRefused("refusing discard: partial backup path does not match approval binding")
-    target = metadata_batch.require_t5_path(Path(bound), t5_volume)
-    if BATCH_ID not in str(target) or target.name != "source":
-        raise metadata_batch.BatchRefused(f"refusing discard: {target} is not this batch's scope backup dir")
-    shutil.rmtree(target)
+    """The one-time discard of S088's unverified partial backup COPY was
+    performed by the as-run version of this script (repo commit cb59df5,
+    content-hash-bound in recovery-approval.json), which held the actual
+    deletion call. This preserved copy is inert evidence, like the archived
+    handoff mutators: the recovery is COMPLETE, the approval's own-hash
+    binding refuses this modified file anyway, and no deletion primitive
+    remains in the live mutation surface. Any attempt to reach this step
+    again refuses rather than deleting anything."""
+    raise metadata_batch.BatchRefused(
+        f"one-time recovery for {BATCH_ID} already ran to COMPLETE; the stale-backup "
+        "discard exists only in the as-run version (commit cb59df5) and cannot re-run"
+    )
 
 
 def _apply_resume_scopes(resume_master: dict, full_master: dict, approval: dict, *,
