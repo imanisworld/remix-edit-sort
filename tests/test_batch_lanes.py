@@ -918,5 +918,107 @@ class LaneGovernanceTests(unittest.TestCase):
         self.assertEqual(entry["primitives"], [])
 
 
+class HoldListCleanDirtyTests(_LaneCase):
+    """--hold-list: operator-held files must never re-enter candidacy."""
+
+    def _write_hold(self, paths):
+        hold_path = self.root / "hold-list.json"
+        hold_path.write_text(json.dumps(paths), encoding="utf-8")
+        return hold_path
+
+    def test_hold_list_excludes_exactly_listed_files(self):
+        make_library(self.library, [
+            {"relative": "Hip Hop/CLEAN/kept.mp3", "genre": "Hip-Hop",
+             "title": "Kept", "v2_version": 3},
+            {"relative": "Hip Hop/CLEAN/held.mp3", "genre": "Hip-Hop",
+             "title": "Held", "v2_version": 3},
+        ])
+        held = str((self.library / "Hip Hop/CLEAN/held.mp3").resolve())
+        hold_set = prepare_metadata_batch.load_hold_list(self._write_hold([held]))
+        rows, exclusions = prepare_metadata_batch.discover_clean_dirty(
+            self.library, self.serato, 150, hold_list=hold_set
+        )
+        self.assertEqual([Path(r["path"]).name for r in rows], ["kept.mp3"])
+        self.assertEqual(exclusions["operator hold list"], 1)
+
+    def test_hold_list_matches_case_and_unicode_variants(self):
+        import unicodedata
+        make_library(self.library, [{
+            "relative": "Hip Hop/CLEAN/S\u00f3ng Title.mp3", "genre": "Hip-Hop",
+            "title": "Song", "v2_version": 3,
+        }])
+        exact = str((self.library / "Hip Hop/CLEAN/S\u00f3ng Title.mp3").resolve())
+        variant = unicodedata.normalize("NFD", exact).upper()
+        if not Path(variant).is_file():
+            self.skipTest("filesystem is not case/normalization-insensitive")
+        hold_set = prepare_metadata_batch.load_hold_list(self._write_hold([variant]))
+        rows, exclusions = prepare_metadata_batch.discover_clean_dirty(
+            self.library, self.serato, 150, hold_list=hold_set
+        )
+        self.assertEqual(rows, [])
+        self.assertEqual(exclusions["operator hold list"], 1)
+
+    def test_full_prepare_binds_hold_list_and_excludes(self):
+        make_library(self.library, [
+            {"relative": "Hip Hop/CLEAN/kept.mp3", "genre": "Hip-Hop",
+             "title": "Kept", "v2_version": 3},
+            {"relative": "Hip Hop/CLEAN/held.mp3", "genre": "Hip-Hop",
+             "title": "Held", "v2_version": 3},
+        ])
+        held = str((self.library / "Hip Hop/CLEAN/held.mp3").resolve())
+        hold_path = self._write_hold([held])
+        master = prepare_metadata_batch.prepare(
+            self.library, self.serato, self.handoff, 150, "mp3",
+            lane="clean-dirty", hold_list=hold_path,
+        )
+        self.assertEqual(master["candidate_count"], 1)
+        self.assertEqual(
+            [Path(c["path"]).name for c in master["candidates"]], ["kept.mp3"]
+        )
+        self.assertEqual(master["exclusions"]["operator hold list"], 1)
+        self.assertEqual(master["hold_list_path"], str(hold_path.resolve()))
+        self.assertEqual(
+            master["hold_list_sha256"], metadata_batch.sha256_file(hold_path)
+        )
+
+    def test_hold_list_refused_outside_clean_dirty_lane(self):
+        make_library(self.library, [{
+            "relative": "Hip Hop/CLEAN/song.mp3", "genre": "Hip-Hop",
+            "title": "Song", "v2_version": 3,
+        }])
+        hold_path = self._write_hold([
+            str((self.library / "Hip Hop/CLEAN/song.mp3").resolve())
+        ])
+        with self.assertRaises(metadata_batch.BatchRefused):
+            prepare_metadata_batch.prepare(
+                self.library, self.serato, self.handoff, 150, "mp3",
+                lane="genre", hold_list=hold_path,
+            )
+
+    def test_hold_list_content_is_fail_closed(self):
+        make_library(self.library, [{
+            "relative": "Hip Hop/CLEAN/song.mp3", "genre": "Hip-Hop",
+            "title": "Song", "v2_version": 3,
+        }])
+        real = str((self.library / "Hip Hop/CLEAN/song.mp3").resolve())
+        for bad in ([], {"path": real}, ["  "], ["relative/path.mp3"],
+                    [real + ".does-not-exist"]):
+            with self.assertRaises(
+                (metadata_batch.BatchRefused, json.JSONDecodeError),
+                msg=f"hold list {bad!r} should refuse",
+            ):
+                prepare_metadata_batch.load_hold_list(self._write_hold(bad))
+
+    def test_missing_hold_list_file_refuses_prepare(self):
+        make_library(self.library, [{
+            "relative": "Hip Hop/CLEAN/song.mp3", "genre": "Hip-Hop",
+            "title": "Song", "v2_version": 3,
+        }])
+        with self.assertRaises(metadata_batch.BatchRefused):
+            prepare_metadata_batch.prepare(
+                self.library, self.serato, self.handoff, 150, "mp3",
+                lane="clean-dirty", hold_list=self.root / "no-such-hold.json",
+            )
+
 if __name__ == "__main__":
     unittest.main()

@@ -14,6 +14,7 @@ import csv
 import json
 import os
 import re
+import unicodedata
 from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -512,6 +513,35 @@ def discover_grouping_term_strip(library_root: Path, serato_root: Path, remove_t
     return _select_stable(candidates, exclusions, maximum)
 
 
+def _hold_key(path: str) -> str:
+    """Canonical path identity for hold-list matching: NFC + casefold."""
+    return unicodedata.normalize("NFC", path).casefold()
+
+
+def load_hold_list(path: Path) -> set[str]:
+    """Operator hold list: a non-empty JSON array of absolute file paths that
+    PREPARE must exclude from candidacy. Fail-closed on anything questionable:
+    wrong shape, relative paths, or an entry that does not exist on disk (a
+    stale or misspelled entry would otherwise silently exclude nothing)."""
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    if (not isinstance(payload, list) or not payload
+            or not all(isinstance(item, str) and item.strip() for item in payload)):
+        raise metadata_batch.BatchRefused(
+            "--hold-list must be a non-empty JSON array of path strings"
+        )
+    held: set[str] = set()
+    for raw in payload:
+        entry = Path(raw)
+        if not entry.is_absolute():
+            raise metadata_batch.BatchRefused(f"hold-list entries must be absolute paths: {raw!r}")
+        if not entry.is_file():
+            raise metadata_batch.BatchRefused(
+                f"hold-list entry does not exist on disk (moved or misspelled?): {raw!r}"
+            )
+        held.add(_hold_key(str(entry.resolve())))
+    return held
+
+
 def load_transcript_dirty_evidence(path: Path) -> dict[str, str]:
     """path -> sha256 for CONFIRMED Dirty transcript hits only.
 
@@ -529,7 +559,8 @@ def load_transcript_dirty_evidence(path: Path) -> dict[str, str]:
 
 
 def discover_clean_dirty(library_root: Path, serato_root: Path, maximum: int,
-                         transcript_dirty_evidence: dict[str, str] | None = None) -> tuple[list[dict], Counter]:
+                         transcript_dirty_evidence: dict[str, str] | None = None,
+                         hold_list: set[str] | None = None) -> tuple[list[dict], Counter]:
     """Deterministic Clean/Dirty Grouping backfill across the sorted library.
 
     Evidence is a literal CLEAN/DIRTY folder component (the canonical unit
@@ -565,6 +596,11 @@ def discover_clean_dirty(library_root: Path, serato_root: Path, maximum: int,
         )
         transcript_candidate = str(path) in transcript_dirty_evidence
         if not folder_terms and not stem_has_label and not transcript_candidate:
+            continue
+        if hold_list and _hold_key(str(path.resolve())) in hold_list:
+            # Operator hold beats every other consideration: these files are
+            # parked for a separate lane and must never re-enter candidacy.
+            exclusions["operator hold list"] += 1
             continue
         if NEEDS_CHECK_FOLDERS.intersection(relative_parts):
             exclusions["left to the needs-check lanes"] += 1
@@ -829,7 +865,8 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
             confirmed_maximum: int | None = None, genre_only: bool = False,
             transcript_evidence: Path | None = None,
             event_folders: list[str] | None = None,
-            remove_terms: list[str] | None = None) -> dict:
+            remove_terms: list[str] | None = None,
+            hold_list: Path | None = None) -> dict:
     if batch_format.casefold() != "mp3":
         raise metadata_batch.BatchRefused("automated lane is MP3-only; FLAC requires its own proven canary")
     if lane not in LANES:
@@ -840,6 +877,10 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
         raise metadata_batch.BatchRefused("--transcript-evidence is only valid with --lane clean-dirty")
     if transcript_evidence is not None and not Path(transcript_evidence).is_file():
         raise metadata_batch.BatchRefused(f"--transcript-evidence file does not exist: {transcript_evidence}")
+    if hold_list is not None and lane != "clean-dirty":
+        raise metadata_batch.BatchRefused("--hold-list is only valid with --lane clean-dirty")
+    if hold_list is not None and not Path(hold_list).is_file():
+        raise metadata_batch.BatchRefused(f"--hold-list file does not exist: {hold_list}")
     if lane == "strip-event-label" and not event_folders:
         raise metadata_batch.BatchRefused("--event-folders is required for --lane strip-event-label")
     if event_folders and lane != "strip-event-label":
@@ -892,8 +933,10 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
                 load_transcript_dirty_evidence(transcript_evidence)
                 if transcript_evidence is not None else None
             )
+            held_paths = load_hold_list(hold_list) if hold_list is not None else None
             rows, exclusions = discover_clean_dirty(
-                library_root, serato_root, maximum, transcript_dirty_evidence=transcript_dirty
+                library_root, serato_root, maximum, transcript_dirty_evidence=transcript_dirty,
+                hold_list=held_paths,
             )
         elif lane == "intake":
             rows, exclusions = discover_intake(library_root, serato_root, intake_root, maximum)
@@ -980,6 +1023,10 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
             "transcript_evidence_sha256": (
                 metadata_batch.sha256_file(Path(transcript_evidence)) if transcript_evidence else None
             ),
+            "hold_list_path": str(Path(hold_list).resolve()) if hold_list else None,
+            "hold_list_sha256": (
+                metadata_batch.sha256_file(Path(hold_list)) if hold_list else None
+            ),
             "intake_root": str(intake_root) if intake_root is not None else None,
             "event_folders": list(event_folders) if event_folders else None,
             "remove_terms": list(remove_terms) if remove_terms else None,
@@ -1056,6 +1103,9 @@ def main() -> int:
     parser.add_argument("--lane", choices=LANES, default="genre")
     parser.add_argument("--genre-only", action="store_true",
                         help="Genre lane only: propose Genre changes and hold Grouping unchanged (0 additions)")
+    parser.add_argument("--hold-list", type=Path,
+                        help="JSON array of absolute paths PREPARE must exclude "
+                             "(operator-held files; clean-dirty lane only)")
     parser.add_argument("--transcript-evidence", type=Path,
                         help="Clean-Dirty lane only: JSON with confirmed transcript Dirty hits "
                              "(path/sha256/classification records); silence never proves Clean")
@@ -1085,10 +1135,11 @@ def main() -> int:
             if not args.approved_by:
                 raise metadata_batch.BatchRefused("--approved-by is required with --approve")
             if (args.lane != "genre" or args.intake_root or args.confirm_max is not None
-                    or args.genre_only or args.transcript_evidence or event_folders or remove_terms):
+                    or args.genre_only or args.transcript_evidence or event_folders or remove_terms
+                    or args.hold_list):
                 raise metadata_batch.BatchRefused(
                     "--lane/--intake-root/--confirm-max/--genre-only/--transcript-evidence/"
-                    "--event-folders/--remove-terms are only valid when preparing"
+                    "--event-folders/--remove-terms/--hold-list are only valid when preparing"
                 )
             result = approve(args.approve, args.approved_by, metadata_batch.HANDOFF_ROOT)
             print(json.dumps({"HUMAN_APPROVED": True, **result}, indent=2))
@@ -1099,7 +1150,7 @@ def main() -> int:
                          args.max, args.format, lane=args.lane, intake_root=args.intake_root,
                          confirmed_maximum=args.confirm_max, genre_only=args.genre_only,
                          transcript_evidence=args.transcript_evidence, event_folders=event_folders,
-                         remove_terms=remove_terms)
+                         remove_terms=remove_terms, hold_list=args.hold_list)
         smart_count = sum(len(row["smart_crate_effects"]) for row in result["candidates"])
         print(f"BATCH ID: {result['batch_id']}")
         print(f"LANE: {result['lane']}")
