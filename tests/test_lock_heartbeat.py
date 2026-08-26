@@ -25,7 +25,7 @@ import lock_guard  # noqa: E402
 
 def _run(func, **kwargs):
     defaults = {"agent": None, "note": None, "run_id": None, "repo_sha": "testsha",
-                "stale_hours": 6.0, "reason": None, "force": False}
+                "stale_hours": 6.0, "reason": None, "force": False, "expect_run_id": None}
     defaults.update(kwargs)
     args = SimpleNamespace(**defaults)
     buf = io.StringIO()

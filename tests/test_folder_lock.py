@@ -18,7 +18,7 @@ SPEC.loader.exec_module(folder_lock)
 def run(func, **kwargs):
     """Call a cmd_* function with sane argparse-Namespace-like defaults and
     capture its printed JSON, mirroring how main() dispatches subcommands."""
-    defaults = {"stale_hours": 6.0, "agent": None, "note": None, "run_id": None, "repo_sha": "testsha", "reason": None}
+    defaults = {"stale_hours": 6.0, "agent": None, "note": None, "run_id": None, "repo_sha": "testsha", "reason": None, "expect_run_id": None}
     defaults.update(kwargs)
     args = SimpleNamespace(**defaults)
     buf = io.StringIO()
@@ -249,6 +249,58 @@ class FolderLockTests(unittest.TestCase):
         for field in ("folder", "session", "agent", "started_at", "last_renewed_at",
                       "pid", "hostname", "repo_sha", "run_id", "note"):
             self.assertIn(field, lock)
+
+
+class RunIdBoundReleaseTests(unittest.TestCase):
+    """--expect-run-id: release must refuse when the lock's run_id is not the
+    one this caller acquired, even under the same session label (a stale lock
+    reclaimed under a deterministic session name must not be releasable by the
+    old process)."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self._orig_locks_dir = folder_lock.LOCKS_DIR
+        folder_lock.LOCKS_DIR = Path(self._tmp.name)
+
+    def tearDown(self):
+        folder_lock.LOCKS_DIR = self._orig_locks_dir
+        self._tmp.cleanup()
+
+    def test_release_refuses_same_session_wrong_run_id(self):
+        _, acquired = run(folder_lock.cmd_acquire, folder="Hip Hop", session="s1")
+        old_run_id = acquired["lock"]["run_id"]
+        # Model the replacement: the same session label re-acquires after a
+        # stale reclaim, producing a new run_id.
+        lock = folder_lock.read_lock("Hip Hop")
+        lock["run_id"] = "replacement-run-id"
+        folder_lock.write_lock("Hip Hop", lock)
+
+        code, out = run(folder_lock.cmd_release, folder="Hip Hop", session="s1",
+                        force=False, expect_run_id=old_run_id)
+        self.assertEqual(code, 1)
+        self.assertFalse(out["released"])
+        self.assertIsNotNone(folder_lock.read_lock("Hip Hop"))  # owner's lock survives
+
+    def test_force_does_not_bypass_run_id_binding(self):
+        _, acquired = run(folder_lock.cmd_acquire, folder="Hip Hop", session="s1")
+        old_run_id = acquired["lock"]["run_id"]
+        lock = folder_lock.read_lock("Hip Hop")
+        lock["run_id"] = "replacement-run-id"
+        folder_lock.write_lock("Hip Hop", lock)
+
+        code, out = run(folder_lock.cmd_release, folder="Hip Hop", session="s1",
+                        force=True, reason="should not matter", expect_run_id=old_run_id)
+        self.assertEqual(code, 1)
+        self.assertFalse(out["released"])
+        self.assertIsNotNone(folder_lock.read_lock("Hip Hop"))
+
+    def test_release_succeeds_with_matching_run_id(self):
+        _, acquired = run(folder_lock.cmd_acquire, folder="Hip Hop", session="s1")
+        code, out = run(folder_lock.cmd_release, folder="Hip Hop", session="s1",
+                        force=False, expect_run_id=acquired["lock"]["run_id"])
+        self.assertEqual(code, 0)
+        self.assertTrue(out["released"])
+        self.assertIsNone(folder_lock.read_lock("Hip Hop"))
 
 
 if __name__ == "__main__":
