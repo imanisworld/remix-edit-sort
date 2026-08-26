@@ -604,7 +604,7 @@ class FailedApplyClassificationTests(unittest.TestCase):
         }
 
     @staticmethod
-    def _successful_lock(command, folder, session, master):
+    def _successful_lock(command, folder, session, master, expect_run_id=None):
         if command == "acquire":
             return {"acquired": True, "lock": {"run_id": f"{folder}-run"}}
         return {"released": True, "lock": {"run_id": f"{folder}-run"}}

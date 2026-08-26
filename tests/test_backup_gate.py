@@ -243,6 +243,58 @@ class BackupGateTests(unittest.TestCase):
         with self.assertRaises(backup_manifest.BackupGateError):
             backup_manifest.require_pass(manifest_path, self.source, serato_required=True)
 
+    def test_unrelated_non_empty_directory_is_not_serato_evidence(self):
+        # Regression for the independent-audit finding: a directory holding
+        # only an unrelated file must never satisfy serato_required.
+        serato = self.tmp / "_Serato_backup"
+        serato.mkdir()
+        (serato / "unrelated.txt").write_text("not a serato backup", encoding="utf-8")
+        fixtures.mirror_backup(self.source, self.tmp / "backup")
+        manifest = backup_manifest.build_manifest(
+            self.source, self.tmp / "backup",
+            serato_backup=serato, serato_required=True,
+        )
+        self.assertEqual(manifest["status"], "FAIL")
+        self.assertEqual(manifest["serato"]["result"], "FAIL")
+        self.assertTrue(any("database V2" in p for p in manifest["problems"]))
+
+    def test_empty_database_v2_is_not_serato_evidence(self):
+        serato = self.tmp / "_Serato_backup"
+        serato.mkdir()
+        (serato / "database V2").write_bytes(b"")
+        (serato / "other.bin").write_bytes(b"payload")
+        fixtures.mirror_backup(self.source, self.tmp / "backup")
+        manifest = backup_manifest.build_manifest(
+            self.source, self.tmp / "backup",
+            serato_backup=serato, serato_required=True,
+        )
+        self.assertEqual(manifest["serato"]["result"], "FAIL")
+        self.assertTrue(any("database V2" in p for p in manifest["problems"]))
+
+    def test_serato_pass_records_database_and_crate_hashes(self):
+        serato = self.tmp / "_Serato_backup"
+        (serato / "Subcrates").mkdir(parents=True)
+        (serato / "SmartCrates").mkdir()
+        (serato / "database V2").write_bytes(b"vrsn-serato-database-bytes")
+        (serato / "Subcrates" / "house.crate").write_bytes(b"crate-bytes")
+        (serato / "SmartCrates" / "clean.scrate").write_bytes(b"scrate-bytes")
+        fixtures.mirror_backup(self.source, self.tmp / "backup")
+        manifest = backup_manifest.build_manifest(
+            self.source, self.tmp / "backup",
+            serato_backup=serato, serato_required=True,
+        )
+        self.assertEqual(manifest["serato"]["result"], "PASS")
+        self.assertEqual(
+            manifest["serato"]["database_v2_sha256"],
+            backup_manifest.sha256_file(serato / "database V2"),
+        )
+        self.assertEqual(manifest["serato"]["crate_count"], 1)
+        self.assertEqual(manifest["serato"]["smart_crate_count"], 1)
+        self.assertEqual(
+            manifest["serato"]["crate_sha256"]["house.crate"],
+            backup_manifest.sha256_file(serato / "Subcrates" / "house.crate"),
+        )
+
     # ------------------------------------------------------------------
     def test_per_item_evidence_covers_only_files_in_the_backup(self):
         manifest = backup_manifest.require_pass(self._good_manifest(), self.source)

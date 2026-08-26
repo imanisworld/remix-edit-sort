@@ -493,6 +493,23 @@ def cmd_release(args: argparse.Namespace) -> int:
             print(json.dumps({"released": False, "reason": "no lock exists"}, indent=2))
             return 0
 
+        if args.expect_run_id and existing.get("run_id") != args.expect_run_id:
+            # Session labels are deterministic and can repeat across processes;
+            # only the acquire-time run_id proves this caller still owns the
+            # lock. A mismatch means ownership changed hands (e.g. a stale lock
+            # was reclaimed under the same session label) and this caller must
+            # never remove the current owner's lock. --force does not bypass
+            # this: passing --expect-run-id declares strict ownership binding.
+            print(json.dumps({
+                "released": False,
+                "reason": (
+                    f"lock run_id is {existing.get('run_id')!r}, not the expected "
+                    f"{args.expect_run_id!r}; ownership changed hands, refusing to release"
+                ),
+                "held_by": existing,
+            }, indent=2))
+            return 1
+
         same_session = existing.get("session") == args.session
         if not same_session:
             if not args.force:
@@ -623,6 +640,11 @@ def main() -> int:
     p_release.add_argument("--session", required=True)
     p_release.add_argument("--force", action="store_true")
     p_release.add_argument("--reason", help="required when force-releasing a different session's lock")
+    p_release.add_argument(
+        "--expect-run-id",
+        help="refuse unless the lock's run_id matches exactly (strongest ownership proof; "
+             "not bypassed by --force)",
+    )
     p_release.add_argument("--agent", help="e.g. claude, codex, chatgpt (recorded in the audit log)")
     p_release.set_defaults(func=cmd_release)
 

@@ -194,7 +194,8 @@ def preflight(master_sha: str, handoff_root: Path = metadata_batch.HANDOFF_ROOT,
     return master, approval
 
 
-def _lock_command(command: str, folder: str, session: str, master: dict) -> dict:
+def _lock_command(command: str, folder: str, session: str, master: dict,
+                  expect_run_id: str | None = None) -> dict:
     cmd = [
         sys.executable, str(metadata_batch.REPO_ROOT / "scripts/folder_lock.py"), command,
         "--folder", folder, "--session", session,
@@ -204,6 +205,13 @@ def _lock_command(command: str, folder: str, session: str, master: dict) -> dict
             "--agent", "metadata-batch", "--repo-sha", master["repo_commit"],
             "--note", f"approved metadata batch {master['batch_id']}",
         ]
+    if command == "release":
+        if not expect_run_id:
+            raise metadata_batch.BatchRefused(
+                f"lock release for {folder} requires the acquire-time run_id; "
+                "releasing on session label alone can remove another owner's lock"
+            )
+        cmd += ["--expect-run-id", expect_run_id]
     result = subprocess.run(cmd, text=True, capture_output=True)
     try:
         payload = json.loads(result.stdout)
@@ -423,7 +431,10 @@ def apply_batch(master_sha: str, handoff_root: Path = metadata_batch.HANDOFF_ROO
             finally:
                 if acquired:
                     try:
-                        released = _lock_command("release", scope["lock_folder"], session, master)
+                        released = _lock_command(
+                            "release", scope["lock_folder"], session, master,
+                            expect_run_id=acquired_payload["lock"]["run_id"],
+                        )
                         locks_released = locks_released and bool(released.get("released"))
                     except Exception:
                         locks_released = False

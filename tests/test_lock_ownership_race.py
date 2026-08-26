@@ -296,7 +296,8 @@ class LockOwnershipRaceTests(unittest.TestCase):
             wait_for_barrier({str(barrier)!r})
             time.sleep(0.4)   # let A prove it is beating successfully first
             rel = SimpleNamespace(folder=FOLDER, session="session-B", force=True,
-                                  reason="test handoff", agent="test", stale_hours=6.0)
+                                  reason="test handoff", agent="test", stale_hours=6.0,
+                                  expect_run_id=None)
             acq = SimpleNamespace(folder=FOLDER, session="session-B", agent="test",
                                   note=None, run_id=None, repo_sha="t", stale_hours=6.0)
             with contextlib.redirect_stdout(io.StringIO()):
