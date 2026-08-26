@@ -449,7 +449,8 @@ def discover_event_label_strip(library_root: Path, serato_root: Path, event_fold
 
 
 def discover_grouping_term_strip(library_root: Path, serato_root: Path, remove_terms: list[str],
-                                 maximum: int) -> tuple[list[dict], Counter]:
+                                 maximum: int,
+                                 target_list: set[str] | None = None) -> tuple[list[dict], Counter]:
     """Deterministic, library-wide discovery for removing an explicit list
     of literal Grouping terms (e.g. leftover download-source labels like
     'www.bpmsupreme.com') wherever they appear. No semantic classification,
@@ -457,7 +458,9 @@ def discover_grouping_term_strip(library_root: Path, serato_root: Path, remove_t
     already contains at least one exact literal term (casefold-matched)
     from the given list; only those matched terms are proposed for
     removal, and every other Grouping value, Genre, and file location is
-    left untouched.
+    left untouched. An operator target_list (keys from load_target_list)
+    restricts candidacy to exactly those files — every other file is
+    excluded before its tags are even read.
     """
     crate_rules = parse_smart_crates(serato_root)
     target_normalized = {term.strip().casefold() for term in remove_terms if term.strip()}
@@ -468,6 +471,9 @@ def discover_grouping_term_strip(library_root: Path, serato_root: Path, remove_t
     for path in sorted(Path(library_root).rglob("*.mp3")):
         if OUT_OF_SCOPE_FOLDERS.intersection(path.parts):
             exclusions["out of scope folder"] += 1
+            continue
+        if target_list is not None and _hold_key(str(path.resolve())) not in target_list:
+            exclusions["outside operator target list"] += 1
             continue
         try:
             current = read_track(path)
@@ -518,28 +524,41 @@ def _hold_key(path: str) -> str:
     return unicodedata.normalize("NFC", path).casefold()
 
 
-def load_hold_list(path: Path) -> set[str]:
-    """Operator hold list: a non-empty JSON array of absolute file paths that
-    PREPARE must exclude from candidacy. Fail-closed on anything questionable:
-    wrong shape, relative paths, or an entry that does not exist on disk (a
-    stale or misspelled entry would otherwise silently exclude nothing)."""
+def _load_operator_path_list(path: Path, flag: str) -> set[str]:
+    """Shared loader for operator-supplied path lists (--hold-list and
+    --target-list): a non-empty JSON array of absolute file paths. Fail-closed
+    on anything questionable: wrong shape, relative paths, or an entry that
+    does not exist on disk (a stale or misspelled entry would otherwise
+    silently select or exclude nothing)."""
     payload = json.loads(Path(path).read_text(encoding="utf-8"))
     if (not isinstance(payload, list) or not payload
             or not all(isinstance(item, str) and item.strip() for item in payload)):
         raise metadata_batch.BatchRefused(
-            "--hold-list must be a non-empty JSON array of path strings"
+            f"{flag} must be a non-empty JSON array of path strings"
         )
-    held: set[str] = set()
+    keys: set[str] = set()
     for raw in payload:
         entry = Path(raw)
         if not entry.is_absolute():
-            raise metadata_batch.BatchRefused(f"hold-list entries must be absolute paths: {raw!r}")
+            raise metadata_batch.BatchRefused(f"{flag} entries must be absolute paths: {raw!r}")
         if not entry.is_file():
             raise metadata_batch.BatchRefused(
-                f"hold-list entry does not exist on disk (moved or misspelled?): {raw!r}"
+                f"{flag} entry does not exist on disk (moved or misspelled?): {raw!r}"
             )
-        held.add(_hold_key(str(entry.resolve())))
-    return held
+        keys.add(_hold_key(str(entry.resolve())))
+    return keys
+
+
+def load_hold_list(path: Path) -> set[str]:
+    """Operator hold list: files PREPARE must exclude from candidacy."""
+    return _load_operator_path_list(path, "--hold-list")
+
+
+def load_target_list(path: Path) -> set[str]:
+    """Operator target list: the ONLY files strip-grouping-term discovery may
+    consider. Restriction only — a listed file still needs a live matching
+    term to become a candidate; listing a file never forces a change."""
+    return _load_operator_path_list(path, "--target-list")
 
 
 def load_transcript_dirty_evidence(path: Path) -> dict[str, str]:
@@ -866,7 +885,8 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
             transcript_evidence: Path | None = None,
             event_folders: list[str] | None = None,
             remove_terms: list[str] | None = None,
-            hold_list: Path | None = None) -> dict:
+            hold_list: Path | None = None,
+            target_list: Path | None = None) -> dict:
     if batch_format.casefold() != "mp3":
         raise metadata_batch.BatchRefused("automated lane is MP3-only; FLAC requires its own proven canary")
     if lane not in LANES:
@@ -889,6 +909,10 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
         raise metadata_batch.BatchRefused("--remove-terms is required for --lane strip-grouping-term")
     if remove_terms and lane != "strip-grouping-term":
         raise metadata_batch.BatchRefused("--remove-terms is only valid with --lane strip-grouping-term")
+    if target_list is not None and lane != "strip-grouping-term":
+        raise metadata_batch.BatchRefused("--target-list is only valid with --lane strip-grouping-term")
+    if target_list is not None and not Path(target_list).is_file():
+        raise metadata_batch.BatchRefused(f"--target-list file does not exist: {target_list}")
     if maximum < 1:
         raise metadata_batch.BatchRefused("--max must be at least 1")
     if maximum > DEFAULT_MAX_CANDIDATES and confirmed_maximum != maximum:
@@ -945,8 +969,9 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
                 library_root, serato_root, event_folders, maximum
             )
         elif lane == "strip-grouping-term":
+            target_paths = load_target_list(target_list) if target_list is not None else None
             rows, exclusions = discover_grouping_term_strip(
-                library_root, serato_root, remove_terms, maximum
+                library_root, serato_root, remove_terms, maximum, target_list=target_paths
             )
         else:
             rows, exclusions = discover(library_root, serato_root, maximum, genre_only=genre_only)
@@ -1030,6 +1055,10 @@ def prepare(library_root: Path, serato_root: Path, handoff_root: Path, maximum: 
             "intake_root": str(intake_root) if intake_root is not None else None,
             "event_folders": list(event_folders) if event_folders else None,
             "remove_terms": list(remove_terms) if remove_terms else None,
+            "target_list_path": str(Path(target_list).resolve()) if target_list else None,
+            "target_list_sha256": (
+                metadata_batch.sha256_file(Path(target_list)) if target_list else None
+            ),
             "batch_limit": maximum,
             "library_root": str(library_root),
             "serato_root": str(serato_root),
@@ -1117,6 +1146,9 @@ def main() -> int:
     parser.add_argument("--remove-terms", type=Path,
                         help="strip-grouping-term lane only: JSON file with a list of literal "
                              "Grouping terms to remove wherever they appear, library-wide")
+    parser.add_argument("--target-list", type=Path,
+                        help="strip-grouping-term lane only: JSON array of absolute file paths; "
+                             "when given, ONLY the listed files may become candidates")
     parser.add_argument("--library-root", type=Path, default=DEFAULT_LIBRARY)
     parser.add_argument("--serato-root", type=Path, default=DEFAULT_SERATO)
     parser.add_argument("--approve", metavar="MASTER_SHA")
@@ -1136,10 +1168,10 @@ def main() -> int:
                 raise metadata_batch.BatchRefused("--approved-by is required with --approve")
             if (args.lane != "genre" or args.intake_root or args.confirm_max is not None
                     or args.genre_only or args.transcript_evidence or event_folders or remove_terms
-                    or args.hold_list):
+                    or args.hold_list or args.target_list):
                 raise metadata_batch.BatchRefused(
                     "--lane/--intake-root/--confirm-max/--genre-only/--transcript-evidence/"
-                    "--event-folders/--remove-terms/--hold-list are only valid when preparing"
+                    "--event-folders/--remove-terms/--hold-list/--target-list are only valid when preparing"
                 )
             result = approve(args.approve, args.approved_by, metadata_batch.HANDOFF_ROOT)
             print(json.dumps({"HUMAN_APPROVED": True, **result}, indent=2))
@@ -1150,7 +1182,8 @@ def main() -> int:
                          args.max, args.format, lane=args.lane, intake_root=args.intake_root,
                          confirmed_maximum=args.confirm_max, genre_only=args.genre_only,
                          transcript_evidence=args.transcript_evidence, event_folders=event_folders,
-                         remove_terms=remove_terms, hold_list=args.hold_list)
+                         remove_terms=remove_terms, hold_list=args.hold_list,
+                         target_list=args.target_list)
         smart_count = sum(len(row["smart_crate_effects"]) for row in result["candidates"])
         print(f"BATCH ID: {result['batch_id']}")
         print(f"LANE: {result['lane']}")

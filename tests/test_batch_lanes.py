@@ -1020,5 +1020,123 @@ class HoldListCleanDirtyTests(_LaneCase):
                 lane="clean-dirty", hold_list=self.root / "no-such-hold.json",
             )
 
+class TargetListGroupingTermStripTests(_LaneCase):
+    """--target-list: restrict strip-grouping-term candidacy to exactly the
+    listed files; every other file is excluded before its tags are read."""
+
+    def _write_targets(self, paths):
+        target_path = self.root / "target-list.json"
+        target_path.write_text(json.dumps(paths), encoding="utf-8")
+        return target_path
+
+    def test_target_list_restricts_to_exactly_listed_files(self):
+        make_library(self.library, [
+            {"relative": "House/wanted.mp3", "genre": "House",
+             "grouping": "Dirty; Remix", "v2_version": 3},
+            {"relative": "Techno/unwanted.mp3", "genre": "Techno",
+             "grouping": "Dirty", "v2_version": 3},
+        ])
+        wanted = str((self.library / "House/wanted.mp3").resolve())
+        target_set = prepare_metadata_batch.load_target_list(self._write_targets([wanted]))
+        rows, exclusions = prepare_metadata_batch.discover_grouping_term_strip(
+            self.library, self.serato, ["Dirty"], 150, target_list=target_set
+        )
+        self.assertEqual([Path(r["path"]).name for r in rows], ["wanted.mp3"])
+        self.assertEqual(rows[0]["proposed_grouping"], "Remix")
+        self.assertEqual(exclusions["outside operator target list"], 1)
+
+    def test_target_list_matches_case_and_unicode_variants(self):
+        import unicodedata
+        make_library(self.library, [{
+            "relative": "House/Sóng Title.mp3", "genre": "House",
+            "grouping": "Dirty", "v2_version": 3,
+        }])
+        exact = str((self.library / "House/Sóng Title.mp3").resolve())
+        variant = unicodedata.normalize("NFD", exact).upper()
+        if not Path(variant).is_file():
+            self.skipTest("filesystem is not case/normalization-insensitive")
+        target_set = prepare_metadata_batch.load_target_list(self._write_targets([variant]))
+        rows, _ = prepare_metadata_batch.discover_grouping_term_strip(
+            self.library, self.serato, ["Dirty"], 150, target_list=target_set
+        )
+        self.assertEqual(len(rows), 1)
+
+    def test_targeted_file_without_the_term_is_still_excluded(self):
+        make_library(self.library, [{
+            "relative": "House/no-term.mp3", "genre": "House",
+            "grouping": "Remix", "v2_version": 3,
+        }])
+        target = str((self.library / "House/no-term.mp3").resolve())
+        target_set = prepare_metadata_batch.load_target_list(self._write_targets([target]))
+        rows, exclusions = prepare_metadata_batch.discover_grouping_term_strip(
+            self.library, self.serato, ["Dirty"], 150, target_list=target_set
+        )
+        self.assertEqual(rows, [])
+        self.assertEqual(exclusions["no matching term present"], 1)
+
+    def test_full_prepare_binds_target_list_and_restricts(self):
+        make_library(self.library, [
+            {"relative": "House/wanted.mp3", "genre": "House",
+             "grouping": "Dirty; Remix", "v2_version": 3},
+            {"relative": "Techno/unwanted.mp3", "genre": "Techno",
+             "grouping": "Dirty", "v2_version": 3},
+        ])
+        wanted = str((self.library / "House/wanted.mp3").resolve())
+        target_path = self._write_targets([wanted])
+        master = prepare_metadata_batch.prepare(
+            self.library, self.serato, self.handoff, 150, "mp3",
+            lane="strip-grouping-term", remove_terms=["Dirty"], target_list=target_path,
+        )
+        self.assertEqual(master["candidate_count"], 1)
+        self.assertEqual(
+            [Path(c["path"]).name for c in master["candidates"]], ["wanted.mp3"]
+        )
+        self.assertEqual(master["exclusions"]["outside operator target list"], 1)
+        self.assertEqual(master["target_list_path"], str(target_path.resolve()))
+        self.assertEqual(
+            master["target_list_sha256"], metadata_batch.sha256_file(target_path)
+        )
+
+    def test_target_list_refused_outside_strip_grouping_term_lane(self):
+        make_library(self.library, [{
+            "relative": "House/song.mp3", "genre": "House",
+            "grouping": "Dirty", "v2_version": 3,
+        }])
+        target_path = self._write_targets([
+            str((self.library / "House/song.mp3").resolve())
+        ])
+        with self.assertRaises(metadata_batch.BatchRefused):
+            prepare_metadata_batch.prepare(
+                self.library, self.serato, self.handoff, 150, "mp3",
+                lane="clean-dirty", target_list=target_path,
+            )
+
+    def test_target_list_content_is_fail_closed(self):
+        make_library(self.library, [{
+            "relative": "House/song.mp3", "genre": "House",
+            "grouping": "Dirty", "v2_version": 3,
+        }])
+        real = str((self.library / "House/song.mp3").resolve())
+        for bad in ([], {"path": real}, ["  "], ["relative/path.mp3"],
+                    [real + ".does-not-exist"]):
+            with self.assertRaises(
+                (metadata_batch.BatchRefused, json.JSONDecodeError),
+                msg=f"target list {bad!r} should refuse",
+            ):
+                prepare_metadata_batch.load_target_list(self._write_targets(bad))
+
+    def test_missing_target_list_file_refuses_prepare(self):
+        make_library(self.library, [{
+            "relative": "House/song.mp3", "genre": "House",
+            "grouping": "Dirty", "v2_version": 3,
+        }])
+        with self.assertRaises(metadata_batch.BatchRefused):
+            prepare_metadata_batch.prepare(
+                self.library, self.serato, self.handoff, 150, "mp3",
+                lane="strip-grouping-term", remove_terms=["Dirty"],
+                target_list=self.root / "no-such-targets.json",
+            )
+
+
 if __name__ == "__main__":
     unittest.main()
