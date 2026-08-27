@@ -39,6 +39,16 @@ _Serato_/
 /*-result-*.json
 /*-undo-*.jsonl
 
+# Persistent library-index/runtime databases are private local state.
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite-journal
+*.sqlite3-wal
+*.sqlite3-shm
+*.sqlite3-journal
+
 # Secrets and machine-local configuration.
 .env
 .env.*
