@@ -86,6 +86,31 @@ rather than inferring missing facts; and this milestone does not modify or valid
 Rekordbox databases. Development tests use temporary fixtures only. Do not use the test suite
 to scan the live library.
 
+### Read-only Serato relationships
+
+After a trusted library scan exists, import Serato's database and crate relationships into
+the same local SQLite index:
+
+```bash
+python3 scripts/serato_index.py import \
+  --serato-dir "/Users/djb.a.e/Music/_Serato_" \
+  --db "$HOME/Library/Application Support/DJ Library Tool/library.sqlite3"
+
+python3 scripts/serato_index.py status \
+  --db "$HOME/Library/Application Support/DJ Library Tool/library.sqlite3"
+```
+
+This command reads `database V2` and `Subcrates/*.crate`; it never writes Serato or audio
+files. Exact current paths become `EXACT_PATH` relationships. A single same-named indexed
+file is only a `MOVED_LIKELY` hint, multiple candidates remain `AMBIGUOUS`, and no candidate
+is `MISSING`. Only exact-path matches are authoritative. The import fingerprints every input
+before and after parsing and rolls back without replacing the last trusted import if a Serato
+file changes or is structurally truncated.
+
+Serato imports are historical snapshots in additive, separately versioned tables. They do
+not change the library-index schema version or overwrite scan history. See
+`references/serato-index-architecture.md` for the boundary and trade-offs.
+
 ## Whole-library audit: verified read-only first
 
 Before another cleanup pass, establish the physical library inventory without changing source audio. The required entry point is the verified wrapper:
