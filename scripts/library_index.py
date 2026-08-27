@@ -27,7 +27,7 @@ try:
 except ImportError as exc:  # pragma: no cover
     raise SystemExit("mutagen is required") from exc
 
-TOOL_VERSION = "1.0.3"
+TOOL_VERSION = "1.0.4"
 SCHEMA_VERSION = 3
 SUPPORTED_EXTENSIONS = {".mp3", ".flac", ".aiff", ".aif", ".m4a", ".aac", ".wav"}
 
@@ -325,14 +325,22 @@ def connect_database(db_path: Path) -> sqlite3.Connection:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
+
+    # Reject an existing incompatible index before executing any schema DDL.
+    meta_exists = conn.execute(
+        "SELECT 1 FROM sqlite_master WHERE type='table' AND name='meta'"
+    ).fetchone()
+    if meta_exists is not None:
+        existing = conn.execute("SELECT value FROM meta WHERE key='schema_version'").fetchone()
+        if existing is None or int(existing[0]) != SCHEMA_VERSION:
+            value = existing[0] if existing is not None else "missing"
+            conn.close()
+            raise RuntimeError(
+                f"unsupported library-index schema {value}; expected {SCHEMA_VERSION}. "
+                "This milestone does not migrate pre-release databases."
+            )
+
     conn.executescript(SCHEMA_SQL)
-    existing = conn.execute("SELECT value FROM meta WHERE key='schema_version'").fetchone()
-    if existing is not None and int(existing[0]) != SCHEMA_VERSION:
-        conn.close()
-        raise RuntimeError(
-            f"unsupported library-index schema {existing[0]}; expected {SCHEMA_VERSION}. "
-            "This milestone does not migrate pre-release databases."
-        )
     conn.execute("INSERT OR REPLACE INTO meta(key, value) VALUES('schema_version', ?)", (str(SCHEMA_VERSION),))
     conn.commit()
     return conn
@@ -506,8 +514,6 @@ def scan(root: Path, db_path: Path) -> dict[str, Any]:
             if prior is None:
                 new_by_hash.setdefault(sha, []).append(snap)
 
-        # A scan is trusted only if every file still has the same filesystem
-        # identity/size/mtime after hashing and metadata reads complete.
         for snap in discovered:
             try:
                 after = snapshot_path(snap.path)
