@@ -318,6 +318,54 @@ class LibraryIndexTests(unittest.TestCase):
         self.assertTrue(result["completed_successfully"])
         self.assertEqual(library_index.status(self.db)["bound_root"], library_index.canonicalize_path(other))
 
+    def test_wav_and_aiff_id3_chunk_tags_are_indexed(self):
+        import struct
+
+        from mutagen.aiff import AIFF
+        from mutagen.id3 import TCON, TIT2
+        from mutagen.wave import WAVE
+
+        pcm = b"\x00\x00" * 8
+        wav = (
+            b"RIFF" + struct.pack("<I", 36 + len(pcm)) + b"WAVE"
+            + b"fmt " + struct.pack("<IHHIIHH", 16, 1, 1, 44100, 88200, 2, 16)
+            + b"data" + struct.pack("<I", len(pcm)) + pcm
+        )
+        wav_path = self.write_audio("tagged.wav", wav)
+        tags = WAVE(wav_path)
+        tags.add_tags()
+        tags.tags.add(TCON(encoding=3, text=["jersey club"]))
+        tags.tags.add(TIT2(encoding=3, text=["Tagged Wav"]))
+        tags.save()
+
+        comm = struct.pack(">hIh", 1, 8, 16) + b"\x40\x0e\xac\x44\x00\x00\x00\x00\x00\x00"
+        ssnd = struct.pack(">II", 0, 0) + pcm
+        aif = (
+            b"FORM" + struct.pack(">I", 4 + 8 + len(comm) + 8 + len(ssnd)) + b"AIFF"
+            + b"COMM" + struct.pack(">I", len(comm)) + comm
+            + b"SSND" + struct.pack(">I", len(ssnd)) + ssnd
+        )
+        aif_path = self.write_audio("tagged.aif", aif)
+        tags = AIFF(aif_path)
+        tags.add_tags()
+        tags.tags.add(TCON(encoding=3, text=["neo soul"]))
+        tags.save()
+
+        self.scan()
+        conn = sqlite3.connect(self.db)
+        try:
+            rows = dict(
+                conn.execute("SELECT extension, genre FROM files").fetchall()
+            )
+            title = conn.execute(
+                "SELECT title FROM files WHERE extension='.wav'"
+            ).fetchone()[0]
+        finally:
+            conn.close()
+        self.assertEqual(rows[".wav"], "jersey club")
+        self.assertEqual(rows[".aif"], "neo soul")
+        self.assertEqual(title, "Tagged Wav")
+
     def test_symlink_is_not_followed(self):
         outside = self.base / "outside"
         outside.mkdir()
