@@ -22,7 +22,7 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from urllib.parse import unquote_to_bytes, urlsplit
+from urllib.parse import unquote_to_bytes
 
 import library_index
 
@@ -200,15 +200,27 @@ def _parse_nonnegative_int(value: str | None, *, context: str, required: bool) -
 
 
 def _location_to_path(location: str, *, context: str) -> str:
-    split = urlsplit(location)
-    if split.scheme.casefold() != "file":
+    if location[:5].casefold() != "file:":
         raise RuntimeError(f"non-file Location URI in {context}: {location!r}")
-    if split.netloc.casefold() not in ("", "localhost"):
-        raise RuntimeError(f"remote file host in {context}: {location!r}")
-    if split.query or split.fragment:
-        raise RuntimeError(f"query or fragment in Location URI in {context}: {location!r}")
+    remainder = location[5:]
+    if remainder.startswith("//"):
+        authority_and_path = remainder[2:]
+        slash = authority_and_path.find("/")
+        if slash < 0:
+            raise RuntimeError(f"file Location has no absolute path in {context}: {location!r}")
+        authority = authority_and_path[:slash]
+        raw_path = authority_and_path[slash:]
+        if authority.casefold() not in ("", "localhost"):
+            raise RuntimeError(f"remote file host in {context}: {location!r}")
+    elif remainder.startswith("/"):
+        raw_path = remainder
+    else:
+        raise RuntimeError(f"non-absolute file Location in {context}: {location!r}")
+    # Rekordbox's own XML exporter leaves literal '#' and '?' characters in
+    # filenames instead of percent-encoding them.  They are path bytes here,
+    # not URI fragment/query delimiters, so preserve the complete remainder.
     try:
-        decoded = unquote_to_bytes(split.path).decode("utf-8", errors="strict")
+        decoded = unquote_to_bytes(raw_path).decode("utf-8", errors="strict")
     except UnicodeDecodeError as exc:
         raise RuntimeError(f"invalid UTF-8 file Location in {context}") from exc
     if not decoded.startswith("/"):
