@@ -27,8 +27,8 @@ try:
 except ImportError as exc:  # pragma: no cover
     raise SystemExit("mutagen is required") from exc
 
-TOOL_VERSION = "1.0.2"
-SCHEMA_VERSION = 2
+TOOL_VERSION = "1.0.3"
+SCHEMA_VERSION = 3
 SUPPORTED_EXTENSIONS = {".mp3", ".flac", ".aiff", ".aif", ".m4a", ".aac", ".wav"}
 
 SCHEMA_SQL = """
@@ -56,6 +56,15 @@ CREATE TABLE IF NOT EXISTS scans (
     tool_version TEXT NOT NULL,
     schema_version INTEGER NOT NULL
 );
+CREATE TABLE IF NOT EXISTS scan_errors (
+    error_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    scan_id INTEGER NOT NULL,
+    stage TEXT NOT NULL,
+    path TEXT,
+    error TEXT NOT NULL,
+    FOREIGN KEY(scan_id) REFERENCES scans(scan_id)
+);
+CREATE INDEX IF NOT EXISTS idx_scan_errors_scan ON scan_errors(scan_id);
 CREATE TABLE IF NOT EXISTS files (
     file_id INTEGER PRIMARY KEY AUTOINCREMENT,
     canonical_path TEXT NOT NULL UNIQUE,
@@ -268,6 +277,18 @@ def snapshot_path(path: Path) -> FileSnapshot:
     )
 
 
+def _snapshot_stable(before: FileSnapshot, after: FileSnapshot) -> bool:
+    return (
+        before.canonical_path == after.canonical_path
+        and before.path_identity == after.path_identity
+        and before.extension == after.extension
+        and before.size_bytes == after.size_bytes
+        and before.mtime_ns == after.mtime_ns
+        and before.device == after.device
+        and before.inode == after.inode
+    )
+
+
 def discover_audio(root: Path) -> tuple[list[FileSnapshot], list[str]]:
     root = root.resolve()
     root_real = canonicalize_path(root)
@@ -346,8 +367,6 @@ def _bind_root_on_success(conn: sqlite3.Connection, root: Path) -> None:
     canonical, identity = _validate_bound_root(conn, root)
     conn.execute("INSERT OR IGNORE INTO meta(key, value) VALUES('root_identity', ?)", (identity,))
     conn.execute("INSERT OR IGNORE INTO meta(key, value) VALUES('root_canonical', ?)", (canonical,))
-    # Re-check while the scan transaction owns the write lock. This closes the
-    # race where two previously unbound scans for different roots start together.
     _validate_bound_root(conn, root)
 
 
@@ -369,6 +388,17 @@ def _insert_scan(conn: sqlite3.Connection, root: Path) -> int:
         (utc_now(), os.fspath(root), canonicalize_path(root), json.dumps(config, sort_keys=True), TOOL_VERSION, SCHEMA_VERSION),
     )
     return int(cur.lastrowid)
+
+
+def _record_scan_errors(conn: sqlite3.Connection, scan_id: int, stage: str, errors: list[str]) -> None:
+    for message in errors:
+        path, sep, detail = message.partition(": ")
+        conn.execute(
+            "INSERT INTO scan_errors(scan_id,stage,path,error) VALUES(?,?,?,?)",
+            (scan_id, stage, path if sep else None, detail if sep else message),
+        )
+    conn.execute("UPDATE scans SET error_count=? WHERE scan_id=?", (len(errors), scan_id))
+    conn.commit()
 
 
 def _existing_files(conn: sqlite3.Connection) -> dict[str, sqlite3.Row]:
@@ -441,9 +471,15 @@ def scan(root: Path, db_path: Path) -> dict[str, Any]:
     try:
         _validate_bound_root(conn, root)
         scan_id = _insert_scan(conn, root)
-        conn.commit()  # durable failed/incomplete scan record; trusted file state is untouched
+        conn.commit()
         previous = _existing_files(conn)
         discovered, discovery_errors = discover_audio(root)
+        if discovery_errors:
+            _record_scan_errors(conn, scan_id, "discovery", discovery_errors)
+            raise RuntimeError(
+                f"filesystem discovery incomplete ({len(discovery_errors)} error(s)); "
+                "trusted index state was preserved"
+            )
         _assert_unique_path_identities(discovered)
 
         current_identities = {snap.path_identity for snap in discovered}
@@ -452,11 +488,9 @@ def scan(root: Path, db_path: Path) -> dict[str, Any]:
         for row in removed_rows:
             removed_by_hash.setdefault(row["sha256"], []).append(row)
 
-        # Prepare hashes/metadata first so move decisions are made across the full
-        # SHA-256 candidate group, never greedily one discovered file at a time.
         prepared: dict[str, tuple[FileSnapshot, sqlite3.Row | None, str, ParsedMetadata, bool]] = {}
         new_by_hash: dict[str, list[FileSnapshot]] = {}
-        error_count = len(discovery_errors)
+        error_count = 0
         for snap in discovered:
             prior = previous.get(snap.path_identity)
             unchanged = prior is not None and _row_identity_matches(prior, snap)
@@ -471,6 +505,23 @@ def scan(root: Path, db_path: Path) -> dict[str, Any]:
             prepared[snap.path_identity] = (snap, prior, sha, meta, unchanged)
             if prior is None:
                 new_by_hash.setdefault(sha, []).append(snap)
+
+        # A scan is trusted only if every file still has the same filesystem
+        # identity/size/mtime after hashing and metadata reads complete.
+        for snap in discovered:
+            try:
+                after = snapshot_path(snap.path)
+            except Exception as exc:
+                _record_scan_errors(conn, scan_id, "stability", [f"{snap.display_path}: {exc}"])
+                raise RuntimeError("file disappeared or became unreadable during scan; trusted index state was preserved") from exc
+            if not _snapshot_stable(snap, after):
+                _record_scan_errors(
+                    conn,
+                    scan_id,
+                    "stability",
+                    [f"{snap.display_path}: file changed during scan"],
+                )
+                raise RuntimeError("file changed during scan; trusted index state was preserved")
 
         counts = {name: 0 for name in ("NEW", "CHANGED", "MOVED", "REMOVED", "UNCHANGED")}
         total_bytes = sum(snap.size_bytes for snap in discovered)
