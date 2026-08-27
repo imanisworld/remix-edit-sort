@@ -221,6 +221,44 @@ class LibraryIndexTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             library_index.scan(self.music, self.music / "library.sqlite3")
 
+    def test_database_is_bound_to_first_successful_music_root(self):
+        self.write_audio("a.mp3", b"alpha")
+        first = self.scan()
+        status = library_index.status(self.db)
+        self.assertEqual(status["bound_root"], library_index.canonicalize_path(self.music))
+
+        other = self.base / "other-music"
+        other.mkdir()
+        (other / "b.mp3").write_bytes(b"beta")
+        with self.assertRaises(ValueError):
+            library_index.scan(other, self.db)
+
+        after = library_index.status(self.db)
+        self.assertEqual(after["latest_completed_scan"]["scan_id"], first["scan_id"])
+        self.assertEqual(after["current_files"], 1)
+        conn = sqlite3.connect(self.db)
+        try:
+            scan_count = conn.execute("SELECT COUNT(*) FROM scans").fetchone()[0]
+            sha = conn.execute("SELECT sha256 FROM files").fetchone()[0]
+        finally:
+            conn.close()
+        self.assertEqual(scan_count, 1)
+        self.assertEqual(sha, hashlib.sha256(b"alpha").hexdigest())
+
+    def test_failed_first_scan_does_not_bind_database_root(self):
+        self.write_audio("a.mp3", b"alpha")
+        with mock.patch.object(library_index, "parse_metadata", side_effect=RuntimeError("injected failure")):
+            with self.assertRaises(RuntimeError):
+                self.scan()
+        self.assertIsNone(library_index.status(self.db)["bound_root"])
+
+        other = self.base / "other-music"
+        other.mkdir()
+        (other / "b.mp3").write_bytes(b"beta")
+        result = library_index.scan(other, self.db)
+        self.assertTrue(result["completed_successfully"])
+        self.assertEqual(library_index.status(self.db)["bound_root"], library_index.canonicalize_path(other))
+
     def test_symlink_is_not_followed(self):
         outside = self.base / "outside"
         outside.mkdir()
