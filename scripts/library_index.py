@@ -23,11 +23,13 @@ from typing import Any
 
 try:
     from mutagen import File as MutagenFile
+    from mutagen.aiff import AIFF
     from mutagen.id3 import ID3
+    from mutagen.wave import WAVE
 except ImportError as exc:  # pragma: no cover
     raise SystemExit("mutagen is required") from exc
 
-TOOL_VERSION = "1.0.5"
+TOOL_VERSION = "1.0.6"
 SCHEMA_VERSION = 3
 SUPPORTED_EXTENSIONS = {".mp3", ".flac", ".aiff", ".aif", ".m4a", ".aac", ".wav"}
 
@@ -229,7 +231,17 @@ def parse_metadata(path: Path) -> ParsedMetadata:
                 values[target_name] = value
 
     try:
-        id3 = ID3(path)
+        # WAV/AIFF carry their ID3 data in a RIFF/IFF chunk, not at offset 0,
+        # so a bare ID3(path) never finds it for those formats.
+        ext = audio_extension(path)
+        if ext == ".wav":
+            id3 = WAVE(path).tags
+        elif ext in (".aif", ".aiff"):
+            id3 = AIFF(path).tags
+        else:
+            id3 = ID3(path)
+        if id3 is None:
+            raise ValueError("no ID3 tags")
         values.update(
             artist=_id3_take(id3, "TPE1"),
             title=_id3_take(id3, "TIT2"),
