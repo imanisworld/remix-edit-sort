@@ -201,13 +201,72 @@ class LibraryIndexTests(unittest.TestCase):
         conn = sqlite3.connect(self.db)
         try:
             sha = conn.execute("SELECT sha256 FROM files").fetchone()[0]
-            failed = conn.execute(
-                "SELECT COUNT(*) FROM scans WHERE completed_successfully=0"
-            ).fetchone()[0]
+            failed = conn.execute("SELECT COUNT(*) FROM scans WHERE completed_successfully=0").fetchone()[0]
         finally:
             conn.close()
         self.assertEqual(sha, hashlib.sha256(b"alpha").hexdigest())
         self.assertEqual(failed, 1)
+
+    def test_discovery_error_fails_closed_and_records_error(self):
+        self.write_audio("a.mp3", b"alpha")
+        first = self.scan()
+        message = f"{self.music}: permission denied"
+        with mock.patch.object(library_index, "discover_audio", return_value=([], [message])):
+            with self.assertRaises(RuntimeError):
+                self.scan()
+
+        status = library_index.status(self.db)
+        self.assertEqual(status["latest_completed_scan"]["scan_id"], first["scan_id"])
+        self.assertEqual(status["current_files"], 1)
+        conn = sqlite3.connect(self.db)
+        try:
+            failed = conn.execute(
+                "SELECT scan_id,error_count FROM scans WHERE completed_successfully=0 ORDER BY scan_id DESC LIMIT 1"
+            ).fetchone()
+            recorded = conn.execute(
+                "SELECT stage,error FROM scan_errors WHERE scan_id=?",
+                (failed[0],),
+            ).fetchone()
+        finally:
+            conn.close()
+        self.assertEqual(failed[1], 1)
+        self.assertEqual(recorded, ("discovery", "permission denied"))
+
+    def test_file_change_during_scan_fails_closed(self):
+        path = self.write_audio("a.mp3", b"alpha")
+        first = self.scan()
+        time.sleep(0.002)
+        path.write_bytes(b"beta-content")
+        os.utime(path, None)
+
+        original_sha = library_index.sha256_file
+        mutated = False
+
+        def hash_then_mutate(target: Path) -> str:
+            nonlocal mutated
+            digest = original_sha(target)
+            if not mutated:
+                mutated = True
+                target.write_bytes(b"gamma-content-with-different-size")
+                os.utime(target, None)
+            return digest
+
+        with mock.patch.object(library_index, "sha256_file", side_effect=hash_then_mutate):
+            with self.assertRaises(RuntimeError):
+                self.scan()
+
+        status = library_index.status(self.db)
+        self.assertEqual(status["latest_completed_scan"]["scan_id"], first["scan_id"])
+        conn = sqlite3.connect(self.db)
+        try:
+            sha = conn.execute("SELECT sha256 FROM files").fetchone()[0]
+            stage = conn.execute(
+                "SELECT stage FROM scan_errors ORDER BY error_id DESC LIMIT 1"
+            ).fetchone()[0]
+        finally:
+            conn.close()
+        self.assertEqual(sha, hashlib.sha256(b"alpha").hexdigest())
+        self.assertEqual(stage, "stability")
 
     def test_supported_format_dispatch(self):
         for ext in ("mp3", "flac", "aiff", "aif", "m4a", "aac", "wav"):
