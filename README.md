@@ -31,8 +31,60 @@ repository. If any other document contradicts it, it wins. In short:
 - Music and video files
 - Serato databases and crates
 - Library inventories containing personal paths
+- SQLite library-index databases and journals
 - Backups, undo payloads, and per-run reports
 - Local credentials or configuration
+
+## Persistent read-only library index
+
+`scripts/library_index.py` is the read-only foundation for the future DJ Library Tool. It
+indexes the filesystem into SQLite without moving, renaming, retagging, deleting, or writing
+anything in the music tree. It is intentionally independent from the mutation engine.
+
+Recommended runtime database location on macOS:
+
+```text
+~/Library/Application Support/DJ Library Tool/library.sqlite3
+```
+
+Example commands:
+
+```bash
+python3 scripts/library_index.py scan \
+  --root "/Users/djb.a.e/Music/DJ-Music/Music" \
+  --db "$HOME/Library/Application Support/DJ Library Tool/library.sqlite3"
+
+python3 scripts/library_index.py status \
+  --db "$HOME/Library/Application Support/DJ Library Tool/library.sqlite3"
+```
+
+Guarantees in this milestone:
+
+- safety classification: `read-only` toward music and DJ-software data;
+- supported inspection formats: MP3, FLAC, AIFF/AIF, M4A/AAC, and WAV;
+- full-file SHA-256 for new/changed files;
+- unchanged files reuse hashes/metadata only when path identity, filesystem identity,
+  byte size, and nanosecond mtime still match;
+- NEW, CHANGED, MOVED, REMOVED, and UNCHANGED scan states;
+- move detection requires SHA-256; multiple identical removed candidates remain ambiguous;
+- Unicode paths are normalized to NFC and compared with a case-folded identity suitable for
+  case-insensitive macOS path reasoning;
+- symlinks are not followed;
+- parse failures are recorded per file instead of aborting the whole scan;
+- the database is rejected if placed inside the selected music root;
+- scan state changes are committed transactionally, so a failed scan does not replace the
+  last completed trusted file state;
+- SQLite databases, WAL/SHM/journal files, and private runtime state are gitignored.
+
+The schema deliberately leaves room for later Serato/Rekordbox relationships and USB export
+state, acoustic fingerprints, audio-quality analysis, durable human decisions, and
+backup/restore records. Those features are **not implemented here**.
+
+Limitations: filesystem identity is advisory and platform-dependent; SHA-256 proves byte
+identity, not whether two copies should be deleted; metadata readers preserve unknown values
+rather than inferring missing facts; and this milestone does not modify or validate Serato or
+Rekordbox databases. Development tests use temporary fixtures only. Do not use the test suite
+to scan the live library.
 
 ## Whole-library audit: verified read-only first
 
@@ -149,7 +201,8 @@ The reusable standalone prompt is available at `music-sort-prompt.md`. Session-s
 - `scripts/` — reusable, parameterized sorting, audit, verification, and evidence-validation tools. Several pipelines live here:
   - `mutation_engine.py` / `lock_guard.py` / `folder_lock.py` / `backup_manifest.py` — the shared safety core every mutation runs through. Read `SAFETY-MODEL.md` before touching any of them.
   - `duplicate_semantics.py` — the repository-wide duplicate truth model (EXACT_DUPLICATE / AUDIO_EQUIVALENT / RELATED_VERSION / REVIEW).
-  - `mutation_surface.py` — the AST scan of every mutation path; enforced in CI.
+  - `mutation_surface.py` — the AST scan of every mutation path; enforced by CI.
+  - `library_index.py` — persistent incremental SQLite index; read-only toward library and DJ-software data.
   - `scan_library.py` / `build_plan.py` / `detect_bpm.py` — the read-only/preview half of the Genre/Remixer pipeline for flat SoundCloud/DJ-pool downloads, documented in `SKILL.md`. `apply_plan.py` is **hard-disabled** (read-only `--report` only); `reclassify.py` and `standardize_names.py` are **preview/plan builders only** — they no longer move or retag anything. Route those mutations through the engine family below.
   - `inventory_library.py` / `build_version_genre_plan.py` / `apply_version_genre_plan.py` — the Version+Genre pipeline actually used for the library cleanup in `handoff/`, generalized from nine near-duplicate per-folder scripts. Use this for the next source folder instead of writing a new one-off apply script.
   - `build_grouping_plan.py` / `apply_grouping_plan.py`, `build_artist_title_plan.py` / `apply_artist_title_plan.py`, `build_year_bpm_plan.py` / `apply_year_bpm_plan.py` — the metadata-completeness pass, run against folders already sorted by the pipeline above.
