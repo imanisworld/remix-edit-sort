@@ -76,15 +76,16 @@ Guarantees in this milestone:
   last completed trusted file state;
 - SQLite databases, WAL/SHM/journal files, and private runtime state are gitignored.
 
-The schema deliberately leaves room for later Serato/Rekordbox relationships and USB export
-state, acoustic fingerprints, audio-quality analysis, durable human decisions, and
-backup/restore records. Those features are **not implemented here**.
+The schema deliberately leaves room for later USB export state, acoustic fingerprints,
+audio-quality analysis, durable human decisions, and backup/restore records. Serato and
+Rekordbox relationship snapshots are implemented as separate, additive schema extensions.
+The remaining features are **not implemented here**.
 
 Limitations: filesystem identity is advisory and platform-dependent; SHA-256 proves byte
 identity, not whether two copies should be deleted; metadata readers preserve unknown values
-rather than inferring missing facts; and this milestone does not modify or validate Serato or
-Rekordbox databases. Development tests use temporary fixtures only. Do not use the test suite
-to scan the live library.
+rather than inferring missing facts; and these adapters do not modify Serato or Rekordbox
+databases. Development tests use temporary fixtures only. Do not use the test suite to scan
+the live library.
 
 ### Read-only Serato relationships
 
@@ -110,6 +111,36 @@ file changes or is structurally truncated.
 Serato imports are historical snapshots in additive, separately versioned tables. They do
 not change the library-index schema version or overwrite scan history. See
 `references/serato-index-architecture.md` for the boundary and trade-offs.
+
+### Read-only Rekordbox XML relationships
+
+Rekordbox's local `master.db` is encrypted application state and is intentionally out of
+scope. In Rekordbox, use **File > Library > Export Collection in xml format**, then validate
+and import that supported interchange file:
+
+```bash
+python3 scripts/rekordbox_index.py inspect \
+  --xml "/path/to/exported-rekordbox.xml"
+
+python3 scripts/rekordbox_index.py import \
+  --xml "/path/to/exported-rekordbox.xml" \
+  --db "$HOME/Library/Application Support/DJ Library Tool/library.sqlite3"
+
+python3 scripts/rekordbox_index.py status \
+  --db "$HOME/Library/Application Support/DJ Library Tool/library.sqlite3"
+```
+
+The importer retains collection metadata, playlist hierarchy and membership, position marks,
+and tempo-grid records. It links only normalized exact current paths to `file_id`. A unique
+same-named file is `MOVED_LIKELY` evidence without an authoritative link; multiple candidates
+remain `AMBIGUOUS`, and absent files are `MISSING`.
+
+The XML must contain a complete `COLLECTION`. Rekordbox's small playlist-tree support file is
+not a collection export and is rejected. The importer also rejects DTD/entity declarations,
+non-file or remote locations, duplicate track IDs, structural count mismatches, symlink
+sources, and files that change while being parsed. It never launches Rekordbox, opens
+`master.db`, writes the XML, changes audio, or writes a performance USB. See
+`references/rekordbox-index-architecture.md`.
 
 ## Whole-library audit: verified read-only first
 
@@ -228,6 +259,7 @@ The reusable standalone prompt is available at `music-sort-prompt.md`. Session-s
   - `duplicate_semantics.py` — the repository-wide duplicate truth model (EXACT_DUPLICATE / AUDIO_EQUIVALENT / RELATED_VERSION / REVIEW).
   - `mutation_surface.py` — the AST scan of every mutation path; enforced by CI.
   - `library_index.py` — persistent incremental SQLite index; read-only toward library and DJ-software data.
+  - `serato_index.py` / `rekordbox_index.py` — separately versioned, read-only relationship snapshot adapters for Serato's local data and Rekordbox's supported collection XML export.
   - `scan_library.py` / `build_plan.py` / `detect_bpm.py` — the read-only/preview half of the Genre/Remixer pipeline for flat SoundCloud/DJ-pool downloads, documented in `SKILL.md`. `apply_plan.py` is **hard-disabled** (read-only `--report` only); `reclassify.py` and `standardize_names.py` are **preview/plan builders only** — they no longer move or retag anything. Route those mutations through the engine family below.
   - `inventory_library.py` / `build_version_genre_plan.py` / `apply_version_genre_plan.py` — the Version+Genre pipeline actually used for the library cleanup in `handoff/`, generalized from nine near-duplicate per-folder scripts. Use this for the next source folder instead of writing a new one-off apply script.
   - `build_grouping_plan.py` / `apply_grouping_plan.py`, `build_artist_title_plan.py` / `apply_artist_title_plan.py`, `build_year_bpm_plan.py` / `apply_year_bpm_plan.py` — the metadata-completeness pass, run against folders already sorted by the pipeline above.
