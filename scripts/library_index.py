@@ -27,7 +27,7 @@ try:
 except ImportError as exc:  # pragma: no cover
     raise SystemExit("mutagen is required") from exc
 
-TOOL_VERSION = "1.0.1"
+TOOL_VERSION = "1.0.2"
 SCHEMA_VERSION = 2
 SUPPORTED_EXTENSIONS = {".mp3", ".flac", ".aiff", ".aif", ".m4a", ".aac", ".wav"}
 
@@ -324,6 +324,33 @@ def assert_db_outside_root(db_path: Path, root: Path) -> None:
         raise ValueError("database must be stored outside the music root")
 
 
+def _root_binding(root: Path) -> tuple[str, str]:
+    canonical = canonicalize_path(root.resolve())
+    return canonical, mac_path_identity(canonical)
+
+
+def _validate_bound_root(conn: sqlite3.Connection, root: Path) -> tuple[str, str]:
+    canonical, identity = _root_binding(root)
+    existing = conn.execute("SELECT value FROM meta WHERE key='root_identity'").fetchone()
+    if existing is not None and existing[0] != identity:
+        stored = conn.execute("SELECT value FROM meta WHERE key='root_canonical'").fetchone()
+        stored_root = stored[0] if stored is not None else "<unknown>"
+        raise ValueError(
+            f"database is bound to a different music root: {stored_root!r}; "
+            f"requested {canonical!r}"
+        )
+    return canonical, identity
+
+
+def _bind_root_on_success(conn: sqlite3.Connection, root: Path) -> None:
+    canonical, identity = _validate_bound_root(conn, root)
+    conn.execute("INSERT OR IGNORE INTO meta(key, value) VALUES('root_identity', ?)", (identity,))
+    conn.execute("INSERT OR IGNORE INTO meta(key, value) VALUES('root_canonical', ?)", (canonical,))
+    # Re-check while the scan transaction owns the write lock. This closes the
+    # race where two previously unbound scans for different roots start together.
+    _validate_bound_root(conn, root)
+
+
 def _row_identity_matches(row: sqlite3.Row, snap: FileSnapshot) -> bool:
     return (
         row["size_bytes"] == snap.size_bytes
@@ -412,6 +439,7 @@ def scan(root: Path, db_path: Path) -> dict[str, Any]:
     assert_db_outside_root(db_path, root)
     conn = connect_database(db_path)
     try:
+        _validate_bound_root(conn, root)
         scan_id = _insert_scan(conn, root)
         conn.commit()  # durable failed/incomplete scan record; trusted file state is untouched
         previous = _existing_files(conn)
@@ -495,6 +523,7 @@ def scan(root: Path, db_path: Path) -> dict[str, Any]:
                 )
                 conn.execute("DELETE FROM files WHERE file_id=?", (row["file_id"],))
 
+            _bind_root_on_success(conn, root)
             conn.execute(
                 """UPDATE scans SET completed_at=?,file_count=?,total_bytes=?,new_count=?,changed_count=?,moved_count=?,
                    removed_count=?,unchanged_count=?,error_count=?,completed_successfully=1 WHERE scan_id=?""",
@@ -528,15 +557,25 @@ def scan(root: Path, db_path: Path) -> dict[str, Any]:
 def status(db_path: Path) -> dict[str, Any]:
     conn = connect_database(db_path)
     try:
+        bound = conn.execute("SELECT value FROM meta WHERE key='root_canonical'").fetchone()
+        bound_root = bound[0] if bound is not None else None
         latest = conn.execute(
             "SELECT * FROM scans WHERE completed_successfully=1 ORDER BY scan_id DESC LIMIT 1"
         ).fetchone()
         if latest is None:
-            return {"initialized": True, "latest_completed_scan": None, "current_files": 0}
+            return {
+                "initialized": True,
+                "schema_version": SCHEMA_VERSION,
+                "tool_version": TOOL_VERSION,
+                "bound_root": bound_root,
+                "latest_completed_scan": None,
+                "current_files": 0,
+            }
         return {
             "initialized": True,
             "schema_version": SCHEMA_VERSION,
             "tool_version": TOOL_VERSION,
+            "bound_root": bound_root,
             "current_files": conn.execute("SELECT COUNT(*) FROM files").fetchone()[0],
             "latest_completed_scan": dict(latest),
         }
