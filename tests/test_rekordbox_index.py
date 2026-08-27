@@ -289,6 +289,31 @@ class RekordboxIndexTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "declares 2 entries"):
             rekordbox_index.inspect_xml(self.xml)
 
+    def test_literal_hash_and_question_mark_from_rekordbox_export_are_path_characters(self):
+        hash_path = self.library / "Love Song #3.mp3"
+        question_path = self.library / "Recuerdas?.mp3"
+
+        self.assertEqual(
+            rekordbox_index._location_to_path(
+                "file://localhost" + str(hash_path).replace(" ", "%20"),
+                context="test",
+            ),
+            str(hash_path),
+        )
+        self.assertEqual(
+            rekordbox_index._location_to_path(
+                "file://localhost" + str(question_path),
+                context="test",
+            ),
+            str(question_path),
+        )
+
+    def test_remote_file_location_remains_refused(self):
+        with self.assertRaisesRegex(RuntimeError, "remote file host"):
+            rekordbox_index._location_to_path(
+                "file://example.com/Music/Track.mp3", context="test"
+            )
+
     def test_playlist_only_xml_is_not_mistaken_for_collection_export(self):
         self.xml.write_text(
             '<?xml version="1.0"?><DJ_PLAYLISTS Version="1.0.0"><PRODUCT Name="rekordbox"/>'
