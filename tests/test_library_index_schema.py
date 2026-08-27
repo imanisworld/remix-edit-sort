@@ -48,6 +48,39 @@ class LibraryIndexSchemaTests(unittest.TestCase):
             self.assertEqual(version, "2")
             self.assertNotIn("scan_errors", after)
 
+    def test_unrelated_sqlite_database_is_refused_without_modification(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            db = Path(tmp) / "not-library.sqlite3"
+            conn = sqlite3.connect(db)
+            try:
+                conn.execute("CREATE TABLE unrelated (id INTEGER PRIMARY KEY, value TEXT)")
+                conn.execute("INSERT INTO unrelated(value) VALUES('keep-me')")
+                conn.commit()
+                before = {
+                    row[0]
+                    for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
+                }
+            finally:
+                conn.close()
+
+            with self.assertRaises(RuntimeError):
+                library_index.connect_database(db)
+
+            conn = sqlite3.connect(db)
+            try:
+                after = {
+                    row[0]
+                    for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
+                }
+                value = conn.execute("SELECT value FROM unrelated").fetchone()[0]
+            finally:
+                conn.close()
+
+            self.assertEqual(after, before)
+            self.assertEqual(value, "keep-me")
+            self.assertNotIn("meta", after)
+            self.assertNotIn("files", after)
+
 
 if __name__ == "__main__":
     unittest.main()
