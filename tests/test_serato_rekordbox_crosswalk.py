@@ -190,9 +190,9 @@ class SeratoRekordboxCrosswalkTests(unittest.TestCase):
         self.assertEqual(candidate["serato_only_count"], 1)
         self.assertEqual(candidate["rekordbox_only_count"], 1)
         catalog_paths = {item["path"] for item in report["track_catalog"].values()}
-        self.assertIn(str(self.a), catalog_paths)
-        self.assertIn(str(self.b), catalog_paths)
-        self.assertIn(str(self.c), catalog_paths)
+        self.assertIn(library_index.canonicalize_path(self.a), catalog_paths)
+        self.assertIn(library_index.canonicalize_path(self.b), catalog_paths)
+        self.assertIn(library_index.canonicalize_path(self.c), catalog_paths)
 
         discovery = self._crate(report, "Discovery")
         self.assertEqual(discovery["mapping_state"], "OVERLAP_CANDIDATES")
