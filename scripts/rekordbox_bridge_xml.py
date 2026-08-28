@@ -85,9 +85,6 @@ def _path_to_location(path: str) -> str:
     normalized = unicodedata.normalize("NFC", path)
     if not normalized.startswith("/"):
         raise RuntimeError(f"approved path is not absolute: {path!r}")
-    # Rekordbox documents Location as a file://localhost/ URI. Percent-encode
-    # filename characters rather than relying on the exporter's historical
-    # habit of sometimes leaving '#' and '?' literal.
     return "file://localhost" + quote(normalized, safe="/")
 
 
@@ -228,9 +225,6 @@ def _approved_targets(
                 f"approved review decision for track {track_id} needs decision_evidence"
             )
 
-        # The review packet already carries the top proposed candidate. A human
-        # may approve that target by setting only decision/evidence, or may add
-        # selected_file_id/selected_path to choose another displayed candidate.
         selected_file_id = item.get("selected_file_id", item.get("proposed_file_id"))
         selected_path = item.get("selected_path", item.get("proposed_path"))
         if not isinstance(selected_file_id, int) or not isinstance(selected_path, str):
@@ -286,12 +280,12 @@ def _rewrite_collection(
     exact_uri_targets: dict[str, set[str]] = {}
     decoded_path_targets: dict[str, set[str]] = {}
     included_ids: set[str] = set()
+    kept_elements: list[ET.Element] = []
 
     for element in list(collection):
         track_id = str(element.attrib.get("TrackID", ""))
         candidate = approved.get(track_id)
         if candidate is None:
-            collection.remove(element)
             continue
         old_location = element.attrib.get("Location")
         if not old_location:
@@ -304,6 +298,8 @@ def _rewrite_collection(
         decoded_path_targets.setdefault(old_path, set()).add(new_location)
         element.set("Location", new_location)
         included_ids.add(track_id)
+        kept_elements.append(element)
+    collection[:] = kept_elements
     collection.set("Entries", str(len(included_ids)))
 
     def flatten(values: dict[str, set[str]], label: str) -> dict[str, str]:
@@ -352,16 +348,18 @@ def _rewrite_playlists(
         key_type = node.attrib.get("KeyType")
         if key_type not in {"0", "1"}:
             raise RuntimeError(f"unsupported playlist KeyType: {key_type!r}")
+
+        kept_children: list[ET.Element] = []
         for child in list(node):
             key = child.attrib.get("Key")
             if key is None:
                 raise RuntimeError(f"playlist {node_key} TRACK is missing Key")
             if key_type == "0":
-                if key not in included_ids:
-                    node.remove(child)
-                    removed += 1
-                else:
+                if key in included_ids:
                     kept += 1
+                    kept_children.append(child)
+                else:
+                    removed += 1
                 continue
 
             target = exact_uri_map.get(key)
@@ -375,12 +373,13 @@ def _rewrite_playlists(
                 if decoded is not None:
                     target = decoded_path_map.get(decoded)
             if target is None:
-                node.remove(child)
                 removed += 1
             else:
                 child.set("Key", target)
                 kept += 1
-        node.set("Entries", str(len(list(node))))
+                kept_children.append(child)
+        node[:] = kept_children
+        node.set("Entries", str(len(kept_children)))
 
     for position, node in enumerate(list(playlists)):
         visit(node, str(position))
@@ -537,7 +536,6 @@ def build_bridge(
     if not output_requested.parent.is_dir():
         raise RuntimeError("bridge output parent directory must already exist")
 
-    # Final source stability check before the only write this tool performs.
     if source_resolved.read_bytes() != source_raw:
         raise RuntimeError("source Rekordbox XML changed before bridge write")
     with output_requested.open("xb") as handle:
