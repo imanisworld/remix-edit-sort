@@ -1,0 +1,4 @@
+# Optional runtime dependencies for scripts/post_export_usb_verify.py.
+# Pinned to exact commits so device-database semantics cannot drift silently.
+git+https://github.com/fragmede/rekordbox-pdb.git@ee3bac2f22ca11a5ce61eea35f8cb951c246eaef
+git+https://github.com/dylanljones/pyrekordbox.git@f695541827cc488af267d6ca8a8e0052598d85a0
