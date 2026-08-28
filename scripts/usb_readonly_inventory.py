@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Inventory one explicitly selected mounted DJ USB volume without writing it.
 
-The caller must provide the mount point.  The tool never auto-selects a volume,
+The caller must provide the mount point. The tool never auto-selects a volume,
 never writes a report to the target, never follows symlinks, and never edits
-Rekordbox/Pioneer databases.  On macOS it reads ``diskutil info -plist`` for
+Rekordbox/Pioneer databases. On macOS it reads ``diskutil info -plist`` for
 volume metadata and independently traverses the mounted filesystem read-only.
 """
 
@@ -25,16 +25,11 @@ from typing import Any
 
 TOOL_VERSION = "1.0.0"
 USB_INVENTORY_SCHEMA_VERSION = 1
-
 AUDIO_EXTENSIONS = {
     ".mp3", ".m4a", ".aac", ".wav", ".aif", ".aiff", ".flac", ".ogg", ".opus"
 }
 REKORDBOX_PATH_MARKERS = {"pioneer", ".pioneer", "rekordbox", "pioneerdj", "onelibrary"}
-REKORDBOX_FILE_MARKERS = {
-    "export.pdb",
-    "master.db",
-    "exportlibrary.db",
-}
+REKORDBOX_FILE_MARKERS = {"export.pdb", "master.db", "exportlibrary.db"}
 MAX_REPORTED_MARKERS = 200
 MAX_REPORTED_ERRORS = 100
 MAX_TOP_LEVEL = 200
@@ -70,10 +65,7 @@ def _explicit_mountpoint(path: Path) -> Path:
 
 def _diskutil_info(volume: Path) -> dict[str, Any]:
     if platform.system() != "Darwin":
-        return {
-            "available": False,
-            "reason": "diskutil metadata is only available on macOS",
-        }
+        return {"available": False, "reason": "diskutil metadata is only available on macOS"}
     diskutil = Path("/usr/sbin/diskutil")
     if not diskutil.is_file():
         raise RuntimeError("macOS diskutil was not found at /usr/sbin/diskutil")
@@ -101,13 +93,10 @@ def _diskutil_info(volume: Path) -> dict[str, Any]:
 
     mount_point = pick("MountPoint")
     if isinstance(mount_point, str):
-        mount_identity = os.path.normcase(os.path.realpath(mount_point))
-        volume_identity = os.path.normcase(os.path.realpath(volume))
-        if mount_identity != volume_identity:
+        if os.path.normcase(os.path.realpath(mount_point)) != os.path.normcase(os.path.realpath(volume)):
             raise RuntimeError(
                 f"diskutil mount point {mount_point!r} does not match requested volume {str(volume)!r}"
             )
-
     return {
         "available": True,
         "device_identifier": pick("DeviceIdentifier"),
@@ -130,11 +119,10 @@ def _capacity(volume: Path) -> dict[str, int | float | None]:
     stat = os.statvfs(volume)
     total = int(stat.f_frsize * stat.f_blocks)
     free = int(stat.f_frsize * stat.f_bavail)
-    used = max(0, total - free)
     return {
         "total_bytes": total,
         "free_bytes": free,
-        "used_bytes": used,
+        "used_bytes": max(0, total - free),
         "free_percent": (free / total * 100.0) if total else None,
     }
 
@@ -146,8 +134,7 @@ def _relative(path: Path, root: Path) -> str:
 def _is_rekordbox_marker(relative: str) -> bool:
     path = Path(relative)
     parts = {part.casefold() for part in path.parts}
-    name = path.name.casefold()
-    return bool(parts & REKORDBOX_PATH_MARKERS) or name in REKORDBOX_FILE_MARKERS
+    return bool(parts & REKORDBOX_PATH_MARKERS) or path.name.casefold() in REKORDBOX_FILE_MARKERS
 
 
 def _sha256_regular(path: Path) -> str:
@@ -159,16 +146,16 @@ def _sha256_regular(path: Path) -> str:
 
 
 def _walk(volume: Path) -> dict[str, Any]:
-    counts = Counter()
+    counts: Counter[str] = Counter()
     audio_by_extension: Counter[str] = Counter()
     top_level: list[dict[str, Any]] = []
     marker_paths: list[dict[str, Any]] = []
     errors: list[dict[str, str]] = []
     total_file_bytes = 0
-    largest_file_bytes = 0
+    largest_file_bytes = -1
     largest_file_path: str | None = None
+    stack = [volume]
 
-    stack: list[Path] = [volume]
     while stack:
         directory = stack.pop()
         try:
@@ -183,20 +170,27 @@ def _walk(volume: Path) -> dict[str, Any]:
         for entry in reversed(entries):
             path = Path(entry.path)
             relative = _relative(path, volume)
+            is_top = path.parent == volume
+            if is_top:
+                counts["top_level_entries"] += 1
             try:
                 if entry.is_symlink():
                     counts["symlinks_skipped"] += 1
-                    if path.parent == volume and len(top_level) < MAX_TOP_LEVEL:
+                    if is_top and len(top_level) < MAX_TOP_LEVEL:
                         top_level.append({"name": entry.name, "type": "symlink_skipped"})
                     continue
+
                 if entry.is_dir(follow_symlinks=False):
                     counts["directories"] += 1
-                    if path.parent == volume and len(top_level) < MAX_TOP_LEVEL:
+                    if is_top and len(top_level) < MAX_TOP_LEVEL:
                         top_level.append({"name": entry.name, "type": "directory"})
-                    if _is_rekordbox_marker(relative) and len(marker_paths) < MAX_REPORTED_MARKERS:
-                        marker_paths.append({"path": relative, "type": "directory"})
+                    if _is_rekordbox_marker(relative):
+                        counts["rekordbox_markers"] += 1
+                        if len(marker_paths) < MAX_REPORTED_MARKERS:
+                            marker_paths.append({"path": relative, "type": "directory"})
                     stack.append(path)
                     continue
+
                 if entry.is_file(follow_symlinks=False):
                     stat = entry.stat(follow_symlinks=False)
                     size = int(stat.st_size)
@@ -209,50 +203,58 @@ def _walk(volume: Path) -> dict[str, Any]:
                     if size > largest_file_bytes:
                         largest_file_bytes = size
                         largest_file_path = relative
-                    if path.parent == volume and len(top_level) < MAX_TOP_LEVEL:
+                    if is_top and len(top_level) < MAX_TOP_LEVEL:
                         top_level.append({"name": entry.name, "type": "file", "size_bytes": size})
-                    if _is_rekordbox_marker(relative) and len(marker_paths) < MAX_REPORTED_MARKERS:
-                        marker: dict[str, Any] = {
-                            "path": relative,
-                            "type": "file",
-                            "size_bytes": size,
-                        }
-                        if path.name.casefold() in REKORDBOX_FILE_MARKERS:
-                            before = entry.stat(follow_symlinks=False)
-                            marker["sha256"] = _sha256_regular(path)
-                            after = entry.stat(follow_symlinks=False)
-                            before_id = (before.st_size, before.st_mtime_ns, before.st_dev, before.st_ino)
-                            after_id = (after.st_size, after.st_mtime_ns, after.st_dev, after.st_ino)
-                            if before_id != after_id:
-                                raise RuntimeError(f"Rekordbox marker changed while being hashed: {path}")
-                        marker_paths.append(marker)
+                    if _is_rekordbox_marker(relative):
+                        counts["rekordbox_markers"] += 1
+                        if len(marker_paths) < MAX_REPORTED_MARKERS:
+                            marker: dict[str, Any] = {
+                                "path": relative,
+                                "type": "file",
+                                "size_bytes": size,
+                            }
+                            if path.name.casefold() in REKORDBOX_FILE_MARKERS:
+                                before = entry.stat(follow_symlinks=False)
+                                marker["sha256"] = _sha256_regular(path)
+                                after = entry.stat(follow_symlinks=False)
+                                before_id = (before.st_size, before.st_mtime_ns, before.st_dev, before.st_ino)
+                                after_id = (after.st_size, after.st_mtime_ns, after.st_dev, after.st_ino)
+                                if before_id != after_id:
+                                    raise RuntimeError(f"Rekordbox marker changed while being hashed: {path}")
+                            marker_paths.append(marker)
                     continue
+
                 counts["other_entries"] += 1
             except OSError as exc:
                 counts["entry_errors"] += 1
                 if len(errors) < MAX_REPORTED_ERRORS:
                     errors.append({"path": relative, "error": str(exc)})
 
+    error_total = int(counts["traversal_errors"] + counts["entry_errors"])
+    marker_total = int(counts["rekordbox_markers"])
+    top_total = int(counts["top_level_entries"])
     return {
         "file_count": int(counts["files"]),
         "directory_count": int(counts["directories"]),
         "audio_file_count": int(counts["audio_files"]),
         "audio_by_extension": dict(sorted(audio_by_extension.items())),
         "total_file_bytes": total_file_bytes,
-        "largest_file": {
-            "path": largest_file_path,
-            "size_bytes": largest_file_bytes,
-        } if largest_file_path is not None else None,
+        "largest_file": (
+            {"path": largest_file_path, "size_bytes": largest_file_bytes}
+            if largest_file_path is not None else None
+        ),
         "symlinks_skipped": int(counts["symlinks_skipped"]),
         "other_entries": int(counts["other_entries"]),
         "traversal_errors": int(counts["traversal_errors"]),
         "entry_errors": int(counts["entry_errors"]),
         "errors": errors,
-        "errors_truncated": (int(counts["traversal_errors"]) + int(counts["entry_errors"])) > len(errors),
+        "errors_truncated": error_total > len(errors),
+        "top_level_entry_count": top_total,
         "top_level": sorted(top_level, key=lambda item: item["name"].casefold()),
-        "top_level_truncated": len(top_level) >= MAX_TOP_LEVEL,
-        "rekordbox_markers": marker_paths,
-        "rekordbox_markers_truncated": len(marker_paths) >= MAX_REPORTED_MARKERS,
+        "top_level_truncated": top_total > len(top_level),
+        "rekordbox_marker_count": marker_total,
+        "rekordbox_markers": sorted(marker_paths, key=lambda item: item["path"].casefold()),
+        "rekordbox_markers_truncated": marker_total > len(marker_paths),
     }
 
 
@@ -265,10 +267,7 @@ def inventory(volume_path: Path) -> dict[str, Any]:
     capacity_after = _capacity(volume)
     after = _root_identity(volume)
 
-    same_root_object = (
-        before["st_dev"] == after["st_dev"]
-        and before["st_ino"] == after["st_ino"]
-    )
+    same_root_object = before["st_dev"] == after["st_dev"] and before["st_ino"] == after["st_ino"]
     capacity_valid = (
         capacity_after["total_bytes"] >= 0
         and capacity_after["free_bytes"] >= 0
@@ -276,19 +275,20 @@ def inventory(volume_path: Path) -> dict[str, Any]:
     )
     error_count = int(tree["traversal_errors"]) + int(tree["entry_errors"])
     health = "PASS"
-    health_reasons: list[str] = []
+    reasons: list[str] = []
     if not same_root_object:
         health = "FAIL"
-        health_reasons.append("mounted volume identity changed during inventory")
+        reasons.append("mounted volume identity changed during inventory")
     if not capacity_valid:
         health = "FAIL"
-        health_reasons.append("filesystem capacity values are inconsistent")
+        reasons.append("filesystem capacity values are inconsistent")
     if error_count:
         health = "FAIL"
-        health_reasons.append(f"{error_count} filesystem entries could not be inventoried")
+        reasons.append(f"{error_count} filesystem entries could not be inventoried")
     if tree["symlinks_skipped"]:
-        health_reasons.append(f"{tree['symlinks_skipped']} symlink entries were safely skipped")
+        reasons.append(f"{tree['symlinks_skipped']} symlink entries were safely skipped")
 
+    marker_count = int(tree["rekordbox_marker_count"])
     return {
         "tool": "usb_readonly_inventory",
         "tool_version": TOOL_VERSION,
@@ -313,18 +313,15 @@ def inventory(volume_path: Path) -> dict[str, Any]:
         },
         "inventory": tree,
         "rekordbox_presence": {
-            "marker_count": len(tree["rekordbox_markers"]),
-            "markers_found": bool(tree["rekordbox_markers"]),
+            "marker_count": marker_count,
+            "markers_found": marker_count > 0,
             "interpretation": (
                 "Rekordbox/Pioneer path or database markers were found; this does not by itself prove a complete or valid device export."
-                if tree["rekordbox_markers"]
+                if marker_count
                 else "No recognized Rekordbox/Pioneer markers were found; this does not prove the volume is empty or incompatible."
             ),
         },
-        "health": {
-            "status": health,
-            "reasons": health_reasons,
-        },
+        "health": {"status": health, "reasons": reasons},
     }
 
 
