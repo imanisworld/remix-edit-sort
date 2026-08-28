@@ -139,8 +139,54 @@ class RekordboxRelocationPreviewTests(unittest.TestCase):
         self.assertEqual(track["status"], "CHANGED")
         self.assertTrue(track["review_required"])
         self.assertFalse(track["bridge_eligible"])
-        self.assertIn("sha256_move_lineage", track["top_candidates"][0]["evidence"])
+        self.assertIn(
+            "historical_sha256_move_lineage",
+            track["top_candidates"][0]["evidence"],
+        )
+        self.assertIn("changed_after_sha256_move", track["top_candidates"][0]["conflicts"])
         self.assertIn("byte_size_changed", track["top_candidates"][0]["conflicts"])
+
+    def test_later_change_blocks_sha_move_even_without_rekordbox_size(self):
+        old = self.add_audio("Old/NoSize.mp3", b"original")
+        self.scan()
+        self.write_export([{"track_id": "1", "path": old, "name": "NoSize"}])
+        rb = self.import_xml()
+
+        new = self.library / "New" / "NoSize.mp3"
+        new.parent.mkdir(parents=True)
+        old.rename(new)
+        self.scan()
+        new.write_bytes(b"changed")
+        self.scan()
+
+        track = rekordbox_relocation_preview.build_preview(
+            self.db, import_id=int(rb["import_id"])
+        )["tracks"][0]
+        self.assertEqual(track["status"], "CHANGED")
+        self.assertFalse(track["bridge_eligible"])
+        self.assertIn(
+            "changed_after_sha256_move",
+            track["top_candidates"][0]["conflicts"],
+        )
+
+    def test_exact_current_path_changed_after_snapshot_requires_review(self):
+        exact = self.add_audio("Exact.mp3", b"first")
+        self.scan()
+        self.write_export([{"track_id": "1", "path": exact, "name": "Exact"}])
+        rb = self.import_xml()
+
+        exact.write_bytes(b"second-content")
+        self.scan()
+
+        track = rekordbox_relocation_preview.build_preview(
+            self.db, import_id=int(rb["import_id"])
+        )["tracks"][0]
+        self.assertEqual(track["status"], "CHANGED")
+        self.assertFalse(track["bridge_eligible"])
+        self.assertIn(
+            "changed_since_rekordbox_snapshot",
+            track["top_candidates"][0]["conflicts"],
+        )
 
     def test_newer_incomplete_scan_blocks_preview(self):
         exact = self.add_audio("Exact.mp3", b"exact")
