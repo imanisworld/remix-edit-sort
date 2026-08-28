@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Build a fail-closed, read-only Rekordbox relocation preview.
 
-Consumes the trusted local SQLite library index plus the latest completed
-Rekordbox XML import. It never opens or writes Rekordbox ``master.db``, never
-writes audio or Serato data, and opens SQLite in read-only/query-only mode.
-Output is JSON on stdout only.
+Consumes the trusted local SQLite library index plus a completed Rekordbox XML
+import. It never opens or writes Rekordbox ``master.db``, never writes audio or
+Serato data, and opens SQLite in read-only/query-only mode. Output is JSON on
+stdout only.
 """
 
 from __future__ import annotations
@@ -18,14 +18,17 @@ import sqlite3
 import sys
 import unicodedata
 from collections import defaultdict
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
 import library_index
 import rekordbox_index
 
-TOOL_VERSION = "1.0.0"
+
+TOOL_VERSION = "1.0.1"
 PREVIEW_SCHEMA_VERSION = 1
+
 STATUS_UNCHANGED = "UNCHANGED"
 STATUS_STRONG = "STRONG_CANDIDATE"
 STATUS_AMBIGUOUS = "AMBIGUOUS"
@@ -38,6 +41,7 @@ STATUSES = (
     STATUS_CHANGED,
     STATUS_MISSING,
 )
+
 DURATION_MATCH_TOLERANCE_SECONDS = 2.0
 DURATION_CONFLICT_TOLERANCE_SECONDS = 5.0
 STRONG_SCORE = 55
@@ -59,8 +63,9 @@ def _filename_identity(path: str) -> str:
 
 
 def _path_identity(path: str) -> str:
-    # Historical paths may no longer exist. They were stored canonically by
-    # the library index at scan time, so do not resolve them again now.
+    # Historical paths may no longer exist. They were stored canonically by the
+    # library index at scan time, so resolving them against today's filesystem
+    # could convert a missing historical path into the wrong identity.
     return library_index.mac_path_identity(
         unicodedata.normalize("NFC", os.path.abspath(path))
     )
@@ -152,7 +157,7 @@ def _validate_index_state(conn: sqlite3.Connection) -> dict[str, Any]:
         "completed_at": latest["completed_at"],
         "root": _required_meta(conn, "root_canonical"),
         "file_count": current_files,
-        # Successful scans already fail before replacing trusted state on
+        # Successful scans fail before replacing trusted state on
         # discovery/stability errors. This count is metadata parse coverage.
         "metadata_parse_error_count": int(latest["error_count"]),
     }
@@ -168,15 +173,18 @@ def _select_rekordbox_import(
         ).fetchone()
     else:
         row = conn.execute(
-            "SELECT * FROM rekordbox_imports WHERE import_id=? AND completed_successfully=1",
+            "SELECT * FROM rekordbox_imports "
+            "WHERE import_id=? AND completed_successfully=1",
             (import_id,),
         ).fetchone()
     if row is None:
         label = "latest completed" if import_id is None else str(import_id)
         raise RuntimeError(f"no completed Rekordbox import found for {label}")
+
     count = int(
         conn.execute(
-            "SELECT COUNT(*) FROM rekordbox_tracks WHERE import_id=?", (row["import_id"],)
+            "SELECT COUNT(*) FROM rekordbox_tracks WHERE import_id=?",
+            (row["import_id"],),
         ).fetchone()[0]
     )
     if count != int(row["collection_track_count"]):
@@ -185,7 +193,9 @@ def _select_rekordbox_import(
 
 
 def _latest_serato_import(conn: sqlite3.Connection) -> sqlite3.Row | None:
-    if not _table_exists(conn, "serato_imports") or not _table_exists(conn, "serato_tracks"):
+    if not _table_exists(conn, "serato_imports") or not _table_exists(
+        conn, "serato_tracks"
+    ):
         return None
     return conn.execute(
         "SELECT * FROM serato_imports WHERE completed_successfully=1 "
@@ -205,6 +215,49 @@ def _attributes(row: sqlite3.Row) -> dict[str, Any]:
             f"non-object attributes_json for Rekordbox track {row['rekordbox_track_id']}"
         )
     return parsed
+
+
+def _source_snapshot_boundary(rb_import: sqlite3.Row) -> str:
+    """Conservative time boundary for evidence that a file changed after XML."""
+    imported = str(rb_import["completed_at"])
+    try:
+        fingerprint = json.loads(rb_import["source_fingerprint_json"])
+        mtime_ns = int(fingerprint["mtime_ns"])
+        source_mtime = datetime.fromtimestamp(
+            mtime_ns / 1_000_000_000, tz=timezone.utc
+        ).isoformat()
+    except (KeyError, TypeError, ValueError, json.JSONDecodeError, OSError):
+        return imported
+    # If the XML is old, use its mtime. If a copy operation made its mtime look
+    # newer than the import, never move the boundary past the import itself.
+    return min(imported, source_mtime)
+
+
+def _snapshot_baseline_scan_id(
+    conn: sqlite3.Connection, rb_import: sqlite3.Row
+) -> int | None:
+    row = conn.execute(
+        "SELECT scan_id FROM scans "
+        "WHERE completed_successfully=1 AND completed_at IS NOT NULL AND completed_at <= ? "
+        "ORDER BY scan_id DESC LIMIT 1",
+        (_source_snapshot_boundary(rb_import),),
+    ).fetchone()
+    return int(row["scan_id"]) if row is not None else None
+
+
+def _changed_since_scan(
+    conn: sqlite3.Connection, baseline_scan_id: int | None
+) -> set[int]:
+    if baseline_scan_id is None:
+        return set()
+    return {
+        int(row["file_id"])
+        for row in conn.execute(
+            "SELECT DISTINCT file_id FROM scan_files "
+            "WHERE scan_id > ? AND state='CHANGED' AND file_id IS NOT NULL",
+            (baseline_scan_id,),
+        )
+    }
 
 
 def _row_payload(row: sqlite3.Row) -> dict[str, Any]:
@@ -248,36 +301,56 @@ def _candidate_indexes(
     return by_path, by_filename, by_size, by_artist_title
 
 
-def _move_history(conn: sqlite3.Connection) -> dict[str, set[int]]:
-    history: dict[str, set[int]] = defaultdict(set)
-    for row in conn.execute(
-        "SELECT file_id,prior_canonical_path FROM scan_files "
-        "WHERE state='MOVED' AND prior_canonical_path IS NOT NULL AND file_id IS NOT NULL"
-    ):
-        history[_path_identity(row["prior_canonical_path"])].add(int(row["file_id"]))
-    return history
+def _move_history(
+    conn: sqlite3.Connection,
+) -> tuple[dict[str, set[int]], dict[str, set[int]]]:
+    """Return current-valid and later-changed SHA move lineage by prior path."""
+    trusted: dict[str, set[int]] = defaultdict(set)
+    invalidated: dict[str, set[int]] = defaultdict(set)
+    moves = list(
+        conn.execute(
+            "SELECT scan_id,file_id,prior_canonical_path FROM scan_files "
+            "WHERE state='MOVED' AND prior_canonical_path IS NOT NULL "
+            "AND file_id IS NOT NULL ORDER BY scan_id"
+        )
+    )
+    for row in moves:
+        file_id = int(row["file_id"])
+        changed_later = conn.execute(
+            "SELECT 1 FROM scan_files "
+            "WHERE file_id=? AND scan_id>? AND state='CHANGED' LIMIT 1",
+            (file_id, row["scan_id"]),
+        ).fetchone()
+        target = invalidated if changed_later is not None else trusted
+        target[_path_identity(row["prior_canonical_path"])].add(file_id)
+    return trusted, invalidated
 
 
 def _serato_evidence(
     conn: sqlite3.Connection, serato_import: sqlite3.Row | None
 ) -> tuple[dict[str, set[int]], set[int]]:
-    by_old_path: dict[str, set[int]] = defaultdict(set)
+    by_path: dict[str, set[int]] = defaultdict(set)
     exact_file_ids: set[int] = set()
     if serato_import is None:
-        return by_old_path, exact_file_ids
+        return by_path, exact_file_ids
     for row in conn.execute(
         "SELECT absolute_path,match_state,file_id FROM serato_tracks WHERE import_id=?",
         (serato_import["import_id"],),
     ):
         if row["match_state"] == "EXACT_PATH" and row["file_id"] is not None:
             file_id = int(row["file_id"])
-            by_old_path[_path_identity(row["absolute_path"])].add(file_id)
+            by_path[_path_identity(row["absolute_path"])].add(file_id)
             exact_file_ids.add(file_id)
-    return by_old_path, exact_file_ids
+    return by_path, exact_file_ids
 
 
-def _metadata_pair(attributes: dict[str, Any]) -> tuple[str | None, str | None]:
-    return _normalize_text(attributes.get("Artist")), _normalize_text(attributes.get("Name"))
+def _metadata_pair(
+    attributes: dict[str, Any],
+) -> tuple[str | None, str | None]:
+    return (
+        _normalize_text(attributes.get("Artist")),
+        _normalize_text(attributes.get("Name")),
+    )
 
 
 def _candidate_set(
@@ -288,13 +361,16 @@ def _candidate_set(
     by_size: dict[int, list[sqlite3.Row]],
     by_artist_title: dict[tuple[str, str], list[sqlite3.Row]],
     move_history: dict[str, set[int]],
-    serato_by_old_path: dict[str, set[int]],
-) -> tuple[list[sqlite3.Row], set[int], set[int]]:
+    invalidated_move_history: dict[str, set[int]],
+    serato_by_path: dict[str, set[int]],
+) -> tuple[list[sqlite3.Row], set[int], set[int], set[int]]:
     ids: set[int] = set()
     old_path_id = _path_identity(rb_row["absolute_path"])
     history_ids = set(move_history.get(old_path_id, set()))
-    serato_ids = set(serato_by_old_path.get(old_path_id, set()))
+    invalidated_history_ids = set(invalidated_move_history.get(old_path_id, set()))
+    serato_ids = set(serato_by_path.get(old_path_id, set()))
     ids.update(history_ids)
+    ids.update(invalidated_history_ids)
     ids.update(serato_ids)
     ids.update(
         int(row["file_id"])
@@ -304,6 +380,7 @@ def _candidate_set(
     rb_size = _safe_int(attributes.get("Size"))
     if rb_size is not None:
         size_rows = by_size.get(rb_size, [])
+        # Byte size is useful but not unique enough to explode a candidate set.
         if len(size_rows) <= 20:
             ids.update(int(row["file_id"]) for row in size_rows)
 
@@ -313,7 +390,13 @@ def _candidate_set(
             int(row["file_id"])
             for row in by_artist_title.get((artist, title), [])
         )
-    return [by_file_id[file_id] for file_id in ids if file_id in by_file_id], history_ids, serato_ids
+
+    return (
+        [by_file_id[file_id] for file_id in ids if file_id in by_file_id],
+        history_ids,
+        invalidated_history_ids,
+        serato_ids,
+    )
 
 
 def _compare_candidate(
@@ -322,8 +405,10 @@ def _compare_candidate(
     candidate: sqlite3.Row,
     *,
     history_ids: set[int],
+    invalidated_history_ids: set[int],
     serato_old_path_ids: set[int],
     serato_exact_file_ids: set[int],
+    changed_since_snapshot_ids: set[int],
 ) -> dict[str, Any]:
     file_id = int(candidate["file_id"])
     score = 0
@@ -334,9 +419,18 @@ def _compare_candidate(
     if file_id in history_ids:
         score += 100
         evidence.append("sha256_move_lineage")
+    elif file_id in invalidated_history_ids:
+        # The move itself was proven by whole-file SHA-256, but a later scan
+        # proved those bytes changed. Keep it as identity evidence, never as
+        # automatic relocation authority.
+        score += 70
+        evidence.append("historical_sha256_move_lineage")
+        conflicts.append("changed_after_sha256_move")
+
     if file_id in serato_old_path_ids:
         score += 70
-        evidence.append("exact_serato_old_path_link")
+        evidence.append("exact_serato_path_link")
+
     if _filename_identity(candidate["canonical_path"]) == _filename_identity(
         rb_row["absolute_path"]
     ):
@@ -389,10 +483,17 @@ def _compare_candidate(
     if rb_ext and rb_ext == str(candidate["extension"]).casefold():
         score += 2
         evidence.append("extension_exact")
+
     if file_id in serato_exact_file_ids:
         score += 5
         evidence.append("current_file_has_exact_serato_reference")
 
+    if file_id in changed_since_snapshot_ids:
+        conflicts.append("changed_since_rekordbox_snapshot")
+
+    # Keep deterministic, non-duplicated evidence when two independent history
+    # rules report the same material change.
+    conflicts = list(dict.fromkeys(conflicts))
     return {
         **_row_payload(candidate),
         "score": score,
@@ -403,26 +504,16 @@ def _compare_candidate(
     }
 
 
-def _exact_path_status(
-    rb_row: sqlite3.Row, attributes: dict[str, Any], exact: sqlite3.Row
-) -> tuple[str, dict[str, Any]]:
-    compared = _compare_candidate(
-        rb_row,
-        attributes,
-        exact,
-        history_ids=set(),
-        serato_old_path_ids=set(),
-        serato_exact_file_ids=set(),
-    )
-    return (STATUS_CHANGED if compared["material_change"] else STATUS_UNCHANGED), compared
-
-
-def _classify_ranked(ranked: list[dict[str, Any]]) -> tuple[str, dict[str, Any] | None]:
+def _classify_ranked(
+    ranked: list[dict[str, Any]],
+) -> tuple[str, dict[str, Any] | None]:
     if not ranked or ranked[0]["score"] < MIN_PLAUSIBLE_SCORE:
         return STATUS_MISSING, None
     top = ranked[0]
     second = ranked[1] if len(ranked) > 1 else None
-    separated = second is None or top["score"] - second["score"] >= AMBIGUITY_MARGIN
+    separated = (
+        second is None or top["score"] - second["score"] >= AMBIGUITY_MARGIN
+    )
     if top["material_change"] and top["score"] >= STRONG_SCORE and separated:
         return STATUS_CHANGED, top
     if top["score"] >= STRONG_SCORE and separated:
@@ -439,16 +530,29 @@ def _build_track_preview(
     by_size: dict[int, list[sqlite3.Row]],
     by_artist_title: dict[tuple[str, str], list[sqlite3.Row]],
     move_history: dict[str, set[int]],
-    serato_by_old_path: dict[str, set[int]],
+    invalidated_move_history: dict[str, set[int]],
+    serato_by_path: dict[str, set[int]],
     serato_exact_file_ids: set[int],
+    changed_since_snapshot_ids: set[int],
 ) -> dict[str, Any]:
     attrs = _attributes(rb_row)
     old_path = rb_row["absolute_path"]
     exact = by_path.get(_path_identity(old_path))
+
     if exact is not None:
-        status, compared = _exact_path_status(rb_row, attrs, exact)
+        compared = _compare_candidate(
+            rb_row,
+            attrs,
+            exact,
+            history_ids=set(),
+            invalidated_history_ids=set(),
+            serato_old_path_ids=set(),
+            serato_exact_file_ids=serato_exact_file_ids,
+            changed_since_snapshot_ids=changed_since_snapshot_ids,
+        )
         compared["evidence"].append("exact_current_path")
         compared["score"] += 200
+        status = STATUS_CHANGED if compared["material_change"] else STATUS_UNCHANGED
         return {
             "rekordbox_track_id": rb_row["rekordbox_track_id"],
             "old_path": old_path,
@@ -462,7 +566,12 @@ def _build_track_preview(
             "top_candidates": [compared],
         }
 
-    candidates, history_ids, serato_old_path_ids = _candidate_set(
+    (
+        candidates,
+        history_ids,
+        invalidated_history_ids,
+        serato_old_path_ids,
+    ) = _candidate_set(
         rb_row,
         attrs,
         by_file_id,
@@ -470,7 +579,8 @@ def _build_track_preview(
         by_size,
         by_artist_title,
         move_history,
-        serato_by_old_path,
+        invalidated_move_history,
+        serato_by_path,
     )
     ranked = sorted(
         (
@@ -479,8 +589,10 @@ def _build_track_preview(
                 attrs,
                 candidate,
                 history_ids=history_ids,
+                invalidated_history_ids=invalidated_history_ids,
                 serato_old_path_ids=serato_old_path_ids,
                 serato_exact_file_ids=serato_exact_file_ids,
+                changed_since_snapshot_ids=changed_since_snapshot_ids,
             )
             for candidate in candidates
         ),
@@ -501,7 +613,9 @@ def _build_track_preview(
     }
 
 
-def build_preview(db_path: Path, *, import_id: int | None = None) -> dict[str, Any]:
+def build_preview(
+    db_path: Path, *, import_id: int | None = None
+) -> dict[str, Any]:
     conn = _readonly_connect(db_path)
     try:
         library_state = _validate_index_state(conn)
@@ -509,15 +623,28 @@ def build_preview(db_path: Path, *, import_id: int | None = None) -> dict[str, A
         serato_import = _latest_serato_import(conn)
         current_rows = list(conn.execute("SELECT * FROM files ORDER BY file_id"))
         by_file_id = {int(row["file_id"]): row for row in current_rows}
-        by_path, by_filename, by_size, by_artist_title = _candidate_indexes(current_rows)
-        move_history = _move_history(conn)
-        serato_by_old_path, serato_exact_file_ids = _serato_evidence(conn, serato_import)
+        (
+            by_path,
+            by_filename,
+            by_size,
+            by_artist_title,
+        ) = _candidate_indexes(current_rows)
+        move_history, invalidated_move_history = _move_history(conn)
+        serato_by_path, serato_exact_file_ids = _serato_evidence(
+            conn, serato_import
+        )
+        baseline_scan_id = _snapshot_baseline_scan_id(conn, rb_import)
+        changed_since_snapshot_ids = _changed_since_scan(
+            conn, baseline_scan_id
+        )
         rb_rows = list(
             conn.execute(
-                "SELECT * FROM rekordbox_tracks WHERE import_id=? ORDER BY rekordbox_track_id",
+                "SELECT * FROM rekordbox_tracks "
+                "WHERE import_id=? ORDER BY rekordbox_track_id",
                 (rb_import["import_id"],),
             )
         )
+
         tracks = [
             _build_track_preview(
                 row,
@@ -527,14 +654,17 @@ def build_preview(db_path: Path, *, import_id: int | None = None) -> dict[str, A
                 by_size=by_size,
                 by_artist_title=by_artist_title,
                 move_history=move_history,
-                serato_by_old_path=serato_by_old_path,
+                invalidated_move_history=invalidated_move_history,
+                serato_by_path=serato_by_path,
                 serato_exact_file_ids=serato_exact_file_ids,
+                changed_since_snapshot_ids=changed_since_snapshot_ids,
             )
             for row in rb_rows
         ]
         counts = {status: 0 for status in STATUSES}
         for track in tracks:
             counts[track["status"]] += 1
+
         return {
             "tool": "rekordbox_relocation_preview",
             "tool_version": TOOL_VERSION,
@@ -554,8 +684,11 @@ def build_preview(db_path: Path, *, import_id: int | None = None) -> dict[str, A
                 "import_id": int(rb_import["import_id"]),
                 "completed_at": rb_import["completed_at"],
                 "xml_path": rb_import["xml_path"],
-                "source_fingerprint": json.loads(rb_import["source_fingerprint_json"]),
+                "source_fingerprint": json.loads(
+                    rb_import["source_fingerprint_json"]
+                ),
                 "collection_tracks": int(rb_import["collection_track_count"]),
+                "evidence_baseline_scan_id": baseline_scan_id,
             },
             "serato": (
                 {
@@ -574,8 +707,12 @@ def build_preview(db_path: Path, *, import_id: int | None = None) -> dict[str, A
                 "ambiguous": counts[STATUS_AMBIGUOUS],
                 "changed": counts[STATUS_CHANGED],
                 "missing": counts[STATUS_MISSING],
-                "bridge_eligible": sum(bool(track["bridge_eligible"]) for track in tracks),
-                "review_required": sum(bool(track["review_required"]) for track in tracks),
+                "bridge_eligible": sum(
+                    bool(track["bridge_eligible"]) for track in tracks
+                ),
+                "review_required": sum(
+                    bool(track["review_required"]) for track in tracks
+                ),
             },
             "tracks": tracks,
         }
@@ -599,7 +736,10 @@ def main(argv: list[str] | None = None) -> int:
     try:
         result = build_preview(args.db, import_id=args.import_id)
     except Exception as exc:
-        print(json.dumps({"ok": False, "error": str(exc)}, indent=2), file=sys.stderr)
+        print(
+            json.dumps({"ok": False, "error": str(exc)}, indent=2),
+            file=sys.stderr,
+        )
         return 1
     print(json.dumps(result, indent=2, ensure_ascii=False))
     return 0
