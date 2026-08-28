@@ -104,7 +104,10 @@ class RekordboxRelocationPreviewTests(unittest.TestCase):
         self.assertEqual(tracks["1"]["status"], "UNCHANGED")
         self.assertTrue(tracks["1"]["bridge_eligible"])
         self.assertEqual(tracks["2"]["status"], "STRONG_CANDIDATE")
-        self.assertEqual(tracks["2"]["proposed_path"], str(destination))
+        self.assertEqual(
+            tracks["2"]["proposed_path"],
+            library_index.canonicalize_path(destination),
+        )
         self.assertTrue(tracks["2"]["bridge_eligible"])
         self.assertIn("sha256_move_lineage", tracks["2"]["top_candidates"][0]["evidence"])
         self.assertEqual(tracks["3"]["status"], "AMBIGUOUS")
