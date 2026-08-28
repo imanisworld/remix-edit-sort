@@ -63,11 +63,11 @@ def _filename_identity(path: str) -> str:
 
 
 def _path_identity(path: str) -> str:
-    # Historical paths may no longer exist. They were stored canonically by the
-    # library index at scan time, so resolving them against today's filesystem
-    # could convert a missing historical path into the wrong identity.
+    # Use the exact same realpath + NFC + case-fold identity as the persistent
+    # library index. realpath also normalizes existing symlinked path prefixes
+    # such as macOS /var -> /private/var even when the final old file is gone.
     return library_index.mac_path_identity(
-        unicodedata.normalize("NFC", os.path.abspath(path))
+        library_index.canonicalize_path(Path(path))
     )
 
 
