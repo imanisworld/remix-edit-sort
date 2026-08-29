@@ -24,9 +24,10 @@ from typing import Any, Iterable
 
 import library_index
 import rekordbox_index
+import audio_payload
 
 
-TOOL_VERSION = "1.0.1"
+TOOL_VERSION = "1.1.0"
 PREVIEW_SCHEMA_VERSION = 1
 
 STATUS_UNCHANGED = "UNCHANGED"
@@ -60,6 +61,51 @@ def _normalize_text(value: Any) -> str | None:
 
 def _filename_identity(path: str) -> str:
     return unicodedata.normalize("NFC", Path(path).name).casefold()
+
+
+def _loose_identity(value: Any) -> str | None:
+    """Punctuation-insensitive identity used only to retrieve candidates."""
+    normalized = _normalize_text(value)
+    if normalized is None:
+        return None
+    decomposed = unicodedata.normalize("NFKD", normalized)
+    identity = "".join(character for character in decomposed if character.isalnum())
+    return identity or None
+
+
+def _loose_filename_identity(path: str) -> str | None:
+    return _loose_identity(Path(path).stem)
+
+
+def _identity_tokens(value: Any) -> set[str]:
+    normalized = _normalize_text(value)
+    if normalized is None:
+        return set()
+    decomposed = unicodedata.normalize("NFKD", normalized)
+    tokens: set[str] = set()
+    current: list[str] = []
+    for character in decomposed:
+        if character.isalnum():
+            current.append(character)
+        elif current:
+            token = "".join(current)
+            if len(token) >= 4:
+                tokens.add(token)
+            current = []
+    if current:
+        token = "".join(current)
+        if len(token) >= 4:
+            tokens.add(token)
+    return tokens
+
+
+def _component_identity_match(left: Any, right: Any) -> bool:
+    left_identity = _loose_identity(left)
+    right_identity = _loose_identity(right)
+    if not left_identity or not right_identity or left_identity == right_identity:
+        return False
+    shorter, longer = sorted((left_identity, right_identity), key=len)
+    return len(shorter) >= 5 and shorter in longer
 
 
 def _path_identity(path: str) -> str:
@@ -283,22 +329,46 @@ def _candidate_indexes(
 ) -> tuple[
     dict[str, sqlite3.Row],
     dict[str, list[sqlite3.Row]],
+    dict[str, list[sqlite3.Row]],
     dict[int, list[sqlite3.Row]],
     dict[tuple[str, str], list[sqlite3.Row]],
+    dict[str, list[sqlite3.Row]],
+    dict[str, list[sqlite3.Row]],
 ]:
     by_path: dict[str, sqlite3.Row] = {}
     by_filename: dict[str, list[sqlite3.Row]] = defaultdict(list)
+    by_loose_filename: dict[str, list[sqlite3.Row]] = defaultdict(list)
     by_size: dict[int, list[sqlite3.Row]] = defaultdict(list)
     by_artist_title: dict[tuple[str, str], list[sqlite3.Row]] = defaultdict(list)
+    by_loose_title: dict[str, list[sqlite3.Row]] = defaultdict(list)
+    by_identity_token: dict[str, list[sqlite3.Row]] = defaultdict(list)
     for row in rows:
         by_path[row["path_identity"]] = row
         by_filename[_filename_identity(row["canonical_path"])].append(row)
+        loose_filename = _loose_filename_identity(row["canonical_path"])
+        if loose_filename:
+            by_loose_filename[loose_filename].append(row)
         by_size[int(row["size_bytes"])].append(row)
         artist = _normalize_text(row["artist"])
         title = _normalize_text(row["title"])
         if artist and title:
             by_artist_title[(artist, title)].append(row)
-    return by_path, by_filename, by_size, by_artist_title
+        loose_title = _loose_identity(row["title"])
+        if loose_title:
+            by_loose_title[loose_title].append(row)
+        for token in _identity_tokens(row["title"]) | _identity_tokens(
+            Path(row["canonical_path"]).stem
+        ):
+            by_identity_token[token].append(row)
+    return (
+        by_path,
+        by_filename,
+        by_loose_filename,
+        by_size,
+        by_artist_title,
+        by_loose_title,
+        by_identity_token,
+    )
 
 
 def _move_history(
@@ -358,8 +428,11 @@ def _candidate_set(
     attributes: dict[str, Any],
     by_file_id: dict[int, sqlite3.Row],
     by_filename: dict[str, list[sqlite3.Row]],
+    by_loose_filename: dict[str, list[sqlite3.Row]],
     by_size: dict[int, list[sqlite3.Row]],
     by_artist_title: dict[tuple[str, str], list[sqlite3.Row]],
+    by_loose_title: dict[str, list[sqlite3.Row]],
+    by_identity_token: dict[str, list[sqlite3.Row]],
     move_history: dict[str, set[int]],
     invalidated_move_history: dict[str, set[int]],
     serato_by_path: dict[str, set[int]],
@@ -376,6 +449,11 @@ def _candidate_set(
         int(row["file_id"])
         for row in by_filename.get(_filename_identity(rb_row["absolute_path"]), [])
     )
+    loose_filename = _loose_filename_identity(rb_row["absolute_path"])
+    if loose_filename:
+        loose_filename_rows = by_loose_filename.get(loose_filename, [])
+        if len(loose_filename_rows) <= 20:
+            ids.update(int(row["file_id"]) for row in loose_filename_rows)
 
     rb_size = _safe_int(attributes.get("Size"))
     if rb_size is not None:
@@ -390,6 +468,28 @@ def _candidate_set(
             int(row["file_id"])
             for row in by_artist_title.get((artist, title), [])
         )
+    loose_title = _loose_identity(attributes.get("Name"))
+    if loose_title:
+        loose_title_rows = by_loose_title.get(loose_title, [])
+        if len(loose_title_rows) <= 20:
+            ids.update(int(row["file_id"]) for row in loose_title_rows)
+    retrieval_tokens = _identity_tokens(attributes.get("Name")) | _identity_tokens(
+        Path(rb_row["absolute_path"]).stem
+    )
+    rb_duration = _safe_float(attributes.get("TotalTime"))
+    for token in retrieval_tokens:
+        token_rows = by_identity_token.get(token, [])
+        if len(token_rows) <= 20:
+            ids.update(int(row["file_id"]) for row in token_rows)
+        elif rb_duration is not None:
+            duration_rows = [
+                row
+                for row in token_rows
+                if (duration := _safe_float(row["duration_seconds"])) is not None
+                and abs(duration - rb_duration) <= DURATION_MATCH_TOLERANCE_SECONDS
+            ]
+            if len(duration_rows) <= 20:
+                ids.update(int(row["file_id"]) for row in duration_rows)
 
     return (
         [by_file_id[file_id] for file_id in ids if file_id in by_file_id],
@@ -415,6 +515,7 @@ def _compare_candidate(
     evidence: list[str] = []
     conflicts: list[str] = []
     differences: list[str] = []
+    payload_summary: dict[str, Any] | None = None
 
     if file_id in history_ids:
         score += 100
@@ -431,11 +532,23 @@ def _compare_candidate(
         score += 70
         evidence.append("exact_serato_path_link")
 
-    if _filename_identity(candidate["canonical_path"]) == _filename_identity(
+    exact_filename = _filename_identity(candidate["canonical_path"]) == _filename_identity(
         rb_row["absolute_path"]
-    ):
+    )
+    if exact_filename:
         score += 25
         evidence.append("filename_exact")
+    elif _loose_filename_identity(candidate["canonical_path"]) == _loose_filename_identity(
+        rb_row["absolute_path"]
+    ):
+        score += 20
+        evidence.append("filename_loose")
+    elif _component_identity_match(
+        Path(candidate["canonical_path"]).stem,
+        Path(rb_row["absolute_path"]).stem,
+    ):
+        score += 15
+        evidence.append("filename_component")
 
     rb_size = _safe_int(attributes.get("Size"))
     if rb_size is not None:
@@ -443,8 +556,41 @@ def _compare_candidate(
             score += 25
             evidence.append("byte_size_exact")
         else:
-            conflicts.append("byte_size_changed")
-            score -= 25
+            differences.append("container_size_changed")
+            candidate_path = Path(candidate["display_path"])
+            before = candidate_path.stat()
+            if (
+                before.st_size != int(candidate["size_bytes"])
+                or before.st_mtime_ns != int(candidate["mtime_ns"])
+            ):
+                raise RuntimeError(
+                    f"candidate changed since trusted library scan: {candidate_path}"
+                )
+            try:
+                payload = audio_payload.payload_digest(candidate_path)
+            except Exception as exc:
+                conflicts.append("audio_payload_unavailable")
+                differences.append(f"audio_payload_error:{type(exc).__name__}")
+                score -= 25
+            else:
+                after = candidate_path.stat()
+                if (
+                    after.st_size != before.st_size
+                    or after.st_mtime_ns != before.st_mtime_ns
+                ):
+                    raise RuntimeError(
+                        f"candidate changed during audio-payload read: {candidate_path}"
+                    )
+                evidence.append("audio_payload_measured")
+                payload_summary = {
+                    "size_bytes": payload.size_bytes,
+                    "sha256": payload.sha256,
+                }
+                if payload.size_bytes <= rb_size:
+                    evidence.append("audio_payload_compatible_with_recorded_size")
+                else:
+                    conflicts.append("audio_payload_exceeds_recorded_size")
+                    score -= 25
 
     rb_duration = _safe_float(attributes.get("TotalTime"))
     current_duration = _safe_float(candidate["duration_seconds"])
@@ -468,6 +614,18 @@ def _compare_candidate(
             if rb_value == current_value:
                 score += points
                 evidence.append(f"{current_name}_exact")
+            elif (
+                current_name in {"title", "artist"}
+                and _loose_identity(rb_value) == _loose_identity(current_value)
+            ):
+                loose_points = points if current_name == "title" else 10
+                score += loose_points
+                evidence.append(f"{current_name}_loose")
+            elif current_name == "title" and _component_identity_match(
+                rb_value, current_value
+            ):
+                score += points
+                evidence.append("title_component")
             else:
                 differences.append(f"{current_name}_changed")
 
@@ -500,6 +658,7 @@ def _compare_candidate(
         "evidence": evidence,
         "conflicts": conflicts,
         "differences": differences,
+        "audio_payload": payload_summary,
         "material_change": bool(conflicts),
     }
 
@@ -527,8 +686,11 @@ def _build_track_preview(
     by_path: dict[str, sqlite3.Row],
     by_file_id: dict[int, sqlite3.Row],
     by_filename: dict[str, list[sqlite3.Row]],
+    by_loose_filename: dict[str, list[sqlite3.Row]],
     by_size: dict[int, list[sqlite3.Row]],
     by_artist_title: dict[tuple[str, str], list[sqlite3.Row]],
+    by_loose_title: dict[str, list[sqlite3.Row]],
+    by_identity_token: dict[str, list[sqlite3.Row]],
     move_history: dict[str, set[int]],
     invalidated_move_history: dict[str, set[int]],
     serato_by_path: dict[str, set[int]],
@@ -576,8 +738,11 @@ def _build_track_preview(
         attrs,
         by_file_id,
         by_filename,
+        by_loose_filename,
         by_size,
         by_artist_title,
+        by_loose_title,
+        by_identity_token,
         move_history,
         invalidated_move_history,
         serato_by_path,
@@ -626,8 +791,11 @@ def build_preview(
         (
             by_path,
             by_filename,
+            by_loose_filename,
             by_size,
             by_artist_title,
+            by_loose_title,
+            by_identity_token,
         ) = _candidate_indexes(current_rows)
         move_history, invalidated_move_history = _move_history(conn)
         serato_by_path, serato_exact_file_ids = _serato_evidence(
@@ -651,8 +819,11 @@ def build_preview(
                 by_path=by_path,
                 by_file_id=by_file_id,
                 by_filename=by_filename,
+                by_loose_filename=by_loose_filename,
                 by_size=by_size,
                 by_artist_title=by_artist_title,
+                by_loose_title=by_loose_title,
+                by_identity_token=by_identity_token,
                 move_history=move_history,
                 invalidated_move_history=invalidated_move_history,
                 serato_by_path=serato_by_path,

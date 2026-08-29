@@ -69,6 +69,32 @@ class RekordboxRelocationPreviewTests(unittest.TestCase):
     def import_xml(self) -> dict[str, object]:
         return rekordbox_index.import_rekordbox(self.xml, self.db)
 
+    def set_index_metadata(
+        self,
+        path: Path,
+        *,
+        title: str,
+        artist: str,
+        duration: float,
+    ) -> None:
+        conn = sqlite3.connect(self.db)
+        try:
+            conn.execute(
+                "UPDATE files SET title=?,artist=?,album='Album',duration_seconds=? WHERE display_path=?",
+                (title, artist, duration, library_index.canonicalize_path(path)),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
+    @staticmethod
+    def tagged_mp3(payload: bytes, tag_payload: bytes) -> bytes:
+        size = len(tag_payload)
+        synchsafe = bytes(
+            ((size >> 21) & 0x7F, (size >> 14) & 0x7F, (size >> 7) & 0x7F, size & 0x7F)
+        )
+        return b"ID3\x04\x00\x00" + synchsafe + tag_payload + payload
+
     def test_read_only_preview_classifies_unchanged_strong_ambiguous_and_missing(self):
         exact = self.add_audio("Exact.mp3", b"exact-current")
         moved = self.add_audio("Old/Moved.mp3", b"moved-payload")
@@ -147,7 +173,195 @@ class RekordboxRelocationPreviewTests(unittest.TestCase):
             track["top_candidates"][0]["evidence"],
         )
         self.assertIn("changed_after_sha256_move", track["top_candidates"][0]["conflicts"])
-        self.assertIn("byte_size_changed", track["top_candidates"][0]["conflicts"])
+        self.assertIn(
+            "audio_payload_exceeds_recorded_size",
+            track["top_candidates"][0]["conflicts"],
+        )
+        self.assertIn(
+            "container_size_changed",
+            track["top_candidates"][0]["differences"],
+        )
+
+    def test_tag_only_size_drift_is_strong_when_payload_fits_old_file(self):
+        payload = b"encoded-audio" * 100
+        current = self.add_audio(
+            "Current/Track.mp3",
+            self.tagged_mp3(payload, b"new-tags" * 100),
+        )
+        self.scan()
+        self.set_index_metadata(
+            current, title="Track", artist="Artist", duration=200.0
+        )
+        old = self.tmp / "old-root" / "Track.mp3"
+        old_size = len(self.tagged_mp3(payload, b"old"))
+        self.write_export(
+            [
+                {
+                    "track_id": "1",
+                    "path": old,
+                    "name": "Track",
+                    "artist": "Artist",
+                    "size": old_size,
+                    "total_time": 200,
+                }
+            ]
+        )
+        rb = self.import_xml()
+
+        track = rekordbox_relocation_preview.build_preview(
+            self.db, import_id=int(rb["import_id"])
+        )["tracks"][0]
+        top = track["top_candidates"][0]
+        self.assertEqual(track["status"], "STRONG_CANDIDATE")
+        self.assertTrue(track["bridge_eligible"])
+        self.assertIn("container_size_changed", top["differences"])
+        self.assertIn("audio_payload_measured", top["evidence"])
+        self.assertIn("audio_payload_compatible_with_recorded_size", top["evidence"])
+        self.assertEqual(top["audio_payload"]["size_bytes"], len(payload))
+        self.assertNotIn("audio_payload_exceeds_recorded_size", top["conflicts"])
+
+    def test_payload_larger_than_old_whole_file_remains_review_only(self):
+        payload = b"replacement-audio" * 100
+        current = self.add_audio(
+            "Current/Track.mp3",
+            self.tagged_mp3(payload, b"tags"),
+        )
+        self.scan()
+        self.set_index_metadata(
+            current, title="Track", artist="Artist", duration=200.0
+        )
+        old = self.tmp / "old-root" / "Track.mp3"
+        self.write_export(
+            [
+                {
+                    "track_id": "1",
+                    "path": old,
+                    "name": "Track",
+                    "artist": "Artist",
+                    "size": len(payload) - 1,
+                    "total_time": 200,
+                }
+            ]
+        )
+        rb = self.import_xml()
+
+        track = rekordbox_relocation_preview.build_preview(
+            self.db, import_id=int(rb["import_id"])
+        )["tracks"][0]
+        top = track["top_candidates"][0]
+        self.assertEqual(track["status"], "CHANGED")
+        self.assertFalse(track["bridge_eligible"])
+        self.assertIn("audio_payload_exceeds_recorded_size", top["conflicts"])
+
+    def test_loose_title_and_filename_retrieve_punctuation_drift(self):
+        current = self.add_audio("Current/l.e.s artistes.mp3", b"audio")
+        self.scan()
+        self.set_index_metadata(
+            current,
+            title="L.E.S Artistes",
+            artist="Santogold",
+            duration=205.0,
+        )
+        old = self.tmp / "old-root" / "L.E.S. Artistes.mp3"
+        self.write_export(
+            [
+                {
+                    "track_id": "1",
+                    "path": old,
+                    "name": "L.E.S. Artistes",
+                    "artist": "Santigold",
+                    "total_time": 205,
+                }
+            ]
+        )
+        rb = self.import_xml()
+
+        track = rekordbox_relocation_preview.build_preview(
+            self.db, import_id=int(rb["import_id"])
+        )["tracks"][0]
+        self.assertEqual(track["status"], "STRONG_CANDIDATE")
+        self.assertEqual(
+            track["proposed_path"], library_index.canonicalize_path(current)
+        )
+        self.assertIn("filename_loose", track["top_candidates"][0]["evidence"])
+        self.assertIn("title_loose", track["top_candidates"][0]["evidence"])
+
+    def test_combined_old_name_retrieves_split_current_artist_and_title(self):
+        current = self.add_audio("Current/Cascara.mp3", b"audio")
+        self.scan()
+        self.set_index_metadata(
+            current,
+            title="Cascara",
+            artist="Breaka",
+            duration=205.0,
+        )
+        old = self.tmp / "old-root" / "Breaka - Cascara.mp3"
+        self.write_export(
+            [
+                {
+                    "track_id": "1",
+                    "path": old,
+                    "name": "Breaka - Cascara",
+                    "artist": "Breaka",
+                    "total_time": 205,
+                }
+            ]
+        )
+        rb = self.import_xml()
+
+        track = rekordbox_relocation_preview.build_preview(
+            self.db, import_id=int(rb["import_id"])
+        )["tracks"][0]
+        self.assertEqual(track["status"], "STRONG_CANDIDATE")
+        self.assertEqual(
+            track["proposed_path"], library_index.canonicalize_path(current)
+        )
+        self.assertIn("filename_component", track["top_candidates"][0]["evidence"])
+        self.assertIn("title_component", track["top_candidates"][0]["evidence"])
+
+    def test_common_identity_token_is_bounded_by_duration(self):
+        current = self.add_audio("Current/Everybody.mp3", b"target-audio")
+        decoys = [
+            self.add_audio(f"Current/Everybody Decoy {number}.mp3", b"decoy")
+            for number in range(21)
+        ]
+        self.scan()
+        self.set_index_metadata(
+            current,
+            title="Everybody (feat. Lil Baby)",
+            artist="Breaka",
+            duration=205.0,
+        )
+        for number, decoy in enumerate(decoys):
+            self.set_index_metadata(
+                decoy,
+                title=f"Everybody Decoy {number}",
+                artist="Different Artist",
+                duration=300.0,
+            )
+        old = self.tmp / "old-root" / "Breaka - Everybody.mp3"
+        self.write_export(
+            [
+                {
+                    "track_id": "1",
+                    "path": old,
+                    "name": "Everybody",
+                    "artist": "Breaka",
+                    "total_time": 205,
+                }
+            ]
+        )
+        rb = self.import_xml()
+
+        track = rekordbox_relocation_preview.build_preview(
+            self.db, import_id=int(rb["import_id"])
+        )["tracks"][0]
+        self.assertEqual(track["status"], "STRONG_CANDIDATE")
+        self.assertEqual(
+            track["proposed_path"], library_index.canonicalize_path(current)
+        )
+        self.assertEqual(len(track["top_candidates"]), 1)
+        self.assertIn("duration_match", track["top_candidates"][0]["evidence"])
 
     def test_later_change_blocks_sha_move_even_without_rekordbox_size(self):
         old = self.add_audio("Old/NoSize.mp3", b"original")
