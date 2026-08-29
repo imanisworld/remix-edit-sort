@@ -73,6 +73,43 @@ class LibraryIndexTests(unittest.TestCase):
         self.assertEqual(second["changed"], 1)
         self.assertEqual(second["unchanged"], 0)
 
+    def _force_stale_device(self) -> int:
+        """Simulate a remount: macOS reassigns st_dev, so the stored id goes stale."""
+        conn = sqlite3.connect(self.db)
+        try:
+            conn.execute("UPDATE files SET device = device + 1")
+            conn.commit()
+            return conn.execute("SELECT device FROM files").fetchone()[0]
+        finally:
+            conn.close()
+
+    def test_remount_rehashes_but_identical_content_stays_unchanged(self):
+        path = self.write_audio("a.mp3", b"alpha")
+        self.scan()
+        stale_device = self._force_stale_device()
+
+        result = self.scan()
+        self.assertEqual(result["unchanged"], 1)
+        self.assertEqual(result["changed"], 0)
+
+        conn = sqlite3.connect(self.db)
+        try:
+            device = conn.execute("SELECT device FROM files").fetchone()[0]
+        finally:
+            conn.close()
+        self.assertNotEqual(device, stale_device)
+        self.assertEqual(device, path.stat().st_dev)
+
+    def test_remount_with_edited_content_is_still_changed(self):
+        path = self.write_audio("a.mp3", b"alpha")
+        self.scan()
+        path.write_bytes(b"different-content")
+        self._force_stale_device()
+
+        result = self.scan()
+        self.assertEqual(result["changed"], 1)
+        self.assertEqual(result["unchanged"], 0)
+
     def test_new_and_removed(self):
         old = self.write_audio("old.mp3", b"old")
         first = self.scan()

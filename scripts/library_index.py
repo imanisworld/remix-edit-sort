@@ -29,7 +29,7 @@ try:
 except ImportError as exc:  # pragma: no cover
     raise SystemExit("mutagen is required") from exc
 
-TOOL_VERSION = "1.0.6"
+TOOL_VERSION = "1.0.7"
 SCHEMA_VERSION = 3
 SUPPORTED_EXTENSIONS = {".mp3", ".flac", ".aiff", ".aif", ".m4a", ".aac", ".wav"}
 
@@ -570,7 +570,10 @@ def scan(root: Path, db_path: Path) -> dict[str, Any]:
                         (scan_id, snap.display_path, snap.canonical_path, file_id),
                     )
                 elif prior is not None:
-                    state = "CHANGED"
+                    # Volatile stat identity (notably st_dev, which macOS
+                    # reassigns across remounts) forced a rehash. Byte-identical
+                    # content is still UNCHANGED; the write refreshes identity.
+                    state = "UNCHANGED" if sha == prior["sha256"] else "CHANGED"
                     file_id = _write_file(conn, scan_id, snap, sha, meta, prior)
                 else:
                     old_candidates = removed_by_hash.get(sha, [])
