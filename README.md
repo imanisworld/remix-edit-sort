@@ -142,6 +142,20 @@ sources, and files that change while being parsed. It never launches Rekordbox, 
 `master.db`, writes the XML, changes audio, or writes a performance USB. See
 `references/rekordbox-index-architecture.md`.
 
+After an import, build a read-only relocation preview:
+
+```bash
+python3 scripts/rekordbox_relocation_preview.py \
+  --db "$HOME/Library/Application Support/DJ Library Tool/library.sqlite3" \
+  > relocation-preview.json
+```
+
+Whole-file byte-size drift is reported as a container difference, not automatically as an
+audio-content change. For MP3/AAC, M4A, FLAC, WAV, and AIFF candidates, the preview measures
+the current encoded-audio payload while excluding mutable tag/container regions. A payload
+that cannot fit within Rekordbox's historical whole-file size remains `CHANGED`; compatible
+payload size is supporting evidence only and does not claim historical hash equality.
+
 ## Whole-library audit: verified read-only first
 
 Before another cleanup pass, establish the physical library inventory without changing source audio. The required entry point is the verified wrapper:
