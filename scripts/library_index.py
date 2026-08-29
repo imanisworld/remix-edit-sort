@@ -29,7 +29,7 @@ try:
 except ImportError as exc:  # pragma: no cover
     raise SystemExit("mutagen is required") from exc
 
-TOOL_VERSION = "1.0.6"
+TOOL_VERSION = "1.0.7"
 SCHEMA_VERSION = 3
 SUPPORTED_EXTENSIONS = {".mp3", ".flac", ".aiff", ".aif", ".m4a", ".aac", ".wav"}
 
@@ -530,9 +530,16 @@ def scan(root: Path, db_path: Path) -> dict[str, Any]:
                 meta = _metadata_from_row(prior)
             else:
                 sha = sha256_file(snap.path)
-                meta = parse_metadata(snap.path)
-                if meta.error:
-                    error_count += 1
+                if prior is not None and sha == prior["sha256"]:
+                    # Filesystem device numbers can change across macOS mounts.
+                    # When the exact bytes still match, refresh the volatile
+                    # stat identity without recording an audio-file change.
+                    unchanged = True
+                    meta = _metadata_from_row(prior)
+                else:
+                    meta = parse_metadata(snap.path)
+                    if meta.error:
+                        error_count += 1
             prepared[snap.path_identity] = (snap, prior, sha, meta, unchanged)
             if prior is None:
                 new_by_hash.setdefault(sha, []).append(snap)
@@ -566,8 +573,19 @@ def scan(root: Path, db_path: Path) -> dict[str, Any]:
                     state = "UNCHANGED"
                     file_id = int(prior["file_id"])
                     conn.execute(
-                        "UPDATE files SET last_seen_scan_id=?,display_path=?,canonical_path=? WHERE file_id=?",
-                        (scan_id, snap.display_path, snap.canonical_path, file_id),
+                        """UPDATE files SET last_seen_scan_id=?,display_path=?,canonical_path=?,extension=?,
+                           size_bytes=?,mtime_ns=?,device=?,inode=? WHERE file_id=?""",
+                        (
+                            scan_id,
+                            snap.display_path,
+                            snap.canonical_path,
+                            snap.extension,
+                            snap.size_bytes,
+                            snap.mtime_ns,
+                            snap.device,
+                            snap.inode,
+                            file_id,
+                        ),
                     )
                 elif prior is not None:
                     state = "CHANGED"

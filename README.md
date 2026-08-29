@@ -63,8 +63,10 @@ Guarantees in this milestone:
 - safety classification: `read-only` toward music and DJ-software data;
 - supported inspection formats: MP3, FLAC, AIFF/AIF, M4A/AAC, and WAV;
 - full-file SHA-256 for new/changed files;
-- unchanged files reuse hashes/metadata only when path identity, filesystem identity,
-  byte size, and nanosecond mtime still match;
+- unchanged files reuse hashes/metadata without rereading only when path identity,
+  filesystem identity, byte size, and nanosecond mtime still match; if volatile filesystem
+  identity changes (for example after a macOS remount), exact SHA-256 equality keeps the file
+  `UNCHANGED` and refreshes its stored stat identity;
 - NEW, CHANGED, MOVED, REMOVED, and UNCHANGED scan states;
 - move detection requires SHA-256; multiple identical removed candidates remain ambiguous;
 - Unicode paths are normalized to NFC and compared with a case-folded identity suitable for

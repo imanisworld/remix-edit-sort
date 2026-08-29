@@ -62,6 +62,45 @@ class LibraryIndexTests(unittest.TestCase):
         self.assertEqual(result["unchanged"], 1)
         self.assertEqual(result["changed"], 0)
 
+    def test_device_number_drift_rehashes_then_remains_unchanged(self):
+        path = self.write_audio("a.mp3", b"alpha")
+        self.scan()
+        actual = path.stat()
+        conn = sqlite3.connect(self.db)
+        try:
+            conn.execute("UPDATE files SET device=device+1")
+            conn.commit()
+        finally:
+            conn.close()
+
+        original_sha = library_index.sha256_file
+        with mock.patch.object(
+            library_index, "sha256_file", wraps=original_sha
+        ) as sha256_file, mock.patch.object(
+            library_index,
+            "parse_metadata",
+            side_effect=AssertionError("identical bytes should reuse trusted metadata"),
+        ):
+            result = self.scan()
+
+        self.assertEqual(result["unchanged"], 1)
+        self.assertEqual(result["changed"], 0)
+        sha256_file.assert_called_once_with(path.resolve())
+        conn = sqlite3.connect(self.db)
+        try:
+            row = conn.execute(
+                "SELECT device,inode,mtime_ns,last_seen_scan_id FROM files"
+            ).fetchone()
+            state = conn.execute(
+                "SELECT state FROM scan_files WHERE scan_id=?",
+                (result["scan_id"],),
+            ).fetchone()[0]
+        finally:
+            conn.close()
+        self.assertEqual(row[:3], (actual.st_dev, actual.st_ino, actual.st_mtime_ns))
+        self.assertEqual(row[3], result["scan_id"])
+        self.assertEqual(state, "UNCHANGED")
+
     def test_changed_content(self):
         path = self.write_audio("a.mp3", b"alpha")
         first = self.scan()
