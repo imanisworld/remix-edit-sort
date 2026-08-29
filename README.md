@@ -66,6 +66,9 @@ Guarantees in this milestone:
 - unchanged files reuse hashes/metadata only when path identity, filesystem identity,
   byte size, and nanosecond mtime still match;
 - NEW, CHANGED, MOVED, REMOVED, and UNCHANGED scan states;
+- a stale filesystem identity (notably the device number macOS reassigns across remounts)
+  forces a defensive rehash, but byte-identical content is still reported UNCHANGED and the
+  stored identity is refreshed — a remount does not mass-flag the library as CHANGED;
 - move detection requires SHA-256; multiple identical removed candidates remain ambiguous;
 - Unicode paths are normalized to NFC and compared with a case-folded identity suitable for
   case-insensitive macOS path reasoning;
