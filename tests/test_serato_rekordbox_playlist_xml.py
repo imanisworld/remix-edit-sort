@@ -228,6 +228,15 @@ class SeratoRekordboxPlaylistXmlTests(unittest.TestCase):
             report["summary"]["unresolved_entries_explicitly_excluded"], 1
         )
 
+        output_root = ET.fromstring(self.output.read_bytes())
+        playlists_element = output_root.find("PLAYLISTS")
+        self.assertIsNotNone(playlists_element)
+        top_children = list(playlists_element)
+        self.assertEqual(len(top_children), 1)
+        self.assertEqual(top_children[0].tag, "NODE")
+        self.assertEqual(top_children[0].attrib.get("Type"), "0")
+        self.assertEqual(top_children[0].attrib.get("Name"), "ROOT")
+
         parsed = rekordbox_index._parse_export(self.output.read_bytes())
         self.assertEqual(parsed.declared_collection_count, 2)
         tracks_by_path = {track["absolute_path"]: track for track in parsed.tracks}

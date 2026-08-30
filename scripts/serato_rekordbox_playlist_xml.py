@@ -407,8 +407,17 @@ def _build_xml(
         collection.append(element)
 
     playlists = ET.SubElement(root, "PLAYLISTS")
-    folder = ET.SubElement(
+    playlist_root = ET.SubElement(
         playlists,
+        "NODE",
+        {
+            "Type": "0",
+            "Name": "ROOT",
+            "Count": "1",
+        },
+    )
+    folder = ET.SubElement(
+        playlist_root,
         "NODE",
         {
             "Name": folder_name,
