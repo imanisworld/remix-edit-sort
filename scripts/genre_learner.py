@@ -4,13 +4,9 @@
 Read-only with respect to the music library and Serato. Outputs only reports,
 feature caches and predictions under --out-dir.
 
-Key invariants:
-- Canonical genres are never folded to a parent merely to reach sample count.
-- Brooke/user-reviewed library examples are primary.
-- Sparse genres may be supplemented by explicitly accepted external examples.
-- External examples never enter the Brooke/user held-out evaluation set.
-- A genre still below the training target is reported as not_yet_trainable.
-- Family/subtype models are internal only; final predictions are canonical Genres.
+Canonical Genres are never folded into parent Genres to satisfy sample-count
+requirements. Sparse Genres may use explicitly accepted external references;
+final evaluation remains Brooke/user-library holdout only.
 """
 from __future__ import annotations
 
@@ -29,9 +25,6 @@ import wave
 from collections import Counter, defaultdict
 from pathlib import Path
 
-import numpy as np
-
-
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_RULES = REPO_ROOT / "references/genre-learner-rules.json"
 DEFAULT_DOCS = Path("/Users/djb.a.e/Documents/DJ-library-project-20260825")
@@ -46,6 +39,14 @@ AUDIO_EXTENSIONS = {".mp3", ".m4a", ".flac", ".wav", ".aif", ".aiff"}
 
 class LearnerError(RuntimeError):
     pass
+
+
+def _np():
+    try:
+        import numpy as np
+    except ImportError as exc:
+        raise LearnerError("genre learner requires numpy") from exc
+    return np
 
 
 def norm(value: str) -> str:
@@ -69,6 +70,8 @@ def load_rules(path: Path) -> dict:
         raise LearnerError("canonical_genres contains duplicates")
     if not rules.get("training", {}).get("never_fold_to_parent_for_sample_count"):
         raise LearnerError("rules must explicitly forbid sample-count taxonomy folding")
+    alias_index(rules)
+    genre_to_family(rules)
     return rules
 
 
@@ -77,7 +80,7 @@ def alias_index(rules: dict) -> dict[str, str]:
     for genre in rules["canonical_genres"]:
         key = norm(genre)
         if key in index and index[key] != genre:
-            raise LearnerError(f"canonical normalization collision: {genre} / {index[key]}")
+            raise LearnerError(f"canonical normalization collision: {genre!r} / {index[key]!r}")
         index[key] = genre
     for raw, genre in rules.get("aliases", {}).items():
         if genre not in rules["canonical_genres"]:
@@ -89,8 +92,21 @@ def alias_index(rules: dict) -> dict[str, str]:
     return index
 
 
+def genre_to_family(rules: dict) -> dict[str, str]:
+    mapping = {}
+    for family, genres in rules.get("families", {}).items():
+        for genre in genres:
+            if genre not in rules["canonical_genres"]:
+                raise LearnerError(f"family {family!r} names noncanonical Genre {genre!r}")
+            if genre in mapping:
+                raise LearnerError(f"Genre {genre!r} belongs to multiple learner families")
+            mapping[genre] = family
+    for genre in rules["canonical_genres"]:
+        mapping.setdefault(genre, f"single::{genre}")
+    return mapping
+
+
 def _split_genre_string(raw: str) -> list[str]:
-    """Split legacy multi-tags without breaking canonical ampersand names."""
     protected = {
         "r&b": "__PROTECT_RNB__",
         "drum & bass": "__PROTECT_DNB__",
@@ -101,17 +117,19 @@ def _split_genre_string(raw: str) -> list[str]:
     for phrase, placeholder in protected.items():
         text = re.sub(re.escape(phrase), placeholder, text, flags=re.I)
     parts = re.split(r"\s*(?:;|,|/|\+|\||\s&\s)\s*", text)
-    reverse = {value: key for key, value in protected.items()}
+    reverse = {placeholder: phrase for phrase, placeholder in protected.items()}
     return [reverse.get(part, part).strip() for part in parts if part.strip()]
 
 
 def classify_raw_genre(raw: str, rules: dict) -> dict:
-    """Interpret source metadata without inventing or folding a Genre."""
+    """Interpret metadata without inventing or folding a Genre."""
     raw = (raw or "").strip()
     if not raw:
         return {"status": "blank", "labels": [], "unknown": [], "raw": raw}
 
-    legacy = {norm(value): value for value in rules.get("legacy_compounds_requiring_audio_review", [])}
+    legacy = {
+        norm(value): value for value in rules.get("legacy_compounds_requiring_audio_review", [])
+    }
     if norm(raw) in legacy:
         return {
             "status": "legacy_compound_review",
@@ -126,8 +144,7 @@ def classify_raw_genre(raw: str, rules: dict) -> dict:
         return {"status": "single", "labels": [whole], "unknown": [], "raw": raw}
 
     context = {norm(value) for value in rules.get("context_tokens_not_genre", [])}
-    labels = []
-    unknown = []
+    labels, unknown = [], []
     for token in _split_genre_string(raw):
         key = norm(token)
         if not key or key in context:
@@ -155,20 +172,6 @@ def classify_raw_genre(raw: str, rules: dict) -> dict:
     return {"status": status, "labels": labels, "unknown": unknown, "raw": raw}
 
 
-def genre_to_family(rules: dict) -> dict[str, str]:
-    mapping = {}
-    for family, genres in rules.get("families", {}).items():
-        for genre in genres:
-            if genre not in rules["canonical_genres"]:
-                raise LearnerError(f"family {family!r} names noncanonical Genre {genre!r}")
-            if genre in mapping:
-                raise LearnerError(f"Genre {genre!r} belongs to multiple learner families")
-            mapping[genre] = family
-    for genre in rules["canonical_genres"]:
-        mapping.setdefault(genre, f"single::{genre}")
-    return mapping
-
-
 def training_status(counts: dict[str, int], rules: dict) -> dict[str, str]:
     target = int(rules["training"]["target_examples_per_genre"])
     return {
@@ -189,19 +192,19 @@ def parse_serato_database(database: Path, parser_path: Path) -> list[dict]:
 
 
 def library_rows(rows: list[dict], library: Path) -> list[dict]:
-    library_text = str(Path(library).resolve())
+    library_root = Path(library).resolve()
     result = []
     for row in rows:
-        raw_path = row.get("path") or ""
-        path_text = raw_path if str(raw_path).startswith("/") else "/" + str(raw_path)
-        path = Path(path_text)
+        raw_path = str(row.get("path") or "")
+        path = Path(raw_path if raw_path.startswith("/") else "/" + raw_path)
+        resolved = path.resolve()
         try:
-            resolved = str(path.resolve())
-        except OSError:
-            resolved = str(path)
-        if "needs check" in resolved.casefold() or not resolved.startswith(library_text):
+            resolved.relative_to(library_root)
+        except ValueError:
             continue
-        result.append({**row, "file": resolved})
+        if "needs check" in str(resolved).casefold():
+            continue
+        result.append({**row, "file": str(resolved)})
     return result
 
 
@@ -236,38 +239,38 @@ def build_census(rows: list[dict], rules: dict) -> dict:
 
 def decode(path: Path):
     """afconvert -> mono 22.05k s16 WAV; return middle SEG seconds."""
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as handle:
-        temp = handle.name
-    try:
-        result = subprocess.run(
-            ["/usr/bin/afconvert", "-f", "WAVE", "-d", f"LEI16@{SR}", "-c", "1", str(path), temp],
-            capture_output=True,
-            timeout=180,
-        )
-        if result.returncode != 0:
-            return None, f"afconvert exit {result.returncode}"
-        with wave.open(temp, "rb") as wav:
-            n = wav.getnframes()
-            segment = SEG * SR
-            start = max(0, (n - segment) // 2)
-            wav.setpos(start)
-            data = wav.readframes(min(segment, n - start))
-        x = np.frombuffer(data, dtype=np.int16).astype(np.float32) / 32768.0
-        if len(x) < SR * 10:
-            return None, "decoded segment shorter than 10 seconds"
-        return x, None
-    except subprocess.TimeoutExpired:
-        return None, "afconvert timeout"
-    except Exception as exc:  # noqa: BLE001 - failure is recorded, not hidden
-        return None, f"{type(exc).__name__}: {exc}"
-    finally:
+    np = _np()
+    with tempfile.TemporaryDirectory(prefix="genre-learner-") as temp_dir:
+        temp = Path(temp_dir) / "segment.wav"
         try:
-            os.unlink(temp)
-        except OSError:
-            pass
+            result = subprocess.run(
+                [
+                    "/usr/bin/afconvert", "-f", "WAVE", "-d", f"LEI16@{SR}",
+                    "-c", "1", str(path), str(temp),
+                ],
+                capture_output=True,
+                timeout=180,
+            )
+            if result.returncode != 0:
+                return None, f"afconvert exit {result.returncode}"
+            with wave.open(str(temp), "rb") as wav:
+                n = wav.getnframes()
+                segment = SEG * SR
+                start = max(0, (n - segment) // 2)
+                wav.setpos(start)
+                data = wav.readframes(min(segment, n - start))
+            x = np.frombuffer(data, dtype=np.int16).astype(np.float32) / 32768.0
+            if len(x) < SR * 10:
+                return None, "decoded segment shorter than 10 seconds"
+            return x, None
+        except subprocess.TimeoutExpired:
+            return None, "afconvert timeout"
+        except Exception as exc:  # noqa: BLE001 - recorded as evidence
+            return None, f"{type(exc).__name__}: {exc}"
 
 
-def features(x: np.ndarray):
+def features(x):
+    np = _np()
     n_fft, hop = 2048, 512
     win = np.hanning(n_fft)
     frames = 1 + (len(x) - n_fft) // hop
@@ -285,7 +288,6 @@ def features(x: np.ndarray):
         for lo, hi in zip(edges[:-1], edges[1:])
     ], axis=1)
     logb = np.log10(bands + 1e-9)
-
     centroid = (spectrum * freqs).sum(axis=1) / (spectrum.sum(axis=1) + 1e-9)
     cumulative = np.cumsum(power, axis=1)
     rolloff = freqs[np.argmax(cumulative >= 0.85 * total[:, None], axis=1)]
@@ -302,19 +304,23 @@ def features(x: np.ndarray):
     lo_lag, hi_lag = int(fps * 60 / 200), int(fps * 60 / 60)
     lag = lo_lag + int(np.argmax(ac[lo_lag:hi_lag]))
     bpm = 60.0 * fps / lag
-    tempo_strength = float(ac[lag])
-    double_lag_strength = float(ac[min(2 * lag, len(ac) - 1)])
-
-    low = power[:, freqs < 150].sum() / power.sum()
-    mid = power[:, (freqs >= 150) & (freqs < 2000)].sum() / power.sum()
-    high = power[:, freqs >= 4000].sum() / power.sum()
 
     values = [
-        bpm, tempo_strength, double_lag_strength, zcr, rms, peak,
-        float(centroid.mean()), float(centroid.std()),
-        float(rolloff.mean()), float(rolloff.std()),
-        float(flux.mean()), float(flux.std()),
-        float(low), float(mid), float(high),
+        bpm,
+        float(ac[lag]),
+        float(ac[min(2 * lag, len(ac) - 1)]),
+        zcr,
+        rms,
+        peak,
+        float(centroid.mean()),
+        float(centroid.std()),
+        float(rolloff.mean()),
+        float(rolloff.std()),
+        float(flux.mean()),
+        float(flux.std()),
+        float(power[:, freqs < 150].sum() / power.sum()),
+        float(power[:, (freqs >= 150) & (freqs < 2000)].sum() / power.sum()),
+        float(power[:, freqs >= 4000].sum() / power.sum()),
     ]
     values += list(logb.mean(axis=0))
     values += list(logb.std(axis=0))
@@ -342,7 +348,7 @@ def append_feature(path: Path, row: dict) -> None:
         os.fsync(handle.fileno())
 
 
-def feature_for_path(path: Path, cache_path: Path, cache: dict[str, dict]) -> tuple[list[float] | None, str | None]:
+def feature_for_path(path: Path, cache_path: Path, cache: dict[str, dict]):
     key = f"file:{Path(path).resolve()}"
     cached = cache.get(key)
     if cached is not None:
@@ -384,15 +390,16 @@ def single_label_examples(rows: list[dict], rules: dict) -> dict[str, list[dict]
 
 
 def split_library_examples(grouped: dict[str, list[dict]], rules: dict, seed: int = 42):
+    np = _np()
     cap = int(rules["training"]["cap_brooke_examples_per_genre"])
     hold_fraction = float(rules["training"]["heldout_fraction"])
     min_eval = int(rules["training"]["minimum_brooke_examples_for_stratified_eval"])
     rng = np.random.default_rng(seed)
-    train, holdout = [], []
-    per_genre = {}
+    train, holdout, per_genre = [], [], {}
     for genre in rules["canonical_genres"]:
-        rows = list(grouped.get(genre, []))
-        rows.sort(key=lambda row: row["path"])
+        available = list(grouped.get(genre, []))
+        available.sort(key=lambda row: row["path"])
+        rows = available
         if len(rows) > cap:
             indices = rng.choice(len(rows), cap, replace=False)
             rows = [rows[int(index)] for index in sorted(indices)]
@@ -407,7 +414,7 @@ def split_library_examples(grouped: dict[str, list[dict]], rules: dict, seed: in
         train.extend(genre_train)
         holdout.extend(genre_hold)
         per_genre[genre] = {
-            "available": len(grouped.get(genre, [])),
+            "available": len(available),
             "selected": len(rows),
             "train": len(genre_train),
             "holdout": len(genre_hold),
@@ -415,17 +422,21 @@ def split_library_examples(grouped: dict[str, list[dict]], rules: dict, seed: in
     return train, holdout, per_genre
 
 
-def load_external_manifest(path: Path | None, rules: dict, holdout: list[dict]) -> tuple[list[dict], list[dict]]:
+def load_external_manifest(path: Path | None, rules: dict, holdout: list[dict]):
     if path is None or not Path(path).exists():
         return [], []
     path = Path(path)
     if path.suffix.casefold() == ".jsonl":
-        rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+        rows = [
+            json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
     else:
         value = json.loads(path.read_text(encoding="utf-8"))
         rows = value if isinstance(value, list) else value.get("examples", [])
+
     canonical = set(rules["canonical_genres"])
-    holdout_identities = {_row_identity(row) for row in holdout} - {None}
+    holdout_ids = {_row_identity(row) for row in holdout} - {None}
     accepted, rejected = [], []
     for index, row in enumerate(rows, start=1):
         reason = None
@@ -438,7 +449,7 @@ def load_external_manifest(path: Path | None, rules: dict, holdout: list[dict]) 
             reason = "missing provenance"
         elif str(row.get("label_confidence", "")).casefold() not in {"high", "reviewed"}:
             reason = "label confidence is not high/reviewed"
-        elif _row_identity(row) in holdout_identities:
+        elif _row_identity(row) in holdout_ids:
             reason = "artist/title overlaps library holdout"
         elif not isinstance(row.get("feat"), list):
             local = Path(str(row.get("path") or ""))
@@ -453,27 +464,26 @@ def load_external_manifest(path: Path | None, rules: dict, holdout: list[dict]) 
 
 def supplement_training(library_train: list[dict], external: list[dict], rules: dict):
     target = int(rules["training"]["target_examples_per_genre"])
-    by_genre_library = defaultdict(list)
-    by_genre_external = defaultdict(list)
+    library_by_genre = defaultdict(list)
+    external_by_genre = defaultdict(list)
     for row in library_train:
-        by_genre_library[row["genre"]].append(row)
+        library_by_genre[row["genre"]].append(row)
     for row in external:
-        by_genre_external[row["genre"]].append(row)
+        external_by_genre[row["genre"]].append(row)
 
-    combined = []
-    report = {}
+    combined, report = [], {}
     for genre in rules["canonical_genres"]:
-        lib = by_genre_library[genre]
-        ext = by_genre_external[genre]
-        needed = max(0, target - len(lib))
-        chosen_ext = ext[:needed]
-        combined.extend(lib)
-        combined.extend(chosen_ext)
-        total = len(lib) + len(chosen_ext)
+        library_rows_for_genre = library_by_genre[genre]
+        external_rows_for_genre = external_by_genre[genre]
+        needed = max(0, target - len(library_rows_for_genre))
+        chosen_external = external_rows_for_genre[:needed]
+        combined.extend(library_rows_for_genre)
+        combined.extend(chosen_external)
+        total = len(library_rows_for_genre) + len(chosen_external)
         report[genre] = {
-            "library_train": len(lib),
-            "external_available": len(ext),
-            "external_used": len(chosen_ext),
+            "library_train": len(library_rows_for_genre),
+            "external_available": len(external_rows_for_genre),
+            "external_used": len(chosen_external),
             "total_training": total,
             "target": target,
             "still_needed": max(0, target - total),
@@ -489,7 +499,7 @@ def build_external_needs(report: dict) -> list[dict]:
     ]
 
 
-def materialize_features(examples: list[dict], cache_path: Path, cache: dict[str, dict], failures: list[dict]):
+def materialize_features(examples, cache_path: Path, cache: dict, failures: list[dict]):
     usable = []
     for index, row in enumerate(examples, start=1):
         if isinstance(row.get("feat"), list):
@@ -506,31 +516,36 @@ def materialize_features(examples: list[dict], cache_path: Path, cache: dict[str
 
 
 def _fit_classifier(X, y):
-    from sklearn.ensemble import HistGradientBoostingClassifier
+    np = _np()
+    try:
+        from sklearn.ensemble import HistGradientBoostingClassifier
+    except ImportError as exc:
+        raise LearnerError("genre learner training requires scikit-learn") from exc
     model = HistGradientBoostingClassifier(max_iter=400, random_state=7)
     model.fit(np.asarray(X), np.asarray(y))
     return model
 
 
-def train_hierarchy(examples: list[dict], trainable_genres: set[str], rules: dict):
+def train_hierarchy(examples, trainable_genres: set[str], rules: dict):
     family_map = genre_to_family(rules)
     usable = [row for row in examples if row["genre"] in trainable_genres]
     if not usable:
         raise LearnerError("no trainable examples after sample gate")
     family_labels = [family_map[row["genre"]] for row in usable]
     families = sorted(set(family_labels))
-    family_model = None if len(families) == 1 else _fit_classifier(
-        [row["feat"] for row in usable], family_labels
-    )
-    family_models = {}
-    family_genres = {}
+    family_model = None
+    if len(families) > 1:
+        family_model = _fit_classifier([row["feat"] for row in usable], family_labels)
+
+    family_models, family_genres = {}, {}
     for family in families:
         subset = [row for row in usable if family_map[row["genre"]] == family]
         genres = sorted(set(row["genre"] for row in subset))
         family_genres[family] = genres
         if len(genres) > 1:
             family_models[family] = _fit_classifier(
-                [row["feat"] for row in subset], [row["genre"] for row in subset]
+                [row["feat"] for row in subset],
+                [row["genre"] for row in subset],
             )
     return {
         "family_model": family_model,
@@ -540,10 +555,10 @@ def train_hierarchy(examples: list[dict], trainable_genres: set[str], rules: dic
     }
 
 
-def predict_scores(model_bundle: dict, feat: list[float]) -> dict[str, float]:
-    family_model = model_bundle["family_model"]
+def predict_scores(bundle: dict, feat) -> dict[str, float]:
+    family_model = bundle["family_model"]
     if family_model is None:
-        family_probs = {model_bundle["families"][0]: 1.0}
+        family_probs = {bundle["families"][0]: 1.0}
     else:
         probabilities = family_model.predict_proba([feat])[0]
         family_probs = {
@@ -553,36 +568,53 @@ def predict_scores(model_bundle: dict, feat: list[float]) -> dict[str, float]:
 
     scores = {}
     for family, family_probability in family_probs.items():
-        subtype = model_bundle["family_models"].get(family)
-        genres = model_bundle["family_genres"][family]
+        subtype = bundle["family_models"].get(family)
+        genres = bundle["family_genres"][family]
         if subtype is None:
             scores[genres[0]] = scores.get(genres[0], 0.0) + family_probability
             continue
         probabilities = subtype.predict_proba([feat])[0]
         for index, genre in enumerate(subtype.classes_):
-            scores[str(genre)] = scores.get(str(genre), 0.0) + family_probability * float(probabilities[index])
+            scores[str(genre)] = (
+                scores.get(str(genre), 0.0)
+                + family_probability * float(probabilities[index])
+            )
     total = sum(scores.values()) or 1.0
     return {genre: value / total for genre, value in scores.items()}
 
 
-def top_predictions(model_bundle: dict, feat: list[float], limit: int = 3) -> list[dict]:
-    scores = predict_scores(model_bundle, feat)
+def top_predictions(bundle: dict, feat, limit: int = 3) -> list[dict]:
     return [
         {"genre": genre, "confidence": round(score, 4)}
-        for genre, score in sorted(scores.items(), key=lambda item: -item[1])[:limit]
+        for genre, score in sorted(
+            predict_scores(bundle, feat).items(), key=lambda item: -item[1]
+        )[:limit]
     ]
 
 
-def evaluate(model_bundle: dict, holdout: list[dict], trainable_genres: set[str], out_dir: Path) -> dict:
-    from sklearn.metrics import accuracy_score, balanced_accuracy_score, classification_report, confusion_matrix
+def evaluate(bundle: dict, holdout, trainable_genres: set[str], out_dir: Path) -> dict:
+    try:
+        from sklearn.metrics import (
+            accuracy_score,
+            balanced_accuracy_score,
+            classification_report,
+            confusion_matrix,
+        )
+    except ImportError as exc:
+        raise LearnerError("genre learner evaluation requires scikit-learn") from exc
 
-    rows = [row for row in holdout if row["genre"] in trainable_genres and row.get("feat") is not None]
+    rows = [
+        row for row in holdout
+        if row["genre"] in trainable_genres and row.get("feat") is not None
+    ]
     if not rows:
-        return {"status": "NO_BROOKE_HOLDOUT_FOR_TRAINABLE_GENRES", "count": 0}
+        return {"status": "NO_LIBRARY_HOLDOUT_FOR_TRAINABLE_GENRES", "count": 0}
     truth = [row["genre"] for row in rows]
-    predicted = [top_predictions(model_bundle, row["feat"], 1)[0]["genre"] for row in rows]
+    predicted = [top_predictions(bundle, row["feat"], 1)[0]["genre"] for row in rows]
     labels = sorted(set(truth) | set(predicted))
-    report = classification_report(truth, predicted, labels=labels, zero_division=0, output_dict=True)
+    report = classification_report(
+        truth, predicted, labels=labels, zero_division=0, output_dict=True
+    )
     matrix = confusion_matrix(truth, predicted, labels=labels)
     with (out_dir / "confusion-matrix.csv").open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
@@ -599,6 +631,7 @@ def evaluate(model_bundle: dict, holdout: list[dict], trainable_genres: set[str]
 
 
 def confidence_summary(predictions: list[dict]) -> dict:
+    np = _np()
     values = np.asarray([
         row["top"][0]["confidence"] for row in predictions if row.get("top")
     ], dtype=float)
@@ -637,12 +670,17 @@ def load_prediction_targets(docs: Path) -> list[str]:
 
 def write_json(path: Path, value) -> None:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
-    Path(path).write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    Path(path).write_text(
+        json.dumps(value, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
 
 
 def command_census(args) -> int:
     rules = load_rules(args.rules)
-    rows = library_rows(parse_serato_database(args.serato_db, args.serato_parser), args.library)
+    rows = library_rows(
+        parse_serato_database(args.serato_db, args.serato_parser), args.library
+    )
     census = build_census(rows, rules)
     args.out_dir.mkdir(parents=True, exist_ok=True)
     write_json(args.out_dir / "genre-census.json", census)
@@ -661,30 +699,43 @@ def command_run(args) -> int:
     cache_path = args.out_dir / "genre-features.jsonl"
     cache = load_feature_cache(cache_path)
 
-    rows = library_rows(parse_serato_database(args.serato_db, args.serato_parser), args.library)
+    rows = library_rows(
+        parse_serato_database(args.serato_db, args.serato_parser), args.library
+    )
     census = build_census(rows, rules)
     write_json(args.out_dir / "genre-census.json", census)
 
     grouped = single_label_examples(rows, rules)
     library_train, library_holdout, split_report = split_library_examples(grouped, rules)
-    external, external_rejected = load_external_manifest(args.external_manifest, rules, library_holdout)
+    external, external_rejected = load_external_manifest(
+        args.external_manifest, rules, library_holdout
+    )
     training_rows, sample_report = supplement_training(library_train, external, rules)
-    needs = build_external_needs(sample_report)
     write_json(args.out_dir / "genre-training-counts.json", {
         "split": split_report,
         "training": sample_report,
         "external_rejected": external_rejected,
     })
-    write_json(args.out_dir / "genre-external-needs.json", needs)
+    write_json(
+        args.out_dir / "genre-external-needs.json",
+        build_external_needs(sample_report),
+    )
 
     failures = []
-    training_with_features = materialize_features(training_rows, cache_path, cache, failures)
-    holdout_with_features = materialize_features(library_holdout, cache_path, cache, failures)
+    training_with_features = materialize_features(
+        training_rows, cache_path, cache, failures
+    )
+    holdout_with_features = materialize_features(
+        library_holdout, cache_path, cache, failures
+    )
     write_json(args.out_dir / "genre-feature-failures.json", failures)
 
     target = int(rules["training"]["target_examples_per_genre"])
     usable_counts = Counter(row["genre"] for row in training_with_features)
-    trainable = {genre for genre in rules["canonical_genres"] if usable_counts[genre] >= target}
+    trainable = {
+        genre for genre in rules["canonical_genres"]
+        if usable_counts[genre] >= target
+    }
     unsupported = [
         {"genre": genre, "usable_training": usable_counts[genre], "target": target}
         for genre in rules["canonical_genres"] if genre not in trainable
@@ -692,20 +743,29 @@ def command_run(args) -> int:
     write_json(args.out_dir / "genre-not-yet-trainable.json", unsupported)
     if not trainable:
         raise LearnerError(
-            "no Genre reached the training target; add accepted external references or lower the explicit target"
+            "no Genre reached the training target; add accepted external references"
         )
 
     eval_bundle = train_hierarchy(training_with_features, trainable, rules)
-    evaluation = evaluate(eval_bundle, holdout_with_features, trainable, args.out_dir)
+    evaluation = evaluate(
+        eval_bundle, holdout_with_features, trainable, args.out_dir
+    )
     write_json(args.out_dir / "genre-learner-eval.json", evaluation)
 
-    # Deployment/prediction model may now use all Brooke examples; the score
-    # above remains the honest Brooke-only holdout estimate.
+    # Only after the honest library holdout score is recorded may the final
+    # prediction model use the held-out library examples too.
     final_library = library_train + library_holdout
-    final_training, final_sample_report = supplement_training(final_library, external, rules)
-    final_with_features = materialize_features(final_training, cache_path, cache, failures)
+    final_training, final_sample_report = supplement_training(
+        final_library, external, rules
+    )
+    final_with_features = materialize_features(
+        final_training, cache_path, cache, failures
+    )
     final_counts = Counter(row["genre"] for row in final_with_features)
-    final_trainable = {genre for genre in rules["canonical_genres"] if final_counts[genre] >= target}
+    final_trainable = {
+        genre for genre in rules["canonical_genres"]
+        if final_counts[genre] >= target
+    }
     final_bundle = train_hierarchy(final_with_features, final_trainable, rules)
 
     predictions = []
@@ -718,9 +778,14 @@ def command_run(args) -> int:
             "file": path_text,
             "top": top_predictions(final_bundle, feat, 3),
         })
-    predictions.sort(key=lambda row: -(row["top"][0]["confidence"] if row["top"] else 0.0))
+    predictions.sort(
+        key=lambda row: -(row["top"][0]["confidence"] if row["top"] else 0.0)
+    )
     write_json(args.out_dir / "genre-learner-predictions.json", predictions)
-    write_json(args.out_dir / "genre-confidence-distribution.json", confidence_summary(predictions))
+    write_json(
+        args.out_dir / "genre-confidence-distribution.json",
+        confidence_summary(predictions),
+    )
     write_json(args.out_dir / "genre-feature-failures.json", failures)
     write_json(args.out_dir / "genre-model-metadata.json", {
         "rules": str(args.rules),
@@ -770,7 +835,10 @@ def main() -> int:
             return command_census(args)
         return command_run(args)
     except LearnerError as exc:
-        print(json.dumps({"status": "REFUSED", "reason": str(exc)}, indent=2), file=sys.stderr)
+        print(
+            json.dumps({"status": "REFUSED", "reason": str(exc)}, indent=2),
+            file=sys.stderr,
+        )
         return 2
 
 
