@@ -21,14 +21,16 @@ class GenreExternalManifestTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.rules = genre_learner.load_rules(REPO_ROOT / "references/genre-learner-rules.json")
+        cls.a_path = str(Path("/tmp/genre-manifest-test/a.mp3").resolve())
+        cls.b_path = str(Path("/tmp/genre-manifest-test/b.mp3").resolve())
         cls.targets = {
-            "/lib/a.mp3": {"path": "/lib/a.mp3", "artist": "Artist A", "title": "Song A"},
-            "/lib/b.mp3": {"path": "/lib/b.mp3", "artist": "Artist B", "title": "Song B"},
+            cls.a_path: {"path": cls.a_path, "artist": "Artist A", "title": "Song A"},
+            cls.b_path: {"path": cls.b_path, "artist": "Artist B", "title": "Song B"},
         }
 
     def accepted(self, **overrides):
         row = {
-            "path": "/lib/a.mp3",
+            "path": self.a_path,
             "artist": "Artist A",
             "title": "Song A",
             "genre": "Afrobeats",
@@ -53,7 +55,7 @@ class GenreExternalManifestTests(unittest.TestCase):
         row = self.accepted(path="")
         examples, report = builder.build_manifest([row], self.targets, self.rules)
         self.assertEqual(report["rejected_rows"], 0)
-        self.assertEqual(examples[0]["path"], "/lib/a.mp3")
+        self.assertEqual(examples[0]["path"], self.a_path)
 
     def test_spotify_is_research_only_and_never_enters_manifest(self):
         row = self.accepted(
