@@ -102,6 +102,47 @@ class GenreLearnerTaxonomyTests(unittest.TestCase):
         self.assertEqual(report["House"]["holdout_source"], "fixed")
         self.assertEqual(report["Rock"]["train"], 12 - report["Rock"]["holdout"])
 
+    def test_external_training_examples_are_excluded_from_prediction_targets(self):
+        targets = ["/lib/a.mp3", "/lib/b.mp3", "/lib/c.mp3"]
+        final_training = [
+            {
+                "path": "/lib/a.mp3",
+                "genre": "House",
+                "artist": "Artist A",
+                "title": "Song A",
+                "source_type": "external",
+                "feat": [1.0],
+            },
+            {
+                "path": "/references/b.mp3",
+                "genre": "Rock",
+                "artist": "Artist B",
+                "title": "Song B",
+                "source_type": "external",
+                "feat": [2.0],
+            },
+            {
+                "path": "/lib/c.mp3",
+                "genre": "Pop",
+                "artist": "Artist C",
+                "title": "Song C",
+                "source_type": "library",
+                "feat": [3.0],
+            },
+        ]
+        library_rows = [
+            {"file": "/lib/a.mp3", "artist": "Artist A", "title": "Song A"},
+            {"file": "/lib/b.mp3", "artist": "Artist B", "title": "Song B"},
+            {"file": "/lib/c.mp3", "artist": "Artist C", "title": "Song C"},
+        ]
+        kept, excluded = genre_learner.filter_prediction_targets_against_training(
+            targets, final_training, library_rows
+        )
+        self.assertEqual(kept, ["/lib/c.mp3"])
+        by_file = {row["file"]: row["reasons"] for row in excluded}
+        self.assertIn("same_local_path_as_external_training", by_file["/lib/a.mp3"])
+        self.assertIn("same_artist_title_as_external_training", by_file["/lib/b.mp3"])
+
     def test_cap_override_rejects_noncanonical_genre(self):
         self.assertEqual(genre_learner.parse_cap_overrides("R&B=800, Pop=600", self.rules), {"R&B": 800, "Pop": 600})
         with self.assertRaises(genre_learner.LearnerError):
