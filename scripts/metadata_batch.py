@@ -304,9 +304,10 @@ def create_verified_tag_only_backup(
     """Back up only tag-write candidates from a tag-only plan, then prove them.
 
     This is deliberately narrower than ``create_verified_backup`` and refuses
-    any plan containing a move.  It preserves each source-relative path under
+    any plan containing a move. It preserves each source-relative path under
     the backup root because ``mutation_engine`` resolves and re-hashes that
-    exact copy immediately before each mutation.
+    exact copy immediately before each mutation. PASS is computed by
+    ``backup_manifest.build_scoped_manifest`` rather than asserted here.
     """
     source_root = Path(source_root).resolve()
     destination = require_t5_path(destination, t5_volume)
@@ -336,11 +337,15 @@ def create_verified_tag_only_backup(
         relative = Path(relative_text)
         if relative.is_absolute() or ".." in relative.parts:
             raise BatchRefused(f"unsafe source_relative in plan item {index}: {relative_text!r}")
-        expected_source = (source_root / relative).resolve()
+        expected_literal = source_root / relative
         source_text = item.get("source")
         if not isinstance(source_text, str) or not source_text:
             raise BatchRefused(f"plan item {index} is missing source")
-        source = Path(source_text).resolve()
+        source_literal = Path(source_text)
+        if expected_literal.is_symlink() or source_literal.is_symlink():
+            raise BatchRefused(f"planned tag source is a symlink: {source_literal}")
+        expected_source = expected_literal.resolve()
+        source = source_literal.resolve()
         if source != expected_source:
             raise BatchRefused(
                 f"source/source_relative mismatch in plan item {index}: {source} != {expected_source}"
@@ -349,7 +354,7 @@ def create_verified_tag_only_backup(
             source.relative_to(source_root)
         except ValueError as exc:
             raise BatchRefused(f"plan source escapes source root: {source}") from exc
-        if not source.is_file() or source.is_symlink():
+        if not source.is_file():
             raise BatchRefused(f"planned tag source is not a literal file: {source}")
         expected_hash = item.get("sha256")
         actual_hash = sha256_file(source)
@@ -359,62 +364,31 @@ def create_verified_tag_only_backup(
         if key in seen:
             raise BatchRefused(f"duplicate/colliding source_relative in tag-only plan: {relative}")
         seen.add(key)
-        selected.append((relative, source, actual_hash, source.stat().st_size))
+        selected.append((relative, source, actual_hash))
 
     if not selected:
         raise BatchRefused("tag-only plan contains no tag_change items to back up")
 
     # Finish every read-only precondition before creating the destination.
     destination.mkdir(parents=True, exist_ok=False)
-    files = []
-    total_bytes = 0
-    for relative, source, source_hash, size in selected:
+    for relative, source, source_hash in selected:
         if heartbeat is not None:
             heartbeat.beat()
         backup_path = destination / relative
         backup_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, backup_path)
-        backup_hash = sha256_file(backup_path)
-        if backup_hash != source_hash:
+        if sha256_file(backup_path) != source_hash:
             raise BatchRefused(f"scoped backup copy hash mismatch: {backup_path}")
-        total_bytes += size
-        files.append({
-            "path": str(relative),
-            "sha256": source_hash,
-            "bytes": size,
-            "backed_up": True,
-            "backup_sha256": backup_hash,
-            "matched": True,
-        })
 
-    manifest = {
-        "manifest_version": backup_manifest.MANIFEST_VERSION,
-        "backup_id": f"tag-only-{destination.parent.name}",
-        "timestamp": now(),
-        "source_root": str(source_root),
-        "source_root_identity": backup_manifest._identity(source_root),
-        "backup_root": str(destination),
-        "file_count": len(files),
-        "total_bytes": total_bytes,
-        "files": files,
-        "serato": {
-            "required": False,
-            "present": False,
-            "path": None,
-            "result": "NOT_REQUIRED",
-        },
-        "verifier": backup_manifest.VERIFIER_NAME,
-        "verifier_version": backup_manifest.MANIFEST_VERSION,
-        "repo_sha": backup_manifest._repo_sha(),
-        "scope_mode": "tag-only-plan",
-        "scope_plan": str(Path(plan_path).resolve()),
-        "problems": [],
-        "status": backup_manifest.STATUS_PASS,
-    }
-    manifest["manifest_sha256"] = backup_manifest.canonical_digest(manifest)
+    manifest = backup_manifest.build_scoped_manifest(
+        source_root,
+        destination,
+        [str(relative) for relative, _, _ in selected],
+        backup_id=f"tag-only-{destination.parent.name}",
+    )
     backup_manifest.write_manifest(manifest, manifest_path)
     verified = backup_manifest.require_pass(manifest_path, source_root)
-    for _, source, source_hash, _ in selected:
+    for _, source, source_hash in selected:
         recorded = backup_manifest.require_item_backed_up(verified, source_root, source)
         if recorded != source_hash:
             raise BatchRefused(f"scoped manifest evidence mismatch after write: {source}")
