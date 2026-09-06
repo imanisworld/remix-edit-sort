@@ -30,6 +30,7 @@ import library_index
 import rekordbox_bridge_xml
 import rekordbox_index
 import rekordbox_unresolved_review
+import serato_rekordbox_performance_verify
 
 TOOL_VERSION = "1.0.0"
 VERIFY_SCHEMA_VERSION = 1
@@ -266,6 +267,7 @@ def verify(
     preview_path: Path,
     *,
     review_path: Path | None = None,
+    verify_serato_performance: bool = False,
 ) -> dict[str, Any]:
     bridge_resolved, bridge_raw = _read_stable(bridge_xml, label="bridge XML")
     fresh_resolved, fresh_raw = _read_stable(fresh_xml, label="fresh Rekordbox XML")
@@ -295,6 +297,7 @@ def verify(
 
     track_findings: list[dict[str, Any]] = []
     matched_expected = 0
+    matched_fresh_tracks: list[dict[str, Any]] = []
     for identity, bridge_list in sorted(bridge_tracks.items()):
         bridge_track = bridge_list[0]
         fresh_list = fresh_tracks.get(identity, [])
@@ -317,6 +320,7 @@ def verify(
             continue
         matched_expected += 1
         fresh_track = fresh_list[0]
+        matched_fresh_tracks.append(fresh_track)
         if _static_attributes(bridge_track) != _static_attributes(fresh_track):
             track_findings.append(
                 {
@@ -406,11 +410,27 @@ def verify(
     extra_fresh_tracks = len(fresh_path_set - bridge_path_set)
     extra_fresh_playlist_nodes = len(set(fresh_nodes) - set(bridge_nodes))
 
+    serato_performance_report = None
+    serato_performance_failures = 0
+    if verify_serato_performance:
+        serato_performance_report = serato_rekordbox_performance_verify.verify_tracks(
+            matched_fresh_tracks
+        )
+        if serato_performance_report["verdict"] == "FAIL":
+            serato_performance_failures = int(
+                serato_performance_report["summary"]["fail_findings"]
+            )
+
     preview_summary = preview["summary"]
-    fail_count = len(track_findings) + len(playlist_findings) + len(missing_files)
+    fail_count = (
+        len(track_findings)
+        + len(playlist_findings)
+        + len(missing_files)
+        + serato_performance_failures
+    )
     verdict = "PASS" if fail_count == 0 else "FAIL"
 
-    return {
+    report = {
         "tool": "rekordbox_bridge_verify",
         "tool_version": TOOL_VERSION,
         "verify_schema_version": VERIFY_SCHEMA_VERSION,
@@ -453,6 +473,10 @@ def verify(
         "playlist_findings": playlist_findings,
         "missing_files": missing_files,
     }
+    if serato_performance_report is not None:
+        report["summary"]["serato_performance_fail_findings"] = serato_performance_failures
+        report["serato_performance"] = serato_performance_report
+    return report
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -461,6 +485,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--fresh-xml", type=Path, required=True)
     parser.add_argument("--preview", type=Path, required=True)
     parser.add_argument("--review", type=Path)
+    parser.add_argument(
+        "--verify-serato-performance",
+        action="store_true",
+        help="also compare embedded Serato cues/loops/BeatGrid against the fresh Rekordbox XML",
+    )
     return parser
 
 
@@ -472,6 +501,7 @@ def main(argv: list[str] | None = None) -> int:
             args.fresh_xml,
             args.preview,
             review_path=args.review,
+            verify_serato_performance=args.verify_serato_performance,
         )
     except Exception as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, indent=2), file=sys.stderr)
