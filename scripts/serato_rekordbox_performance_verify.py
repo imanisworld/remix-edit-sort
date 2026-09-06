@@ -22,7 +22,6 @@ import argparse
 import json
 import math
 import sys
-import unicodedata
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -194,7 +193,7 @@ def _compare_grid(
             position_matches,
             key=lambda index: abs(target_tempos[index]["position_ms"] - source_position),
         )
-        unused.remove(best)
+        unused = unused - {best}
         target = target_tempos[best]
         if not _close(float(anchor["bpm"]), target["bpm"], BPM_TOLERANCE):
             findings.append({
