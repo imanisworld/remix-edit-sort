@@ -98,6 +98,11 @@
   "legacy_compounds_requiring_audio_review": [
     "Juke & Footwork"
   ],
+  "target_excluded_folders": [
+    "bae re work",
+    "Imani Drops",
+    "Local Artist"
+  ],
   "context_tokens_not_genre": [
     "Plex",
     "Old Head",

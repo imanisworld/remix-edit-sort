@@ -70,6 +70,41 @@ class GenreLearnerTaxonomyTests(unittest.TestCase):
         self.assertEqual(status["Deep House"], "not_yet_trainable")
         self.assertEqual(status["House"], "trainable")
 
+    def test_protected_ampersand_phrases_never_leak_placeholders(self):
+        parsed = self.parse("Alternative R&B; Pop")
+        self.assertEqual(parsed["status"], "multi_label")
+        self.assertEqual(parsed["labels"], ["Alternative R&B", "Pop"])
+        parsed = self.parse("Nu R&B")
+        self.assertEqual(parsed["status"], "unknown")
+        self.assertEqual(parsed["unknown"], ["Nu R&B"])
+        parsed = self.parse("Drum & Bass / Jungle, funk & soul")
+        self.assertEqual(parsed["status"], "multi_label")
+        self.assertEqual(parsed["labels"], ["Drum & Bass", "Jungle", "Funk & Soul"])
+        for value in ("Alternative R&B; Pop", "Nu R&B", "Juke & Footwork; House"):
+            for token in genre_learner._split_genre_string(value):
+                self.assertNotIn("__PROTECT_", token)
+
+    def test_fixed_holdout_is_reused_and_excluded_from_training(self):
+        grouped = {
+            "House": [{"path": f"/lib/house-{i}.mp3", "genre": "House"} for i in range(30)],
+            "Rock": [{"path": f"/lib/rock-{i}.mp3", "genre": "Rock"} for i in range(12)],
+        }
+        _, holdout_a, _ = genre_learner.split_library_examples(grouped, self.rules)
+        frozen = {row["path"] for row in holdout_a}
+        train_b, holdout_b, report = genre_learner.split_library_examples(
+            grouped, self.rules, fixed_holdout=frozen, cap_overrides={"House": 5}
+        )
+        self.assertEqual({row["path"] for row in holdout_b}, frozen)
+        self.assertTrue(frozen.isdisjoint({row["path"] for row in train_b}))
+        self.assertEqual(report["House"]["train"], 5)
+        self.assertEqual(report["House"]["holdout_source"], "fixed")
+        self.assertEqual(report["Rock"]["train"], 12 - report["Rock"]["holdout"])
+
+    def test_cap_override_rejects_noncanonical_genre(self):
+        self.assertEqual(genre_learner.parse_cap_overrides("R&B=800, Pop=600", self.rules), {"R&B": 800, "Pop": 600})
+        with self.assertRaises(genre_learner.LearnerError):
+            genre_learner.parse_cap_overrides("Drill=10", self.rules)
+
     def test_every_canonical_genre_has_exactly_one_internal_family(self):
         mapping = genre_learner.genre_to_family(self.rules)
         self.assertEqual(set(mapping), set(self.rules["canonical_genres"]))

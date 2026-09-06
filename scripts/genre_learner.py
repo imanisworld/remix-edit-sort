@@ -106,19 +106,31 @@ def genre_to_family(rules: dict) -> dict[str, str]:
     return mapping
 
 
+PROTECTED_AMPERSAND_PHRASES = ("r&b", "drum & bass", "funk & soul", "juke & footwork")
+_PLACEHOLDER = re.compile(r"__PROTECT_(\d+)__")
+
+
 def _split_genre_string(raw: str) -> list[str]:
-    protected = {
-        "r&b": "__PROTECT_RNB__",
-        "drum & bass": "__PROTECT_DNB__",
-        "funk & soul": "__PROTECT_FUNSOUL__",
-        "juke & footwork": "__PROTECT_JUKEFOOT__",
-    }
+    """Split a multi-genre string on separators without breaking protected
+    ampersand phrases. Placeholders are restored inside every token (e.g.
+    "Alternative R&B" or "Nu R&B"), preserving the original casing, so a
+    placeholder can never leak into a label or an unknown-token report."""
+    saved: list[str] = []
+
+    def _stash(match: re.Match) -> str:
+        saved.append(match.group(0))
+        return f"__PROTECT_{len(saved) - 1}__"
+
     text = raw
-    for phrase, placeholder in protected.items():
-        text = re.sub(re.escape(phrase), placeholder, text, flags=re.I)
+    for phrase in PROTECTED_AMPERSAND_PHRASES:
+        text = re.sub(re.escape(phrase), _stash, text, flags=re.I)
     parts = re.split(r"\s*(?:;|,|/|\+|\||\s&\s)\s*", text)
-    reverse = {placeholder: phrase for phrase, placeholder in protected.items()}
-    return [reverse.get(part, part).strip() for part in parts if part.strip()]
+
+    def _restore(part: str) -> str:
+        return _PLACEHOLDER.sub(lambda match: saved[int(match.group(1))], part).strip()
+
+    restored = [_restore(part) for part in parts]
+    return [part for part in restored if part]
 
 
 def classify_raw_genre(raw: str, rules: dict) -> dict:
@@ -389,9 +401,24 @@ def single_label_examples(rows: list[dict], rules: dict) -> dict[str, list[dict]
     return grouped
 
 
-def split_library_examples(grouped: dict[str, list[dict]], rules: dict, seed: int = 42):
+def split_library_examples(
+    grouped: dict[str, list[dict]],
+    rules: dict,
+    seed: int = 42,
+    fixed_holdout: set[str] | None = None,
+    cap_overrides: dict[str, int] | None = None,
+):
+    """Split library examples into train/holdout per Genre.
+
+    With ``fixed_holdout`` (a set of file paths), the holdout is exactly those
+    paths and never re-drawn, so later runs (bigger caps, external references)
+    are scored against the same held-out library tracks. Training then draws
+    from the remaining pool only. ``cap_overrides`` raises/lowers the per-Genre
+    training cap for named Genres without touching the others.
+    """
     np = _np()
     cap = int(rules["training"]["cap_brooke_examples_per_genre"])
+    cap_overrides = cap_overrides or {}
     hold_fraction = float(rules["training"]["heldout_fraction"])
     min_eval = int(rules["training"]["minimum_brooke_examples_for_stratified_eval"])
     rng = np.random.default_rng(seed)
@@ -399,9 +426,27 @@ def split_library_examples(grouped: dict[str, list[dict]], rules: dict, seed: in
     for genre in rules["canonical_genres"]:
         available = list(grouped.get(genre, []))
         available.sort(key=lambda row: row["path"])
+        genre_cap = int(cap_overrides.get(genre, cap))
+        if fixed_holdout is not None:
+            genre_hold = [row for row in available if row["path"] in fixed_holdout]
+            pool = [row for row in available if row["path"] not in fixed_holdout]
+            if len(pool) > genre_cap:
+                indices = rng.choice(len(pool), genre_cap, replace=False)
+                pool = [pool[int(index)] for index in sorted(indices)]
+            train.extend(pool)
+            holdout.extend(genre_hold)
+            per_genre[genre] = {
+                "available": len(available),
+                "selected": len(pool) + len(genre_hold),
+                "train": len(pool),
+                "holdout": len(genre_hold),
+                "holdout_source": "fixed",
+                "cap": genre_cap,
+            }
+            continue
         rows = available
-        if len(rows) > cap:
-            indices = rng.choice(len(rows), cap, replace=False)
+        if len(rows) > genre_cap:
+            indices = rng.choice(len(rows), genre_cap, replace=False)
             rows = [rows[int(index)] for index in sorted(indices)]
         if len(rows) >= min_eval:
             order = rng.permutation(len(rows))
@@ -649,6 +694,69 @@ def confidence_summary(predictions: list[dict]) -> dict:
     }
 
 
+def build_targets(rows: list[dict], library: Path, rules: dict) -> dict:
+    """Read-only: a fresh prediction-target list from the CURRENT library.
+
+    Targets are files with no trustworthy Genre: anything under a
+    "needs check" folder, Serato rows whose Genre is blank, rows whose Genre
+    holds no canonical label at all, and legacy compound rows. Folders named
+    in rules["target_excluded_folders"] (the user's own productions) are
+    skipped. Nothing is written except the report the caller chooses.
+    """
+    library_root = Path(library).resolve()
+    excluded = {norm(value) for value in rules.get("target_excluded_folders", [])}
+
+    def _excluded(path: Path) -> bool:
+        try:
+            parts = path.resolve().relative_to(library_root).parts
+        except ValueError:
+            return True
+        return any(norm(part) in excluded for part in parts)
+
+    targets: dict[str, dict] = {}
+
+    def _add(path: Path, reason: str, raw_genre: str = "") -> None:
+        if path.suffix.casefold() not in AUDIO_EXTENSIONS or not path.is_file():
+            return
+        if _excluded(path):
+            return
+        key = str(path.resolve())
+        entry = targets.setdefault(key, {"file": key, "reasons": [], "raw_genre": raw_genre})
+        if reason not in entry["reasons"]:
+            entry["reasons"].append(reason)
+
+    for path in sorted(library_root.rglob("*")):
+        if "needs check" in str(path).casefold():
+            _add(path, "needs_check_folder")
+    for row in rows:
+        raw = (row.get("genre") or "").strip()
+        parsed = classify_raw_genre(raw, rules)
+        path = Path(row["file"])
+        if parsed["status"] == "blank":
+            _add(path, "blank_genre", raw)
+        elif parsed["status"] == "unknown":
+            _add(path, "no_canonical_genre_label", raw)
+        elif parsed["status"] == "legacy_compound_review":
+            _add(path, "legacy_compound", raw)
+    ordered = sorted(targets.values(), key=lambda entry: entry["file"])
+    counts = Counter(reason for entry in ordered for reason in entry["reasons"])
+    return {
+        "mode": "read-only-targets",
+        "library": str(library_root),
+        "excluded_folders": sorted(rules.get("target_excluded_folders", [])),
+        "count": len(ordered),
+        "reason_counts": dict(counts),
+        "targets": ordered,
+    }
+
+
+def load_targets_file(path: Path) -> list[str]:
+    value = json.loads(Path(path).read_text(encoding="utf-8"))
+    entries = value.get("targets", value) if isinstance(value, dict) else value
+    files = [entry["file"] if isinstance(entry, dict) else str(entry) for entry in entries]
+    return sorted(file for file in files if Path(file).is_file())
+
+
 def load_prediction_targets(docs: Path) -> list[str]:
     targets = set()
     lookup = docs / "needscheck-genre-lookup.json"
@@ -706,7 +814,23 @@ def command_run(args) -> int:
     write_json(args.out_dir / "genre-census.json", census)
 
     grouped = single_label_examples(rows, rules)
-    library_train, library_holdout, split_report = split_library_examples(grouped, rules)
+    fixed_holdout = None
+    if args.holdout_file:
+        holdout_value = json.loads(Path(args.holdout_file).read_text(encoding="utf-8"))
+        holdout_rows = holdout_value.get("holdout", holdout_value)
+        fixed_holdout = {
+            row["path"] if isinstance(row, dict) else str(row) for row in holdout_rows
+        }
+    cap_overrides = parse_cap_overrides(args.cap_override, rules)
+    library_train, library_holdout, split_report = split_library_examples(
+        grouped, rules, fixed_holdout=fixed_holdout, cap_overrides=cap_overrides
+    )
+    write_json(args.out_dir / "genre-holdout.json", {
+        "note": "held-out library tracks used for evaluation; pass as --holdout-file to freeze",
+        "source": "fixed" if fixed_holdout is not None else "seeded split",
+        "count": len(library_holdout),
+        "holdout": [{"path": row["path"], "genre": row["genre"]} for row in library_holdout],
+    })
     external, external_rejected = load_external_manifest(
         args.external_manifest, rules, library_holdout
     )
@@ -768,8 +892,12 @@ def command_run(args) -> int:
     }
     final_bundle = train_hierarchy(final_with_features, final_trainable, rules)
 
+    if args.targets_file:
+        prediction_targets = load_targets_file(args.targets_file)
+    else:
+        prediction_targets = load_prediction_targets(args.docs)
     predictions = []
-    for path_text in load_prediction_targets(args.docs):
+    for path_text in prediction_targets:
         feat, error = feature_for_path(Path(path_text), cache_path, cache)
         if feat is None:
             failures.append({"path": path_text, "genre": None, "error": error})
@@ -793,6 +921,10 @@ def command_run(args) -> int:
         "trainable_genres_eval": sorted(trainable),
         "trainable_genres_final": sorted(final_trainable),
         "external_manifest": str(args.external_manifest) if args.external_manifest else None,
+        "holdout_file": str(args.holdout_file) if args.holdout_file else None,
+        "targets_file": str(args.targets_file) if args.targets_file else None,
+        "cap_overrides": cap_overrides,
+        "prediction_target_count": len(prediction_targets),
         "external_examples_accepted": len(external),
         "library_holdout_count": len(library_holdout),
         "final_training": final_sample_report,
@@ -822,10 +954,45 @@ def parser() -> argparse.ArgumentParser:
     root.add_argument("--out-dir", type=Path, default=DEFAULT_DOCS / "genre-learner")
     sub = root.add_subparsers(dest="command", required=True)
     sub.add_parser("census")
+    sub.add_parser("targets", help="read-only: fresh prediction targets from the current library")
     run = sub.add_parser("run")
     run.add_argument("--docs", type=Path, default=DEFAULT_DOCS)
     run.add_argument("--external-manifest", type=Path)
+    run.add_argument("--targets-file", type=Path, help="genre-targets.json from the targets command")
+    run.add_argument("--holdout-file", type=Path, help="genre-holdout.json from a previous run; freezes the held-out set")
+    run.add_argument("--cap-override", default="", help="per-Genre training cap overrides, e.g. 'R&B=800,Pop=800'")
     return root
+
+
+def parse_cap_overrides(text: str, rules: dict) -> dict[str, int]:
+    overrides: dict[str, int] = {}
+    canonical = set(rules["canonical_genres"])
+    for chunk in (text or "").split(","):
+        chunk = chunk.strip()
+        if not chunk:
+            continue
+        genre, _, value = chunk.rpartition("=")
+        genre = genre.strip()
+        if genre not in canonical:
+            raise LearnerError(f"cap override names noncanonical Genre {genre!r}")
+        overrides[genre] = int(value)
+    return overrides
+
+
+def command_targets(args) -> int:
+    rules = load_rules(args.rules)
+    rows = library_rows(
+        parse_serato_database(args.serato_db, args.serato_parser), args.library
+    )
+    report = build_targets(rows, args.library, rules)
+    args.out_dir.mkdir(parents=True, exist_ok=True)
+    write_json(args.out_dir / "genre-targets.json", report)
+    print(json.dumps({
+        "targets": report["count"],
+        "reason_counts": report["reason_counts"],
+        "output": str(args.out_dir / "genre-targets.json"),
+    }, indent=2))
+    return 0
 
 
 def main() -> int:
@@ -833,6 +1000,8 @@ def main() -> int:
     try:
         if args.command == "census":
             return command_census(args)
+        if args.command == "targets":
+            return command_targets(args)
         return command_run(args)
     except LearnerError as exc:
         print(
