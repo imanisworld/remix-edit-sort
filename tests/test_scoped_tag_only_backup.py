@@ -65,7 +65,7 @@ class ScopedTagOnlyBackupTests(unittest.TestCase):
         )
 
         self.assertEqual(manifest["status"], "PASS")
-        self.assertEqual(manifest["scope_mode"], "tag-only-plan")
+        self.assertEqual(manifest["scope_mode"], "explicit-files")
         self.assertEqual(manifest["file_count"], 1)
         self.assertEqual((self.backup / "2026/target.mp3").read_bytes(), b"target-bytes")
         self.assertFalse((self.backup / "2026/untouched.mp3").exists())
@@ -75,6 +75,16 @@ class ScopedTagOnlyBackupTests(unittest.TestCase):
         )
         with self.assertRaises(backup_manifest.BackupGateError):
             backup_manifest.require_item_backed_up(manifest, self.library, untouched)
+
+    def test_verifier_fails_scoped_manifest_when_copy_differs(self):
+        source = self._write_source("song.mp3", b"source")
+        self.backup.mkdir(parents=True)
+        (self.backup / "song.mp3").write_bytes(b"different")
+        manifest = backup_manifest.build_scoped_manifest(
+            self.library, self.backup, ["song.mp3"], backup_id="test-scoped"
+        )
+        self.assertEqual(manifest["status"], "FAIL")
+        self.assertTrue(any("differs" in problem for problem in manifest["problems"]))
 
     def test_refuses_any_move_plan(self):
         source = self._write_source("song.mp3", b"song")
