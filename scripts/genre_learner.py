@@ -776,6 +776,51 @@ def load_prediction_targets(docs: Path) -> list[str]:
     return sorted(path for path in targets if Path(path).is_file())
 
 
+def filter_prediction_targets_against_training(
+    prediction_targets: list[str],
+    training_rows: list[dict],
+    library_rows_for_identity: list[dict],
+) -> tuple[list[str], list[dict]]:
+    """Exclude targets that overlap external examples actually used to train.
+
+    Exact local-path overlap is always excluded. Artist/title identity is also
+    excluded when the external example has provenance for the same recording,
+    preventing a differently located copy/version of that identity from being
+    counted as an independent prediction.
+    """
+    external_training = [
+        row for row in training_rows if row.get("source_type") == "external"
+    ]
+    training_paths = {
+        str(Path(str(row["path"])).resolve())
+        for row in external_training if row.get("path")
+    }
+    training_ids = {_row_identity(row) for row in external_training} - {None}
+
+    library_ids = {}
+    for row in library_rows_for_identity:
+        if not row.get("file"):
+            continue
+        identity = _row_identity(row)
+        if identity:
+            library_ids[str(Path(str(row["file"])).resolve())] = identity
+
+    kept, excluded = [], []
+    for path_text in prediction_targets:
+        resolved = str(Path(path_text).resolve())
+        reasons = []
+        if resolved in training_paths:
+            reasons.append("same_local_path_as_external_training")
+        identity = library_ids.get(resolved)
+        if identity and identity in training_ids:
+            reasons.append("same_artist_title_as_external_training")
+        if reasons:
+            excluded.append({"file": path_text, "reasons": reasons})
+        else:
+            kept.append(path_text)
+    return kept, excluded
+
+
 def write_json(path: Path, value) -> None:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     Path(path).write_text(
@@ -893,9 +938,19 @@ def command_run(args) -> int:
     final_bundle = train_hierarchy(final_with_features, final_trainable, rules)
 
     if args.targets_file:
-        prediction_targets = load_targets_file(args.targets_file)
+        requested_prediction_targets = load_targets_file(args.targets_file)
     else:
-        prediction_targets = load_prediction_targets(args.docs)
+        requested_prediction_targets = load_prediction_targets(args.docs)
+    prediction_targets, prediction_exclusions = filter_prediction_targets_against_training(
+        requested_prediction_targets, final_with_features, rows
+    )
+    write_json(args.out_dir / "genre-prediction-exclusions.json", {
+        "requested": len(requested_prediction_targets),
+        "excluded_training_overlap": len(prediction_exclusions),
+        "remaining": len(prediction_targets),
+        "excluded": prediction_exclusions,
+    })
+
     predictions = []
     for path_text in prediction_targets:
         feat, error = feature_for_path(Path(path_text), cache_path, cache)
@@ -924,7 +979,9 @@ def command_run(args) -> int:
         "holdout_file": str(args.holdout_file) if args.holdout_file else None,
         "targets_file": str(args.targets_file) if args.targets_file else None,
         "cap_overrides": cap_overrides,
+        "prediction_target_count_requested": len(requested_prediction_targets),
         "prediction_target_count": len(prediction_targets),
+        "prediction_targets_excluded_training_overlap": len(prediction_exclusions),
         "external_examples_accepted": len(external),
         "library_holdout_count": len(library_holdout),
         "final_training": final_sample_report,
@@ -937,6 +994,7 @@ def command_run(args) -> int:
         "not_yet_trainable": len(unsupported),
         "external_examples": len(external),
         "holdout_evaluation": evaluation,
+        "prediction_targets_excluded_training_overlap": len(prediction_exclusions),
         "predictions": len(predictions),
         "confidence": confidence_summary(predictions),
         "failures": len(failures),
