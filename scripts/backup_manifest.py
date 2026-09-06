@@ -37,16 +37,16 @@ a *computed result*, never an assertion a caller can hand in.
 
 It is an integrity check against accidental or careless alteration -- a
 truncated file, a hand edit, a partial merge. It is NOT a signature: anyone
-who can write the manifest can recompute the digest. That is acceptable
+who can write the file can recompute the digest. That is acceptable
 here because the threat model is "an agent or human takes a shortcut", not
 "an attacker with write access to the repo". Do not describe it as
 tamper-proof.
 
 ## Producing a manifest
 
-    python3 scripts/backup_manifest.py verify \\
-        --source-root "/path/to/Music/Hip Hop" \\
-        --backup "/path/to/backups/hip-hop-20260816" \\
+    python3 scripts/backup_manifest.py verify \
+        --source-root "/path/to/Music/Hip Hop" \
+        --backup "/path/to/backups/hip-hop-20260816" \
         --out backup-manifest.json [--serato-backup /path/to/_Serato_backup]
 
 This walks both trees and computes PASS/FAIL from what it finds. There is
@@ -311,6 +311,113 @@ def build_manifest(
         "verifier": VERIFIER_NAME,
         "verifier_version": MANIFEST_VERSION,
         "repo_sha": _repo_sha(),
+        "problems": problems,
+        "status": STATUS_FAIL if problems or not files else STATUS_PASS,
+    }
+    manifest["manifest_sha256"] = canonical_digest(manifest)
+    return manifest
+
+
+def build_scoped_manifest(
+    source_root: Path,
+    backup_root: Path,
+    relative_paths: list[str],
+    *,
+    backup_id: str | None = None,
+) -> dict:
+    """Hash an explicit subset of one source root and compute PASS/FAIL.
+
+    This mode exists for tag-only plans where restoring the files that can be
+    written is sufficient and copying a multi-gigabyte parent tree is wasteful.
+    It does not authorize any file outside ``relative_paths``; the mutation
+    engine still requires per-item evidence and re-hashes the concrete backup
+    copy immediately before every write.
+    """
+    source_root = Path(source_root).resolve()
+    backup_root = Path(backup_root).resolve()
+    problems: list[str] = []
+    files: list[dict] = []
+    total_bytes = 0
+
+    if not source_root.is_dir():
+        problems.append(f"source root is not a directory: {source_root}")
+    if not backup_root.is_dir():
+        problems.append(f"backup root is not a directory: {backup_root}")
+    if not relative_paths:
+        problems.append("scoped backup contains no requested files")
+
+    seen: dict[str, str] = {}
+    if not problems:
+        for raw_relative in relative_paths:
+            if not isinstance(raw_relative, str) or not raw_relative:
+                problems.append(f"invalid scoped relative path: {raw_relative!r}")
+                continue
+            relative = Path(raw_relative)
+            if relative.is_absolute() or ".." in relative.parts:
+                problems.append(f"unsafe scoped relative path: {raw_relative!r}")
+                continue
+            key = _comparison_key(str(relative))
+            if key in seen:
+                problems.append(
+                    f"canonical path collision in scoped manifest: {seen[key]!r} and {raw_relative!r}"
+                )
+                continue
+            seen[key] = raw_relative
+
+            source_path = source_root / relative
+            backup_path = backup_root / relative
+            if source_path.is_symlink() or not source_path.is_file():
+                problems.append(f"scoped source is missing, not a file, or a symlink: {raw_relative}")
+                continue
+            if backup_path.is_symlink() or not backup_path.is_file():
+                source_hash = sha256_file(source_path)
+                size = source_path.stat().st_size
+                total_bytes += size
+                problems.append(f"missing from scoped backup: {raw_relative}")
+                files.append({
+                    "path": str(relative),
+                    "sha256": source_hash,
+                    "bytes": size,
+                    "backed_up": False,
+                })
+                continue
+
+            source_hash = sha256_file(source_path)
+            backup_hash = sha256_file(backup_path)
+            size = source_path.stat().st_size
+            total_bytes += size
+            matched = source_hash == backup_hash
+            if not matched:
+                problems.append(f"scoped backup copy differs from source: {raw_relative}")
+            files.append({
+                "path": str(relative),
+                "sha256": source_hash,
+                "bytes": size,
+                "backed_up": True,
+                "backup_sha256": backup_hash,
+                "matched": matched,
+            })
+
+    manifest = {
+        "manifest_version": MANIFEST_VERSION,
+        "backup_id": backup_id or f"{source_root.name}-scoped-{datetime.now().astimezone().strftime('%Y%m%d-%H%M%S')}",
+        "timestamp": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "source_root": str(source_root),
+        "source_root_identity": _identity(source_root),
+        "backup_root": str(backup_root),
+        "file_count": len(files),
+        "total_bytes": total_bytes,
+        "files": files,
+        "serato": {
+            "required": False,
+            "present": False,
+            "path": None,
+            "result": "NOT_REQUIRED",
+        },
+        "verifier": VERIFIER_NAME,
+        "verifier_version": MANIFEST_VERSION,
+        "repo_sha": _repo_sha(),
+        "scope_mode": "explicit-files",
         "problems": problems,
         "status": STATUS_FAIL if problems or not files else STATUS_PASS,
     }

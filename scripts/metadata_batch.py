@@ -290,3 +290,108 @@ def create_verified_backup(source_root: Path, destination: Path, manifest_path: 
     if heartbeat is not None:
         heartbeat.beat(force=True)
     return manifest
+
+
+def create_verified_tag_only_backup(
+    source_root: Path,
+    plan_path: Path,
+    destination: Path,
+    manifest_path: Path,
+    *,
+    t5_volume: Path = T5_VOLUME,
+    heartbeat=None,
+) -> dict:
+    """Back up only tag-write candidates from a tag-only plan, then prove them.
+
+    This is deliberately narrower than ``create_verified_backup`` and refuses
+    any plan containing a move. It preserves each source-relative path under
+    the backup root because ``mutation_engine`` resolves and re-hashes that
+    exact copy immediately before each mutation. PASS is computed by
+    ``backup_manifest.build_scoped_manifest`` rather than asserted here.
+    """
+    source_root = Path(source_root).resolve()
+    destination = require_t5_path(destination, t5_volume)
+    manifest_path = require_t5_path(manifest_path, t5_volume)
+    plan = read_json(plan_path)
+    items = plan.get("items")
+
+    if not source_root.is_dir():
+        raise BatchRefused(f"backup source is not a directory: {source_root}")
+    if destination.exists():
+        raise BatchRefused(f"backup destination already exists; refusing overwrite: {destination}")
+    if not isinstance(items, list):
+        raise BatchRefused(f"plan has no items list: {plan_path}")
+    if any(bool(item.get("move")) for item in items if isinstance(item, dict)):
+        raise BatchRefused("scoped tag-only backup refuses any plan containing moves")
+
+    selected = []
+    seen = set()
+    for index, item in enumerate(items, start=1):
+        if not isinstance(item, dict):
+            raise BatchRefused(f"plan item {index} is not an object")
+        if not item.get("tag_change"):
+            continue
+        relative_text = item.get("source_relative")
+        if not isinstance(relative_text, str) or not relative_text.strip():
+            raise BatchRefused(f"plan item {index} is missing source_relative")
+        relative = Path(relative_text)
+        if relative.is_absolute() or ".." in relative.parts:
+            raise BatchRefused(f"unsafe source_relative in plan item {index}: {relative_text!r}")
+        expected_literal = source_root / relative
+        source_text = item.get("source")
+        if not isinstance(source_text, str) or not source_text:
+            raise BatchRefused(f"plan item {index} is missing source")
+        source_literal = Path(source_text)
+        if expected_literal.is_symlink() or source_literal.is_symlink():
+            raise BatchRefused(f"planned tag source is a symlink: {source_literal}")
+        expected_source = expected_literal.resolve()
+        source = source_literal.resolve()
+        if source != expected_source:
+            raise BatchRefused(
+                f"source/source_relative mismatch in plan item {index}: {source} != {expected_source}"
+            )
+        try:
+            source.relative_to(source_root)
+        except ValueError as exc:
+            raise BatchRefused(f"plan source escapes source root: {source}") from exc
+        if not source.is_file():
+            raise BatchRefused(f"planned tag source is not a literal file: {source}")
+        expected_hash = item.get("sha256")
+        actual_hash = sha256_file(source)
+        if not isinstance(expected_hash, str) or actual_hash != expected_hash:
+            raise BatchRefused(f"source hash changed since plan: {source}")
+        key = backup_manifest._relative_key(str(relative))
+        if key in seen:
+            raise BatchRefused(f"duplicate/colliding source_relative in tag-only plan: {relative}")
+        seen.add(key)
+        selected.append((relative, source, actual_hash))
+
+    if not selected:
+        raise BatchRefused("tag-only plan contains no tag_change items to back up")
+
+    # Finish every read-only precondition before creating the destination.
+    destination.mkdir(parents=True, exist_ok=False)
+    for relative, source, source_hash in selected:
+        if heartbeat is not None:
+            heartbeat.beat()
+        backup_path = destination / relative
+        backup_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, backup_path)
+        if sha256_file(backup_path) != source_hash:
+            raise BatchRefused(f"scoped backup copy hash mismatch: {backup_path}")
+
+    manifest = backup_manifest.build_scoped_manifest(
+        source_root,
+        destination,
+        [str(relative) for relative, _, _ in selected],
+        backup_id=f"tag-only-{destination.parent.name}",
+    )
+    backup_manifest.write_manifest(manifest, manifest_path)
+    verified = backup_manifest.require_pass(manifest_path, source_root)
+    for _, source, source_hash in selected:
+        recorded = backup_manifest.require_item_backed_up(verified, source_root, source)
+        if recorded != source_hash:
+            raise BatchRefused(f"scoped manifest evidence mismatch after write: {source}")
+    if heartbeat is not None:
+        heartbeat.beat(force=True)
+    return verified
