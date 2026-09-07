@@ -14,12 +14,14 @@ SCRIPTS = REPO_ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
+import genre_learner_experiments as experiments_module  # noqa: E402
 import genre_learner_clap_hardened as hardened  # noqa: E402
 
 
 class HardenedClapEntrypointTests(unittest.TestCase):
     def setUp(self):
-        # Reload so monkeypatches installed by one test cannot leak into another.
+        # Reload both modules so runtime monkeypatches cannot leak between tests.
+        importlib.reload(experiments_module)
         self.module = importlib.reload(hardened)
 
     def test_provisional_default_is_proven_three_seed_checkpoint(self):
@@ -103,6 +105,7 @@ class HardenedClapEntrypointTests(unittest.TestCase):
             )
             first = self.module.experiments.experiment_cache_key(path, first_spec)
 
+            importlib.reload(experiments_module)
             self.module = importlib.reload(hardened)
             self.module._install_hardening(
                 model_id="org/model", revision="def456", device_request="cpu"
