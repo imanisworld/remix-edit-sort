@@ -20,29 +20,59 @@ import genre_learner_clap_hardened as hardened  # noqa: E402
 
 class HardenedClapEntrypointTests(unittest.TestCase):
     def setUp(self):
-        # Reload both modules so runtime monkeypatches cannot leak between tests.
         importlib.reload(experiments_module)
         self.module = importlib.reload(hardened)
 
-    def test_provisional_default_is_proven_three_seed_checkpoint(self):
+    def test_default_is_three_seed_winning_checkpoint_and_pinned_revision(self):
+        self.assertEqual(self.module.DEFAULT_CLAP_MODEL, "laion/larger_clap_general")
         self.assertEqual(
-            self.module.PROVISIONAL_CLAP_MODEL,
-            "laion/larger_clap_music_and_speech",
+            self.module.DEFAULT_CLAP_REVISION,
+            "ada0c23a36c4e8582805bb38fec3905903f18b41",
         )
         self.assertEqual(self.module.PREFERRED_WINDOW_MODE, "early-middle-late")
 
-    def test_clap_run_requires_pinned_revision(self):
-        with self.assertRaisesRegex(self.module.HardenedClapError, "--clap-revision"):
-            self.module._preparse(["--feature-mode", "clap"])
+    def test_known_default_injects_pinned_revision(self):
+        args = self.module._preparse(["--feature-mode", "clap"])
+        self.assertEqual(args.clap_model, self.module.DEFAULT_CLAP_MODEL)
+        self.assertEqual(args.clap_revision, self.module.DEFAULT_CLAP_REVISION)
 
-    def test_clap_run_accepts_explicit_model_and_revision(self):
+    def test_known_fallback_injects_its_pinned_revision(self):
         args = self.module._preparse([
             "--feature-mode", "clap",
-            "--clap-model", "laion/larger_clap_general",
+            "--clap-model", self.module.FALLBACK_CLAP_MODEL,
+        ])
+        self.assertEqual(args.clap_revision, self.module.FALLBACK_CLAP_REVISION)
+
+    def test_known_checkpoint_refuses_alternate_revision(self):
+        with self.assertRaisesRegex(self.module.HardenedClapError, "pinned to"):
+            self.module._preparse([
+                "--feature-mode", "clap",
+                "--clap-revision", "wrong",
+            ])
+
+    def test_unapproved_model_requires_explicit_revision(self):
+        with self.assertRaisesRegex(self.module.HardenedClapError, "--clap-revision"):
+            self.module._preparse([
+                "--feature-mode", "clap",
+                "--clap-model", "org/other-model",
+            ])
+
+    def test_unapproved_model_accepts_explicit_revision(self):
+        args = self.module._preparse([
+            "--feature-mode", "clap",
+            "--clap-model", "org/other-model",
             "--clap-revision", "abc123",
         ])
-        self.assertEqual(args.clap_model, "laion/larger_clap_general")
+        self.assertEqual(args.clap_model, "org/other-model")
         self.assertEqual(args.clap_revision, "abc123")
+
+    def test_degenerate_checkpoint_revision_is_refused(self):
+        with self.assertRaisesRegex(self.module.HardenedClapError, "degenerate"):
+            self.module._preparse([
+                "--feature-mode", "clap",
+                "--clap-model", "laion/larger_clap_music",
+                "--clap-revision", "a0b4534a14f58e20944452dff00a22a06ce629d1",
+            ])
 
     def test_non_clap_run_does_not_require_revision(self):
         args = self.module._preparse(["--feature-mode", "enhanced-dsp"])
@@ -57,10 +87,7 @@ class HardenedClapEntrypointTests(unittest.TestCase):
         ]
         self.assertEqual(
             self.module._strip_revision_arg(argv),
-            [
-                "--feature-mode", "clap",
-                "--window-mode", "early-middle-late",
-            ],
+            ["--feature-mode", "clap", "--window-mode", "early-middle-late"],
         )
         self.assertEqual(
             self.module._strip_revision_arg([
@@ -78,13 +105,18 @@ class HardenedClapEntrypointTests(unittest.TestCase):
 
     def test_explicit_window_mode_is_never_overridden(self):
         argv = ["--feature-mode", "clap", "--window-mode", "middle"]
-        self.assertEqual(
-            self.module._ensure_preferred_window(argv, "clap"), argv
-        )
+        self.assertEqual(self.module._ensure_preferred_window(argv, "clap"), argv)
         non_clap = ["--feature-mode", "enhanced-dsp"]
         self.assertEqual(
             self.module._ensure_preferred_window(non_clap, "enhanced-dsp"),
             non_clap,
+        )
+
+    def test_selected_model_is_injected_when_not_explicit(self):
+        argv = ["--feature-mode", "clap"]
+        self.assertEqual(
+            self.module._ensure_selected_model(argv, self.module.DEFAULT_CLAP_MODEL),
+            ["--feature-mode", "clap", "--clap-model", self.module.DEFAULT_CLAP_MODEL],
         )
 
     def test_synthetic_preflight_uses_three_distinct_ten_second_signals(self):
@@ -118,9 +150,7 @@ class HardenedClapEntrypointTests(unittest.TestCase):
             self.module._install_hardening(
                 model_id="org/model", revision="abc123", device_request="cpu"
             )
-            first_spec = self.module.experiments.feature_spec(
-                "clap", "middle", "org/model"
-            )
+            first_spec = self.module.experiments.feature_spec("clap", "middle", "org/model")
             first = self.module.experiments.experiment_cache_key(path, first_spec)
 
             importlib.reload(experiments_module)
@@ -128,9 +158,7 @@ class HardenedClapEntrypointTests(unittest.TestCase):
             self.module._install_hardening(
                 model_id="org/model", revision="def456", device_request="cpu"
             )
-            second_spec = self.module.experiments.feature_spec(
-                "clap", "middle", "org/model"
-            )
+            second_spec = self.module.experiments.feature_spec("clap", "middle", "org/model")
             second = self.module.experiments.experiment_cache_key(path, second_spec)
             self.assertNotEqual(first, second)
 

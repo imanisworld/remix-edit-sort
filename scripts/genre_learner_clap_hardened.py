@@ -2,10 +2,10 @@
 """Hardened CLAP entrypoint for the read-only genre representation experiment.
 
 This wrapper integrates the compatibility/provenance safeguards from
-``genre_clap_support`` without changing the production genre learner. It
-requires a pinned Hugging Face checkpoint revision for CLAP runs, performs a
-small synthetic-audio embedding sanity check before touching library audio,
-and delegates the actual evaluation to ``genre_learner_experiments``.
+``genre_clap_support`` without changing the production genre learner. Known
+approved CLAP checkpoints are pinned to exact Hugging Face revisions, a small
+synthetic-audio embedding sanity check runs before library audio is touched,
+and the actual evaluation delegates to ``genre_learner_experiments``.
 """
 from __future__ import annotations
 
@@ -19,7 +19,13 @@ from pathlib import Path
 import genre_clap_support as support
 import genre_learner_experiments as experiments
 
-PROVISIONAL_CLAP_MODEL = "laion/larger_clap_music_and_speech"
+DEFAULT_CLAP_MODEL = "laion/larger_clap_general"
+DEFAULT_CLAP_REVISION = "ada0c23a36c4e8582805bb38fec3905903f18b41"
+FALLBACK_CLAP_MODEL = "laion/larger_clap_music_and_speech"
+FALLBACK_CLAP_REVISION = "195c3a3e68faebb3e2088b9a79e79b43ddbda76b"
+EXCLUDED_CLAP_REVISIONS = {
+    ("laion/larger_clap_music", "a0b4534a14f58e20944452dff00a22a06ce629d1"),
+}
 PREFERRED_WINDOW_MODE = "early-middle-late"
 _PREFLIGHT_DONE: set[tuple[str, str, str]] = set()
 _RUNTIME: dict[tuple[str, str, str], tuple[object, object, object, str]] = {}
@@ -29,16 +35,42 @@ class HardenedClapError(experiments.ExperimentError):
     pass
 
 
+def _approved_revision(model_id: str) -> str | None:
+    if model_id == DEFAULT_CLAP_MODEL:
+        return DEFAULT_CLAP_REVISION
+    if model_id == FALLBACK_CLAP_MODEL:
+        return FALLBACK_CLAP_REVISION
+    return None
+
+
 def _preparse(argv: list[str]):
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--feature-mode", choices=experiments.FEATURE_MODES)
-    parser.add_argument("--clap-model", default=PROVISIONAL_CLAP_MODEL)
+    parser.add_argument("--clap-model", default=DEFAULT_CLAP_MODEL)
     parser.add_argument("--clap-revision")
     parser.add_argument("--clap-device", default="auto")
     known, _unknown = parser.parse_known_args(argv)
-    if known.feature_mode == "clap" and not known.clap_revision:
+
+    if known.feature_mode != "clap":
+        return known
+
+    approved_revision = _approved_revision(known.clap_model)
+    if known.clap_revision is None and approved_revision:
+        known.clap_revision = approved_revision
+    elif known.clap_revision is None:
         raise HardenedClapError(
-            "CLAP experiments require --clap-revision so checkpoint weights are reproducible"
+            "unapproved CLAP checkpoints require --clap-revision so weights are reproducible"
+        )
+
+    if (known.clap_model, known.clap_revision) in EXCLUDED_CLAP_REVISIONS:
+        raise HardenedClapError(
+            f"CLAP checkpoint is excluded as degenerate: {known.clap_model}@{known.clap_revision}"
+        )
+
+    if approved_revision and known.clap_revision != approved_revision:
+        raise HardenedClapError(
+            f"approved checkpoint {known.clap_model} is pinned to {approved_revision}; "
+            f"refusing alternate revision {known.clap_revision}"
         )
     return known
 
@@ -62,11 +94,7 @@ def _strip_revision_arg(argv: list[str]) -> list[str]:
 
 
 def _ensure_preferred_window(argv: list[str], feature_mode: str | None) -> list[str]:
-    """Default CLAP to the proven three-window representation.
-
-    Explicit ``--window-mode`` remains available for controlled comparisons.
-    Non-CLAP lanes keep the original experiment harness defaults unchanged.
-    """
+    """Default CLAP to the proven three-window representation."""
     result = list(argv)
     if feature_mode != "clap":
         return result
@@ -76,6 +104,16 @@ def _ensure_preferred_window(argv: list[str], feature_mode: str | None) -> list[
     ):
         return result
     return [*result, "--window-mode", PREFERRED_WINDOW_MODE]
+
+
+def _ensure_selected_model(argv: list[str], model_id: str) -> list[str]:
+    result = list(argv)
+    if any(
+        value == "--clap-model" or value.startswith("--clap-model=")
+        for value in result
+    ):
+        return result
+    return [*result, "--clap-model", model_id]
 
 
 def _synthetic_preflight_audio():
@@ -219,6 +257,8 @@ def main() -> int:
             )
         delegated = _strip_revision_arg(sys.argv[1:])
         delegated = _ensure_preferred_window(delegated, known.feature_mode)
+        if known.feature_mode == "clap":
+            delegated = _ensure_selected_model(delegated, known.clap_model)
         sys.argv = [sys.argv[0], *delegated]
         return experiments.main()
     except experiments.ExperimentError as exc:
