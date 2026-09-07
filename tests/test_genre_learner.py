@@ -5,6 +5,7 @@ No test touches the real library, Serato data, network, or external drives.
 from __future__ import annotations
 
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -49,6 +50,30 @@ class GenreLearnerTaxonomyTests(unittest.TestCase):
         parsed = self.parse("Juke & Footwork")
         self.assertEqual(parsed["status"], "legacy_compound_review")
         self.assertEqual(parsed["labels"], [])
+
+    def test_neptunes_placeholder_is_not_treated_as_four_genres(self):
+        parsed = self.parse("Rap/Hip-Hop/R&B/Rock/Pop")
+        self.assertEqual(parsed["status"], "legacy_compound_review")
+        self.assertEqual(parsed["labels"], [])
+        self.assertEqual(parsed["unknown"], ["Rap/Hip-Hop/R&B/Rock/Pop"])
+
+    def test_neptunes_placeholder_is_emitted_as_needs_check_target(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            audio = root / "placeholder.mp3"
+            audio.write_bytes(b"synthetic fixture")
+            targets = genre_learner.build_targets(
+                [{"file": str(audio), "genre": "Rap/Hip-Hop/R&B/Rock/Pop"}],
+                root,
+                self.rules,
+            )
+        self.assertEqual(targets["count"], 1)
+        self.assertEqual(targets["targets"][0]["file"], str(audio.resolve()))
+        self.assertIn("legacy_compound", targets["targets"][0]["reasons"])
+        self.assertEqual(
+            targets["targets"][0]["raw_genre"],
+            "Rap/Hip-Hop/R&B/Rock/Pop",
+        )
 
     def test_genuine_multi_style_metadata_is_not_forced_single(self):
         parsed = self.parse("Ballroom; House")
