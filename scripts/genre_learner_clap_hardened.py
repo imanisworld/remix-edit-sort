@@ -61,6 +61,23 @@ def _strip_revision_arg(argv: list[str]) -> list[str]:
     return result
 
 
+def _ensure_preferred_window(argv: list[str], feature_mode: str | None) -> list[str]:
+    """Default CLAP to the proven three-window representation.
+
+    Explicit ``--window-mode`` remains available for controlled comparisons.
+    Non-CLAP lanes keep the original experiment harness defaults unchanged.
+    """
+    result = list(argv)
+    if feature_mode != "clap":
+        return result
+    if any(
+        value == "--window-mode" or value.startswith("--window-mode=")
+        for value in result
+    ):
+        return result
+    return [*result, "--window-mode", PREFERRED_WINDOW_MODE]
+
+
 def _synthetic_preflight_audio():
     np = experiments._np()
     count = experiments.CLAP_SR * experiments.CLAP_SEG_SECONDS
@@ -200,7 +217,9 @@ def main() -> int:
                 revision=known.clap_revision,
                 device_request=known.clap_device,
             )
-        sys.argv = [sys.argv[0], *_strip_revision_arg(sys.argv[1:])]
+        delegated = _strip_revision_arg(sys.argv[1:])
+        delegated = _ensure_preferred_window(delegated, known.feature_mode)
+        sys.argv = [sys.argv[0], *delegated]
         return experiments.main()
     except experiments.ExperimentError as exc:
         import json
