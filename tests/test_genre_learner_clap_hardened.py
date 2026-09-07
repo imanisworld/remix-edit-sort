@@ -69,6 +69,24 @@ class HardenedClapEntrypointTests(unittest.TestCase):
             ["--feature-mode", "clap"],
         )
 
+    def test_clap_defaults_to_proven_three_window_mode(self):
+        argv = ["--feature-mode", "clap"]
+        self.assertEqual(
+            self.module._ensure_preferred_window(argv, "clap"),
+            ["--feature-mode", "clap", "--window-mode", "early-middle-late"],
+        )
+
+    def test_explicit_window_mode_is_never_overridden(self):
+        argv = ["--feature-mode", "clap", "--window-mode", "middle"]
+        self.assertEqual(
+            self.module._ensure_preferred_window(argv, "clap"), argv
+        )
+        non_clap = ["--feature-mode", "enhanced-dsp"]
+        self.assertEqual(
+            self.module._ensure_preferred_window(non_clap, "enhanced-dsp"),
+            non_clap,
+        )
+
     def test_synthetic_preflight_uses_three_distinct_ten_second_signals(self):
         rows = self.module._synthetic_preflight_audio()
         self.assertEqual(len(rows), 3)
