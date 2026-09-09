@@ -11,6 +11,7 @@ import tempfile
 import unittest
 import uuid
 from pathlib import Path
+from unittest import mock
 
 TESTS_DIR = Path(__file__).resolve().parent
 REPO_ROOT = TESTS_DIR.parent
@@ -26,6 +27,7 @@ import backup_manifest  # noqa: E402
 import fixtures  # noqa: E402
 import mutation_engine  # noqa: E402
 from mutagen.id3 import ID3  # noqa: E402
+from mutagen.id3._specs import SpecError  # noqa: E402
 
 
 FOLDER_LOCK = SCRIPTS_DIR / "folder_lock.py"
@@ -309,6 +311,57 @@ class NewApplyScriptsEndToEndTests(unittest.TestCase):
         self.assertEqual(payload["skipped_id3v22"], 1)
         self.assertEqual(path.read_bytes(), before)
         self.assertEqual(ID3(path).version, (2, 2, 0))
+
+    def test_intake_skips_unserializable_id3_without_failed_rollback(self):
+        path = fixtures.make_library(self.root, [{
+            "relative": "a&t (Intro Clean).mp3",
+            "genre": "Other",
+            "grouping": "Existing",
+        }])["a&t (Intro Clean).mp3"]
+        before = path.read_bytes()
+        journal = self.tmp / "unserializable-recovery.jsonl"
+        undo = self.tmp / "unserializable-undo.jsonl"
+        engine = mutation_engine.MutationEngine(
+            journal, heartbeat=None, manifest=None, source_root=None,
+            label="unserializable-test", allow_unbacked=True,
+        )
+        engine.start({})
+
+        with mock.patch.object(
+            intake_apply, "write_metadata", side_effect=SpecError("not in range")
+        ):
+            with engine.item(
+                1, kind=mutation_engine.METADATA, source=path,
+                expected_sha256=backup_manifest.sha256_file(path),
+                require_backup=False,
+            ) as txn:
+                record = intake_apply._apply_one_metadata_write(
+                    txn, path,
+                    proposed_genre="Hip-Hop",
+                    proposed_grouping="Existing; Clean",
+                    original_genre="Other",
+                    original_grouping=["Existing"],
+                    version=4,
+                    tag_backup_root=self.tmp / "tag-backups",
+                    index=1,
+                    undo_path=undo,
+                )
+        engine.finish({"transactions": 1})
+
+        self.assertEqual(path.read_bytes(), before)
+        self.assertFalse(record["tag_changed"])
+        self.assertTrue(record["tag_skipped"])
+        self.assertIn("Unserializable ID3 frames preserved", record["tag_skip_reason"])
+        recovery = mutation_engine.recover(journal)
+        self.assertTrue(recovery["clean"])
+        self.assertEqual(recovery["rollback_failures"], 0)
+        completed = [
+            row for row in mutation_engine.RecoveryJournal(journal).read()
+            if row.get("type") == "completed"
+        ]
+        self.assertEqual(len(completed), 1)
+        self.assertFalse(completed[0]["mutated"])
+        self.assertTrue(completed[0]["tag_skipped"])
 
     def test_all_three_apply_clis_refuse_without_lock_arguments(self):
         path = fixtures.make_library(self.root, [{"relative": "track.mp3"}])["track.mp3"]

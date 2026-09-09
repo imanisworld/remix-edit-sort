@@ -548,12 +548,14 @@ def recover(journal_path: Path) -> dict:
 
     An item is settled by a `completed` record, or by a `rolled_back` record
     that reports `restored: true`. A `rolled_back` record with
-    `restored: false` does NOT settle it: that means the engine mutated the
+    `restored: false` after a `mutated` marker means the engine mutated the
     file, verification failed, and the automatic restore then failed too (a
     corrupted backup, a permissions error, a backup copy that vanished). The
     file is on disk in its broken mutated state and needs a human. Those items
     are reported with `state: "ROLLBACK_FAILED"` and the original
-    `rollback_error`, and they keep `clean` false.
+    `rollback_error`. If no mutation marker and no rollback error exist, the
+    item is instead reported as `ABORTED_BEFORE_MUTATION`: still visible for
+    hash confirmation, but never mislabeled as a failed restore.
     """
     journal = RecoveryJournal(Path(journal_path))
     records = journal.read()
@@ -561,6 +563,7 @@ def recover(journal_path: Path) -> dict:
     mutated: set[tuple] = set()
     settled: set[tuple] = set()
     failed_rollbacks: dict[tuple, dict] = {}
+    prewrite_aborts: dict[tuple, dict] = {}
     case_renames: dict[tuple, dict] = {}
     torn = 0
     runs: dict[str, dict] = {}
@@ -587,16 +590,19 @@ def recover(journal_path: Path) -> dict:
             settled.add(key)
         elif kind == "rolled_back":
             # A rollback record only settles an item if the rollback actually
-            # RESTORED it. do_rollback() journals this record either way -- with
-            # restored: false and a rollback_error when the restore itself threw
-            # (a corrupted backup, a permissions failure, a vanished backup
-            # copy). Treating that as settled was a real hole: the file is still
-            # sitting on disk in its broken, half-mutated state, and recovery
-            # would have cheerfully reported "clean": true. An item whose
-            # rollback failed is the single most urgent thing a human needs to
-            # see, so it stays in-flight.
+            # RESTORED it. do_rollback() also uses this record shape for an
+            # exception before mark_mutated(), when no restore is attempted;
+            # that must stay visible without being called ROLLBACK_FAILED.
+            # A real failed restore remains the single most urgent thing a
+            # human needs to see, so it stays in-flight under that state.
             if record.get("restored"):
                 settled.add(key)
+            elif key not in mutated and not record.get("rollback_error"):
+                # The transaction raised after its durable intent but before
+                # mark_mutated(), so no restore was attempted or needed. Keep
+                # it visible for hash verification, but do not call it a
+                # rollback failure: no rollback took place and none failed.
+                prewrite_aborts[key] = record
             else:
                 failed_rollbacks[key] = record
 
@@ -605,6 +611,7 @@ def recover(journal_path: Path) -> dict:
         if key in settled:
             continue
         failed = failed_rollbacks.get(key)
+        prewrite_abort = prewrite_aborts.get(key)
         entry = {
             "run_id": intent.get("run_id"),
             "index": intent.get("index"),
@@ -619,7 +626,10 @@ def recover(journal_path: Path) -> dict:
             "restorable": bool(intent.get("backup_path") or intent.get("backup_sha256")),
             "rollback_attempted": failed is not None,
             "rollback_error": failed.get("rollback_error") if failed else None,
-            "failure_reason": failed.get("reason") if failed else None,
+            "failure_reason": (
+                failed.get("reason") if failed else
+                prewrite_abort.get("reason") if prewrite_abort else None
+            ),
         }
         case_rename = case_renames.get(key)
         if case_rename is not None:
@@ -635,6 +645,13 @@ def recover(journal_path: Path) -> dict:
                 "restore ALSO failed. This file is on disk in its mutated state. "
                 "Restore it manually from backup_path and confirm it hashes to "
                 "before_sha256 before doing anything else with this folder."
+            )
+        elif prewrite_abort is not None:
+            entry["state"] = "ABORTED_BEFORE_MUTATION"
+            entry["action_required"] = (
+                "The item failed after its intent was journaled, but no mutation marker "
+                "was written and no rollback was attempted. Confirm the source still "
+                "hashes to before_sha256; no restore is needed if it does."
             )
         else:
             entry["state"] = "INTERRUPTED"

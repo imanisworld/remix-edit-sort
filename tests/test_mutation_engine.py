@@ -462,6 +462,13 @@ class RollbackTests(EngineTestCase):
                 raise RuntimeError("failed before touching the file")
         self.assertEqual(calls, [], "rollback ran for an item that was never mutated")
 
+        report = mutation_engine.recover(self.journal)
+        self.assertFalse(report["clean"])
+        self.assertEqual(report["rollback_failures"], 0)
+        self.assertEqual(report["in_flight"][0]["state"], "ABORTED_BEFORE_MUTATION")
+        self.assertFalse(report["in_flight"][0]["mutation_had_started"])
+        self.assertFalse(report["in_flight"][0]["rollback_attempted"])
+
 
 class RecoveryTests(EngineTestCase):
     def test_interrupted_case_rename_reports_its_temporary_path(self):

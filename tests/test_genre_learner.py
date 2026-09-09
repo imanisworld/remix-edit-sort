@@ -59,6 +59,8 @@ class GenreLearnerTaxonomyTests(unittest.TestCase):
         self.assertEqual(self.parse("Twerk")["status"], "context_only")
         self.assertEqual(self.parse("Lounge")["status"], "context_only")
         self.assertEqual(self.parse("Lounge Vibe")["status"], "context_only")
+        self.assertEqual(self.parse("Y2K")["status"], "context_only")
+        self.assertEqual(self.parse("Black Y2K")["status"], "context_only")
         self.assertNotIn("Lounge", self.rules["canonical_genres"])
 
     def test_approved_legacy_normalizations(self):
