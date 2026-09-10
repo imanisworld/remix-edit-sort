@@ -45,33 +45,33 @@ jobs:
               text = text.replace(old_import, new_import, 1)
 
           catch_anchor = '        except SeratoEncodingOnlyChange:\n'
-          catch_block = '''        except SpecError as exc:
-              # Mutagen can read some malformed/out-of-range ID3 frames that it
-              # cannot serialize again (for example an RVA2 peak outside its
-              # writable range). SpecError is raised before save() is expected
-              # to write bytes, but prove that against the real file before
-              # treating this as a safe preservation skip.
-              if sha256_file(path) != before_hash:
-                  txn.mark_mutated()
-                  raise RuntimeError(
-                      f"mutagen serialization failed after changing the file: {path}"
-                  ) from exc
-              skip_reason = (
-                  "Unserializable ID3 frames preserved; tag write skipped "
-                  f"(SpecError: {exc})"
-              )
-'''
+          catch_block = (
+              '        except SpecError as exc:\n'
+              '            # Mutagen can read some malformed/out-of-range ID3 frames that it\n'
+              '            # cannot serialize again (for example an RVA2 peak outside its\n'
+              '            # writable range). Prove the file stayed unchanged before skip.\n'
+              '            if sha256_file(path) != before_hash:\n'
+              '                txn.mark_mutated()\n'
+              '                raise RuntimeError(\n'
+              '                    f"mutagen serialization failed after changing the file: {path}"\n'
+              '                ) from exc\n'
+              '            skip_reason = (\n'
+              '                "Unserializable ID3 frames preserved; tag write skipped "\n'
+              '                f"(SpecError: {exc})"\n'
+              '            )\n'
+          )
           if 'except SpecError as exc:' not in text:
               if text.count(catch_anchor) != 1:
                   raise SystemExit('RVA2 integration refused: serializer catch anchor drifted')
               text = text.replace(catch_anchor, catch_block + catch_anchor, 1)
 
           summary_anchor = '        "id3_upgraded": sum(1 for r in completed if r["id3_upgraded"] == "2.2->2.3"),\n'
-          summary_block = '''        "skipped_unserializable_id3": sum(
-              1 for r in completed
-              if (r["tag_skip_reason"] or "").startswith("Unserializable ID3 frames")
-          ),
-'''
+          summary_block = (
+              '        "skipped_unserializable_id3": sum(\n'
+              '            1 for r in completed\n'
+              '            if (r["tag_skip_reason"] or "").startswith("Unserializable ID3 frames")\n'
+              '        ),\n'
+          )
           if '"skipped_unserializable_id3"' not in text:
               if text.count(summary_anchor) != 1:
                   raise SystemExit('RVA2 integration refused: result-summary anchor drifted')
@@ -129,7 +129,7 @@ jobs:
                   engine.start({})
                   return engine
 
-              def apply_one(self, engine, journal, side_effect):
+              def apply_one(self, engine, side_effect):
                   undo = self.tmp / "undo.jsonl"
                   with mock.patch.object(intake_apply, "write_metadata", side_effect=side_effect):
                       with engine.item(
@@ -160,9 +160,8 @@ jobs:
               def test_unserializable_id3_is_skipped_only_when_file_is_unchanged(self):
                   journal = self.tmp / "unchanged.jsonl"
                   engine = self.engine(journal)
-                  record = self.apply_one(engine, journal, SpecError("not in range"))
+                  record = self.apply_one(engine, SpecError("not in range"))
                   engine.finish({"transactions": 1})
-
                   self.assertEqual(self.path.read_bytes(), self.before)
                   self.assertFalse(record["tag_changed"])
                   self.assertTrue(record["tag_skipped"])
@@ -179,9 +178,8 @@ jobs:
                       raise SpecError("not in range")
 
                   with self.assertRaisesRegex(RuntimeError, "serialization failed after changing"):
-                      self.apply_one(engine, journal, corrupt_then_fail)
+                      self.apply_one(engine, corrupt_then_fail)
                   engine.finish({"transactions": 0})
-
                   self.assertEqual(self.path.read_bytes(), self.before)
                   report = mutation_engine.recover(journal)
                   self.assertTrue(report["clean"], report)
