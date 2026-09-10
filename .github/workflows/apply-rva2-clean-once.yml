@@ -18,20 +18,187 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Apply only the reviewed RVA2 safety patch
+      - name: Apply only the non-conflicting recovery portion
         shell: bash
         run: |
           set -euo pipefail
           git diff 1dd5f2644f20d750a4397050459257433dade677 124e01de6f3fe1c0957429ae237536e1c9d77e5f -- \
-            scripts/apply_new_music_intake_plan.py \
             scripts/mutation_engine.py \
-            tests/fixtures.py \
             tests/test_mutation_engine.py \
-            tests/test_new_apply_scripts.py \
-            > /tmp/rva2-clean.patch
-          git apply --3way --index /tmp/rva2-clean.patch
-          if git diff --cached --name-only | grep -E 'genre-learner|new_music_intake\.py|test_genre_learner\.py'; then
-            echo 'Held learner-taxonomy content entered the clean RVA2 patch.' >&2
+            > /tmp/rva2-recovery.patch
+          git apply --3way --index /tmp/rva2-recovery.patch
+      - name: Add only the serializer guard to the current intake code
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('scripts/apply_new_music_intake_plan.py')
+          text = path.read_text(encoding='utf-8')
+
+          old_import = 'from mutagen.id3 import ID3, ID3NoHeaderError, TCON, TIT1, TDRC, TYER\nfrom mutagen.mp4 import MP4\n'
+          new_import = 'from mutagen.id3 import ID3, ID3NoHeaderError, TCON, TIT1, TDRC, TYER\nfrom mutagen.id3._specs import SpecError\nfrom mutagen.mp4 import MP4\n'
+          if 'from mutagen.id3._specs import SpecError' not in text:
+              if text.count(old_import) != 1:
+                  raise SystemExit('RVA2 integration refused: intake import anchor drifted')
+              text = text.replace(old_import, new_import, 1)
+
+          catch_anchor = '        except SeratoEncodingOnlyChange:\n'
+          catch_block = '''        except SpecError as exc:
+              # Mutagen can read some malformed/out-of-range ID3 frames that it
+              # cannot serialize again (for example an RVA2 peak outside its
+              # writable range). SpecError is raised before save() is expected
+              # to write bytes, but prove that against the real file before
+              # treating this as a safe preservation skip.
+              if sha256_file(path) != before_hash:
+                  txn.mark_mutated()
+                  raise RuntimeError(
+                      f"mutagen serialization failed after changing the file: {path}"
+                  ) from exc
+              skip_reason = (
+                  "Unserializable ID3 frames preserved; tag write skipped "
+                  f"(SpecError: {exc})"
+              )
+'''
+          if 'except SpecError as exc:' not in text:
+              if text.count(catch_anchor) != 1:
+                  raise SystemExit('RVA2 integration refused: serializer catch anchor drifted')
+              text = text.replace(catch_anchor, catch_block + catch_anchor, 1)
+
+          summary_anchor = '        "id3_upgraded": sum(1 for r in completed if r["id3_upgraded"] == "2.2->2.3"),\n'
+          summary_block = '''        "skipped_unserializable_id3": sum(
+              1 for r in completed
+              if (r["tag_skip_reason"] or "").startswith("Unserializable ID3 frames")
+          ),
+'''
+          if '"skipped_unserializable_id3"' not in text:
+              if text.count(summary_anchor) != 1:
+                  raise SystemExit('RVA2 integration refused: result-summary anchor drifted')
+              text = text.replace(summary_anchor, summary_block + summary_anchor, 1)
+
+          path.write_text(text, encoding='utf-8')
+          PY
+      - name: Add focused RVA2 regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > tests/test_rva2_serializer_safety.py <<'PYTEST'
+          import sys
+          import tempfile
+          import unittest
+          from pathlib import Path
+          from unittest import mock
+
+          TESTS_DIR = Path(__file__).resolve().parent
+          SCRIPTS_DIR = TESTS_DIR.parent / "scripts"
+          if str(TESTS_DIR) not in sys.path:
+              sys.path.insert(0, str(TESTS_DIR))
+          if str(SCRIPTS_DIR) not in sys.path:
+              sys.path.insert(0, str(SCRIPTS_DIR))
+
+          import apply_new_music_intake_plan as intake_apply  # noqa: E402
+          import backup_manifest  # noqa: E402
+          import fixtures  # noqa: E402
+          import mutation_engine  # noqa: E402
+          from mutagen.id3._specs import SpecError  # noqa: E402
+
+
+          class Rva2SerializerSafetyTests(unittest.TestCase):
+              def setUp(self):
+                  self.temp = tempfile.TemporaryDirectory()
+                  self.addCleanup(self.temp.cleanup)
+                  self.tmp = Path(self.temp.name)
+                  self.root = self.tmp / "library"
+                  self.path = fixtures.make_library(self.root, [{
+                      "relative": "a&t (Intro Clean).mp3",
+                      "genre": "Other",
+                      "grouping": "Existing",
+                  }])["a&t (Intro Clean).mp3"]
+                  self.before = self.path.read_bytes()
+
+              def engine(self, journal):
+                  engine = mutation_engine.MutationEngine(
+                      journal,
+                      heartbeat=None,
+                      manifest=None,
+                      source_root=None,
+                      label="rva2-safety-test",
+                      allow_unbacked=True,
+                  )
+                  engine.start({})
+                  return engine
+
+              def apply_one(self, engine, journal, side_effect):
+                  undo = self.tmp / "undo.jsonl"
+                  with mock.patch.object(intake_apply, "write_metadata", side_effect=side_effect):
+                      with engine.item(
+                          1,
+                          kind=mutation_engine.METADATA,
+                          source=self.path,
+                          expected_sha256=backup_manifest.sha256_file(self.path),
+                          require_backup=False,
+                      ) as txn:
+                          return intake_apply._apply_one_metadata_write(
+                              txn,
+                              self.path,
+                              proposed_genre="Hip-Hop",
+                              proposed_grouping="Existing; Clean",
+                              proposed_year=None,
+                              original_genre="Other",
+                              original_grouping=["Existing"],
+                              original_year="",
+                              year_basis=None,
+                              year_grade=None,
+                              version=4,
+                              id3_upgrade=None,
+                              tag_backup_root=self.tmp / "tag-backups",
+                              index=1,
+                              undo_path=undo,
+                          )
+
+              def test_unserializable_id3_is_skipped_only_when_file_is_unchanged(self):
+                  journal = self.tmp / "unchanged.jsonl"
+                  engine = self.engine(journal)
+                  record = self.apply_one(engine, journal, SpecError("not in range"))
+                  engine.finish({"transactions": 1})
+
+                  self.assertEqual(self.path.read_bytes(), self.before)
+                  self.assertFalse(record["tag_changed"])
+                  self.assertTrue(record["tag_skipped"])
+                  self.assertIn("Unserializable ID3 frames preserved", record["tag_skip_reason"])
+                  self.assertTrue(mutation_engine.recover(journal)["clean"])
+
+              def test_serializer_error_after_byte_change_is_not_treated_as_skip(self):
+                  journal = self.tmp / "changed.jsonl"
+                  engine = self.engine(journal)
+
+                  def corrupt_then_fail(path, **_kwargs):
+                      with Path(path).open("ab") as handle:
+                          handle.write(b"corrupt")
+                      raise SpecError("not in range")
+
+                  with self.assertRaisesRegex(RuntimeError, "serialization failed after changing"):
+                      self.apply_one(engine, journal, corrupt_then_fail)
+                  engine.finish({"transactions": 0})
+
+                  self.assertEqual(self.path.read_bytes(), self.before)
+                  report = mutation_engine.recover(journal)
+                  self.assertTrue(report["clean"], report)
+                  self.assertEqual(report["rollback_failures"], 0)
+
+
+          if __name__ == "__main__":
+              unittest.main()
+          PYTEST
+      - name: Refuse taxonomy or unrelated changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          unexpected="$(git status --short | awk '{print $2}' | grep -Ev '^(.github/workflows/apply-rva2-clean-once.yml|scripts/apply_new_music_intake_plan.py|scripts/mutation_engine.py|tests/test_mutation_engine.py|tests/test_rva2_serializer_safety.py)$' || true)"
+          if [ -n "$unexpected" ]; then
+            echo "RVA2 integration produced unexpected files:" >&2
+            echo "$unexpected" >&2
             exit 1
           fi
       - name: Install test dependencies
@@ -49,7 +216,7 @@ jobs:
         run: |
           set -euo pipefail
           git rm .github/workflows/apply-rva2-clean-once.yml
-          git add scripts/apply_new_music_intake_plan.py scripts/mutation_engine.py tests/fixtures.py tests/test_mutation_engine.py tests/test_new_apply_scripts.py
+          git add scripts/apply_new_music_intake_plan.py scripts/mutation_engine.py tests/test_mutation_engine.py tests/test_rva2_serializer_safety.py
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'Integrate reviewed RVA2 serializer safety only'
