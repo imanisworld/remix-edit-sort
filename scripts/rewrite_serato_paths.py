@@ -69,6 +69,13 @@ def _canonical_json(value: object) -> bytes:
     ).encode("utf-8")
 
 
+def _literal_stored_path_is_file(serato_path: str) -> bool:
+    """Resolve a Serato path, then require its exact on-disk spelling."""
+    return mutation_engine.literal_path_is_file(
+        check_serato_crate_paths.resolve(serato_path)
+    )
+
+
 def _normalize_map_path(value: object, label: str) -> str:
     if not isinstance(value, str) or not value:
         raise SeratoRewriteError(f"{label} must be a non-empty string")
@@ -440,7 +447,7 @@ def load_and_validate_plan(
             change["to"]
             for item in rebuilt["files"]
             for change in item["rewrites"]
-            if not check_serato_crate_paths.resolve(change["to"]).is_file()
+            if not _literal_stored_path_is_file(change["to"])
         })
         if missing_targets:
             raise SeratoRewriteError(
@@ -521,7 +528,7 @@ def run_post_check(
     unresolved_targets = sorted(set(expected_targets) & unresolved)
     absent_targets = sorted(
         path for path in expected_targets
-        if not check_serato_crate_paths.resolve(path).is_file()
+        if not _literal_stored_path_is_file(path)
     )
     expected_hashes = {
         item["path"]: item["sha256"] for item in plan["source_inventory"]
@@ -637,7 +644,7 @@ def apply_rewrite_plan(
                 )
             missing = sorted({
                 change["to"] for change in changes
-                if not check_serato_crate_paths.resolve(change["to"]).is_file()
+                if not _literal_stored_path_is_file(change["to"])
             })
             if missing:
                 raise mutation_engine.MutationVerificationError(
