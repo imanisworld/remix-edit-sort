@@ -227,8 +227,8 @@ the original v2.2 bytes.
 ```
 
 `from` must still match the live tag and `to` must be a four-digit year from 1900 through
-2100. Write-authorizing grades are `confirmed_primary`, `confirmed_secondary`,
-`local_evidence`, and `inference`; `unknown` and `unconfirmable` cannot authorize a tag
+2100. Write-authorizing grades are `confirmed_primary`, `confirmed_secondary`, and
+`local_evidence`; `inference`, `unknown`, and `unconfirmable` cannot authorize a tag
 mutation. Year joins any Genre/Grouping changes in the same backed-up transaction. The
 engine writes and verifies the container's native field: ID3v2.4 `TDRC`, ID3v2.3 `TYER`,
 FLAC `date`, or MP4/M4A `©day`. ID3v2.2 still requires the explicit v2.2-to-v2.3 item
