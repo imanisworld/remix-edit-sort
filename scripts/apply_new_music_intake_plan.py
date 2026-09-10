@@ -5,6 +5,12 @@ Grouping (remix/edit type + "Edit" umbrella, and/or an explicit Clean/Dirty
 filename label). Duplicate flags in the plan are report-only and are never
 acted on here -- deleting anything stays a manual, per-file decision.
 
+ID3v2.2 MP3s remain byte-for-byte skips unless that exact actionable item
+carries ``"id3_upgrade": {"from": "2.2", "to": "2.3"}``. The upgrade is
+validated against the live tag version, performed in the same one-save
+metadata transaction, and verifies every non-Genre/Grouping frame plus audio
+and Serato payloads before it is journaled as complete.
+
 Scoped to ONE top-level library folder at a time (the --lock-folder unit),
 same discipline as every other apply_*.py script in this repo. Genre and
 Genre and Grouping are written in one container save and one journaled
@@ -22,6 +28,7 @@ SAFETY_CLASSIFICATION = "engine-user"
 ENGINE_MUTATION_HELPERS = ("_apply_one_metadata_write", "write_metadata")
 
 import argparse
+from collections import Counter
 import hashlib
 import json
 import os
@@ -38,6 +45,7 @@ import lock_guard
 import mutation_engine
 
 SUPPORTED_EXTS = {".mp3", ".flac", ".m4a"}
+ID3_V22_TO_V23 = {"from": "2.2", "to": "2.3"}
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -262,12 +270,79 @@ def combined_grouping(existing: list[str], new_terms: list[str], remove_terms: l
     return "; ".join(values)
 
 
+def approved_id3_upgrade(value: object) -> bool:
+    return isinstance(value, dict) and value == ID3_V22_TO_V23
+
+
+def _semantic_value(value):
+    """Stable JSON value for verifying non-target ID3 frame preservation."""
+    if isinstance(value, bytes):
+        return {"bytes": len(value), "sha256": sha256_bytes(value)}
+    if isinstance(value, (str, int, float, bool)) or value is None:
+        return value
+    if isinstance(value, (list, tuple)):
+        return [_semantic_value(item) for item in value]
+    if isinstance(value, dict):
+        return {
+            str(key): _semantic_value(item)
+            for key, item in sorted(value.items(), key=lambda pair: str(pair[0]))
+        }
+    # Mutagen enums (Encoding, PictureType, Channel, ...) are int-like in
+    # current releases.  String fallback keeps unusual frame attributes
+    # comparable without depending on private serialization APIs.
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return str(value)
+
+
+def id3_preservation_snapshot(path: Path) -> dict:
+    """Semantic inventory of every ID3 frame except fields this plan edits.
+
+    ID3v2.2 frames are already mapped by mutagen on load (PIC -> APIC,
+    GEO -> GEOB, COM -> COMM, and so on), so this compares the mapped v2.3
+    identity, multiplicity, and payload-bearing attributes on both sides of
+    the upgrade. Encoding is intentionally omitted: v2.2 -> v2.3 may need a
+    representation change while the text/data stays the same.
+    """
+    tags = ID3(path)
+    frames = []
+    counts: Counter[str] = Counter()
+    for frame in tags.values():
+        if frame.FrameID in {"TCON", "TIT1"}:
+            continue
+        counts[frame.FrameID] += 1
+        attributes = {
+            key: _semantic_value(value)
+            for key, value in sorted(getattr(frame, "__dict__", {}).items())
+            if key != "encoding"
+        }
+        frames.append({
+            "frame_id": frame.FrameID,
+            "hash_key": frame.HashKey,
+            "attributes": attributes,
+        })
+    frames.sort(key=lambda item: (
+        item["frame_id"], item["hash_key"],
+        json.dumps(item["attributes"], sort_keys=True, ensure_ascii=False),
+    ))
+    return {
+        "frame_id_counts": dict(sorted(counts.items())),
+        "frames": frames,
+        "unknown_frames": [
+            {"bytes": len(value), "sha256": sha256_bytes(value)}
+            for value in tags.unknown_frames
+        ],
+    }
+
+
 def write_metadata(
     path: Path,
     *,
     genre_value: str | None,
     grouping_value: str | None,
     version: int,
+    id3_upgrade: dict | None = None,
 ) -> None:
     """Write all requested tag fields with exactly one container save."""
     if version not in {3, 4}:
@@ -278,8 +353,19 @@ def write_metadata(
     if suffix == ".mp3":
         try:
             tags = ID3(path)
+            source_version = tags.version[1]
         except ID3NoHeaderError:
             tags = ID3()
+            source_version = 4
+        if source_version == 2:
+            if not approved_id3_upgrade(id3_upgrade) or version != 3:
+                raise RuntimeError(
+                    f"ID3v2.2 upgrade was not explicitly approved by the plan: {path}"
+                )
+        elif id3_upgrade is not None:
+            raise RuntimeError(
+                f"plan requests an ID3v2.2 upgrade, but source is ID3v2.{source_version}: {path}"
+            )
         encoding = 3 if version == 4 else 1
         if genre_value is not None:
             tags.delall("TCON")
@@ -289,6 +375,8 @@ def write_metadata(
             tags.add(TIT1(encoding=encoding, text=[grouping_value]))
         tags.save(path, v2_version=version)
         return
+    if id3_upgrade is not None:
+        raise RuntimeError(f"ID3 upgrade is only valid for MP3 files: {path}")
     if suffix == ".flac":
         audio = FLAC(path)
         if genre_value is not None:
@@ -308,11 +396,13 @@ def write_metadata(
     raise RuntimeError(f"metadata write not supported for {path.suffix}: {path}")
 
 
-def tag_skip_reason(path: Path) -> str | None:
+def tag_skip_reason(path: Path, id3_upgrade: dict | None = None) -> str | None:
     if path.suffix.casefold() != ".mp3":
         return None
     try:
         if ID3(path).version[1] == 2:
+            if approved_id3_upgrade(id3_upgrade):
+                return None
             return "ID3v2.2 preserved; tag write skipped"
     except ID3NoHeaderError:
         pass
@@ -349,13 +439,34 @@ def load_and_validate(plan_path: Path, root: Path) -> tuple[list[dict], list[str
             errors.append(f"missing file: {path}")
             continue
         if path.suffix.casefold() not in SUPPORTED_EXTS:
-            if "genre_fix" in row or "grouping_fix" in row:
+            if "genre_fix" in row or "grouping_fix" in row or "id3_upgrade" in row:
                 errors.append(f"unsupported metadata format in actionable item: {path}")
             continue
         actual_hash = sha256_file(path)
         if actual_hash != row["sha256"]:
             errors.append(f"file hash changed since survey: {path}")
             continue
+        if "id3_upgrade" in row:
+            upgrade = row["id3_upgrade"]
+            if not approved_id3_upgrade(upgrade):
+                errors.append(f"unsupported ID3 upgrade request for {path}: {upgrade!r}")
+                continue
+            if path.suffix.casefold() != ".mp3":
+                errors.append(f"ID3 upgrade requested for non-MP3 file: {path}")
+                continue
+            if "genre_fix" not in row and "grouping_fix" not in row:
+                errors.append(f"standalone ID3 upgrade without a metadata fix is not allowed: {path}")
+                continue
+            try:
+                source_version = ID3(path).version[1]
+            except ID3NoHeaderError:
+                source_version = None
+            if source_version != 2:
+                errors.append(
+                    f"ID3 upgrade requested, but file is not ID3v2.2: {path} "
+                    f"(found {source_version!r})"
+                )
+                continue
         if "genre_fix" in row:
             current = read_genre(path)
             if current.strip() != (row["genre_fix"]["from"] or "").strip():
@@ -381,6 +492,7 @@ def _apply_one_metadata_write(
     original_genre,
     original_grouping,
     version,
+    id3_upgrade,
     tag_backup_root,
     index,
     undo_path,
@@ -389,9 +501,11 @@ def _apply_one_metadata_write(
     before_audio = sha256_bytes(audio_payload(path))
     before_serato = serato_digest(path)
     before_serato_payload = serato_payload_digest(path)
-    skip_reason = tag_skip_reason(path)
+    skip_reason = tag_skip_reason(path, id3_upgrade)
     tag_backup = None
     tag_was_changed = False
+    id3_upgraded = False
+    preserved_id3 = id3_preservation_snapshot(path) if id3_upgrade else None
 
     if not skip_reason:
         tag_backup = tag_backup_root / f"{index:05d}-metadata-{path.name}"
@@ -405,9 +519,11 @@ def _apply_one_metadata_write(
                 path,
                 genre_value=proposed_genre,
                 grouping_value=proposed_grouping,
-                version=version,
+                version=3 if id3_upgrade else version,
+                id3_upgrade=id3_upgrade,
             )
             tag_was_changed = True
+            id3_upgraded = bool(id3_upgrade)
             txn.mark_mutated()
             if proposed_genre is not None and read_genre(path) != proposed_genre:
                 raise RuntimeError("Genre tag verification failed")
@@ -420,19 +536,34 @@ def _apply_one_metadata_write(
                     raise RuntimeError("Grouping tag verification failed")
             if sha256_bytes(audio_payload(path)) != before_audio:
                 raise RuntimeError("audio payload changed")
-            if serato_digest(path) != before_serato:
+            if id3_upgrade:
+                if ID3(path).version[1] != 3:
+                    raise RuntimeError("ID3v2.2 -> v2.3 upgrade verification failed")
+                if id3_preservation_snapshot(path) != preserved_id3:
+                    raise RuntimeError("non-target ID3 frame preservation verification failed")
+                if serato_payload_digest(path) != before_serato_payload:
+                    raise RuntimeError("Serato frame payload changed during ID3 upgrade")
+            elif serato_digest(path) != before_serato:
                 if serato_payload_digest(path) == before_serato_payload:
                     raise SeratoEncodingOnlyChange("encoding-byte-only Serato change; rolled back")
                 raise RuntimeError("Serato frames changed")
         except SeratoEncodingOnlyChange:
             mutation_engine.restore_from_backup(tag_backup, path, before_hash)
             tag_was_changed = False
+            id3_upgraded = False
             skip_reason = "Serato encoding-only change on write; skipped out of caution"
 
     after_hash = sha256_file(path)
     if sha256_bytes(audio_payload(path)) != before_audio:
         raise RuntimeError(f"post-write audio verification failed: {path}")
-    if serato_digest(path) != before_serato:
+    if id3_upgrade and tag_was_changed:
+        if ID3(path).version[1] != 3:
+            raise RuntimeError(f"post-write ID3 version verification failed: {path}")
+        if id3_preservation_snapshot(path) != preserved_id3:
+            raise RuntimeError(f"post-write non-target ID3 preservation failed: {path}")
+        if serato_payload_digest(path) != before_serato_payload:
+            raise RuntimeError(f"post-write Serato payload verification failed: {path}")
+    elif serato_digest(path) != before_serato:
         raise RuntimeError(f"post-write Serato verification failed: {path}")
     if not skip_reason and proposed_genre is not None and read_genre(path) != proposed_genre:
         raise RuntimeError(f"post-write Genre verification failed: {path}")
@@ -445,6 +576,7 @@ def _apply_one_metadata_write(
         "index": index, "kind": "metadata", "path": str(path),
         "tag_changed": tag_was_changed, "tag_skipped": bool(skip_reason),
         "tag_skip_reason": skip_reason,
+        "id3_upgraded": "2.2->2.3" if id3_upgraded else None,
         "genre_requested": proposed_genre is not None,
         "grouping_requested": proposed_grouping is not None,
         "old_genre": original_genre,
@@ -492,6 +624,7 @@ def apply(plan_path: Path, root: Path, manifest: dict, out_dir: Path, label: str
                 "proposed_genre": proposed_genre,
                 "add_grouping_terms": row.get("grouping_fix", {}).get("add_terms", []),
                 "remove_grouping_terms": row.get("grouping_fix", {}).get("remove_terms", []),
+                "id3_upgrade": row.get("id3_upgrade"),
             },
         ) as txn:
             completed.append(_apply_one_metadata_write(
@@ -501,6 +634,7 @@ def apply(plan_path: Path, root: Path, manifest: dict, out_dir: Path, label: str
                 original_genre=original_genre,
                 original_grouping=existing_grouping,
                 version=version,
+                id3_upgrade=row.get("id3_upgrade"),
                 tag_backup_root=tag_backup_root,
                 index=index,
                 undo_path=undo_path,
@@ -517,6 +651,7 @@ def apply(plan_path: Path, root: Path, manifest: dict, out_dir: Path, label: str
         "skipped_id3v22": sum(
             1 for r in completed if (r["tag_skip_reason"] or "").startswith("ID3v2.2")
         ),
+        "id3_upgraded": sum(1 for r in completed if r["id3_upgraded"] == "2.2->2.3"),
         "duplicate_flags_in_plan_not_acted_on": sum(1 for row in items if "duplicate_of" in row),
         "undo_log": str(undo_path),
         "tag_backup_root": str(tag_backup_root),
