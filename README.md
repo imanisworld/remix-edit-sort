@@ -198,7 +198,7 @@ Reusable release-year decisions live in `references/year-evidence.json` and are 
 ### Explicit ID3v2.2 to v2.3 upgrades
 
 `apply_new_music_intake_plan.py` preserves ID3v2.2 MP3s byte-for-byte by default. A reviewed
-Genre/Grouping plan may opt one file into the approved conversion by adding this field to
+metadata plan may opt one file into the approved conversion by adding this field to
 that actionable item:
 
 ```json
@@ -209,8 +209,30 @@ Apply refuses any other version pair, a non-MP3 target, a standalone format conv
 no metadata fix, or a source that is no longer v2.2. The conversion and requested metadata
 changes happen in one backed-up mutation-engine transaction. Verification requires v2.3 on
 disk, unchanged audio, unchanged Serato payloads, and semantic preservation of every ID3
-frame other than the explicitly replaced Genre (`TCON`) and Grouping (`TIT1`) frames. The
-undo record journals `"id3_upgraded": "2.2->2.3"` and restores the original v2.2 bytes.
+frame other than the explicitly replaced Genre (`TCON`), Grouping (`TIT1`), and/or Year
+(`TDRC`/`TYER`) frames. The undo record journals `"id3_upgraded": "2.2->2.3"` and restores
+the original v2.2 bytes.
+
+### Plan-gated release-year writes
+
+`apply_new_music_intake_plan.py` accepts a reviewed year correction on an actionable item:
+
+```json
+"year_fix": {
+  "from": "2024",
+  "to": "2013",
+  "basis": "official original-release page",
+  "grade": "confirmed_primary"
+}
+```
+
+`from` must still match the live tag and `to` must be a four-digit year from 1900 through
+2100. Write-authorizing grades are `confirmed_primary`, `confirmed_secondary`,
+`local_evidence`, and `inference`; `unknown` and `unconfirmable` cannot authorize a tag
+mutation. Year joins any Genre/Grouping changes in the same backed-up transaction. The
+engine writes and verifies the container's native field: ID3v2.4 `TDRC`, ID3v2.3 `TYER`,
+FLAC `date`, or MP4/M4A `©day`. ID3v2.2 still requires the explicit v2.2-to-v2.3 item
+above. The completion and undo records retain the old/new year, basis, and evidence grade.
 
 ## Proving a backup before any apply
 

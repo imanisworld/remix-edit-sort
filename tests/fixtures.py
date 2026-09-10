@@ -88,6 +88,7 @@ def write_id3v22_mp3(
     title: str = "",
     artist: str = "",
     grouping: str = "",
+    year: str = "",
     comment: str = "",
     picture_data: bytes | None = None,
     geob_data: bytes | None = None,
@@ -106,6 +107,7 @@ def write_id3v22_mp3(
     frames = bytearray()
     for frame_id, text in (
         ("TCO", genre), ("TT2", title), ("TP1", artist), ("TT1", grouping),
+        ("TYE", year),
     ):
         if not text:
             continue
