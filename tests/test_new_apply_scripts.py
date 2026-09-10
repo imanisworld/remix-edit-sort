@@ -310,6 +310,132 @@ class NewApplyScriptsEndToEndTests(unittest.TestCase):
         self.assertEqual(path.read_bytes(), before)
         self.assertEqual(ID3(path).version, (2, 2, 0))
 
+    def test_intake_explicitly_upgrades_id3v22_to_v23_and_preserves_other_frames(self):
+        picture = b"synthetic-png-payload"
+        geob = b"synthetic-serato-payload"
+        path = fixtures.write_id3v22_mp3(
+            self.root / "old-upgrade.mp3",
+            genre="Other",
+            title="Keep This Title",
+            artist="Keep This Artist",
+            grouping="Existing",
+            comment="Keep This Comment",
+            picture_data=picture,
+            geob_data=geob,
+        )
+        original = path.read_bytes()
+        before_audio = intake_apply.audio_payload(path)
+        before_snapshot = intake_apply.id3_preservation_snapshot(path)
+        before_serato_payload = intake_apply.serato_payload_digest(path)
+        _, manifest = self.backup()
+        plan = {
+            "mode": "preview-only", "root": str(self.root),
+            "rules": {"approval_required": True}, "counts": {},
+            "items": [{
+                "path": str(path), "sha256": backup_manifest.sha256_file(path),
+                "genre_fix": {"from": "Other", "to": "House", "basis": "test"},
+                "grouping_fix": {"existing": ["Existing"], "add_terms": ["Clean"]},
+                "id3_upgrade": {"from": "2.2", "to": "2.3"},
+            }],
+        }
+        plan_path = self.tmp / "v22-upgrade-plan.json"
+        plan_path.write_text(json.dumps(plan), encoding="utf-8")
+
+        result = run(
+            INTAKE_APPLY, "--root", self.root, "--plan", plan_path,
+            "--backup-manifest", manifest, "--apply", *self.locked_args(),
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertEqual(payload["id3_upgraded"], 1)
+        self.assertEqual(payload["skipped_id3v22"], 0)
+        self.assertEqual(ID3(path).version, (2, 3, 0))
+        self.assertEqual(intake_apply.read_genre(path), "House")
+        self.assertEqual(intake_apply.read_grouping(path)[0], ["Existing", "Clean"])
+        self.assertEqual(intake_apply.audio_payload(path), before_audio)
+        self.assertEqual(intake_apply.serato_payload_digest(path), before_serato_payload)
+        self.assertEqual(intake_apply.id3_preservation_snapshot(path), before_snapshot)
+        tags = ID3(path)
+        self.assertEqual(tags.getall("APIC")[0].data, picture)
+        self.assertEqual(tags.getall("GEOB")[0].data, geob)
+        self.assertEqual(str(tags.getall("COMM")[0]), "Keep This Comment")
+        undo_record = json.loads(
+            Path(payload["undo_log"]).read_text(encoding="utf-8").splitlines()[0]
+        )
+        self.assertEqual(undo_record["id3_upgraded"], "2.2->2.3")
+        self.assertTrue(
+            mutation_engine.recover(Path(payload["recovery_journal"]))["clean"]
+        )
+
+        undone = run(
+            INTAKE_APPLY, "--root", self.root, "--undo", payload["undo_log"],
+            *self.locked_args(),
+        )
+        self.assertEqual(undone.returncode, 0, undone.stdout + undone.stderr)
+        self.assertEqual(path.read_bytes(), original)
+        self.assertEqual(ID3(path).version, (2, 2, 0))
+
+    def test_direct_id3v22_upgrade_without_explicit_plan_item_is_refused(self):
+        path = fixtures.write_id3v22_mp3(self.root / "direct-old.mp3", genre="Other")
+        before = path.read_bytes()
+        with self.assertRaisesRegex(RuntimeError, "not explicitly approved"):
+            intake_apply.write_metadata(
+                path,
+                genre_value="House",
+                grouping_value=None,
+                version=3,
+            )
+        self.assertEqual(path.read_bytes(), before)
+
+    def test_id3_upgrade_plan_is_refused_when_source_is_already_v23(self):
+        path = fixtures.make_library(self.root, [{
+            "relative": "already-v23.mp3", "genre": "Other", "v2_version": 3,
+        }])["already-v23.mp3"]
+        plan = {
+            "mode": "preview-only", "root": str(self.root),
+            "rules": {"approval_required": True}, "counts": {},
+            "items": [{
+                "path": str(path), "sha256": backup_manifest.sha256_file(path),
+                "genre_fix": {"from": "Other", "to": "House", "basis": "test"},
+                "id3_upgrade": {"from": "2.2", "to": "2.3"},
+            }],
+        }
+        plan_path = self.tmp / "already-v23-plan.json"
+        plan_path.write_text(json.dumps(plan), encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "not ID3v2.2"):
+            intake_apply.load_and_validate(plan_path, self.root.resolve())
+
+    def test_id3_upgrade_plan_refuses_other_version_pairs_and_upgrade_only_items(self):
+        path = fixtures.write_id3v22_mp3(self.root / "invalid-upgrade.mp3", genre="Other")
+        base = {
+            "path": str(path), "sha256": backup_manifest.sha256_file(path),
+            "genre_fix": {"from": "Other", "to": "House", "basis": "test"},
+        }
+        for name, item, message in (
+            (
+                "wrong-pair",
+                {**base, "id3_upgrade": {"from": "2.2", "to": "2.4"}},
+                "unsupported ID3 upgrade",
+            ),
+            (
+                "upgrade-only",
+                {
+                    "path": str(path), "sha256": backup_manifest.sha256_file(path),
+                    "id3_upgrade": {"from": "2.2", "to": "2.3"},
+                },
+                "standalone ID3 upgrade",
+            ),
+        ):
+            with self.subTest(name=name):
+                plan_path = self.tmp / f"{name}.json"
+                plan_path.write_text(json.dumps({
+                    "mode": "preview-only", "root": str(self.root),
+                    "rules": {"approval_required": True}, "counts": {},
+                    "items": [item],
+                }), encoding="utf-8")
+                with self.assertRaisesRegex(RuntimeError, message):
+                    intake_apply.load_and_validate(plan_path, self.root.resolve())
+
     def test_all_three_apply_clis_refuse_without_lock_arguments(self):
         path = fixtures.make_library(self.root, [{"relative": "track.mp3"}])["track.mp3"]
         _, manifest = self.backup()
