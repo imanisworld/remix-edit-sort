@@ -11,6 +11,7 @@ import tempfile
 import unittest
 import uuid
 from pathlib import Path
+from unittest import mock
 
 TESTS_DIR = Path(__file__).resolve().parent
 REPO_ROOT = TESTS_DIR.parent
@@ -374,6 +375,154 @@ class NewApplyScriptsEndToEndTests(unittest.TestCase):
         self.assertEqual(undone.returncode, 0, undone.stdout + undone.stderr)
         self.assertEqual(path.read_bytes(), original)
         self.assertEqual(ID3(path).version, (2, 2, 0))
+
+    def test_intake_writes_year_to_version_specific_id3_fields_and_undoes(self):
+        paths = fixtures.make_library(self.root, [
+            {"relative": "v24.mp3", "year": "2020", "v2_version": 4, "serato": True},
+            {"relative": "v23.mp3", "year": "2021", "v2_version": 3, "serato": True},
+        ])
+        originals = {name: path.read_bytes() for name, path in paths.items()}
+        before_audio = {
+            name: intake_apply.audio_payload(path) for name, path in paths.items()
+        }
+        _, manifest = self.backup()
+        plan = {
+            "mode": "preview-only", "root": str(self.root),
+            "rules": {"approval_required": True}, "counts": {},
+            "items": [
+                {
+                    "path": str(paths["v24.mp3"]),
+                    "sha256": backup_manifest.sha256_file(paths["v24.mp3"]),
+                    "year_fix": {
+                        "from": "2020", "to": "1999", "basis": "official release",
+                        "grade": "confirmed_primary",
+                    },
+                },
+                {
+                    "path": str(paths["v23.mp3"]),
+                    "sha256": backup_manifest.sha256_file(paths["v23.mp3"]),
+                    "year_fix": {
+                        "from": "2021", "to": "2001", "basis": "label catalog",
+                        "grade": "confirmed_secondary",
+                    },
+                },
+            ],
+        }
+        plan_path = self.tmp / "year-plan.json"
+        plan_path.write_text(json.dumps(plan), encoding="utf-8")
+
+        result = run(
+            INTAKE_APPLY, "--root", self.root, "--plan", plan_path,
+            "--backup-manifest", manifest, "--apply", *self.locked_args(),
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertEqual(payload["transactions"], 2)
+        self.assertEqual(payload["year_changed"], 2)
+        raw24 = ID3(paths["v24.mp3"], translate=False)
+        raw23 = ID3(paths["v23.mp3"], translate=False)
+        self.assertEqual(str(raw24.getall("TDRC")[0]), "1999")
+        self.assertFalse(raw24.getall("TYER"))
+        self.assertEqual(str(raw23.getall("TYER")[0]), "2001")
+        self.assertFalse(raw23.getall("TDRC"))
+        for name, path in paths.items():
+            self.assertEqual(intake_apply.audio_payload(path), before_audio[name])
+        records = [
+            json.loads(line) for line in Path(payload["undo_log"]).read_text().splitlines()
+        ]
+        self.assertEqual(records[0]["year_grade"], "confirmed_primary")
+        self.assertEqual(records[1]["year_basis"], "label catalog")
+
+        undone = run(
+            INTAKE_APPLY, "--root", self.root, "--undo", payload["undo_log"],
+            *self.locked_args(),
+        )
+        self.assertEqual(undone.returncode, 0, undone.stdout + undone.stderr)
+        for name, path in paths.items():
+            self.assertEqual(path.read_bytes(), originals[name])
+
+    def test_intake_year_fix_can_authorize_the_v22_to_v23_upgrade(self):
+        path = fixtures.write_id3v22_mp3(
+            self.root / "old-year.mp3", title="Preserved", year="2024",
+            geob_data=b"serato-year-payload",
+        )
+        before_audio = intake_apply.audio_payload(path)
+        before_serato = intake_apply.serato_payload_digest(path)
+        _, manifest = self.backup()
+        plan = {
+            "mode": "preview-only", "root": str(self.root),
+            "rules": {"approval_required": True}, "counts": {},
+            "items": [{
+                "path": str(path), "sha256": backup_manifest.sha256_file(path),
+                "year_fix": {
+                    "from": "2024", "to": "2013", "basis": "original release page",
+                    "grade": "confirmed_primary",
+                },
+                "id3_upgrade": {"from": "2.2", "to": "2.3"},
+            }],
+        }
+        plan_path = self.tmp / "v22-year-plan.json"
+        plan_path.write_text(json.dumps(plan), encoding="utf-8")
+        result = run(
+            INTAKE_APPLY, "--root", self.root, "--plan", plan_path,
+            "--backup-manifest", manifest, "--apply", *self.locked_args(),
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertEqual(payload["year_changed"], 1)
+        self.assertEqual(payload["id3_upgraded"], 1)
+        raw = ID3(path, translate=False)
+        self.assertEqual(raw.version, (2, 3, 0))
+        self.assertEqual(str(raw.getall("TYER")[0]), "2013")
+        self.assertFalse(raw.getall("TDRC"))
+        self.assertEqual(str(ID3(path).getall("TIT2")[0]), "Preserved")
+        self.assertEqual(intake_apply.audio_payload(path), before_audio)
+        self.assertEqual(intake_apply.serato_payload_digest(path), before_serato)
+
+    def test_intake_year_fix_schema_and_live_from_value_are_validated(self):
+        path = fixtures.make_library(
+            self.root, [{"relative": "year.mp3", "year": "2020"}],
+        )["year.mp3"]
+        base = {
+            "path": str(path), "sha256": backup_manifest.sha256_file(path),
+        }
+        cases = (
+            ("bad-grade", {"from": "2020", "to": "1999", "basis": "none", "grade": "unknown"}, "grade must authorize"),
+            ("missing-basis", {"from": "2020", "to": "1999", "grade": "local_evidence"}, "exactly"),
+            ("stale-from", {"from": "2021", "to": "1999", "basis": "test", "grade": "local_evidence"}, "year changed"),
+        )
+        for name, year_fix, message in cases:
+            with self.subTest(name=name):
+                plan_path = self.tmp / f"{name}.json"
+                plan_path.write_text(json.dumps({
+                    "mode": "preview-only", "root": str(self.root),
+                    "rules": {"approval_required": True}, "counts": {},
+                    "items": [{**base, "year_fix": year_fix}],
+                }), encoding="utf-8")
+                with self.assertRaisesRegex(RuntimeError, message):
+                    intake_apply.load_and_validate(plan_path, self.root.resolve())
+
+    def test_year_write_uses_flac_date_and_mp4_day_fields(self):
+        class FakeTags(dict):
+            def save(self):
+                self.saved = True
+
+        for suffix, constructor_name, field in (
+            (".flac", "FLAC", "date"),
+            (".m4a", "MP4", "\xa9day"),
+        ):
+            with self.subTest(suffix=suffix):
+                tags = FakeTags()
+                with mock.patch.object(intake_apply, constructor_name, return_value=tags):
+                    intake_apply.write_metadata(
+                        self.root / f"synthetic{suffix}", genre_value=None,
+                        grouping_value=None, year_value="1997", version=4,
+                    )
+                    intake_apply.verify_year_field(
+                        self.root / f"synthetic{suffix}", "1997", 4,
+                    )
+                self.assertEqual(tags[field], ["1997"])
+                self.assertTrue(tags.saved)
 
     def test_direct_id3v22_upgrade_without_explicit_plan_item_is_refused(self):
         path = fixtures.write_id3v22_mp3(self.root / "direct-old.mp3", genre="Other")
