@@ -69,8 +69,9 @@ exact normalized match.
 - Failed, truncated, or changing Serato inputs cannot replace the latest trusted import.
 - The SQLite file contains private Serato paths and crate names and must remain outside Git.
 - Rekordbox support remains a separate adapter with its own source parser and schema version.
-- A future user-approved repair workflow would require a separate mutation design; this importer
-  provides no Serato write path.
+- This importer still provides no Serato write path. The later, separately approved repair design
+  is implemented by `rewrite_serato_paths.py` and documented in
+  `serato-path-rewrite-architecture.md`; it does not weaken this adapter's read-only boundary.
 
 ## Action items
 

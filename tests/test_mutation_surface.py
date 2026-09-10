@@ -30,6 +30,7 @@ NEW_ENGINE_USERS = (
     "apply_genre_needs_check_folder_plan.py",
     "apply_new_music_intake_plan.py",
     "apply_approved_batch.py",
+    "rewrite_serato_paths.py",
 )
 
 
@@ -113,6 +114,7 @@ class MutationSurfaceTests(unittest.TestCase):
             "scripts/folder_lock.py",                 # removes its own lock files
             "scripts/detect_bpm.py",                  # removes its own temp wav
             "scripts/metadata_batch.py",              # removes only a failed owned atomic-write temp file
+            "scripts/rewrite_serato_paths.py",        # removes only its unique atomic-write temp file
         }
         offenders = sorted({entry["module"] for entry in self.report["deletion_primitives"]}
                            - allowed)
