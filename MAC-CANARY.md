@@ -85,6 +85,10 @@ Tick every one of these. Any failure blocks production.
       neither was treated as a duplicate or collision of the other.
 - [ ] The **ID3v2.2** file was skipped rather than upgraded — check its version
       is still `(2, 2, 0)` after the run.
+- [ ] A second ID3v2.2 copy carrying the explicit reviewed `id3_upgrade`
+      item became `(2, 3, 0)`, retained synthetic APIC/GEOB/COMM payloads,
+      and undo restored its exact original v2.2 SHA-256. An unflagged copy
+      must continue to satisfy the skip check above.
 - [ ] **Serato GEOB frames** on the tagged files are byte-identical before and
       after (the engine verifies this; confirm the run reported zero Serato
       changes).
