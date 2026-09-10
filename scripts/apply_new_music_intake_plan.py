@@ -48,7 +48,7 @@ import mutation_engine
 SUPPORTED_EXTS = {".mp3", ".flac", ".m4a"}
 ID3_V22_TO_V23 = {"from": "2.2", "to": "2.3"}
 YEAR_GRADES = {
-    "confirmed_primary", "confirmed_secondary", "local_evidence", "inference",
+    "confirmed_primary", "confirmed_secondary", "local_evidence",
 }
 
 
@@ -336,9 +336,6 @@ def _semantic_value(value):
             str(key): _semantic_value(item)
             for key, item in sorted(value.items(), key=lambda pair: str(pair[0]))
         }
-    # Mutagen enums (Encoding, PictureType, Channel, ...) are int-like in
-    # current releases.  String fallback keeps unusual frame attributes
-    # comparable without depending on private serialization APIs.
     try:
         return int(value)
     except (TypeError, ValueError):
@@ -348,14 +345,6 @@ def _semantic_value(value):
 def id3_preservation_snapshot(
     path: Path, excluded_frame_ids: set[str] | None = None,
 ) -> dict:
-    """Semantic inventory of every ID3 frame except fields this plan edits.
-
-    ID3v2.2 frames are already mapped by mutagen on load (PIC -> APIC,
-    GEO -> GEOB, COM -> COMM, and so on), so this compares the mapped v2.3
-    identity, multiplicity, and payload-bearing attributes on both sides of
-    the upgrade. Encoding is intentionally omitted: v2.2 -> v2.3 may need a
-    representation change while the text/data stays the same.
-    """
     tags = ID3(path)
     excluded = {"TCON", "TIT1"} if excluded_frame_ids is None else excluded_frame_ids
     frames = []
@@ -397,7 +386,6 @@ def write_metadata(
     year_value: str | None = None,
     id3_upgrade: dict | None = None,
 ) -> None:
-    """Write all requested tag fields with exactly one container save."""
     if version not in {3, 4}:
         raise RuntimeError(
             f"ID3v2.{version} is not writable without an upgrade; refusing to change {path}"
