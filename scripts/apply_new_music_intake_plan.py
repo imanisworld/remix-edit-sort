@@ -30,7 +30,7 @@ from datetime import datetime
 from pathlib import Path
 
 from mutagen.flac import FLAC
-from mutagen.id3 import ID3, ID3NoHeaderError, TCON, TIT1
+from mutagen.id3 import ID3, ID3NoHeaderError, TCON, TIT1, error as ID3Error
 from mutagen.id3._specs import SpecError
 from mutagen.mp4 import MP4
 
@@ -51,6 +51,23 @@ def sha256_file(path: Path) -> str:
         while chunk := handle.read(4 * 1024 * 1024):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def underlying_spec_error(exc: BaseException) -> SpecError | None:
+    """Return a wrapped Mutagen SpecError, if this exception contains one.
+
+    ID3.save() exposes frame-serialization failures as mutagen.id3.error and
+    retains the originating SpecError as exception context. Keeping this
+    check narrow avoids treating unrelated ID3 I/O failures as safe skips.
+    """
+    current: BaseException | None = exc
+    seen: set[int] = set()
+    while current is not None and id(current) not in seen:
+        if isinstance(current, SpecError):
+            return current
+        seen.add(id(current))
+        current = current.__cause__ or current.__context__
+    return None
 
 
 def _mp4_top_level_boxes(data: bytes):
@@ -425,12 +442,16 @@ def _apply_one_metadata_write(
                 if serato_payload_digest(path) == before_serato_payload:
                     raise SeratoEncodingOnlyChange("encoding-byte-only Serato change; rolled back")
                 raise RuntimeError("Serato frames changed")
-        except SpecError as exc:
+        except (SpecError, ID3Error) as exc:
             # Mutagen can read some malformed/out-of-range ID3 frames that it
             # cannot serialize again (for example an RVA2 peak outside its
-            # writable range). SpecError is raised by ID3._prepare_data before
-            # save() writes bytes. Prove that invariant against the real file
-            # before treating this like the ID3v2.2 preservation skip.
+            # writable range). ID3.save() wraps the SpecError from
+            # ID3._prepare_data in mutagen.id3.error. Reject other ID3 errors,
+            # and prove that the real file stayed untouched before treating
+            # this like the ID3v2.2 preservation skip.
+            spec_error = underlying_spec_error(exc)
+            if spec_error is None:
+                raise
             if sha256_file(path) != before_hash:
                 txn.mark_mutated()
                 raise RuntimeError(
@@ -438,7 +459,7 @@ def _apply_one_metadata_write(
                 ) from exc
             skip_reason = (
                 "Unserializable ID3 frames preserved; tag write skipped "
-                f"(SpecError: {exc})"
+                f"(SpecError: {spec_error})"
             )
         except SeratoEncodingOnlyChange:
             mutation_engine.restore_from_backup(tag_backup, path, before_hash)

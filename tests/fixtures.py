@@ -118,6 +118,40 @@ def write_id3v22_mp3(
     return path
 
 
+def write_unserializable_rva2_mp3(
+    path: Path,
+    seed: int = 0,
+    genre: str = "",
+    grouping: str = "",
+) -> Path:
+    """Write ID3v2.4 with a real RVA2 frame Mutagen cannot re-serialize.
+
+    A malformed peak-width byte of 35 makes Mutagen's RVA2 reader scale the
+    four stored peak bytes to 40.0. The frame is therefore readable, but its
+    parsed peak exceeds the writer's allowed range and save() fails with a
+    wrapped SpecError before touching the file. This reproduces the production
+    a&t failure without mocking Mutagen or opening a library file.
+    """
+    def frame(frame_id: str, body: bytes) -> bytes:
+        return frame_id.encode("ascii") + _synchsafe(len(body)) + b"\x00\x00" + body
+
+    frames = bytearray()
+    for frame_id, text in (("TCON", genre), ("TIT1", grouping)):
+        if text:
+            frames += frame(frame_id, b"\x03" + text.encode("utf-8"))
+
+    # description="\x0c\x10", master channel, zero gain, 35-bit width,
+    # 0xa0000000 peak. Mutagen reads the resulting peak as 40.0000000186.
+    rva2 = b"\x0c\x10\x00\x01\x00\x00\x23\xa0\x00\x00\x00"
+    frames += frame("RVA2", rva2)
+    body = bytes(frames) + b"\x00" * 32
+    header = b"ID3" + bytes((4, 0, 0)) + _synchsafe(len(body))
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(header + body + mp3_bytes(seed))
+    return path
+
+
 def add_serato_frame(path: Path, payload: bytes = b"SERATO-TEST-PAYLOAD") -> Path:
     """Attach a GEOB frame that looks like Serato performance data.
 

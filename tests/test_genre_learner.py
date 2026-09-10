@@ -68,6 +68,35 @@ class GenreLearnerTaxonomyTests(unittest.TestCase):
         self.assertEqual(self.parse("Baile Funk")["labels"], ["Baile"])
         self.assertEqual(self.parse("ATL Bass")["labels"], ["Atlanta Bass"])
 
+    def test_unresolved_alias_proposals_preserve_genre_grouping_axes_and_counts(self):
+        proposals = {
+            row["token"]: row
+            for row in self.rules["unresolved_token_alias_proposals"]
+        }
+        self.assertEqual(
+            {
+                token: row["affected_files"]
+                for token, row in proposals.items()
+            },
+            {
+                "Juke & Footwork": 36,
+                "East Coast Hip Hop": 14,
+                "World": 9,
+            },
+        )
+        self.assertEqual(proposals["Juke & Footwork"]["genre"], ["Juke", "Footwork"])
+        self.assertEqual(proposals["Juke & Footwork"]["grouping"], [])
+        self.assertEqual(proposals["East Coast Hip Hop"]["genre"], ["Hip-Hop"])
+        self.assertEqual(
+            proposals["East Coast Hip Hop"]["grouping"], ["Source: East Coast"]
+        )
+        self.assertEqual(proposals["World"]["genre"], [])
+        self.assertEqual(proposals["World"]["grouping"], ["Source: World"])
+        canonical = set(self.rules["canonical_genres"])
+        for row in proposals.values():
+            self.assertTrue(set(row["genre"]).issubset(canonical))
+            self.assertTrue(all(value.startswith("Source: ") for value in row["grouping"]))
+
     def test_sparse_genres_are_not_folded(self):
         counts = {"Deep House": 79, "House": 5000}
         status = genre_learner.training_status(counts, self.rules)

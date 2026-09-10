@@ -11,7 +11,6 @@ import tempfile
 import unittest
 import uuid
 from pathlib import Path
-from unittest import mock
 
 TESTS_DIR = Path(__file__).resolve().parent
 REPO_ROOT = TESTS_DIR.parent
@@ -27,7 +26,6 @@ import backup_manifest  # noqa: E402
 import fixtures  # noqa: E402
 import mutation_engine  # noqa: E402
 from mutagen.id3 import ID3  # noqa: E402
-from mutagen.id3._specs import SpecError  # noqa: E402
 
 
 FOLDER_LOCK = SCRIPTS_DIR / "folder_lock.py"
@@ -313,45 +311,40 @@ class NewApplyScriptsEndToEndTests(unittest.TestCase):
         self.assertEqual(ID3(path).version, (2, 2, 0))
 
     def test_intake_skips_unserializable_id3_without_failed_rollback(self):
-        path = fixtures.make_library(self.root, [{
-            "relative": "a&t (Intro Clean).mp3",
-            "genre": "Other",
-            "grouping": "Existing",
-        }])["a&t (Intro Clean).mp3"]
-        before = path.read_bytes()
-        journal = self.tmp / "unserializable-recovery.jsonl"
-        undo = self.tmp / "unserializable-undo.jsonl"
-        engine = mutation_engine.MutationEngine(
-            journal, heartbeat=None, manifest=None, source_root=None,
-            label="unserializable-test", allow_unbacked=True,
+        path = fixtures.write_unserializable_rva2_mp3(
+            self.root / "a&t (Intro Clean).mp3",
+            genre="Other",
+            grouping="Existing",
         )
-        engine.start({})
+        rva2 = ID3(path).getall("RVA2")
+        self.assertEqual(len(rva2), 1)
+        self.assertEqual(rva2[0].desc, "\x0c\x10")
+        self.assertGreater(rva2[0].peak, 2.0)
+        before = path.read_bytes()
+        _, manifest = self.backup()
+        plan = {
+            "mode": "preview-only", "root": str(self.root),
+            "rules": {"approval_required": True}, "counts": {},
+            "items": [{
+                "path": str(path), "sha256": backup_manifest.sha256_file(path),
+                "genre_fix": {"from": "Other", "to": "Hip-Hop", "basis": "test"},
+                "grouping_fix": {"existing": ["Existing"], "add_terms": ["Clean"]},
+            }],
+        }
+        plan_path = self.tmp / "unserializable-plan.json"
+        plan_path.write_text(json.dumps(plan), encoding="utf-8")
+        result = run(
+            INTAKE_APPLY, "--root", self.root, "--plan", plan_path,
+            "--backup-manifest", manifest, "--apply", *self.locked_args(),
+        )
 
-        with mock.patch.object(
-            intake_apply, "write_metadata", side_effect=SpecError("not in range")
-        ):
-            with engine.item(
-                1, kind=mutation_engine.METADATA, source=path,
-                expected_sha256=backup_manifest.sha256_file(path),
-                require_backup=False,
-            ) as txn:
-                record = intake_apply._apply_one_metadata_write(
-                    txn, path,
-                    proposed_genre="Hip-Hop",
-                    proposed_grouping="Existing; Clean",
-                    original_genre="Other",
-                    original_grouping=["Existing"],
-                    version=4,
-                    tag_backup_root=self.tmp / "tag-backups",
-                    index=1,
-                    undo_path=undo,
-                )
-        engine.finish({"transactions": 1})
-
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertEqual(payload["skipped_unserializable_id3"], 1)
         self.assertEqual(path.read_bytes(), before)
-        self.assertFalse(record["tag_changed"])
-        self.assertTrue(record["tag_skipped"])
-        self.assertIn("Unserializable ID3 frames preserved", record["tag_skip_reason"])
+        self.assertEqual(intake_apply.read_genre(path), "Other")
+        self.assertEqual(intake_apply.read_grouping(path)[0], ["Existing"])
+        journal = Path(payload["recovery_journal"])
         recovery = mutation_engine.recover(journal)
         self.assertTrue(recovery["clean"])
         self.assertEqual(recovery["rollback_failures"], 0)
@@ -362,6 +355,10 @@ class NewApplyScriptsEndToEndTests(unittest.TestCase):
         self.assertEqual(len(completed), 1)
         self.assertFalse(completed[0]["mutated"])
         self.assertTrue(completed[0]["tag_skipped"])
+        self.assertIn(
+            "Unserializable ID3 frames preserved",
+            completed[0]["tag_skip_reason"],
+        )
 
     def test_all_three_apply_clis_refuse_without_lock_arguments(self):
         path = fixtures.make_library(self.root, [{"relative": "track.mp3"}])["track.mp3"]

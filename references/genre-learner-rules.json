@@ -97,6 +97,38 @@
   "legacy_compounds_requiring_audio_review": [
     "Juke & Footwork"
   ],
+  "unresolved_token_alias_proposals": [
+    {
+      "token": "Juke & Footwork",
+      "affected_files": 36,
+      "genre": [
+        "Juke",
+        "Footwork"
+      ],
+      "grouping": [],
+      "rationale": "Both terms are musical styles; preserve the two canonical labels rather than folding the compound to one."
+    },
+    {
+      "token": "East Coast Hip Hop",
+      "affected_files": 14,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Source: East Coast"
+      ],
+      "rationale": "Hip-Hop is the style; East Coast is regional context and belongs in Grouping."
+    },
+    {
+      "token": "World",
+      "affected_files": 9,
+      "genre": [],
+      "grouping": [
+        "Source: World"
+      ],
+      "rationale": "World is broad source/region context, not a musical style; do not invent a Genre."
+    }
+  ],
   "target_excluded_folders": [
     "bae re work",
     "Imani Drops",
