@@ -1,5 +1,6 @@
 {
   "schema_version": 1,
   "description": "Reusable evidence for release-year decisions. Do not store unsupported guesses as confirmed values.",
+  "reissue_guard": "Remaster, Deluxe, Anniversary, Greatest Hits, Live, later-than-embedded store years, and disagreeing store years require review and retain year=null with evidence_grade=unknown.",
   "entries": []
 }

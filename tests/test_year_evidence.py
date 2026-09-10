@@ -22,6 +22,17 @@ class YearEvidenceTests(unittest.TestCase):
         payload = {"schema_version": 1, "entries": [{"key": "artist--title", "year": 2024, "evidence_grade": "confirmed_primary", "sources": [{"url": "https://example.com/release"}]}]}
         self.assertEqual([], module.validate(payload))
 
+    def test_guarded_reissue_record_cannot_select_a_year(self):
+        payload = {"schema_version": 1, "entries": [{
+            "key": "artist--title", "year": 2011, "evidence_grade": "confirmed_primary",
+            "review_status": "reissue_review_required",
+            "guard_flags": [{"code": "reissue_title_marker"}],
+            "store_year_candidates": [2011],
+            "sources": [{"url": "https://example.com/remaster"}],
+        }]}
+        errors = module.validate(payload)
+        self.assertTrue(any("year=null" in error for error in errors))
+
 
 if __name__ == "__main__":
     unittest.main()
