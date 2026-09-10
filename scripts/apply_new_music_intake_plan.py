@@ -39,6 +39,7 @@ from pathlib import Path
 
 from mutagen.flac import FLAC
 from mutagen.id3 import ID3, ID3NoHeaderError, TCON, TIT1, TDRC, TYER
+from mutagen.id3._specs import SpecError
 from mutagen.mp4 import MP4
 
 import backup_manifest
@@ -653,6 +654,19 @@ def _apply_one_metadata_write(
                 if serato_payload_digest(path) == before_serato_payload:
                     raise SeratoEncodingOnlyChange("encoding-byte-only Serato change; rolled back")
                 raise RuntimeError("Serato frames changed")
+        except SpecError as exc:
+            # Mutagen can read some malformed/out-of-range ID3 frames that it
+            # cannot serialize again (for example an RVA2 peak outside its
+            # writable range). Prove the file stayed unchanged before skip.
+            if sha256_file(path) != before_hash:
+                txn.mark_mutated()
+                raise RuntimeError(
+                    f"mutagen serialization failed after changing the file: {path}"
+                ) from exc
+            skip_reason = (
+                "Unserializable ID3 frames preserved; tag write skipped "
+                f"(SpecError: {exc})"
+            )
         except SeratoEncodingOnlyChange:
             mutation_engine.restore_from_backup(tag_backup, path, before_hash)
             tag_was_changed = False
@@ -774,6 +788,10 @@ def apply(plan_path: Path, root: Path, manifest: dict, out_dir: Path, label: str
         "year_changed": sum(1 for r in completed if r["year_requested"] and r["tag_changed"]),
         "skipped_id3v22": sum(
             1 for r in completed if (r["tag_skip_reason"] or "").startswith("ID3v2.2")
+        ),
+        "skipped_unserializable_id3": sum(
+            1 for r in completed
+            if (r["tag_skip_reason"] or "").startswith("Unserializable ID3 frames")
         ),
         "id3_upgraded": sum(1 for r in completed if r["id3_upgraded"] == "2.2->2.3"),
         "duplicate_flags_in_plan_not_acted_on": sum(1 for row in items if "duplicate_of" in row),
