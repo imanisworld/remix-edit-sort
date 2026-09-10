@@ -1,0 +1,56 @@
+name: apply-rva2-clean-once
+
+on:
+  push:
+    branches:
+      - chatgpt/integrate-reviewed-serato-rva2-20260910
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply only the reviewed RVA2 safety patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff 1dd5f2644f20d750a4397050459257433dade677 124e01de6f3fe1c0957429ae237536e1c9d77e5f -- \
+            scripts/apply_new_music_intake_plan.py \
+            scripts/mutation_engine.py \
+            tests/fixtures.py \
+            tests/test_mutation_engine.py \
+            tests/test_new_apply_scripts.py \
+            > /tmp/rva2-clean.patch
+          git apply --3way --index /tmp/rva2-clean.patch
+          if git diff --cached --name-only | grep -E 'genre-learner|new_music_intake\.py|test_genre_learner\.py'; then
+            echo 'Held learner-taxonomy content entered the clean RVA2 patch.' >&2
+            exit 1
+          fi
+      - name: Install test dependencies
+        run: python -m pip install mutagen numpy
+      - name: Validate integrated repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q scripts tests
+          python scripts/mutation_surface.py
+          python -m unittest discover -s tests -v
+          python scripts/validate_year_evidence.py references/year-evidence.json
+      - name: Commit only after validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/apply-rva2-clean-once.yml
+          git add scripts/apply_new_music_intake_plan.py scripts/mutation_engine.py tests/fixtures.py tests/test_mutation_engine.py tests/test_new_apply_scripts.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Integrate reviewed RVA2 serializer safety only'
+          git push origin HEAD:chatgpt/integrate-reviewed-serato-rva2-20260910
