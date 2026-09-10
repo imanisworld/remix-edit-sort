@@ -100,6 +100,28 @@ in the handoff notes before starting real work. A canary run only vouches for
 the commit it ran on; re-run it after any change to `mutation_engine.py`,
 `backup_manifest.py`, `folder_lock.py`, or `lock_guard.py`.
 
+## Additional canary for the Serato path-rewrite lane
+
+Before the first live `rewrite_serato_paths.py apply`, make a throwaway
+`_Serato_` tree on the same APFS volume with a synthetic `database V2`, at
+least two crates, and real throwaway old/new media targets. Exercise a folder
+prefix, a case-only folder spelling change, a trailing-space folder name, and
+an exact `.wav` to `.flac` path replacement. The gate passes only when:
+
+- preview changes no source bytes and lists the expected `pfil`/`ptrk`
+  occurrences exactly;
+- deleting or changing one backup copy makes the backup gate refuse apply;
+- changing or adding a crate after preview makes plan validation refuse apply;
+- apply changes no TLV other than the reviewed path values and enclosing
+  length words;
+- the post-check reports no mapped old references, no unresolved rewritten
+  target, and PASS source-integrity hashes;
+- recovery reports `"clean": true`, and restoring the changed files from the
+  verified backup reproduces their exact pre-apply SHA-256 values.
+
+Do not point this canary at the live `_Serato_` directory. Keep Serato closed
+during the canary for the same reason it must be closed during production.
+
 ## Why this is a document and not a test
 
 It could be automated, but only on a Mac — and the machine that would run it

@@ -115,6 +115,58 @@ Serato imports are historical snapshots in additive, separately versioned tables
 not change the library-index schema version or overwrite scan history. See
 `references/serato-index-architecture.md` for the boundary and trade-offs.
 
+### Reviewed Serato path rewrites
+
+When an approved library rename or format replacement has already landed, build a dry-run
+diff from an explicit rename map. Paths may be absolute in the input; the plan canonicalizes
+them to Serato's volume-relative spelling. Folder-prefix matches stop at a path-component
+boundary, and an exact file mapping can override a broader folder mapping.
+
+```json
+{
+  "renames": [
+    {"from": "/Users/dj/Music/DJ-Music/Music/DNB", "to": "/Users/dj/Music/DJ-Music/Music/Drum & Bass"},
+    {"from": "/Users/dj/Music/DJ-Music/Music/House/Track.wav", "to": "/Users/dj/Music/DJ-Music/Music/House/Track.flac"}
+  ]
+}
+```
+
+```bash
+python3 scripts/rewrite_serato_paths.py preview \
+  --serato-dir "/path/to/_Serato_" --rename-map rename-map.json \
+  --out serato-path-preview.json
+```
+
+The preview does not write Serato or music. Review its occurrence-level `files[].rewrites`
+diff and counts. Before apply, close Serato, make a byte-for-byte backup whose root mirrors
+`_Serato_`, and verify it against the exact live Serato root:
+
+```bash
+mkdir -p "/path/to/_Serato_backup"
+cp -Rp "/path/to/_Serato_/." "/path/to/_Serato_backup/"
+python3 scripts/backup_manifest.py verify \
+  --source-root "/path/to/_Serato_" --backup "/path/to/_Serato_backup" \
+  --out serato-backup-manifest.json
+python3 scripts/folder_lock.py acquire \
+  --folder Serato --session serato-path-rewrite --agent codex
+python3 scripts/rewrite_serato_paths.py apply \
+  --serato-dir "/path/to/_Serato_" --library-root "/path/to/Music" \
+  --plan serato-path-preview.json --backup-manifest serato-backup-manifest.json \
+  --lock-folder Serato --session serato-path-rewrite --confirm-serato-closed \
+  --journal serato-path-recovery.jsonl --post-check-out serato-path-post-check.json \
+  --out serato-path-result.json
+python3 scripts/mutation_engine.py recover --journal serato-path-recovery.jsonl
+python3 scripts/folder_lock.py release \
+  --folder Serato --session serato-path-rewrite
+```
+
+Apply refuses a changed database/crate inventory, a missing new media target, a mismatched
+backup, a missing lock, or a plan with no actual rewrites. The standard path checker is run
+afterward; its global missing counts remain visible, while the rewrite-specific PASS/FAIL is
+scoped to the paths this plan changed. See
+`references/serato-path-rewrite-architecture.md` and run the Serato canary in
+`MAC-CANARY.md` before the first live apply.
+
 ### Read-only Rekordbox XML relationships
 
 Rekordbox's local `master.db` is encrypted application state and is intentionally out of
@@ -277,6 +329,7 @@ The reusable standalone prompt is available at `music-sort-prompt.md`. Session-s
   - `mutation_surface.py` — the AST scan of every mutation path; enforced by CI.
   - `library_index.py` — persistent incremental SQLite index; read-only toward library and DJ-software data.
   - `serato_index.py` / `rekordbox_index.py` — separately versioned, read-only relationship snapshot adapters for Serato's local data and Rekordbox's supported collection XML export.
+  - `rewrite_serato_paths.py` — explicit, preview-first Serato `pfil`/`ptrk` rewrites under lock, verified backup, recovery journal, and post-check.
   - `scan_library.py` / `build_plan.py` / `detect_bpm.py` — the read-only/preview half of the Genre/Remixer pipeline for flat SoundCloud/DJ-pool downloads, documented in `SKILL.md`. `apply_plan.py` is **hard-disabled** (read-only `--report` only); `reclassify.py` and `standardize_names.py` are **preview/plan builders only** — they no longer move or retag anything. Route those mutations through the engine family below.
   - `inventory_library.py` / `build_version_genre_plan.py` / `apply_version_genre_plan.py` — the Version+Genre pipeline actually used for the library cleanup in `handoff/`, generalized from nine near-duplicate per-folder scripts. Use this for the next source folder instead of writing a new one-off apply script.
   - `build_grouping_plan.py` / `apply_grouping_plan.py`, `build_artist_title_plan.py` / `apply_artist_title_plan.py`, `build_year_bpm_plan.py` / `apply_year_bpm_plan.py` — the metadata-completeness pass, run against folders already sorted by the pipeline above.

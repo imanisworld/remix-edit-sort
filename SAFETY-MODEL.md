@@ -5,10 +5,10 @@ it, this one is right and the other one is stale.
 
 ## The five invariants
 
-Every production mutation of the DJ library — moving a file, renaming a file,
-writing Genre, Grouping, Artist/Title, or Year/BPM, or deleting a verified
-duplicate — satisfies all five of these. There is no approved path that skips
-any of them.
+Every production mutation of the DJ library or its Serato path index — moving
+a file, renaming a file, writing Genre, Grouping, Artist/Title, or Year/BPM,
+rewriting an explicit Serato path, or deleting a verified duplicate — satisfies
+all five of these. There is no approved path that skips any of them.
 
 1. **One engine.** All mutations go through `scripts/mutation_engine.py`. No
    apply script performs its own rename, tag write, or unlink outside a
@@ -72,6 +72,7 @@ they do not fabricate or trust an unverified restore path.
 | `apply_genre_needs_check_folder_plan.py` | engine-user | Folder-scoped Genre recheck from a hashed survey. |
 | `apply_clean_dirty_move_plan.py` | engine-user | Clean/Dirty relocation plus additive Grouping. |
 | `apply_new_music_intake_plan.py` | engine-user | One-save Genre/Grouping intake metadata transaction. |
+| `rewrite_serato_paths.py` | engine-user | Reviewed, hash-bound `pfil`/`ptrk` path rewrites in Serato database/crates. |
 | `delete_verified_duplicates.py` | engine-user | Manual EXACT_DUPLICATE deletion. |
 | `apply_plan.py` | disabled-legacy | Hard-disabled. Read-only `--report` only. |
 | `merge_events_duplicates.py` | disabled-legacy | Hard-disabled completed one-off. |
