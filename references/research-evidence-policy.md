@@ -26,6 +26,11 @@ Every externally researched value must carry one of these statuses:
 
 Confirmed values must be reusable. Record them in a small reference registry rather than researching the same item again later. For release years use `references/year-evidence.json`.
 
+Store years are not automatically original-release years. Route store hits through
+`scripts/guard_reissue_years.py`: reissue/compilation/live title markers, a store year later
+than the embedded year, or disagreement among stores must remain `unknown` with no selected
+year until reviewed. Preserve the store candidates and URLs even when the guard holds them.
+
 Each record should contain:
 
 - stable lookup key;

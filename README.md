@@ -195,6 +195,23 @@ Release-year, event, artist/title, genre, and similar research follows `referenc
 
 Reusable release-year decisions live in `references/year-evidence.json` and are validated by `scripts/validate_year_evidence.py`.
 
+Store/catalog research must pass the reissue-year guard before it enters that registry:
+
+```bash
+python3 scripts/guard_reissue_years.py \
+  --input reviewed-store-hits.json \
+  --registry references/year-evidence.json \
+  --out guarded-year-evidence.json
+python3 scripts/validate_year_evidence.py guarded-year-evidence.json
+```
+
+The guard flags album titles containing Remaster, Deluxe, Anniversary, Greatest Hits, or
+Live; any store year later than the embedded year; and disagreement among store years. A
+flagged item retains every candidate and source but is written with `year: null`,
+`evidence_grade: unknown`, and `review_status: reissue_review_required`, so it cannot feed a
+year write accidentally. Unflagged, agreeing store hits retain the most conservative source
+grade and still require the normal reviewed-plan approval before metadata changes.
+
 ## Proving a backup before any apply
 
 ```bash
