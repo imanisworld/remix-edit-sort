@@ -1,0 +1,7522 @@
+{
+  "schema_version": 1,
+  "mode": "review-only",
+  "source": "unresolved-tokens-20260910.json",
+  "source_sha256": "f1cb3da0a0e48b5730d3d8c55fad7ea62a12f2d645377f3c783b19fb20ed21b3",
+  "rules": "genre-learner-rules.json",
+  "summary": {
+    "source_rows": 606,
+    "normalized_tokens": 552,
+    "track_occurrences": 1949,
+    "tokens_by_status": {
+      "approved_rule": 31,
+      "decision_required": 261,
+      "operator_directed_proposal": 13,
+      "partial_phrase_proposal": 247
+    },
+    "occurrences_by_status": {
+      "approved_rule": 568,
+      "decision_required": 738,
+      "operator_directed_proposal": 122,
+      "partial_phrase_proposal": 521
+    }
+  },
+  "proposals": [
+    {
+      "normalized": "jukefootwork",
+      "token": "Juke & Footwork",
+      "variants": [
+        "Juke & Footwork",
+        "juke Footwork"
+      ],
+      "count": 421,
+      "genre": [
+        "Juke"
+      ],
+      "grouping": [],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "dance",
+      "token": "Dance",
+      "variants": [
+        "Dance",
+        "dance"
+      ],
+      "count": 101,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "Decide whether Dance becomes a canonical Genre or remains context."
+    },
+    {
+      "normalized": "wch",
+      "token": "wch",
+      "variants": [
+        "wch",
+        "WCH"
+      ],
+      "count": 40,
+      "genre": [],
+      "grouping": [
+        "White OOtz"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "garage",
+      "token": "Garage",
+      "variants": [
+        "Garage",
+        "garage"
+      ],
+      "count": 33,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "Decide between a canonical Garage label and UK Garage."
+    },
+    {
+      "normalized": "holiday",
+      "token": "Holiday",
+      "variants": [
+        "Holiday"
+      ],
+      "count": 33,
+      "genre": [],
+      "grouping": [
+        "Holiday"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "bass",
+      "token": "Bass",
+      "variants": [
+        "Bass",
+        "bass"
+      ],
+      "count": 24,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "white",
+      "token": "white",
+      "variants": [
+        "white"
+      ],
+      "count": 24,
+      "genre": [],
+      "grouping": [
+        "White OOtz"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "caribbean",
+      "token": "Caribbean",
+      "variants": [
+        "Caribbean",
+        "caribbean"
+      ],
+      "count": 21,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "mainstream",
+      "token": "MainStream",
+      "variants": [
+        "MainStream",
+        "Mainstream"
+      ],
+      "count": 21,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "Decide whether Mainstream is dropped or retained as context."
+    },
+    {
+      "normalized": "world",
+      "token": "World",
+      "variants": [
+        "World",
+        "world"
+      ],
+      "count": 20,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "indierock",
+      "token": "indie rock",
+      "variants": [
+        "indie rock",
+        "Indie Rock"
+      ],
+      "count": 19,
+      "genre": [
+        "Rock"
+      ],
+      "grouping": [
+        "Indie Rock"
+      ],
+      "status": "operator_directed_proposal",
+      "rationale": "Operator direction: indie rock -> Rock + Indie Rock context."
+    },
+    {
+      "normalized": "punk",
+      "token": "Punk",
+      "variants": [
+        "Punk"
+      ],
+      "count": 17,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "eastcoasthiphop",
+      "token": "East Coast Hip Hop",
+      "variants": [
+        "East Coast Hip Hop",
+        "east coast hip hop"
+      ],
+      "count": 16,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "East Coast"
+      ],
+      "status": "operator_directed_proposal",
+      "rationale": "Operator direction: regional Hip-Hop keeps region in Grouping."
+    },
+    {
+      "normalized": "nuwave",
+      "token": "Nu Wave",
+      "variants": [
+        "Nu Wave"
+      ],
+      "count": 15,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "Decide whether Nu Wave becomes canonical or maps to another style."
+    },
+    {
+      "normalized": "garagejungle",
+      "token": "Garage Jungle",
+      "variants": [
+        "Garage Jungle"
+      ],
+      "count": 13,
+      "genre": [
+        "Jungle"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "technohouse",
+      "token": "techno house",
+      "variants": [
+        "techno house",
+        "Techno House"
+      ],
+      "count": 13,
+      "genre": [
+        "Techno",
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "atlhiphop",
+      "token": "atl hip hop",
+      "variants": [
+        "atl hip hop"
+      ],
+      "count": 12,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Atlanta"
+      ],
+      "status": "operator_directed_proposal",
+      "rationale": "Operator direction: regional Hip-Hop keeps region in Grouping."
+    },
+    {
+      "normalized": "bollywood",
+      "token": "Bollywood",
+      "variants": [
+        "Bollywood"
+      ],
+      "count": 12,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "Decide whether Bollywood becomes a canonical Genre or context."
+    },
+    {
+      "normalized": "genre",
+      "token": "Genre",
+      "variants": [
+        "Genre",
+        "genre"
+      ],
+      "count": 12,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "Generic placeholder: approve drop or a context term; never a Genre."
+    },
+    {
+      "normalized": "psychedelic",
+      "token": "psychedelic",
+      "variants": [
+        "psychedelic"
+      ],
+      "count": 12,
+      "genre": [
+        "Rock"
+      ],
+      "grouping": [
+        "Psychedelic"
+      ],
+      "status": "operator_directed_proposal",
+      "rationale": "Operator direction: psychedelic* -> Rock + Psychedelic context."
+    },
+    {
+      "normalized": "psychedelicpop",
+      "token": "psychedelic pop",
+      "variants": [
+        "psychedelic pop"
+      ],
+      "count": 12,
+      "genre": [
+        "Rock"
+      ],
+      "grouping": [
+        "Psychedelic"
+      ],
+      "status": "operator_directed_proposal",
+      "rationale": "Operator direction: psychedelic* -> Rock + Psychedelic context."
+    },
+    {
+      "normalized": "psychedelicrock",
+      "token": "psychedelic rock",
+      "variants": [
+        "psychedelic rock"
+      ],
+      "count": 12,
+      "genre": [
+        "Rock"
+      ],
+      "grouping": [
+        "Psychedelic"
+      ],
+      "status": "operator_directed_proposal",
+      "rationale": "Operator direction: psychedelic* -> Rock + Psychedelic context."
+    },
+    {
+      "normalized": "alternativeindierockmetal",
+      "token": "Alternative Indie Rock Metal",
+      "variants": [
+        "Alternative Indie Rock Metal"
+      ],
+      "count": 11,
+      "genre": [
+        "Rock"
+      ],
+      "grouping": [
+        "Indie Rock"
+      ],
+      "status": "operator_directed_proposal",
+      "rationale": "Operator direction: indie rock -> Rock + Indie Rock context."
+    },
+    {
+      "normalized": "blackband",
+      "token": "black band",
+      "variants": [
+        "black band"
+      ],
+      "count": 11,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "chilljuke",
+      "token": "chill juke",
+      "variants": [
+        "chill juke"
+      ],
+      "count": 11,
+      "genre": [
+        "Juke"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "dancejuke",
+      "token": "dance juke",
+      "variants": [
+        "dance juke"
+      ],
+      "count": 11,
+      "genre": [
+        "Juke"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "dirtysouthrap",
+      "token": "dirty south rap",
+      "variants": [
+        "dirty south rap"
+      ],
+      "count": 11,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Dirty South"
+      ],
+      "status": "operator_directed_proposal",
+      "rationale": "Operator direction: regional Hip-Hop keeps region in Grouping."
+    },
+    {
+      "normalized": "noirsound",
+      "token": "Noir Sound",
+      "variants": [
+        "Noir Sound"
+      ],
+      "count": 11,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "Project/source label: approve drop or a context term; never infer a Genre."
+    },
+    {
+      "normalized": "sample",
+      "token": "sample",
+      "variants": [
+        "sample",
+        "SAMPLE"
+      ],
+      "count": 11,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "blues",
+      "token": "Blues",
+      "variants": [
+        "Blues"
+      ],
+      "count": 10,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "electrotechno",
+      "token": "Electro Techno",
+      "variants": [
+        "Electro Techno"
+      ],
+      "count": 10,
+      "genre": [
+        "Electro",
+        "Techno"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hiphopclassic",
+      "token": "hip hop classic",
+      "variants": [
+        "hip hop classic"
+      ],
+      "count": 10,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rockandroll",
+      "token": "Rock And Roll",
+      "variants": [
+        "Rock And Roll"
+      ],
+      "count": 10,
+      "genre": [
+        "Rock"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "gangsterrap",
+      "token": "gangster rap",
+      "variants": [
+        "gangster rap"
+      ],
+      "count": 9,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "groovybouncehouse",
+      "token": "groovy bounce house",
+      "variants": [
+        "groovy bounce house",
+        "Groovy Bounce house",
+        "Groovy Bounce House"
+      ],
+      "count": 9,
+      "genre": [
+        "Groovy Bounce",
+        "Bounce",
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hiphoprap",
+      "token": "Hip Hop Rap",
+      "variants": [
+        "Hip Hop Rap",
+        "Hip hop Rap",
+        "Hip hop rap"
+      ],
+      "count": 9,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rbedit",
+      "token": "r&b edit",
+      "variants": [
+        "r&b edit"
+      ],
+      "count": 9,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "hardrock",
+      "token": "Hard Rock",
+      "variants": [
+        "Hard Rock"
+      ],
+      "count": 8,
+      "genre": [
+        "Rock"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rockblack",
+      "token": "rock black",
+      "variants": [
+        "rock black"
+      ],
+      "count": 8,
+      "genre": [
+        "Rock"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "90shiphop",
+      "token": "90's Hip-Hop",
+      "variants": [
+        "90's Hip-Hop"
+      ],
+      "count": 7,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "artistpacklocal",
+      "token": "artist pack local",
+      "variants": [
+        "artist pack local"
+      ],
+      "count": 7,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "funkclassic",
+      "token": "funk classic",
+      "variants": [
+        "funk classic"
+      ],
+      "count": 7,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "gay",
+      "token": "gay",
+      "variants": [
+        "gay"
+      ],
+      "count": 7,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "halloween",
+      "token": "Halloween",
+      "variants": [
+        "Halloween"
+      ],
+      "count": 7,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "housejazzy",
+      "token": "house jazzy",
+      "variants": [
+        "house jazzy"
+      ],
+      "count": 7,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "indiepop",
+      "token": "Indie Pop",
+      "variants": [
+        "Indie Pop"
+      ],
+      "count": 7,
+      "genre": [
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "popsoul",
+      "token": "Pop Soul",
+      "variants": [
+        "Pop Soul"
+      ],
+      "count": 7,
+      "genre": [
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "psychedelicsoul",
+      "token": "Psychedelic Soul",
+      "variants": [
+        "Psychedelic Soul"
+      ],
+      "count": 7,
+      "genre": [
+        "Rock"
+      ],
+      "grouping": [
+        "Psychedelic"
+      ],
+      "status": "operator_directed_proposal",
+      "rationale": "Operator direction: psychedelic* -> Rock + Psychedelic context."
+    },
+    {
+      "normalized": "a",
+      "token": "A-",
+      "variants": [
+        "A-"
+      ],
+      "count": 6,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "funkrb",
+      "token": "funk r&b",
+      "variants": [
+        "funk r&b"
+      ],
+      "count": 6,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "jazzy",
+      "token": "jazzy",
+      "variants": [
+        "jazzy"
+      ],
+      "count": 6,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "memerap",
+      "token": "Meme Rap",
+      "variants": [
+        "Meme Rap"
+      ],
+      "count": 6,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "minimal",
+      "token": "Minimal",
+      "variants": [
+        "Minimal"
+      ],
+      "count": 6,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "noir23",
+      "token": "Noir23",
+      "variants": [
+        "Noir23",
+        "noir 23",
+        "noir23"
+      ],
+      "count": 6,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "rbafrobeatlounge",
+      "token": "r&b afro beat lounge",
+      "variants": [
+        "r&b afro beat lounge"
+      ],
+      "count": 6,
+      "genre": [
+        "Afrobeat",
+        "R&B"
+      ],
+      "grouping": [
+        "Lounge"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "yachtrock",
+      "token": "Yacht Rock",
+      "variants": [
+        "Yacht Rock"
+      ],
+      "count": 6,
+      "genre": [
+        "Rock"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "afro",
+      "token": "afro",
+      "variants": [
+        "afro"
+      ],
+      "count": 5,
+      "genre": [
+        "Afrobeat"
+      ],
+      "grouping": [],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "classicrb",
+      "token": "classic r&b",
+      "variants": [
+        "classic r&b",
+        "Classic r&b"
+      ],
+      "count": 5,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "deeptech",
+      "token": "Deep Tech",
+      "variants": [
+        "Deep Tech"
+      ],
+      "count": 5,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "discohouse",
+      "token": "disco house",
+      "variants": [
+        "disco house",
+        "Disco House"
+      ],
+      "count": 5,
+      "genre": [
+        "House",
+        "Disco"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "electrohouse",
+      "token": "Electro House",
+      "variants": [
+        "Electro House",
+        "electro house"
+      ],
+      "count": 5,
+      "genre": [
+        "Electro",
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "futurehouse",
+      "token": "Future House",
+      "variants": [
+        "Future House"
+      ],
+      "count": 5,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "houseclassic",
+      "token": "House Classic",
+      "variants": [
+        "House Classic",
+        "house classic"
+      ],
+      "count": 5,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "indie",
+      "token": "indie",
+      "variants": [
+        "indie",
+        "Indie"
+      ],
+      "count": 5,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "jukehouseplex",
+      "token": "juke house plex",
+      "variants": [
+        "juke house plex"
+      ],
+      "count": 5,
+      "genre": [
+        "House",
+        "Juke"
+      ],
+      "grouping": [
+        "Plex"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "noir22",
+      "token": "Noir22",
+      "variants": [
+        "Noir22"
+      ],
+      "count": 5,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "soulduro",
+      "token": "SOULDURO",
+      "variants": [
+        "SOULDURO",
+        "Soulduro",
+        "soulduro"
+      ],
+      "count": 5,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "southcarolinahiphop",
+      "token": "south carolina hip hop",
+      "variants": [
+        "south carolina hip hop"
+      ],
+      "count": 5,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Dirty South"
+      ],
+      "status": "operator_directed_proposal",
+      "rationale": "Operator direction: regional Hip-Hop keeps region in Grouping."
+    },
+    {
+      "normalized": "triphop",
+      "token": "trip hop",
+      "variants": [
+        "trip hop",
+        "Triphop"
+      ],
+      "count": 5,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "90s",
+      "token": "90s",
+      "variants": [
+        "90s"
+      ],
+      "count": 4,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "alternativemetal",
+      "token": "alternative metal",
+      "variants": [
+        "alternative metal"
+      ],
+      "count": 4,
+      "genre": [
+        "Alternative"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "blend",
+      "token": "Blend",
+      "variants": [
+        "Blend",
+        "BLEND",
+        "blend"
+      ],
+      "count": 4,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "boogie80s",
+      "token": "Boogie 80's",
+      "variants": [
+        "Boogie 80's"
+      ],
+      "count": 4,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "boyband",
+      "token": "boy band",
+      "variants": [
+        "boy band"
+      ],
+      "count": 4,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "breakbeat",
+      "token": "Breakbeat",
+      "variants": [
+        "Breakbeat"
+      ],
+      "count": 4,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "classichouse",
+      "token": "Classic House",
+      "variants": [
+        "Classic House"
+      ],
+      "count": 4,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "cleanfunk",
+      "token": "Clean Funk",
+      "variants": [
+        "Clean Funk"
+      ],
+      "count": 4,
+      "genre": [],
+      "grouping": [
+        "Clean"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "downtempo",
+      "token": "downtempo",
+      "variants": [
+        "downtempo",
+        "Downtempo"
+      ],
+      "count": 4,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "hiphipclassic",
+      "token": "Hip hip classic",
+      "variants": [
+        "Hip hip classic"
+      ],
+      "count": 4,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "housegroovybounce",
+      "token": "house groovy bounce",
+      "variants": [
+        "house groovy bounce",
+        "House groovy bounce"
+      ],
+      "count": 4,
+      "genre": [
+        "Groovy Bounce",
+        "Bounce",
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "houseplex",
+      "token": "house plex",
+      "variants": [
+        "house plex",
+        "House Plex"
+      ],
+      "count": 4,
+      "genre": [
+        "House"
+      ],
+      "grouping": [
+        "Plex"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "housetechno",
+      "token": "house techno",
+      "variants": [
+        "house techno"
+      ],
+      "count": 4,
+      "genre": [
+        "Techno",
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "imani",
+      "token": "imani",
+      "variants": [
+        "imani"
+      ],
+      "count": 4,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "imaniplaylist",
+      "token": "imani playlist",
+      "variants": [
+        "imani playlist",
+        "Imani Playlist"
+      ],
+      "count": 4,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "mymusicteam",
+      "token": "MyMusicTeam",
+      "variants": [
+        "MyMusicTeam"
+      ],
+      "count": 4,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "newsoul",
+      "token": "new soul",
+      "variants": [
+        "new soul"
+      ],
+      "count": 4,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "numetal",
+      "token": "nu metal",
+      "variants": [
+        "nu metal"
+      ],
+      "count": 4,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "povindie",
+      "token": "pov: indie",
+      "variants": [
+        "pov: indie"
+      ],
+      "count": 4,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "rbneosoul",
+      "token": "r&b neo soul",
+      "variants": [
+        "r&b neo soul"
+      ],
+      "count": 4,
+      "genre": [
+        "Neo Soul",
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rocknroll",
+      "token": "rock n roll",
+      "variants": [
+        "rock n roll",
+        "Rock N Roll"
+      ],
+      "count": 4,
+      "genre": [
+        "Rock"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "spokenword",
+      "token": "Spoken Word",
+      "variants": [
+        "Spoken Word"
+      ],
+      "count": 4,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "urbanintros",
+      "token": "Urban Intros",
+      "variants": [
+        "Urban Intros"
+      ],
+      "count": 4,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "2090srb",
+      "token": "2090s R&B",
+      "variants": [
+        "2090s R&B"
+      ],
+      "count": 3,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "90popoldheadparty",
+      "token": "90 Pop. old head party",
+      "variants": [
+        "90 Pop. old head party"
+      ],
+      "count": 3,
+      "genre": [
+        "Pop"
+      ],
+      "grouping": [
+        "Old Head"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "alternativerock",
+      "token": "Alternative Rock",
+      "variants": [
+        "Alternative Rock",
+        "alternative rock"
+      ],
+      "count": 3,
+      "genre": [
+        "Alternative",
+        "Rock"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "ballad",
+      "token": "Ballad",
+      "variants": [
+        "Ballad"
+      ],
+      "count": 3,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "britpop",
+      "token": "Brit Pop",
+      "variants": [
+        "Brit Pop",
+        "Britpop"
+      ],
+      "count": 3,
+      "genre": [
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "burn",
+      "token": "burn",
+      "variants": [
+        "burn",
+        "Burn"
+      ],
+      "count": 3,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "chicagoclub",
+      "token": "CHICAGO CLUB",
+      "variants": [
+        "CHICAGO CLUB"
+      ],
+      "count": 3,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "christmas",
+      "token": "Christmas",
+      "variants": [
+        "Christmas",
+        "christmas"
+      ],
+      "count": 3,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "chruch",
+      "token": "chruch",
+      "variants": [
+        "chruch"
+      ],
+      "count": 3,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "contemporaryrbpoprb",
+      "token": "Contemporary R&B Pop R&B",
+      "variants": [
+        "Contemporary R&B Pop R&B"
+      ],
+      "count": 3,
+      "genre": [
+        "R&B",
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "frenchhouse",
+      "token": "french house",
+      "variants": [
+        "french house"
+      ],
+      "count": 3,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "girlgroup",
+      "token": "girl group",
+      "variants": [
+        "girl group"
+      ],
+      "count": 3,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "groovybounceamapiano",
+      "token": "Groovy Bounce amapiano",
+      "variants": [
+        "Groovy Bounce amapiano",
+        "Groovy Bounce Amapiano"
+      ],
+      "count": 3,
+      "genre": [
+        "Groovy Bounce",
+        "Amapiano",
+        "Bounce"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "groovybounceriddim",
+      "token": "groovy bounce riddim",
+      "variants": [
+        "groovy bounce riddim"
+      ],
+      "count": 3,
+      "genre": [
+        "Groovy Bounce",
+        "Riddim",
+        "Bounce"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "groovyhouse",
+      "token": "groovy house",
+      "variants": [
+        "groovy house"
+      ],
+      "count": 3,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hiphopwomen",
+      "token": "hip hop women",
+      "variants": [
+        "hip hop women"
+      ],
+      "count": 3,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Women"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "housechill",
+      "token": "house chill",
+      "variants": [
+        "house chill"
+      ],
+      "count": 3,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "houseedit",
+      "token": "house edit",
+      "variants": [
+        "house edit"
+      ],
+      "count": 3,
+      "genre": [
+        "House"
+      ],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "latinhouse",
+      "token": "latin house",
+      "variants": [
+        "latin house"
+      ],
+      "count": 3,
+      "genre": [
+        "House",
+        "Latin"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "mashup",
+      "token": "mashup",
+      "variants": [
+        "mashup"
+      ],
+      "count": 3,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "moombahton",
+      "token": "Moombahton",
+      "variants": [
+        "Moombahton"
+      ],
+      "count": 3,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "popclassic",
+      "token": "pop classic",
+      "variants": [
+        "pop classic"
+      ],
+      "count": 3,
+      "genre": [
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "poprb",
+      "token": "pop r&b",
+      "variants": [
+        "pop r&b"
+      ],
+      "count": 3,
+      "genre": [
+        "R&B",
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "postdisco",
+      "token": "post-disco",
+      "variants": [
+        "post-disco"
+      ],
+      "count": 3,
+      "genre": [
+        "Disco"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rnbdm",
+      "token": "R N B D M",
+      "variants": [
+        "R N B D M",
+        "RNBDM"
+      ],
+      "count": 3,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "rbdance",
+      "token": "R&B dance",
+      "variants": [
+        "R&B dance"
+      ],
+      "count": 3,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rbgroovybounce",
+      "token": "r&b groovy bounce",
+      "variants": [
+        "r&b groovy bounce"
+      ],
+      "count": 3,
+      "genre": [
+        "Groovy Bounce",
+        "Bounce",
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rapmetal",
+      "token": "rap metal",
+      "variants": [
+        "rap metal"
+      ],
+      "count": 3,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rhythm",
+      "token": "Rhythm",
+      "variants": [
+        "Rhythm"
+      ],
+      "count": 3,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "stlouisrap",
+      "token": "st louis rap",
+      "variants": [
+        "st louis rap"
+      ],
+      "count": 3,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "St. Louis"
+      ],
+      "status": "operator_directed_proposal",
+      "rationale": "Operator direction: regional Hip-Hop keeps region in Grouping."
+    },
+    {
+      "normalized": "tech",
+      "token": "tech",
+      "variants": [
+        "tech"
+      ],
+      "count": 3,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "traditional",
+      "token": "Traditional",
+      "variants": [
+        "Traditional"
+      ],
+      "count": 3,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "instrumental",
+      "token": "(Instrumental)",
+      "variants": [
+        "(Instrumental)"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "90sxgoldenera",
+      "token": "90s x Golden Era",
+      "variants": [
+        "90s x Golden Era"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "afrobeatedit",
+      "token": "afro beat edit",
+      "variants": [
+        "afro beat edit"
+      ],
+      "count": 2,
+      "genre": [
+        "Afrobeat"
+      ],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "afrobounce",
+      "token": "afro bounce",
+      "variants": [
+        "afro bounce"
+      ],
+      "count": 2,
+      "genre": [
+        "Bounce",
+        "Afrobeat"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "afroedit",
+      "token": "afro edit",
+      "variants": [
+        "afro edit"
+      ],
+      "count": 2,
+      "genre": [
+        "Afrobeat"
+      ],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "afroriddim",
+      "token": "afro riddim",
+      "variants": [
+        "afro riddim"
+      ],
+      "count": 2,
+      "genre": [
+        "Riddim",
+        "Afrobeat"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "alternativepop",
+      "token": "alternative pop",
+      "variants": [
+        "alternative pop"
+      ],
+      "count": 2,
+      "genre": [
+        "Alternative",
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "amapanio",
+      "token": "amapanio",
+      "variants": [
+        "amapanio"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "amapianogroovybounce",
+      "token": "Amapiano Groovy Bounce",
+      "variants": [
+        "Amapiano Groovy Bounce"
+      ],
+      "count": 2,
+      "genre": [
+        "Groovy Bounce",
+        "Amapiano",
+        "Bounce"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "ambient",
+      "token": "Ambient",
+      "variants": [
+        "Ambient"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "ballroomhousewch",
+      "token": "Ballroom house wch",
+      "variants": [
+        "Ballroom house wch"
+      ],
+      "count": 2,
+      "genre": [
+        "Ballroom",
+        "House"
+      ],
+      "grouping": [
+        "White OOtz"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "batida",
+      "token": "Batida",
+      "variants": [
+        "Batida"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "brazilphunk",
+      "token": "brazil phunk",
+      "variants": [
+        "brazil phunk"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "breakbeats",
+      "token": "break beats",
+      "variants": [
+        "break beats",
+        "Break Beats"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "childrensmusic",
+      "token": "children's music",
+      "variants": [
+        "children's music"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "chillhouse",
+      "token": "chill house",
+      "variants": [
+        "chill house"
+      ],
+      "count": 2,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "churchhouse",
+      "token": "church house",
+      "variants": [
+        "church house"
+      ],
+      "count": 2,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "detroit",
+      "token": "Detroit",
+      "variants": [
+        "Detroit",
+        "DETROIT"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "drill",
+      "token": "Drill",
+      "variants": [
+        "Drill"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "ech",
+      "token": "ech",
+      "variants": [
+        "ech"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "edithiphop",
+      "token": "edit hip hop",
+      "variants": [
+        "edit hip hop"
+      ],
+      "count": 2,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "electropop",
+      "token": "Electro Pop",
+      "variants": [
+        "Electro Pop"
+      ],
+      "count": 2,
+      "genre": [
+        "Electro",
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "electronicrock",
+      "token": "electronic rock",
+      "variants": [
+        "electronic rock"
+      ],
+      "count": 2,
+      "genre": [
+        "Electronic",
+        "Rock"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "felakuti",
+      "token": "Fela Kuti",
+      "variants": [
+        "Fela Kuti",
+        "felakuti"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "footworkjungle",
+      "token": "FOOTWORK JUNGLE",
+      "variants": [
+        "FOOTWORK JUNGLE",
+        "Footwork Jungle"
+      ],
+      "count": 2,
+      "genre": [
+        "Footwork",
+        "Jungle"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "forbiddentrax",
+      "token": "FORBIDDEN TRAX",
+      "variants": [
+        "FORBIDDEN TRAX"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "funkwave",
+      "token": "Funk Wave",
+      "variants": [
+        "Funk Wave",
+        "FUNK WAVE"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "future",
+      "token": "Future",
+      "variants": [
+        "Future"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "futurebass",
+      "token": "Future Bass",
+      "variants": [
+        "Future Bass"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "gfunk",
+      "token": "g-funk",
+      "variants": [
+        "g-funk"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "garagebreaks",
+      "token": "Garage Breaks",
+      "variants": [
+        "Garage Breaks"
+      ],
+      "count": 2,
+      "genre": [
+        "Breaks"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "gayjukeghettotech",
+      "token": "gay juke ghetto tech",
+      "variants": [
+        "gay juke ghetto tech"
+      ],
+      "count": 2,
+      "genre": [
+        "Ghettotech",
+        "Juke"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "gingerwinevol1",
+      "token": "GINGERWINEVOL1",
+      "variants": [
+        "GINGERWINEVOL1"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "goodvibez",
+      "token": "good vibez",
+      "variants": [
+        "good vibez"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "gospelhouse",
+      "token": "gospel house",
+      "variants": [
+        "gospel house"
+      ],
+      "count": 2,
+      "genre": [
+        "Gospel",
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hardgroovehouse",
+      "token": "hard groove house",
+      "variants": [
+        "hard groove house"
+      ],
+      "count": 2,
+      "genre": [
+        "Hardgroove",
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hinrg",
+      "token": "hi-nrg",
+      "variants": [
+        "hi-nrg"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "hiphop",
+      "token": "hip  hop",
+      "variants": [
+        "hip  hop",
+        "hip ho p"
+      ],
+      "count": 2,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "hiphopnurb",
+      "token": "Hip hop Nu R&B",
+      "variants": [
+        "Hip hop Nu R&B"
+      ],
+      "count": 2,
+      "genre": [
+        "Hip-Hop",
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hiphopremix",
+      "token": "hip hop remix",
+      "variants": [
+        "hip hop remix"
+      ],
+      "count": 2,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Remix"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "hiphoptwerk",
+      "token": "Hip-Hop Twerk",
+      "variants": [
+        "Hip-Hop Twerk"
+      ],
+      "count": 2,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Twerk"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "housedance",
+      "token": "House dance",
+      "variants": [
+        "House dance"
+      ],
+      "count": 2,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "housewch",
+      "token": "house wch",
+      "variants": [
+        "house wch"
+      ],
+      "count": 2,
+      "genre": [
+        "House"
+      ],
+      "grouping": [
+        "White OOtz"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "imanilibrary",
+      "token": "Imani Library",
+      "variants": [
+        "Imani Library"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "indiehiphop",
+      "token": "Indie Hip Hop",
+      "variants": [
+        "Indie Hip Hop"
+      ],
+      "count": 2,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "industrial",
+      "token": "industrial",
+      "variants": [
+        "industrial",
+        "Industrial"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "jazzfunk",
+      "token": "jazz funk",
+      "variants": [
+        "jazz funk"
+      ],
+      "count": 2,
+      "genre": [
+        "Jazz"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "jcleez",
+      "token": "jcleez",
+      "variants": [
+        "jcleez"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "jerseyclub",
+      "token": "JERSEYCLUB",
+      "variants": [
+        "JERSEYCLUB",
+        "jerseyclub"
+      ],
+      "count": 2,
+      "genre": [
+        "Jersey Club"
+      ],
+      "grouping": [],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "junglegarage",
+      "token": "jungle garage",
+      "variants": [
+        "jungle garage"
+      ],
+      "count": 2,
+      "genre": [
+        "Jungle"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "lofi",
+      "token": "Lofi",
+      "variants": [
+        "Lofi",
+        "lofi"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "london",
+      "token": "london",
+      "variants": [
+        "london"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "loungeedit",
+      "token": "lounge edit",
+      "variants": [
+        "lounge edit"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [
+        "Lounge",
+        "Edit"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "loungeremix",
+      "token": "lounge remix",
+      "variants": [
+        "lounge remix"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [
+        "Lounge",
+        "Remix"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "miamihiphop",
+      "token": "miami hip hop",
+      "variants": [
+        "miami hip hop"
+      ],
+      "count": 2,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "midclub",
+      "token": "mid club",
+      "variants": [
+        "mid club"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "mix",
+      "token": "mix",
+      "variants": [
+        "mix"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "mixtape",
+      "token": "mixtape",
+      "variants": [
+        "mixtape"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "motown",
+      "token": "motown",
+      "variants": [
+        "motown"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "neptune",
+      "token": "neptune",
+      "variants": [
+        "neptune"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "newrave",
+      "token": "new rave",
+      "variants": [
+        "new rave"
+      ],
+      "count": 2,
+      "genre": [
+        "Rave"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "noir25",
+      "token": "noir25",
+      "variants": [
+        "noir25"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "northernsoul",
+      "token": "northern soul",
+      "variants": [
+        "northern soul"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "nudisco",
+      "token": "Nu Disco",
+      "variants": [
+        "Nu Disco"
+      ],
+      "count": 2,
+      "genre": [
+        "Disco"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "pfunk",
+      "token": "p funk",
+      "variants": [
+        "p funk"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "popdance",
+      "token": "Pop dance",
+      "variants": [
+        "Pop dance",
+        "pop dance"
+      ],
+      "count": 2,
+      "genre": [
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "popedit",
+      "token": "pop edit",
+      "variants": [
+        "pop edit"
+      ],
+      "count": 2,
+      "genre": [
+        "Pop"
+      ],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "pophiphop",
+      "token": "Pop Hip Hop",
+      "variants": [
+        "Pop Hip Hop",
+        "pop hip hop"
+      ],
+      "count": 2,
+      "genre": [
+        "Hip-Hop",
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rbjerseyclub",
+      "token": "r&b  jersey club",
+      "variants": [
+        "r&b  jersey club",
+        "r&b jersey club"
+      ],
+      "count": 2,
+      "genre": [
+        "Jersey Club",
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rbhiphop",
+      "token": "r&b hip hop",
+      "variants": [
+        "r&b hip hop"
+      ],
+      "count": 2,
+      "genre": [
+        "Hip-Hop",
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rbremix",
+      "token": "r&b remix",
+      "variants": [
+        "r&b remix"
+      ],
+      "count": 2,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [
+        "Remix"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "rapbass",
+      "token": "Rap bass",
+      "variants": [
+        "Rap bass"
+      ],
+      "count": 2,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rockbandpop",
+      "token": "rock band pop",
+      "variants": [
+        "rock band pop"
+      ],
+      "count": 2,
+      "genre": [
+        "Rock",
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "soflojook",
+      "token": "SoFloJook",
+      "variants": [
+        "SoFloJook",
+        "SoFLoJook"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "soulhiphop",
+      "token": "Soul - Hip Hop",
+      "variants": [
+        "Soul - Hip Hop"
+      ],
+      "count": 2,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "souldance",
+      "token": "Soul dance",
+      "variants": [
+        "Soul dance"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "soulrb",
+      "token": "soul r&b",
+      "variants": [
+        "soul r&b"
+      ],
+      "count": 2,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "soulection",
+      "token": "Soulection",
+      "variants": [
+        "Soulection"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "speed",
+      "token": "Speed",
+      "variants": [
+        "Speed"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "trapqueen",
+      "token": "trap queen",
+      "variants": [
+        "trap queen"
+      ],
+      "count": 2,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "trommel",
+      "token": "Trommel",
+      "variants": [
+        "Trommel"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "ufe",
+      "token": "ufe",
+      "variants": [
+        "ufe",
+        "UFE"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "vocalhouse",
+      "token": "Vocal House",
+      "variants": [
+        "Vocal House"
+      ],
+      "count": 2,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "westcoasthiphop",
+      "token": "west coast hip hop",
+      "variants": [
+        "west coast hip hop"
+      ],
+      "count": 2,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "whitepeople",
+      "token": "white people",
+      "variants": [
+        "white people"
+      ],
+      "count": 2,
+      "genre": [],
+      "grouping": [
+        "White OOtz"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "clubhousediscodanceseattleknosubz",
+      "token": "#club #house #disco #dance #seattle #knosubz",
+      "variants": [
+        "#club #house #disco #dance #seattle #knosubz"
+      ],
+      "count": 1,
+      "genre": [
+        "House",
+        "Disco"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "1",
+      "token": "(-1)",
+      "variants": [
+        "(-1)"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "80s",
+      "token": "80s",
+      "variants": [
+        "80s"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "acapella",
+      "token": "Acapella",
+      "variants": [
+        "Acapella"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "afrogroovybounce",
+      "token": "Afro Groovy Bounce",
+      "variants": [
+        "Afro Groovy Bounce"
+      ],
+      "count": 1,
+      "genre": [
+        "Groovy Bounce",
+        "Bounce",
+        "Afrobeat"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "afrohiphop",
+      "token": "afro hip-hop",
+      "variants": [
+        "afro hip-hop"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop",
+        "Afrobeat"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "afrohousegroovybounce",
+      "token": "afro House groovy bounce",
+      "variants": [
+        "afro House groovy bounce"
+      ],
+      "count": 1,
+      "genre": [
+        "Groovy Bounce",
+        "Afro House",
+        "Bounce",
+        "House",
+        "Afrobeat"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "afrobeatmidclub",
+      "token": "afrobeat mid club",
+      "variants": [
+        "afrobeat mid club"
+      ],
+      "count": 1,
+      "genre": [
+        "Afrobeat"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "afrofusionafrobeatnaija",
+      "token": "Afrofusion #Afrobeat #Naija",
+      "variants": [
+        "Afrofusion #Afrobeat #Naija"
+      ],
+      "count": 1,
+      "genre": [
+        "Afrobeat"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "althiphop",
+      "token": "Alt Hip-Hop",
+      "variants": [
+        "Alt Hip-Hop"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "altrock",
+      "token": "Alt. Rock",
+      "variants": [
+        "Alt. Rock"
+      ],
+      "count": 1,
+      "genre": [
+        "Rock"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "alterativepop",
+      "token": "alterative pop",
+      "variants": [
+        "alterative pop"
+      ],
+      "count": 1,
+      "genre": [
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "alternativedance",
+      "token": "alternative dance",
+      "variants": [
+        "alternative dance"
+      ],
+      "count": 1,
+      "genre": [
+        "Alternative"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "alternativehiphopalternativerb",
+      "token": "alternative hip hopalternative r&b",
+      "variants": [
+        "alternative hip hopalternative r&b"
+      ],
+      "count": 1,
+      "genre": [
+        "Alternative",
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "alternativerbhiphop",
+      "token": "Alternative R&B Hip Hop",
+      "variants": [
+        "Alternative R&B Hip Hop"
+      ],
+      "count": 1,
+      "genre": [
+        "Alternative R&B",
+        "Alternative",
+        "Hip-Hop",
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "alternativerbhiphopgay",
+      "token": "alternative r&b hip hop gay",
+      "variants": [
+        "alternative r&b hip hop gay"
+      ],
+      "count": 1,
+      "genre": [
+        "Alternative R&B",
+        "Alternative",
+        "Hip-Hop",
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "amapiono",
+      "token": "amapiono",
+      "variants": [
+        "amapiono"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "ambre",
+      "token": "ambre",
+      "variants": [
+        "ambre"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "atlbassrb",
+      "token": "atl bass r&b",
+      "variants": [
+        "atl bass r&b"
+      ],
+      "count": 1,
+      "genre": [
+        "Atlanta Bass",
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "atlantaclub",
+      "token": "Atlanta Club",
+      "variants": [
+        "Atlanta Club"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "azealiabanks",
+      "token": "AZEALIABANKS",
+      "variants": [
+        "AZEALIABANKS"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "b",
+      "token": "B",
+      "variants": [
+        "B"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "badquality",
+      "token": "bad quality",
+      "variants": [
+        "bad quality"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "bailechill",
+      "token": "Baile Chill",
+      "variants": [
+        "Baile Chill"
+      ],
+      "count": 1,
+      "genre": [
+        "Baile"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "baileclub",
+      "token": "Baile Club",
+      "variants": [
+        "Baile Club"
+      ],
+      "count": 1,
+      "genre": [
+        "Baile"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "bailephunk",
+      "token": "baile phunk",
+      "variants": [
+        "baile phunk"
+      ],
+      "count": 1,
+      "genre": [
+        "Baile"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "bailefunk",
+      "token": "Bailefunk",
+      "variants": [
+        "Bailefunk"
+      ],
+      "count": 1,
+      "genre": [
+        "Baile"
+      ],
+      "grouping": [],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "ballrom",
+      "token": "ballrom",
+      "variants": [
+        "ballrom"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "ballroomhouse",
+      "token": "ballroom house",
+      "variants": [
+        "ballroom house"
+      ],
+      "count": 1,
+      "genre": [
+        "Ballroom",
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "band",
+      "token": "band",
+      "variants": [
+        "band"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "bandesoriginalesdefilms",
+      "token": "Bandes originales de films",
+      "variants": [
+        "Bandes originales de films"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "bassjerseyclub",
+      "token": "bass jersey club",
+      "variants": [
+        "bass jersey club"
+      ],
+      "count": 1,
+      "genre": [
+        "Jersey Club"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "bassplex",
+      "token": "bass plex",
+      "variants": [
+        "bass plex"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [
+        "Plex"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "basssoflojook",
+      "token": "bass SoFLoJook",
+      "variants": [
+        "bass SoFLoJook"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "bestever",
+      "token": "bestever",
+      "variants": [
+        "bestever"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "billiex90srnb",
+      "token": "Billie X 90s rnb",
+      "variants": [
+        "Billie X 90s rnb"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "blackcoffee",
+      "token": "BLACK COFFEE",
+      "variants": [
+        "BLACK COFFEE"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "blacktechno",
+      "token": "Black Techno",
+      "variants": [
+        "Black Techno"
+      ],
+      "count": 1,
+      "genre": [
+        "Techno"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "bolha",
+      "token": "BOLHA",
+      "variants": [
+        "BOLHA"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "bootleg",
+      "token": "bootleg",
+      "variants": [
+        "bootleg"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [
+        "Remix"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "bootydreams",
+      "token": "Booty Dreams",
+      "variants": [
+        "Booty Dreams"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "bootyfunk",
+      "token": "BootyFunk",
+      "variants": [
+        "BootyFunk"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "bossa",
+      "token": "Bossa",
+      "variants": [
+        "Bossa"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "boulangerie",
+      "token": "boulangerie",
+      "variants": [
+        "boulangerie"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "bouyonxmerenge",
+      "token": "BOUYONxMERENGE",
+      "variants": [
+        "BOUYONxMERENGE"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "brazillianhouse",
+      "token": "Brazillian House",
+      "variants": [
+        "Brazillian House"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "brent",
+      "token": "Brent",
+      "variants": [
+        "Brent"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "brooklynindie",
+      "token": "brooklyn indie",
+      "variants": [
+        "brooklyn indie"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "bubbling",
+      "token": "BUBBLING",
+      "variants": [
+        "BUBBLING"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "caesarsalad",
+      "token": "caesar salad",
+      "variants": [
+        "caesar salad"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "canadiancountry",
+      "token": "canadian country",
+      "variants": [
+        "canadian country"
+      ],
+      "count": 1,
+      "genre": [
+        "Country"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "canadianpop",
+      "token": "canadian pop",
+      "variants": [
+        "canadian pop"
+      ],
+      "count": 1,
+      "genre": [
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "carribean",
+      "token": "carribean",
+      "variants": [
+        "carribean"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "cartoon",
+      "token": "cartoon",
+      "variants": [
+        "cartoon"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "chicagohouse",
+      "token": "chicago house",
+      "variants": [
+        "chicago house"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "chicagojuke",
+      "token": "Chicago JUke",
+      "variants": [
+        "Chicago JUke"
+      ],
+      "count": 1,
+      "genre": [
+        "Juke"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "chilledithiphop",
+      "token": "Chill edit hip-hop",
+      "variants": [
+        "Chill edit hip-hop"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "chiptune",
+      "token": "chiptune",
+      "variants": [
+        "chiptune"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "christian",
+      "token": "Christian",
+      "variants": [
+        "Christian"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "church",
+      "token": "church",
+      "variants": [
+        "church"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "classsoul",
+      "token": "class soul",
+      "variants": [
+        "class soul"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "classicfunksouldisco",
+      "token": "Classic Funk-Soul disco",
+      "variants": [
+        "Classic Funk-Soul disco"
+      ],
+      "count": 1,
+      "genre": [
+        "Disco"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "classicrbsoul",
+      "token": "classic r&b soul",
+      "variants": [
+        "classic r&b soul"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "classicsoul",
+      "token": "classic soul",
+      "variants": [
+        "classic soul"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "cleancutz",
+      "token": "Clean Cutz",
+      "variants": [
+        "Clean Cutz"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [
+        "Clean"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "clubplex",
+      "token": "club plex",
+      "variants": [
+        "club plex"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [
+        "Plex"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "clubtool",
+      "token": "Club Tool",
+      "variants": [
+        "Club Tool"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "comedy",
+      "token": "comedy",
+      "variants": [
+        "comedy"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "contemporaryrb",
+      "token": "Contemporary  R&B",
+      "variants": [
+        "Contemporary  R&B"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "contemporarycountry",
+      "token": "contemporary country",
+      "variants": [
+        "contemporary country"
+      ],
+      "count": 1,
+      "genre": [
+        "Country"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "contemporaryrbdancepopelectronicpop",
+      "token": "Contemporary R&B Dance-Pop Electronic  Pop",
+      "variants": [
+        "Contemporary R&B Dance-Pop Electronic  Pop"
+      ],
+      "count": 1,
+      "genre": [
+        "Electronic",
+        "R&B",
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "contemporaryrbpoppopsoulrb",
+      "token": "Contemporary R&B Pop Pop Soul R&B",
+      "variants": [
+        "Contemporary R&B Pop Pop Soul R&B"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B",
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "countrydawn",
+      "token": "country dawn",
+      "variants": [
+        "country dawn"
+      ],
+      "count": 1,
+      "genre": [
+        "Country"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "cuco",
+      "token": "CUCO",
+      "variants": [
+        "CUCO"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "customjuke",
+      "token": "custom juke",
+      "variants": [
+        "custom juke"
+      ],
+      "count": 1,
+      "genre": [
+        "Juke"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "cyberpunk",
+      "token": "cyberpunk",
+      "variants": [
+        "cyberpunk"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "dtrain",
+      "token": "D train",
+      "variants": [
+        "D train"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "dancesoulfulhouse",
+      "token": "Dance - Soulful House",
+      "variants": [
+        "Dance - Soulful House"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "dennerysegment",
+      "token": "Dennery Segment",
+      "variants": [
+        "Dennery Segment"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "disclosure",
+      "token": "Disclosure",
+      "variants": [
+        "Disclosure"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "discoclassic",
+      "token": "disco classic",
+      "variants": [
+        "disco classic"
+      ],
+      "count": 1,
+      "genre": [
+        "Disco"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "discoedit",
+      "token": "disco edit",
+      "variants": [
+        "disco edit"
+      ],
+      "count": 1,
+      "genre": [
+        "Disco"
+      ],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "discooldschool",
+      "token": "disco old school",
+      "variants": [
+        "disco old school"
+      ],
+      "count": 1,
+      "genre": [
+        "Disco"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "discofunk",
+      "token": "Discofunk",
+      "variants": [
+        "Discofunk"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "djgetdownrmx",
+      "token": "DJ GETDOWN RMX",
+      "variants": [
+        "DJ GETDOWN RMX"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "dnbedit",
+      "token": "DNB edit",
+      "variants": [
+        "DNB edit"
+      ],
+      "count": 1,
+      "genre": [
+        "Drum & Bass"
+      ],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "dnbrb",
+      "token": "dnb r&b",
+      "variants": [
+        "dnb r&b"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B",
+        "Drum & Bass"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "donell",
+      "token": "DONELL",
+      "variants": [
+        "DONELL"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "dongyo",
+      "token": "dong-yo",
+      "variants": [
+        "dong-yo"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "doowop",
+      "token": "doo-wop",
+      "variants": [
+        "doo-wop"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "drizzy",
+      "token": "drizzy",
+      "variants": [
+        "drizzy"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "drumandbassedit",
+      "token": "drum and bass edit",
+      "variants": [
+        "drum and bass edit"
+      ],
+      "count": 1,
+      "genre": [
+        "Drum & Bass"
+      ],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "dtw",
+      "token": "DTW",
+      "variants": [
+        "DTW"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "dub",
+      "token": "Dub",
+      "variants": [
+        "Dub"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "editpop",
+      "token": "edit pop",
+      "variants": [
+        "edit pop"
+      ],
+      "count": 1,
+      "genre": [
+        "Pop"
+      ],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "editwch",
+      "token": "edit wch",
+      "variants": [
+        "edit wch"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [
+        "Edit",
+        "White OOtz"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "edmjerseyclub",
+      "token": "EDM jersey club",
+      "variants": [
+        "EDM jersey club"
+      ],
+      "count": 1,
+      "genre": [
+        "Jersey Club"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "electroclassic",
+      "token": "Electro (Classic",
+      "variants": [
+        "Electro (Classic"
+      ],
+      "count": 1,
+      "genre": [
+        "Electro"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "electrohiphop",
+      "token": "Electro Hip Hop",
+      "variants": [
+        "Electro Hip Hop"
+      ],
+      "count": 1,
+      "genre": [
+        "Electro",
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "electronicghettotech",
+      "token": "electronic ghetto tech",
+      "variants": [
+        "electronic ghetto tech"
+      ],
+      "count": 1,
+      "genre": [
+        "Ghettotech",
+        "Electronic"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "electronicmix",
+      "token": "electronic mix",
+      "variants": [
+        "electronic mix"
+      ],
+      "count": 1,
+      "genre": [
+        "Electronic"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "end",
+      "token": "end",
+      "variants": [
+        "end"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "entertainment",
+      "token": "Entertainment",
+      "variants": [
+        "Entertainment"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "essentials",
+      "token": "Essentials",
+      "variants": [
+        "Essentials"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "europop",
+      "token": "europop",
+      "variants": [
+        "europop"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "film",
+      "token": "Film",
+      "variants": [
+        "Film"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "filterhouse",
+      "token": "filter house",
+      "variants": [
+        "filter house"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "flipside",
+      "token": "FLIP SIDE",
+      "variants": [
+        "FLIP SIDE"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [
+        "Remix"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "folk",
+      "token": "folk",
+      "variants": [
+        "folk"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "freedownload",
+      "token": "FREE DOWNLOAD",
+      "variants": [
+        "FREE DOWNLOAD"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "freestyle",
+      "token": "Freestyle",
+      "variants": [
+        "Freestyle"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "fullbodydurag",
+      "token": "FULLBODYDURAG",
+      "variants": [
+        "FULLBODYDURAG"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "funana",
+      "token": "Funana",
+      "variants": [
+        "Funana"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "funksouldiscohouse",
+      "token": "Funk Soul Disco house",
+      "variants": [
+        "Funk Soul Disco house"
+      ],
+      "count": 1,
+      "genre": [
+        "House",
+        "Disco"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "futurebeats",
+      "token": "Future Beats",
+      "variants": [
+        "Future Beats"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "futurefunk",
+      "token": "Future Funk",
+      "variants": [
+        "Future Funk"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "futurehousedance",
+      "token": "Future House dance",
+      "variants": [
+        "Future House dance"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "futureindiebounce",
+      "token": "future indie bounce",
+      "variants": [
+        "future indie bounce"
+      ],
+      "count": 1,
+      "genre": [
+        "Bounce"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "futureriddim",
+      "token": "Future Riddim",
+      "variants": [
+        "Future Riddim"
+      ],
+      "count": 1,
+      "genre": [
+        "Riddim"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "futurehyphyfunk",
+      "token": "Futurehyphyfunk",
+      "variants": [
+        "Futurehyphyfunk"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "futuresoul",
+      "token": "futuresoul",
+      "variants": [
+        "futuresoul"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "futuristicswag",
+      "token": "Futuristic Swag",
+      "variants": [
+        "Futuristic Swag"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "garageukg",
+      "token": "garage ukg",
+      "variants": [
+        "garage ukg"
+      ],
+      "count": 1,
+      "genre": [
+        "UK Garage"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "geneva",
+      "token": "geneva",
+      "variants": [
+        "geneva"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "geotheory",
+      "token": "GEOTHEORY",
+      "variants": [
+        "GEOTHEORY"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "ghetotech",
+      "token": "gheto tech",
+      "variants": [
+        "gheto tech"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "ghettotechno",
+      "token": "Ghetto Techno",
+      "variants": [
+        "Ghetto Techno"
+      ],
+      "count": 1,
+      "genre": [
+        "Techno"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "globalclub",
+      "token": "Global Club",
+      "variants": [
+        "Global Club"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "gocrazygostupid",
+      "token": "gocrazygostupid",
+      "variants": [
+        "gocrazygostupid"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "godmode",
+      "token": "Godmode",
+      "variants": [
+        "Godmode"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "gospelrb",
+      "token": "gospel r&b",
+      "variants": [
+        "gospel r&b"
+      ],
+      "count": 1,
+      "genre": [
+        "Gospel",
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "groovy",
+      "token": "Groovy",
+      "variants": [
+        "Groovy"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "groovybouncerbremix",
+      "token": "groovy bounce r&b remix",
+      "variants": [
+        "groovy bounce r&b remix"
+      ],
+      "count": 1,
+      "genre": [
+        "Groovy Bounce",
+        "Bounce",
+        "R&B"
+      ],
+      "grouping": [
+        "Remix"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "groovybouncetechno",
+      "token": "Groovy Bounce techno",
+      "variants": [
+        "Groovy Bounce techno"
+      ],
+      "count": 1,
+      "genre": [
+        "Groovy Bounce",
+        "Techno",
+        "Bounce"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "groovybounec",
+      "token": "Groovy Bounec",
+      "variants": [
+        "Groovy Bounec"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "grunge",
+      "token": "grunge",
+      "variants": [
+        "grunge"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "hardgroovejerseyclub",
+      "token": "hard groove jersey club",
+      "variants": [
+        "hard groove jersey club"
+      ],
+      "count": 1,
+      "genre": [
+        "Jersey Club",
+        "Hardgroove"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hardcorehiphop",
+      "token": "hardcore hip hop",
+      "variants": [
+        "hardcore hip hop"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "harlemhiphop",
+      "token": "harlem hip hop",
+      "variants": [
+        "harlem hip hop"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hiphip",
+      "token": "hip hip",
+      "variants": [
+        "hip hip"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "hiphopflip",
+      "token": "hip hop  flip",
+      "variants": [
+        "hip hop  flip"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Remix"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "hiphopalternative",
+      "token": "hip hop alternative",
+      "variants": [
+        "hip hop alternative"
+      ],
+      "count": 1,
+      "genre": [
+        "Alternative",
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hiphopbeat",
+      "token": "hip hop beat",
+      "variants": [
+        "hip hop beat"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hiphopedit",
+      "token": "hip hop edit",
+      "variants": [
+        "hip hop edit"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "hiphopeditchill",
+      "token": "hip hop edit chill",
+      "variants": [
+        "hip hop edit chill"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hiphopeditjerseyclub",
+      "token": "hip hop edit jersey club",
+      "variants": [
+        "hip hop edit jersey club"
+      ],
+      "count": 1,
+      "genre": [
+        "Jersey Club",
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hiphopfunksoul",
+      "token": "hip hop funk soul",
+      "variants": [
+        "hip hop funk soul"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hiphoplofi",
+      "token": "Hip Hop lofi",
+      "variants": [
+        "Hip Hop lofi"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hiphopraphood",
+      "token": "hip hop rap hood",
+      "variants": [
+        "hip hop rap hood"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hiphopshow",
+      "token": "hip hop show",
+      "variants": [
+        "hip hop show"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hiphopstlouis",
+      "token": "Hip Hop ST.louis",
+      "variants": [
+        "Hip Hop ST.louis"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hiphopthrowback",
+      "token": "hip hop throwback",
+      "variants": [
+        "hip hop throwback"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hiphouse",
+      "token": "hip house",
+      "variants": [
+        "hip house"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "hiphoprnb",
+      "token": "Hip-Hop Rnb",
+      "variants": [
+        "Hip-Hop Rnb"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop",
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "homage",
+      "token": "Homage",
+      "variants": [
+        "Homage"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "houaw",
+      "token": "Houaw",
+      "variants": [
+        "Houaw"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "housechillhouse",
+      "token": "House  Chill House",
+      "variants": [
+        "House  Chill House"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "houseafro",
+      "token": "House afro",
+      "variants": [
+        "House afro"
+      ],
+      "count": 1,
+      "genre": [
+        "House",
+        "Afrobeat"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "houseballroom",
+      "token": "house ballroom",
+      "variants": [
+        "house ballroom"
+      ],
+      "count": 1,
+      "genre": [
+        "Ballroom",
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "houseclassicsoulfunk",
+      "token": "house classic soul funk",
+      "variants": [
+        "house classic soul funk"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "houseclub",
+      "token": "house club",
+      "variants": [
+        "house club"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "housejazzzy",
+      "token": "house jazzzy",
+      "variants": [
+        "house jazzzy"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "housejuke",
+      "token": "House juke",
+      "variants": [
+        "House juke"
+      ],
+      "count": 1,
+      "genre": [
+        "House",
+        "Juke"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "houselounge",
+      "token": "house lounge",
+      "variants": [
+        "house lounge"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [
+        "Lounge"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "houseplexafrobeat",
+      "token": "house plex afro beat",
+      "variants": [
+        "house plex afro beat"
+      ],
+      "count": 1,
+      "genre": [
+        "House",
+        "Afrobeat"
+      ],
+      "grouping": [
+        "Plex"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "houseplexchruchafrobeats",
+      "token": "house plex chruch afro beats",
+      "variants": [
+        "house plex chruch afro beats"
+      ],
+      "count": 1,
+      "genre": [
+        "House",
+        "Afrobeat"
+      ],
+      "grouping": [
+        "Plex"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "houserb",
+      "token": "house r&b",
+      "variants": [
+        "house r&b"
+      ],
+      "count": 1,
+      "genre": [
+        "House",
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "housesoul",
+      "token": "House soul",
+      "variants": [
+        "House soul"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "housesouljuke",
+      "token": "house soul juke",
+      "variants": [
+        "house soul juke"
+      ],
+      "count": 1,
+      "genre": [
+        "House",
+        "Juke"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "housethatmakesachange",
+      "token": "HOUSE that makes a ChAnGe!",
+      "variants": [
+        "HOUSE that makes a ChAnGe!"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "housewomen",
+      "token": "house women",
+      "variants": [
+        "house women"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [
+        "Women"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "idol",
+      "token": "idol",
+      "variants": [
+        "idol"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "industrialmetal",
+      "token": "industrial metal",
+      "variants": [
+        "industrial metal"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "industrialrock",
+      "token": "industrial rock",
+      "variants": [
+        "industrial rock"
+      ],
+      "count": 1,
+      "genre": [
+        "Rock"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "instrumentalrblounge",
+      "token": "Instrumental r&b lounge",
+      "variants": [
+        "Instrumental r&b lounge"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [
+        "Lounge"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "intros",
+      "token": "Intros",
+      "variants": [
+        "Intros"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "jack",
+      "token": "jack",
+      "variants": [
+        "jack"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "janetjackson",
+      "token": "Janet Jackson",
+      "variants": [
+        "Janet Jackson"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "japaneseclassical",
+      "token": "japanese classical",
+      "variants": [
+        "japanese classical"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "japanesevgm",
+      "token": "japanese vgm",
+      "variants": [
+        "japanese vgm"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "jazzedit",
+      "token": "jazz edit",
+      "variants": [
+        "jazz edit"
+      ],
+      "count": 1,
+      "genre": [
+        "Jazz"
+      ],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "jazzfusion",
+      "token": "Jazz Fusion",
+      "variants": [
+        "Jazz Fusion"
+      ],
+      "count": 1,
+      "genre": [
+        "Jazz"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "jazzhouse",
+      "token": "jazz house",
+      "variants": [
+        "jazz house"
+      ],
+      "count": 1,
+      "genre": [
+        "House",
+        "Jazz"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "jazzrap",
+      "token": "jazz rap",
+      "variants": [
+        "jazz rap"
+      ],
+      "count": 1,
+      "genre": [
+        "Jazz",
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "jerking",
+      "token": "Jerking",
+      "variants": [
+        "Jerking"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "jerseyclubbailefunk",
+      "token": "Jersey Club  Baile Funk",
+      "variants": [
+        "Jersey Club  Baile Funk"
+      ],
+      "count": 1,
+      "genre": [
+        "Jersey Club",
+        "Baile"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "jms",
+      "token": "Jms",
+      "variants": [
+        "Jms"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "jungleedit",
+      "token": "jungle edit",
+      "variants": [
+        "jungle edit"
+      ],
+      "count": 1,
+      "genre": [
+        "Jungle"
+      ],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "jungleplex",
+      "token": "jungle plex",
+      "variants": [
+        "jungle plex"
+      ],
+      "count": 1,
+      "genre": [
+        "Jungle"
+      ],
+      "grouping": [
+        "Plex"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "kaytra",
+      "token": "Kaytra",
+      "variants": [
+        "Kaytra"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "kehlani",
+      "token": "kehlani",
+      "variants": [
+        "kehlani"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "kerseyclub",
+      "token": "kersey club",
+      "variants": [
+        "kersey club"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "koffee",
+      "token": "Koffee",
+      "variants": [
+        "Koffee"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "ladygaga",
+      "token": "ladygaga",
+      "variants": [
+        "ladygaga"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "latinbaile",
+      "token": "latin baile",
+      "variants": [
+        "latin baile"
+      ],
+      "count": 1,
+      "genre": [
+        "Latin",
+        "Baile"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "latintrap",
+      "token": "Latin Trap",
+      "variants": [
+        "Latin Trap"
+      ],
+      "count": 1,
+      "genre": [
+        "Latin",
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "laurynhill",
+      "token": "lauryn hill",
+      "variants": [
+        "lauryn hill"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "lifestylerb",
+      "token": "Lifestyle R&B",
+      "variants": [
+        "Lifestyle R&B"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "lougne",
+      "token": "lougne",
+      "variants": [
+        "lougne"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "loungeafrobeatmidclub",
+      "token": "lounge afrobeat mid club",
+      "variants": [
+        "lounge afrobeat mid club"
+      ],
+      "count": 1,
+      "genre": [
+        "Afrobeat"
+      ],
+      "grouping": [
+        "Lounge"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "loungechillhouse",
+      "token": "lounge chill house",
+      "variants": [
+        "lounge chill house"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [
+        "Lounge"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "loungeeditrbhiphop",
+      "token": "lounge edit r&b hip hop",
+      "variants": [
+        "lounge edit r&b hip hop"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop",
+        "R&B"
+      ],
+      "grouping": [
+        "Lounge",
+        "Edit"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "loungehiphopedit",
+      "token": "lounge hip hop edit",
+      "variants": [
+        "lounge hip hop edit"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Lounge",
+        "Edit"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "loungerb",
+      "token": "lounge r&b",
+      "variants": [
+        "lounge r&b"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [
+        "Lounge"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "lovesong",
+      "token": "Lovesong",
+      "variants": [
+        "Lovesong"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "loyalty",
+      "token": "LOYALTY.",
+      "variants": [
+        "LOYALTY."
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "mariahcarey",
+      "token": "Mariah Carey",
+      "variants": [
+        "Mariah Carey"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "mashuprb",
+      "token": "mashup r&b",
+      "variants": [
+        "mashup r&b"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "matve",
+      "token": "Matveï",
+      "variants": [
+        "Matveï"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "missyelliott",
+      "token": "missyelliott",
+      "variants": [
+        "missyelliott"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "mixtaperb",
+      "token": "mixtape r&b",
+      "variants": [
+        "mixtape r&b"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "modern",
+      "token": "Modern)",
+      "variants": [
+        "Modern)"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "moonstep",
+      "token": "moonstep",
+      "variants": [
+        "moonstep"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "more",
+      "token": "MORE",
+      "variants": [
+        "MORE"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "music",
+      "token": "Music",
+      "variants": [
+        "Music"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "musichall",
+      "token": "music hall",
+      "variants": [
+        "music hall"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "musicachihuahuense",
+      "token": "musica chihuahuense",
+      "variants": [
+        "musica chihuahuense"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "neosoulalternative",
+      "token": "neo soul alternative",
+      "variants": [
+        "neo soul alternative"
+      ],
+      "count": 1,
+      "genre": [
+        "Alternative",
+        "Neo Soul"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "neptunes",
+      "token": "neptunes",
+      "variants": [
+        "neptunes"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "newage",
+      "token": "New Age",
+      "variants": [
+        "New Age"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "newjerseyrap",
+      "token": "new jersey rap",
+      "variants": [
+        "new jersey rap"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "neworleansbounce",
+      "token": "New Orleans Bounce",
+      "variants": [
+        "New Orleans Bounce"
+      ],
+      "count": 1,
+      "genre": [
+        "Bounce"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "newwave",
+      "token": "New Wave",
+      "variants": [
+        "New Wave"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "nobounce",
+      "token": "no bounce",
+      "variants": [
+        "no bounce"
+      ],
+      "count": 1,
+      "genre": [
+        "Bounce"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "noir24",
+      "token": "noir24",
+      "variants": [
+        "noir24"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "nola",
+      "token": "nola",
+      "variants": [
+        "nola"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "nolabounce",
+      "token": "Nola Bounce",
+      "variants": [
+        "Nola Bounce"
+      ],
+      "count": 1,
+      "genre": [
+        "Bounce"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "nursery",
+      "token": "nursery",
+      "variants": [
+        "nursery"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "odeal",
+      "token": "odeal",
+      "variants": [
+        "odeal"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "oldhouse",
+      "token": "old house",
+      "variants": [
+        "old house"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "orchestra",
+      "token": "orchestra",
+      "variants": [
+        "orchestra"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "orchestralsoundtrack",
+      "token": "orchestral soundtrack",
+      "variants": [
+        "orchestral soundtrack"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "otherpop",
+      "token": "Other pop",
+      "variants": [
+        "Other pop"
+      ],
+      "count": 1,
+      "genre": [
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "outside",
+      "token": "outside",
+      "variants": [
+        "outside"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "owmen",
+      "token": "owmen",
+      "variants": [
+        "owmen"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "pali",
+      "token": "pali",
+      "variants": [
+        "pali"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "party",
+      "token": "party",
+      "variants": [
+        "party"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "pawz",
+      "token": "PAWZ",
+      "variants": [
+        "PAWZ"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "phunk",
+      "token": "phunk",
+      "variants": [
+        "phunk"
+      ],
+      "count": 1,
+      "genre": [
+        "Breaks"
+      ],
+      "grouping": [
+        "Phunk"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "ple",
+      "token": "ple",
+      "variants": [
+        "ple"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "plexedit",
+      "token": "plex edit",
+      "variants": [
+        "plex edit"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [
+        "Plex",
+        "Edit"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "popatlhiphop",
+      "token": "Pop atl hip hop",
+      "variants": [
+        "Pop atl hip hop"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Atlanta"
+      ],
+      "status": "operator_directed_proposal",
+      "rationale": "Operator direction: regional Hip-Hop keeps region in Grouping."
+    },
+    {
+      "normalized": "popcalssic",
+      "token": "pop calssic",
+      "variants": [
+        "pop calssic"
+      ],
+      "count": 1,
+      "genre": [
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "popeditmidclub",
+      "token": "pop edit mid club",
+      "variants": [
+        "pop edit mid club"
+      ],
+      "count": 1,
+      "genre": [
+        "Pop"
+      ],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "popteen",
+      "token": "pop teen",
+      "variants": [
+        "pop teen"
+      ],
+      "count": 1,
+      "genre": [
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "poptwerk",
+      "token": "pop twerk",
+      "variants": [
+        "pop twerk"
+      ],
+      "count": 1,
+      "genre": [
+        "Pop"
+      ],
+      "grouping": [
+        "Twerk"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "postgrunge",
+      "token": "post-grunge",
+      "variants": [
+        "post-grunge"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "preschoolchildrensmusic",
+      "token": "preschool children's music",
+      "variants": [
+        "preschool children's music"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "progressivehouse",
+      "token": "progressive house",
+      "variants": [
+        "progressive house"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "public",
+      "token": "public",
+      "variants": [
+        "public"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "quietstorm",
+      "token": "quiet storm",
+      "variants": [
+        "quiet storm"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "rb",
+      "token": "r%b",
+      "variants": [
+        "r%b"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "redit",
+      "token": "r& edit",
+      "variants": [
+        "r& edit"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rbafro",
+      "token": "r&b afro",
+      "variants": [
+        "r&b afro"
+      ],
+      "count": 1,
+      "genre": [
+        "Afrobeat",
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rbafrobeat",
+      "token": "r&b afrobeat",
+      "variants": [
+        "r&b afrobeat"
+      ],
+      "count": 1,
+      "genre": [
+        "Afrobeat",
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rbalternative",
+      "token": "r&b alternative",
+      "variants": [
+        "r&b alternative"
+      ],
+      "count": 1,
+      "genre": [
+        "Alternative",
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rbamapanio",
+      "token": "r&b amapanio",
+      "variants": [
+        "r&b amapanio"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rbclassicrbclassic",
+      "token": "r&b classicr&b classic",
+      "variants": [
+        "r&b classicr&b classic"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rbhouse",
+      "token": "r&b house",
+      "variants": [
+        "r&b house"
+      ],
+      "count": 1,
+      "genre": [
+        "House",
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rbjungle",
+      "token": "r&b jungle",
+      "variants": [
+        "r&b jungle"
+      ],
+      "count": 1,
+      "genre": [
+        "Jungle",
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rblounge",
+      "token": "R&B lounge",
+      "variants": [
+        "R&B lounge"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [
+        "Lounge"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rbpop",
+      "token": "R&B pop",
+      "variants": [
+        "R&B pop"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B",
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rbsingalong",
+      "token": "r&b sing along",
+      "variants": [
+        "r&b sing along"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rbsoul",
+      "token": "r&b soul",
+      "variants": [
+        "r&b soul"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rwave",
+      "token": "R&Wave",
+      "variants": [
+        "R&Wave"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "raplatina",
+      "token": "rap latina",
+      "variants": [
+        "rap latina"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rapremix",
+      "token": "Rap Remix",
+      "variants": [
+        "Rap Remix"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Remix"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "reflip",
+      "token": "Reflip",
+      "variants": [
+        "Reflip"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "reggaefusion",
+      "token": "reggae fusion",
+      "variants": [
+        "reggae fusion"
+      ],
+      "count": 1,
+      "genre": [
+        "Reggae"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "reggaetonbaile",
+      "token": "Reggaeton baile",
+      "variants": [
+        "Reggaeton baile"
+      ],
+      "count": 1,
+      "genre": [
+        "Reggaeton",
+        "Baile"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "remixedit",
+      "token": "remix edit",
+      "variants": [
+        "remix edit"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [
+        "Remix",
+        "Edit"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "remixhiphop",
+      "token": "remix hip hop",
+      "variants": [
+        "remix hip hop"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Remix"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "remixrb",
+      "token": "remix r&b",
+      "variants": [
+        "remix r&b"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [
+        "Remix"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rewind",
+      "token": "Rewind",
+      "variants": [
+        "Rewind"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "riddimgroovybounce",
+      "token": "riddim groovy bounce",
+      "variants": [
+        "riddim groovy bounce"
+      ],
+      "count": 1,
+      "genre": [
+        "Groovy Bounce",
+        "Riddim",
+        "Bounce"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rnbremix",
+      "token": "rnb remix",
+      "variants": [
+        "rnb remix"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [
+        "Remix"
+      ],
+      "status": "approved_rule",
+      "rationale": "Resolved by the synchronized operator rules."
+    },
+    {
+      "normalized": "rockalterntiverb",
+      "token": "rock alterntive r&b",
+      "variants": [
+        "rock alterntive r&b"
+      ],
+      "count": 1,
+      "genre": [
+        "Rock",
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rockjerseyclub",
+      "token": "rock jersey club",
+      "variants": [
+        "rock jersey club"
+      ],
+      "count": 1,
+      "genre": [
+        "Jersey Club",
+        "Rock"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "rockpopalternativerb",
+      "token": "rock pop alternative r&b",
+      "variants": [
+        "rock pop alternative r&b"
+      ],
+      "count": 1,
+      "genre": [
+        "Alternative R&B",
+        "Alternative",
+        "Rock",
+        "R&B",
+        "Pop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "savethebees",
+      "token": "SAVETHEBEES",
+      "variants": [
+        "SAVETHEBEES"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "scandipop",
+      "token": "scandipop",
+      "variants": [
+        "scandipop"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "science",
+      "token": "Science",
+      "variants": [
+        "Science"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "scratchbeats",
+      "token": "Scratch Beats",
+      "variants": [
+        "Scratch Beats"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "sexy",
+      "token": "Sexy",
+      "variants": [
+        "Sexy"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "shm",
+      "token": "SH&M",
+      "variants": [
+        "SH&M"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "show",
+      "token": "show",
+      "variants": [
+        "show"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "singersongwriter",
+      "token": "Singer-Songwriter",
+      "variants": [
+        "Singer-Songwriter"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "slowjams",
+      "token": "Slow Jams",
+      "variants": [
+        "Slow Jams"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "slowrb",
+      "token": "Slow R&B",
+      "variants": [
+        "Slow R&B"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "slowed",
+      "token": "slowed",
+      "variants": [
+        "slowed"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "smoothjazz",
+      "token": "Smooth Jazz",
+      "variants": [
+        "Smooth Jazz"
+      ],
+      "count": 1,
+      "genre": [
+        "Jazz"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "sokawina",
+      "token": "Sokawina",
+      "variants": [
+        "Sokawina"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "sorley",
+      "token": "SORLEY",
+      "variants": [
+        "SORLEY"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "souledit",
+      "token": "Soul edit",
+      "variants": [
+        "Soul edit"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [
+        "Edit"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "soulfunkclassic",
+      "token": "soul funk classic",
+      "variants": [
+        "soul funk classic"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "soulhouse",
+      "token": "soul house",
+      "variants": [
+        "soul house"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "souljuke",
+      "token": "Soul Juke",
+      "variants": [
+        "Soul Juke"
+      ],
+      "count": 1,
+      "genre": [
+        "Juke"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "south",
+      "token": "South",
+      "variants": [
+        "South"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "southernrap",
+      "token": "Southern Rap",
+      "variants": [
+        "Southern Rap"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Dirty South"
+      ],
+      "status": "operator_directed_proposal",
+      "rationale": "Operator direction: regional Hip-Hop keeps region in Grouping."
+    },
+    {
+      "normalized": "spookybooty",
+      "token": "SPOOKY BOOTY",
+      "variants": [
+        "SPOOKY BOOTY"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "stevelacy",
+      "token": "steve lacy",
+      "variants": [
+        "steve lacy"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "stoner",
+      "token": "Stoner",
+      "variants": [
+        "Stoner"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "summernight22",
+      "token": "SUMMERnight22",
+      "variants": [
+        "SUMMERnight22"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "sweatboxhouse",
+      "token": "sweatbox house",
+      "variants": [
+        "sweatbox house"
+      ],
+      "count": 1,
+      "genre": [
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "swing",
+      "token": "Swing",
+      "variants": [
+        "Swing"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "sza",
+      "token": "SZA",
+      "variants": [
+        "SZA"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "szaszn",
+      "token": "SZA SZN",
+      "variants": [
+        "SZA SZN"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "technoghetto",
+      "token": "techno ghetto",
+      "variants": [
+        "techno ghetto"
+      ],
+      "count": 1,
+      "genre": [
+        "Techno"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "technohardgroove",
+      "token": "techno hard groove",
+      "variants": [
+        "techno hard groove"
+      ],
+      "count": 1,
+      "genre": [
+        "Hardgroove",
+        "Techno"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "technojuke",
+      "token": "techno juke",
+      "variants": [
+        "techno juke"
+      ],
+      "count": 1,
+      "genre": [
+        "Techno",
+        "Juke"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "teenhiphop",
+      "token": "teen hip hop",
+      "variants": [
+        "teen hip hop"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "theafrousonians",
+      "token": "The Afro-Usonians",
+      "variants": [
+        "The Afro-Usonians"
+      ],
+      "count": 1,
+      "genre": [
+        "Afrobeat"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "tiktok",
+      "token": "tik tok",
+      "variants": [
+        "tik tok"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "tokyoavesound",
+      "token": "Tokyo Ave Sound",
+      "variants": [
+        "Tokyo Ave Sound"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "tokyoflipz",
+      "token": "TOKYO FLIPZ",
+      "variants": [
+        "TOKYO FLIPZ"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "trackstar",
+      "token": "TRACKSTAR",
+      "variants": [
+        "TRACKSTAR"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "trapelectronic",
+      "token": "Trap Electronic",
+      "variants": [
+        "Trap Electronic"
+      ],
+      "count": 1,
+      "genre": [
+        "Electronic",
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "traveler",
+      "token": "Traveler",
+      "variants": [
+        "Traveler"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "twerkhiphop",
+      "token": "twerk hip hop",
+      "variants": [
+        "twerk hip hop"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Twerk"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "twerkwomen",
+      "token": "twerk women",
+      "variants": [
+        "twerk women"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [
+        "Twerk",
+        "Women"
+      ],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "ukbass",
+      "token": "UK Bass",
+      "variants": [
+        "UK Bass"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "ukdance",
+      "token": "uk dance",
+      "variants": [
+        "uk dance"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "ukgaragehouse",
+      "token": "UK Garage House",
+      "variants": [
+        "UK Garage House"
+      ],
+      "count": 1,
+      "genre": [
+        "Garage House",
+        "UK Garage",
+        "House"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "ukbaile",
+      "token": "UKBaile",
+      "variants": [
+        "UKBaile"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "unknown",
+      "token": "Unknown",
+      "variants": [
+        "Unknown"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "up",
+      "token": "Up.",
+      "variants": [
+        "Up."
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "urbancontemporarychristmas",
+      "token": "urban contemporary christmas",
+      "variants": [
+        "urban contemporary christmas"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "urbancontemporaryrb",
+      "token": "urban contemporary r&b",
+      "variants": [
+        "urban contemporary r&b"
+      ],
+      "count": 1,
+      "genre": [
+        "R&B"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "usclub",
+      "token": "US CLUB",
+      "variants": [
+        "US CLUB"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "vdbl",
+      "token": "VDBL",
+      "variants": [
+        "VDBL"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "verzamel",
+      "token": "Verzamel",
+      "variants": [
+        "Verzamel"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "vibe",
+      "token": "Vibe",
+      "variants": [
+        "Vibe"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "vibes",
+      "token": "Vibes",
+      "variants": [
+        "Vibes"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "videogamemusic",
+      "token": "video game music",
+      "variants": [
+        "video game music"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "vocal",
+      "token": "Vocal",
+      "variants": [
+        "Vocal"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "vocalsample",
+      "token": "vocalsample",
+      "variants": [
+        "vocalsample"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "weirdcore",
+      "token": "weirdcore",
+      "variants": [
+        "weirdcore"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "worldhiphop",
+      "token": "World hip-hop",
+      "variants": [
+        "World hip-hop"
+      ],
+      "count": 1,
+      "genre": [
+        "Hip-Hop"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "worldreggae",
+      "token": "world reggae",
+      "variants": [
+        "world reggae"
+      ],
+      "count": 1,
+      "genre": [
+        "Reggae"
+      ],
+      "grouping": [],
+      "status": "partial_phrase_proposal",
+      "rationale": "Known Genre/context phrases were found inside a compound token; review leftovers."
+    },
+    {
+      "normalized": "worldwide",
+      "token": "Worldwide",
+      "variants": [
+        "Worldwide"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "wuvv",
+      "token": "wuvv",
+      "variants": [
+        "wuvv"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "yuhdunknow",
+      "token": "YUH DUN KNOW",
+      "variants": [
+        "YUH DUN KNOW"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    },
+    {
+      "normalized": "zouk",
+      "token": "Zouk",
+      "variants": [
+        "Zouk"
+      ],
+      "count": 1,
+      "genre": [],
+      "grouping": [],
+      "status": "decision_required",
+      "rationale": "No current rule supports a safe mapping; operator decision required."
+    }
+  ]
+}

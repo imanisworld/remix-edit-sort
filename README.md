@@ -195,6 +195,28 @@ Release-year, event, artist/title, genre, and similar research follows `referenc
 
 Reusable release-year decisions live in `references/year-evidence.json` and are validated by `scripts/validate_year_evidence.py`.
 
+## Genre learner rule sync and alias review
+
+`references/genre-learner-rules.json` is the learner-side copy of approved Genre versus
+Grouping decisions. `context_aliases` canonicalizes context spellings without turning them
+into training Genres; `compound_aliases` handles the rare reviewed token that yields both.
+The classifier also understands `<genre> edit|remix|flip|bootleg` as the canonical Genre
+plus an Edit/Remix Grouping term, and the same suffix rule works for a known context term.
+
+Build a complete review table from an unresolved-token census with:
+
+```bash
+python3 scripts/propose_genre_aliases.py \
+  --input unresolved-tokens.json \
+  --json-out alias-proposals.json \
+  --markdown-out alias-proposals.md
+```
+
+The generator is preview-only. It aggregates learner-equivalent spellings, preserves every
+source count while omitting source filenames, distinguishes approved rules from heuristic proposals, and leaves
+ambiguous tokens explicitly marked `decision_required`. The checked-in 2026-09-10 review
+artifacts are `references/genre-alias-proposals-20260910.{json,md}`.
+
 ## Proving a backup before any apply
 
 ```bash

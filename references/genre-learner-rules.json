@@ -92,11 +92,11 @@
     "london drill": "UK Drill",
     "sample drill": "Sexy Drill",
     "r&b drill": "Sexy Drill",
-    "rnb drill": "Sexy Drill"
+    "rnb drill": "Sexy Drill",
+    "juke & footwork": "Juke",
+    "afro": "Afrobeat"
   },
-  "legacy_compounds_requiring_audio_review": [
-    "Juke & Footwork"
-  ],
+  "legacy_compounds_requiring_audio_review": [],
   "target_excluded_folders": [
     "bae re work",
     "Imani Drops",
@@ -116,6 +116,32 @@
     "Lounge",
     "Lounge Vibe"
   ],
+  "context_aliases": {
+    "Holiday": "Holiday",
+    "Y2K": "Y2K",
+    "Black Y2K": "Black Y2K",
+    "White OOtz": "White OOtz",
+    "white": "White OOtz",
+    "wch": "White OOtz",
+    "white edits": "White OOtz",
+    "white club": "White OOtz",
+    "white club house": "White OOtz",
+    "dnb white": "White OOtz",
+    "Women": "Women",
+    "Old Head Party": "Old Head",
+    "edit": "Edit",
+    "edits": "Edit",
+    "remix": "Remix",
+    "remixes": "Remix",
+    "flip": "Remix",
+    "bootleg": "Remix"
+  },
+  "compound_aliases": {
+    "phunk": {
+      "genres": ["Breaks"],
+      "grouping": ["Phunk"]
+    }
+  },
   "families": {
     "rap_drill": [
       "Hip-Hop",
