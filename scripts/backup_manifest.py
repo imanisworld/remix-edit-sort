@@ -510,6 +510,19 @@ def build_explicit_paths_manifest(
                 })
                 continue
 
+            try:
+                same_file = __import__("os").path.samefile(source_path, backup_path)
+            except OSError as exc:
+                problems.append(
+                    f"could not prove backup independence for {raw_relative}: {exc}"
+                )
+                continue
+            if same_file:
+                problems.append(
+                    f"explicit backup is the source file itself, not an independent copy: {raw_relative}"
+                )
+                continue
+
             backup_path = backup_path.resolve()
             backup_hash = sha256_file(backup_path)
             matched = source_hash == backup_hash
@@ -590,7 +603,7 @@ def backup_path_for_item(manifest: dict, source_root: Path, path: Path) -> Path:
             f"backup manifest does not prove a matching copy for {relative!r}"
         )
 
-    if manifest.get("scope_mode") == "explicit-backup-paths" or "backup_path" in entry:
+    if manifest.get("scope_mode") == "explicit-backup-paths":
         raw_backup = entry.get("backup_path")
         if not isinstance(raw_backup, str) or not raw_backup:
             raise BackupGateError(

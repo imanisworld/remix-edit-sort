@@ -36,7 +36,7 @@ python3 scripts/t5_backup_dedupe.py prepare \
   --report-out "<lane backup report.json>"
 ```
 
-For a scoped plan, pass `--paths-json <json>` containing either a non-empty JSON list of source-relative paths or `{"paths": [...]}`. Matching is SHA-256 only; filenames and durations never authorize reuse. A missing or changed indexed path, a symlink, a hash mismatch, an index-integrity failure, or source drift fails closed.
+For a scoped plan, pass `--paths-json <json>` containing either a non-empty JSON list of source-relative paths or `{"paths": [...]}`. Matching is SHA-256 only; filenames and durations never authorize reuse. A missing or changed indexed path, a symlink, a hash mismatch, an index-integrity failure, source drift, or any attempt to use the live source itself as its backup fails closed. Shared-index operations are serialized with an advisory file lock so parallel lanes cannot overwrite each other's index updates.
 
 No real music files, Serato database, crates, or local library metadata were changed while implementing or testing this repository support.
 

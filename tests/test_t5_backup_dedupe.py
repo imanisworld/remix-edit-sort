@@ -146,6 +146,61 @@ class T5BackupDedupeTests(unittest.TestCase):
         self.assertIn("stale/corrupt", str(ctx.exception))
         self.assertFalse(self.manifest_path.exists())
 
+    def test_source_file_itself_is_never_accepted_as_backup(self):
+        self.source = self.t5 / "live-library"
+        self.source.mkdir()
+        source = self._write_source("song.mp3", b"source-on-t5")
+        self._build_index()
+
+        report = self._prepare()
+
+        copied = self.lane / "song.mp3"
+        self.assertEqual(report["reused_index"], 0)
+        self.assertEqual(report["copied"], 1)
+        self.assertTrue(copied.is_file())
+        self.assertFalse(os.path.samefile(source, copied))
+        manifest = backup_manifest.require_pass(self.manifest_path, self.source)
+        self.assertEqual(
+            backup_manifest.backup_path_for_item(manifest, self.source, source),
+            copied.resolve(),
+        )
+
+    def test_explicit_manifest_rejects_source_as_its_own_backup(self):
+        source = self._write_source("song.mp3", b"payload")
+        self.lane.mkdir()
+        manifest = backup_manifest.build_explicit_paths_manifest(
+            self.source,
+            self.lane,
+            [{
+                "path": "song.mp3",
+                "backup_path": str(source.resolve()),
+                "backup_mode": "bad-self-reference",
+            }],
+        )
+        self.assertEqual(manifest["status"], "FAIL")
+        self.assertTrue(
+            any("source file itself" in problem for problem in manifest["problems"])
+        )
+
+    def test_explicit_backup_symlink_substitution_is_refused(self):
+        source = self._write_source("song.mp3", b"payload")
+        backup = self._write_t5("archive/song.mp3", source.read_bytes())
+        self.lane.mkdir()
+        manifest = backup_manifest.build_explicit_paths_manifest(
+            self.source,
+            self.lane,
+            [{
+                "path": "song.mp3",
+                "backup_path": str(backup.resolve()),
+                "backup_mode": "reused-index",
+            }],
+        )
+        self.assertEqual(manifest["status"], "PASS")
+        backup.unlink()
+        backup.symlink_to(source)
+        with self.assertRaises(backup_manifest.BackupGateError):
+            backup_manifest.backup_path_for_item(manifest, self.source, source)
+
     def test_duplicate_same_hash_candidates_choose_deterministically(self):
         source = self._write_source("song.mp3", b"same")
         expected = self._write_t5("A/copy.mp3", source.read_bytes())

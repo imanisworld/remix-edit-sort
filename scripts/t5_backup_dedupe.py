@@ -16,6 +16,8 @@ from __future__ import annotations
 SAFETY_CLASSIFICATION = "infrastructure"
 
 import argparse
+from contextlib import contextmanager
+import fcntl
 import hashlib
 import json
 import os
@@ -35,6 +37,26 @@ CHUNK_SIZE = 4 * 1024 * 1024
 
 class BackupDedupeError(RuntimeError):
     """Index or backup evidence is insufficient; do not continue the lane."""
+
+
+@contextmanager
+def _index_lock(index_path: Path):
+    # Serialize index refresh/copy/publication across concurrent backup lanes.
+    # flock is released automatically if the process exits or crashes.
+    index_path = Path(index_path).resolve()
+    lock_path = index_path.with_name(index_path.name + ".lock")
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    with lock_path.open("a+", encoding="utf-8") as handle:
+        try:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        except OSError as exc:
+            raise BackupDedupeError(
+                f"could not acquire T5 index lock {lock_path}: {exc}"
+            ) from exc
+        try:
+            yield
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
 def sha256_file(path: Path) -> str:
@@ -324,7 +346,7 @@ def _candidate_path(root: Path, relative: str) -> Path:
     return resolved
 
 
-def _verified_reuse(index: dict, digest: str) -> Path | None:
+def _verified_reuse(index: dict, digest: str, source_path: Path | None = None) -> Path | None:
     candidates = list(index["by_sha256"].get(digest, []))
     if not candidates:
         return None
@@ -336,6 +358,15 @@ def _verified_reuse(index: dict, digest: str) -> Path | None:
             path = _candidate_path(root, relative)
             if not path.is_file():
                 raise BackupDedupeError(f"indexed T5 candidate is missing: {path}")
+            if source_path is not None:
+                try:
+                    if os.path.samefile(path, source_path):
+                        # The live source cannot serve as its own recovery copy.
+                        continue
+                except OSError as exc:
+                    raise BackupDedupeError(
+                        f"could not prove backup independence for {path}: {exc}"
+                    ) from exc
             actual = sha256_file(path)
             if actual != digest:
                 raise BackupDedupeError(
@@ -350,7 +381,7 @@ def _verified_reuse(index: dict, digest: str) -> Path | None:
             + "; ".join(problems[:5])
         )
     verified.sort(key=lambda pair: (_path_key(pair[0]), pair[0]))
-    return verified[0][1]
+    return verified[0][1] if verified else None
 
 
 def _add_verified_path(index: dict, path: Path, digest: str) -> None:
@@ -413,7 +444,7 @@ def _requested_paths(source_root: Path, paths_json: Path | None) -> list[str]:
     return paths
 
 
-def prepare(
+def _prepare_unlocked(
     *,
     index_path: Path,
     source_root: Path,
@@ -452,7 +483,7 @@ def prepare(
             )
         source_hash = sha256_file(source_resolved)
 
-        backup_path = _verified_reuse(index, source_hash)
+        backup_path = _verified_reuse(index, source_hash, source_resolved)
         mode = "reused-index"
         if backup_path is not None:
             reused_index += 1
@@ -557,6 +588,30 @@ def prepare(
     }
 
 
+def prepare(
+    *,
+    index_path: Path,
+    source_root: Path,
+    lane_backup_root: Path,
+    manifest_out: Path,
+    paths_json: Path | None = None,
+    backup_id: str | None = None,
+) -> dict:
+    # Validate placement before creating the adjacent lock file, then reload
+    # the index under the lock inside _prepare_unlocked.
+    probe = load_index(index_path)
+    _require_index_outside_root(index_path, Path(probe["root"]))
+    with _index_lock(index_path):
+        return _prepare_unlocked(
+            index_path=index_path,
+            source_root=source_root,
+            lane_backup_root=lane_backup_root,
+            manifest_out=manifest_out,
+            paths_json=paths_json,
+            backup_id=backup_id,
+        )
+
+
 def _require_index_outside_root(index_path: Path, root: Path) -> None:
     root = Path(root).resolve()
     resolved = Path(index_path).resolve()
@@ -604,8 +659,9 @@ def main() -> int:
     try:
         if args.command == "index":
             _require_index_outside_root(args.out, args.root)
-            index = build_index(args.root)
-            write_index(index, args.out)
+            with _index_lock(args.out):
+                index = build_index(args.root)
+                write_index(index, args.out)
             print(
                 json.dumps(
                     {
@@ -620,10 +676,13 @@ def main() -> int:
             )
             return 0
         if args.command == "refresh":
-            index = load_index(args.index)
-            _require_index_outside_root(args.index, Path(index["root"]))
-            index = refresh_index(index)
-            write_index(index, args.index)
+            probe = load_index(args.index)
+            _require_index_outside_root(args.index, Path(probe["root"]))
+            with _index_lock(args.index):
+                index = load_index(args.index)
+                _require_index_outside_root(args.index, Path(index["root"]))
+                index = refresh_index(index)
+                write_index(index, args.index)
             print(
                 json.dumps(
                     {
