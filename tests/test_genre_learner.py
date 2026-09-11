@@ -45,10 +45,10 @@ class GenreLearnerTaxonomyTests(unittest.TestCase):
         self.assertEqual(self.parse("NYC Drill")["labels"], ["NY Drill"])
         self.assertEqual(self.parse("Drill")["status"], "unknown")
 
-    def test_juke_footwork_legacy_compound_is_not_training_label(self):
+    def test_juke_footwork_uses_operator_approved_juke_mapping(self):
         parsed = self.parse("Juke & Footwork")
-        self.assertEqual(parsed["status"], "legacy_compound_review")
-        self.assertEqual(parsed["labels"], [])
+        self.assertEqual(parsed["status"], "single")
+        self.assertEqual(parsed["labels"], ["Juke"])
 
     def test_genuine_multi_style_metadata_is_not_forced_single(self):
         parsed = self.parse("Ballroom; House")
@@ -60,6 +60,49 @@ class GenreLearnerTaxonomyTests(unittest.TestCase):
         self.assertEqual(self.parse("Lounge")["status"], "context_only")
         self.assertEqual(self.parse("Lounge Vibe")["status"], "context_only")
         self.assertNotIn("Lounge", self.rules["canonical_genres"])
+
+    def test_operator_context_aliases_return_canonical_grouping_terms(self):
+        cases = {
+            "Holiday": ["Holiday"],
+            "Y2K": ["Y2K"],
+            "Black Y2K": ["Black Y2K"],
+            "White OOtz": ["White OOtz"],
+            "white": ["White OOtz"],
+            "wch": ["White OOtz"],
+            "white edits": ["White OOtz"],
+            "white club": ["White OOtz"],
+            "white club house": ["White OOtz"],
+            "dnb white": ["White OOtz"],
+            "Women": ["Women"],
+            "Old Head Party": ["Old Head"],
+        }
+        for raw, expected in cases.items():
+            with self.subTest(raw=raw):
+                parsed = self.parse(raw)
+                self.assertEqual(parsed["status"], "context_only")
+                self.assertEqual(parsed["labels"], [])
+                self.assertEqual(parsed["grouping"], expected)
+
+    def test_genre_modifier_and_context_modifier_patterns(self):
+        cases = {
+            "House Edit": (["House"], ["Edit"]),
+            "R&B Remix": (["R&B"], ["Remix"]),
+            "Juke Flip": (["Juke"], ["Remix"]),
+            "Afrobeat Bootleg": (["Afrobeat"], ["Remix"]),
+            "Lounge Edit": ([], ["Lounge", "Edit"]),
+        }
+        for raw, (genres, grouping) in cases.items():
+            with self.subTest(raw=raw):
+                parsed = self.parse(raw)
+                self.assertEqual(parsed["labels"], genres)
+                self.assertEqual(parsed["grouping"], grouping)
+                self.assertFalse(parsed["unknown"])
+
+    def test_afro_and_phunk_operator_mappings(self):
+        self.assertEqual(self.parse("afro")["labels"], ["Afrobeat"])
+        phunk = self.parse("phunk")
+        self.assertEqual(phunk["labels"], ["Breaks"])
+        self.assertEqual(phunk["grouping"], ["Phunk"])
 
     def test_approved_legacy_normalizations(self):
         self.assertEqual(self.parse("Afrobeats")["labels"], ["Afrobeat"])

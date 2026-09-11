@@ -10,6 +10,7 @@
     "Dance Pop",
     "Rock",
     "Alternative",
+    "New Wave",
     "House",
     "Deep House",
     "Bass House",
@@ -92,11 +93,13 @@
     "london drill": "UK Drill",
     "sample drill": "Sexy Drill",
     "r&b drill": "Sexy Drill",
-    "rnb drill": "Sexy Drill"
+    "rnb drill": "Sexy Drill",
+    "juke & footwork": "Juke",
+    "afro": "Afrobeat",
+    "breakbeat": "Breaks",
+    "nu wave": "New Wave"
   },
-  "legacy_compounds_requiring_audio_review": [
-    "Juke & Footwork"
-  ],
+  "legacy_compounds_requiring_audio_review": [],
   "target_excluded_folders": [
     "bae re work",
     "Imani Drops",
@@ -114,8 +117,40 @@
     "white edits",
     "edit",
     "Lounge",
-    "Lounge Vibe"
+    "Lounge Vibe",
+    "World"
   ],
+  "context_aliases": {
+    "Holiday": "Holiday",
+    "Y2K": "Y2K",
+    "Black Y2K": "Black Y2K",
+    "White OOtz": "White OOtz",
+    "white": "White OOtz",
+    "wch": "White OOtz",
+    "white edits": "White OOtz",
+    "white club": "White OOtz",
+    "white club house": "White OOtz",
+    "dnb white": "White OOtz",
+    "Women": "Women",
+    "Old Head Party": "Old Head",
+    "edit": "Edit",
+    "edits": "Edit",
+    "remix": "Remix",
+    "remixes": "Remix",
+    "flip": "Remix",
+    "bootleg": "Remix",
+    "World": "World"
+  },
+  "compound_aliases": {
+    "phunk": {
+      "genres": [
+        "Breaks"
+      ],
+      "grouping": [
+        "Phunk"
+      ]
+    }
+  },
   "families": {
     "rap_drill": [
       "Hip-Hop",
@@ -204,7 +239,8 @@
       "Dance Pop",
       "Rock",
       "Alternative",
-      "Country"
+      "Country",
+      "New Wave"
     ]
   },
   "training": {
