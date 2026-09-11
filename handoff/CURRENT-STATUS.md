@@ -17,27 +17,28 @@ The learner work was integrated separately from the RVA2 safety fix and tested a
 
 No real music files, Serato database, crates, or local library metadata were changed by these repository integrations.
 
-## Remaining prerequisite
+## T5 SHA-256 backup deduplication
 
-### T5 backup deduplication
+Repository support is implemented and tested. `scripts/t5_backup_dedupe.py` can build/refresh a full-file SHA-256 index, reuse an existing identical T5 backup only after re-hashing the concrete file, copy only unmatched content into the lane backup, and emit a verified manifest with an explicit concrete backup path for every source item. The mutation engine accepts that explicit path while remaining backward-compatible with legacy `backup_root/<relative>` manifests, and still re-hashes the selected backup immediately before any mutation.
 
-This remains a **Mac-local prerequisite**, not a GitHub-only task.
+The actual chain shell workflow is Mac-local/untracked; there is no chain shell script in this repository to patch. It must invoke the helper locally. The initial real T5 index and a real matched/unmatched dry proof are therefore still **Mac-local execution prerequisites**:
 
-Known facts from the local review:
+```bash
+python3 scripts/t5_backup_dedupe.py index \
+  --root /Volumes/T5 \
+  --out ~/Documents/DJ-library-project-20260825/t5-backup-sha256-index.json
 
-- The backup step is owned by the chain shell workflow, not `apply_new_music_intake_plan.py`.
-- The existing T5 inventory records sizes but does not contain the SHA-256 index required for safe content reuse.
+python3 scripts/t5_backup_dedupe.py prepare \
+  --index ~/Documents/DJ-library-project-20260825/t5-backup-sha256-index.json \
+  --source-root "<lane source root>" \
+  --lane-backup-root "/Volumes/T5/<lane backup root>" \
+  --manifest-out "<lane backup manifest.json>" \
+  --report-out "<lane backup report.json>"
+```
 
-Required implementation before relying on deduplicated backups:
+For a scoped plan, pass `--paths-json <json>` containing either a non-empty JSON list of source-relative paths or `{"paths": [...]}`. Matching is SHA-256 only; filenames and durations never authorize reuse. A missing or changed indexed path, a symlink, a hash mismatch, an index-integrity failure, or source drift fails closed.
 
-1. Build a Mac-local SHA-256 index of T5 backup content.
-2. For every file a lane would back up, match by full-file SHA-256 only—never filename.
-3. On a hash match, reuse the existing T5 path only after proving it is a regular file and re-verifying its hash.
-4. On no match, copy the file into the lane backup and verify the new copy hashes identically.
-5. Record a valid backup location and source hash for every planned item so manifest/journal recovery remains complete.
-6. Test at least one matched and one unmatched file: matched content must not be duplicated; unmatched content must be copied; both must remain recoverable through the existing contract.
-
-Do not change the media move/write/delete path as part of this backup optimization.
+No real music files, Serato database, crates, or local library metadata were changed while implementing or testing this repository support.
 
 ## Production safety boundary
 
