@@ -1,0 +1,166 @@
+name: finalize-learner-taxonomy-once
+
+on:
+  push:
+    branches:
+      - chatgpt/finalize-learner-taxonomy-20260910
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Transplant reviewed learner implementation only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin codex/learner-rules-sync
+          git checkout origin/codex/learner-rules-sync -- \
+            references/genre-learner-rules.json \
+            scripts/genre_learner.py \
+            scripts/propose_genre_aliases.py \
+            tests/test_genre_learner.py \
+            tests/test_propose_genre_aliases.py
+
+      - name: Apply final taxonomy decisions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('references/genre-learner-rules.json')
+          rules = json.loads(path.read_text(encoding='utf-8'))
+
+          # Preserve specific musical styles as Genres.
+          for genre in ('Afro House', 'Garage House'):
+              if genre not in rules['canonical_genres']:
+                  raise SystemExit(f'missing reviewed canonical Genre: {genre}')
+
+          # Final explicit normalizations.
+          rules.setdefault('aliases', {})['breakbeat'] = 'Breaks'
+          rules['aliases']['nu wave'] = 'New Wave'
+
+          if 'New Wave' not in rules['canonical_genres']:
+              insert_at = rules['canonical_genres'].index('Alternative') + 1
+              rules['canonical_genres'].insert(insert_at, 'New Wave')
+
+          contexts = rules.setdefault('context_tokens_not_genre', [])
+          if 'World' not in contexts:
+              contexts.append('World')
+          rules.setdefault('context_aliases', {})['World'] = 'World'
+
+          pop_rock = rules.setdefault('families', {}).setdefault('pop_rock', [])
+          if 'New Wave' not in pop_rock:
+              pop_rock.append('New Wave')
+
+          path.write_text(json.dumps(rules, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+          PY
+
+          cat > tests/test_learner_taxonomy_final.py <<'PY'
+          """Regression tests for the final 2026-09-10 learner taxonomy decisions."""
+          import sys
+          import unittest
+          from pathlib import Path
+
+          REPO_ROOT = Path(__file__).resolve().parents[1]
+          SCRIPTS = REPO_ROOT / 'scripts'
+          if str(SCRIPTS) not in sys.path:
+              sys.path.insert(0, str(SCRIPTS))
+
+          import genre_learner  # noqa: E402
+
+
+          class FinalLearnerTaxonomyTests(unittest.TestCase):
+              @classmethod
+              def setUpClass(cls):
+                  cls.rules = genre_learner.load_rules(
+                      REPO_ROOT / 'references/genre-learner-rules.json'
+                  )
+
+              def parse(self, raw):
+                  return genre_learner.classify_raw_genre(raw, self.rules)
+
+              def test_afro_and_garage_house_remain_distinct_genres(self):
+                  self.assertEqual(self.parse('Afro House')['labels'], ['Afro House'])
+                  self.assertEqual(self.parse('Garage House')['labels'], ['Garage House'])
+
+              def test_breakbeat_normalizes_to_breaks(self):
+                  parsed = self.parse('Breakbeat')
+                  self.assertEqual(parsed['status'], 'single')
+                  self.assertEqual(parsed['labels'], ['Breaks'])
+                  self.assertEqual(parsed['grouping'], [])
+
+              def test_nu_wave_normalizes_to_new_wave(self):
+                  parsed = self.parse('Nu Wave')
+                  self.assertEqual(parsed['status'], 'single')
+                  self.assertEqual(parsed['labels'], ['New Wave'])
+                  self.assertIn('New Wave', self.rules['canonical_genres'])
+
+              def test_world_is_context_not_genre(self):
+                  parsed = self.parse('World')
+                  self.assertEqual(parsed['status'], 'context_only')
+                  self.assertEqual(parsed['labels'], [])
+                  self.assertEqual(parsed['grouping'], ['World'])
+                  self.assertNotIn('World', self.rules['canonical_genres'])
+
+
+          if __name__ == '__main__':
+              unittest.main()
+          PY
+
+      - name: Refuse stale proposals and unrelated changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add \
+            references/genre-learner-rules.json \
+            scripts/genre_learner.py \
+            scripts/propose_genre_aliases.py \
+            tests/test_genre_learner.py \
+            tests/test_propose_genre_aliases.py \
+            tests/test_learner_taxonomy_final.py
+          git diff --cached --name-only | sort > /tmp/actual
+          cat > /tmp/allowed <<'EOF'
+          references/genre-learner-rules.json
+          scripts/genre_learner.py
+          scripts/propose_genre_aliases.py
+          tests/test_genre_learner.py
+          tests/test_learner_taxonomy_final.py
+          tests/test_propose_genre_aliases.py
+          EOF
+          sort -o /tmp/allowed /tmp/allowed
+          diff -u /tmp/allowed /tmp/actual
+          test -z "$(git diff --cached --name-only | grep -E 'genre-alias-proposals|README|handoff' || true)"
+
+      - name: Install test dependencies
+        run: python -m pip install mutagen numpy
+
+      - name: Validate integrated repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q scripts tests
+          python scripts/mutation_surface.py
+          python -m unittest discover -s tests -v
+          python scripts/validate_year_evidence.py references/year-evidence.json
+
+      - name: Commit only after validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/finalize-learner-taxonomy-once.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Finalize reviewed learner taxonomy'
+          git push origin HEAD:chatgpt/finalize-learner-taxonomy-20260910
