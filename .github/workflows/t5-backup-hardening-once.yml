@@ -1,0 +1,64 @@
+name: t5-backup-hardening-once
+
+on:
+  push:
+    branches:
+      - chatgpt/t5-sha256-backup-dedupe-20260910
+
+permissions:
+  contents: write
+
+jobs:
+  harden:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply source-independence and shared-index hardening
+        run: python .github/t5_backup_hardening_patch.py
+
+      - name: Install test dependencies
+        run: python -m pip install mutagen numpy
+
+      - name: Validate hardened T5 backup path
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q scripts tests
+          python scripts/mutation_surface.py
+          python -m unittest discover -s tests -p 'test_t5_backup_dedupe.py' -v
+          python -m unittest discover -s tests -v
+          python scripts/validate_year_evidence.py references/year-evidence.json
+
+      - name: Commit only validated final files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/t5-backup-hardening-once.yml .github/t5_backup_hardening_patch.py
+          git add \
+            scripts/t5_backup_dedupe.py \
+            scripts/backup_manifest.py \
+            scripts/mutation_engine.py \
+            scripts/mutation_surface.py \
+            tests/test_t5_backup_dedupe.py \
+            handoff/CURRENT-STATUS.md
+          git diff --name-only origin/main -- . | sort > /tmp/actual
+          cat > /tmp/allowed <<'EOF'
+          handoff/CURRENT-STATUS.md
+          scripts/backup_manifest.py
+          scripts/mutation_engine.py
+          scripts/mutation_surface.py
+          scripts/t5_backup_dedupe.py
+          tests/test_t5_backup_dedupe.py
+          EOF
+          sort -o /tmp/allowed /tmp/allowed
+          diff -u /tmp/allowed /tmp/actual
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Harden T5 backup independence and index locking'
+          git push origin HEAD:chatgpt/t5-sha256-backup-dedupe-20260910
