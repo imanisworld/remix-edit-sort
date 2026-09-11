@@ -6,28 +6,18 @@ This file is the concise continuation point for the active repository state. Old
 
 ## Reviewed repository changes
 
-The reviewed integration now contains these safety changes on top of the already-merged ID3v2.2, reissue-year, and year-write work:
+The reviewed integration contains these completed safety and taxonomy changes on top of the already-merged ID3v2.2, reissue-year, and year-write work:
 
 - **Serato path rewrite:** explicit, plan-gated `pfil`/`ptrk` rewrites only. Target existence uses the mutation engine's literal directory-entry check, so an APFS case alias cannot make `Ghetto Tech` -> `Ghettotech` look complete before the literal rename exists. The lane still requires Serato closed, the Serato lock, verified backup evidence, write-ahead recovery, and post-checks.
 - **RVA2 / unserializable ID3 safety:** a real Mutagen `SpecError` becomes a preservation skip only after SHA-256 proves the source file is unchanged. If bytes changed before the serializer error, the item is marked mutated, fails, and uses the normal verified rollback path.
 - **Recovery wording/state:** an exception after intent but before any mutation is reported as `ABORTED_BEFORE_MUTATION`, not as a failed rollback. A real failed restore remains `ROLLBACK_FAILED`.
+- **Learner taxonomy:** the previously mixed learner branch was isolated and the taxonomy decisions were completed on current `main`. Afro House and Garage House remain distinct canonical Genres; `Breakbeat` normalizes to `Breaks`; `Nu Wave` normalizes to canonical `New Wave`; `World` is Grouping/context rather than Genre. The learner proposal builder and behavior tests are included, while the stale generated 2026-09-10 proposal snapshot is intentionally excluded.
 
-The RVA2 integration was isolated from the mixed learner branch. **No learner-taxonomy changes from that branch are included.**
+The learner work was integrated separately from the RVA2 safety fix and tested against the combined current repository. No stale README or generated proposal-review artifacts were carried forward.
 
-No real music files, Serato database, crates, or local library metadata were changed by this repository integration.
+No real music files, Serato database, crates, or local library metadata were changed by these repository integrations.
 
-## Still held
-
-### Learner taxonomy
-
-Do not merge the learner-rules work until the taxonomy pass is independently reviewed. The last review still required explicit resolution for:
-
-- Afro House / Garage House treatment
-- `Breakbeat` -> `Breaks`
-- Nu Wave
-- World rule
-
-Keep this separate from the already-reviewed RVA2 safety fix.
+## Remaining prerequisite
 
 ### T5 backup deduplication
 
