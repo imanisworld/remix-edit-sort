@@ -102,6 +102,8 @@ INFRASTRUCTURE_ALLOWLIST = {
         "no primitives of its own; renews coordination locks via folder_lock",
     "scripts/metadata_batch.py":
         "atomically writes only repo handoff/T5 evidence and copies full scopes only to confined T5 backups",
+    "scripts/t5_backup_dedupe.py":
+        "copies only source bytes into a caller-confined T5 lane backup root and atomically replaces only its external SHA-256 index; never mutates library source media",
 }
 
 # Attribute-style primitives: matched on the attribute name of the call.

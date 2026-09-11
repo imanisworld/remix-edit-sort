@@ -460,9 +460,8 @@ class MutationEngine:
                 # moved, removed, or damaged after the manifest was written.
                 # Recording the concrete path also makes crash recovery
                 # actionable instead of merely naming a backup id/hash.
-                manifest_backup = (
-                    Path(self.manifest["backup_root"])
-                    / source.resolve().relative_to(self.source_root.resolve())
+                manifest_backup = backup_manifest.backup_path_for_item(
+                    self.manifest, self.source_root, source
                 )
                 if not manifest_backup.is_file():
                     raise MutationRefused(f"per-item backup copy missing: {manifest_backup}")
