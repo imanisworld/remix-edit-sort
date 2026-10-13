@@ -1,58 +1,75 @@
-# DJ library integration — current tasks and handoff
+# DJ library integration — one current work plan
 
-Checked: 2026-10-13. **Source-only work; nothing here authorizes a music move, metadata write, DJ database rewrite, merge, or deployment.**
+Reviewed: **2026-10-13**. This replaces older *task instructions* in this file. It does not delete historical handoffs. **No audio/metadata, Serato/Rekordbox app data, production database, folder names, or website records were changed. Nothing in these pull requests is merged.**
 
-This is the **single current task list** for connecting the website's event records, actual DJ playback histories, Serato/Rekordbox source change detection, and safe genre folder organization. Technical boundaries and source requirements live in [event-history-and-folder-renames.md](event-history-and-folder-renames.md). General safety is governed by `SAFETY-MODEL.md` and `MAC-CANARY.md`.
+## Goal and stop point
 
-## State verified in GitHub
+One working music library: download new tracks into an inbox, identify exact copies and uncertain metadata, review approved Genre and physical destinations, then eventually move only approved tracks to their real existing folders **while preserving DJ software references and event context**.
 
-- [ ] **PR #37:** genre atlas, approved 76-genre learner vocabulary, empty Genre-to-existing-folder maps; **open/unmerged** at this check. This PR does **not** reconcile the two older sorter rule files. Review and merge separately when approved: https://github.com/imanisworld/remix-edit-sort/pull/37
-- [ ] **PR #42:** read-only `dj_source_drift.py`, fixtures and this plan; draft/open, CI passed before this documentation update. Re-run/inspect current head checks before considering merge: https://github.com/imanisworld/remix-edit-sort/pull/42
-- [x] Library index can detect NEW, CHANGED, MOVED, REMOVED audio files in read-only scans.
-- [x] Serato `database V2`/Subcrates and Rekordbox *exported collection XML* have read-only snapshot importers; separate Serato path-rewrite and Rekordbox relocation/bridge tools already exist.
-- [x] **Pure synthetic time normalization** in stacked PR #43: IANA/DST/overnight handling and fail-closed candidate event-window checks. No real History importer or actual plays-to-event association; PR remains unmerged.
-- [x] **Manual DJ review launcher (draft PR #44):** scans an explicitly selected download/landing folder, flags exact-byte duplicates and missing tags, rechecks SHA matches in the *existing* SQLite library index, optionally checks Serato/Rekordbox source drift, and writes private HTML/JSON reports. Actual file moves and native History row parsing are explicitly disabled.
-- [ ] **One integrated, accepted real-history matcher:** not built or verified. Do not claim current track-to-event associations.
-- [ ] **Live folder map / current Mac canary / current Serato & Rekordbox exports:** unavailable while the Mac is offline.
+**Remote coding stops** once the two source-only PR stacks are coherent, checked on both CI operating systems, and this Mac checklist is ready. Do not add a watcher, new data service, second music database, automatic deletion lane, or speculative native DJ History parser.
 
-## Remote work — do now, without the Mac
+## Active PRs — two ordered stacks, no merge authorization
 
-| Priority | Owner | Task | Done when |
-| --- | --- | --- | --- |
-| P0 | Grok **research only** | Verify official Serato History session CSV/TXT fields and track played/unplayed rules; verify official Rekordbox Histories capabilities and export limitations. Separate *History* from Serato support diagnostic session logs and Rekordbox collection XML. | Cite current vendor docs; list confirmed, unknown, and sample-required fields; no repository/data changes. |
-| P0 | ChatGPT **draft PR #43**, stacked on #42 | Pure IANA/DST/overnight DJ set windows, offset-aware playback timestamps and fail-closed candidate matching with synthetic normalized fixtures. | Code + focused tests committed; CI and review required. Does **not** parse/validate real history exports or establish actual played-at-event records. |
-| P0 | ChatGPT **draft PR #44**, stacked on #43 | One manual Mac launch, selected-downloads audit, exact SHA duplicate checks, existing snapshot-drift reuse, typed index/source-evidence rechecks, private HTML/JSON reports. | Synthetic tests + Linux/macOS CI, then real read-only Mac canary; no watcher or file moves. |
-| P0 | Cursor Cloud **review, not rewrite** | Inspect PR #42 change detector for fail-closed behavior and missing coverage; keep source-fingerprint drift separate from per-track metadata deltas and live Rekordbox changes. | Focused review findings, tests for any code fixes, clear unsupported cases. |
-| P1 | Cursor Cloud **preview design** | Plan idempotent folder moves and Serato/Rekordbox reference verification using existing utilities; do not generate hardcoded live folder mappings. | Written gates, test cases and proposed artifact shapes, with **no** applied moves/rewrites. |
-| P1 | Website code owner **later, separate PR** | Design a private read-only export of event metadata *and confirmed actual DJ set times* if available; never expose private booking links or playback data via the public events API. | Reviewed access design and tests; no production DB change in this stage. |
+| Lane | Merge/review order | Verified scope |
+| --- | --- | --- |
+| **Genre and folders** | [#37](https://github.com/imanisworld/remix-edit-sort/pull/37) → [#41](https://github.com/imanisworld/remix-edit-sort/pull/41) | Reference Genre Atlas, proposed 76-Genre vocabulary, user review notes, two reconciled sorter pipelines, approved-later folder maps, and hashed **read-only** landing-promotion/Serato path previews |
+| **DJ source intelligence + one-run tool** | [#42](https://github.com/imanisworld/remix-edit-sort/pull/42) → [#43](https://github.com/imanisworld/remix-edit-sort/pull/43) → [#44](https://github.com/imanisworld/remix-edit-sort/pull/44) | Trusted Serato/Rekordbox **snapshot drift**, IANA/DST/overnight **candidate-only** time handling, and a manual `DJ Library Review.command` for download/inbox duplicates, missing tag review and private HTML/JSON evidence |
 
-**Source-status boundary:** PR #43 includes code/tests for **synthetic time evidence only** and documents the remaining Grok gaps in [event-history-and-folder-renames.md](event-history-and-folder-renames.md). Do not treat a claimed `EXACT_INDEXED_FILE` field in arbitrary JSON as verified; upstream trusted importers must establish it from the existing index first. Real Serato/Rekordbox histories and DJ set times are still required.
+- **#38, #39, #40 are CLOSED AS SUPERSEDED, unmerged.** #38's complete 27-comment operator-review record is preserved in #41. #39's corrected Atlanta Bass/Miami Bass and context routing is covered by stronger #41 tests; its old automatic compound-label assertions are intentionally not retained. #40's preview/policy/tests are incorporated and additionally hardened in #41. Their original source branches/history remain for reference.
+- #37 is open and **not approved to auto-retag a real track**. #41 remains draft, stacked on #37. Both Atlanta Bass and Miami Bass remain canonical and distinct. Historical Afrobeat versus Afrobeats, and several Funk/Soul/Boogie and compound decisions are held for human review.
+- #42 was reviewed and hardened remotely: source bytes are opened safely, saved SHA-256/size manifests must be structurally valid, the SQLite index must be correct and have a completed root-bound scan, and missing baselines/sources are never described as unchanged. #43 and #44 contain the same source and tests for this hardening, so the combined stack can be checked by CI.
+- All five remain **unmerged**. Read CI at the **latest head SHA** of each PR before integration. After any parent-stack change, confirm the child branches carry the new source and rerun the child's Linux/macOS CI. Never claim an older green check proves a newer combination.
+- The code can propose file routing and evidence associations, but **there is no approved automated cross-folder audio move**. No separate app/database, scheduler, daemon or production deployment is authorized.
 
-**Agent separation:** `bae-agenda/docs/GROK_MANAGER_SCOUT_PROMPT.md` is for finding paid DJ opportunities. The Grok research task above is a one-off **music-library technical research** request and must not replace that existing Manager automation/prompt. Cursor must read open PRs and current repo safety docs first, and use a different branch from #37 and #42.
+## Remote work — done versus evidence still missing
 
-## Mac-only acceptance queue — do later
+| Item | Remote status | Remaining gate |
+| --- | --- | --- |
+| One canonical genre vocabulary and both sorter rule sets | Source-only implementation and CI in #37/#41 | Review remaining disputed Genre mappings and confirm physical folders from Mac |
+| Landing/inbox read-only candidate movement preview | Implemented in #41 | Exact live inventory, verified route map, approval, backup+undo canary, Serato/Rekordbox reference verification |
+| Serato database + crate, Rekordbox exported XML **drift** | Implemented and security-reviewed in #42 | New trusted imports on the Mac, real snapshots; an unchanged old XML says nothing about unexported changes |
+| Overnight set dates, IANA time zones, DST gaps/folds and overlapping events | Synthetic, strict candidate matching in #43 | Real actual DJ set start/end and source-aware playback row times; no inference from public event start |
+| Downloads/inbox audit + identical-file duplicates + private HTML/JSON report | Implemented as manually invoked #44 | Run on selected small real folder; verify existing indexed library and app inputs |
+| Shared Serato ↔ Rekordbox track identity | Existing index crosswalk uses its **own** local `file_id` from separately matched current paths | Validate real source paths/import snapshots; never equate Rekordbox `TrackID` to a Serato ID |
+| Actual played-track-to-event history | **NOT IMPLEMENTED** for real vendor History exports | One original Serato History CSV/TXT + one representative Rekordbox Histories artifact, verified session fields and timestamps; crate/playlist/PlayCount/LastPlayed are insufficient |
 
-**Run first when the Mac is available (draft PR #44 must be approved and present in the local checkout):**
+Grok can help **once**, separately from its DJ Manager lead-scouting automation: verify *current vendor documentation* for actual Serato History CSV/TXT fields, manual played/unplayed/inserted rows, Rekordbox history export/device behavior, time zones and midnight handling; mark each finding **documented**, **observed on installed version**, or **requires sample**. Research notes go in [event-history-and-folder-renames.md](event-history-and-folder-renames.md); do not claim the installed-app export fields are confirmed without real samples.
 
-- [ ] From the `remix-edit-sort` repository directory, make the manual launcher executable (one time):
-  ```bash
-  chmod +x "DJ Library Review.command"
-  ```
-- [ ] Double-click `DJ Library Review.command` (or run `bash "DJ Library Review.command"`). Choose the actual `music to move` folder or `~/Downloads`. Start with a small read-only sample, then review the HTML/JSON under `~/Desktop/DJ-Library-Reports`.
-- [ ] Confirm the source paths, existing library-index availability, duplicate evidence, Serato/Rekordbox snapshot inputs, and any unreadable tracks before considering a real-library move. **Do not approve a move from the initial report alone.**
+## Mac-only run checklist — saved commands
 
-1. [ ] Obtain current, read-only `genre-folders.txt`: exact folders, physical track counts, and both Afrobeat/Afrobeats if present. Populate maps only after review; reconcile older `genre-rules.json` and `version-genre-rules.json` with the approved master and correct misrouted keywords.
-2. [ ] Export one **real Serato History** session (CSV/TXT) with start/end/deck/played status columns shown where available, and one representative **Rekordbox Histories** artifact. Inspect samples before writing parsers. Never commit actual history files, private paths, crates, or music.
-3. [ ] Confirm actual DJ **set** windows (event start time is insufficient), including clock/timezone, and compare with real playback rows in a **read-only** end-to-end run.
-4. [ ] Capture fresh, trusted library/Serato/Rekordbox snapshots; test drift against controlled known changes without touching originals. A Rekordbox XML that has not been re-exported cannot detect new in-app changes.
-5. [ ] Verify a **current-engine** on-volume APFS synthetic canary and PASS scoped music + `_Serato_` backups. Historical completed library sorts do not prove this current engine's canary gate.
-6. [ ] For any **explicitly approved** physical folder rename: review exact old/new paths, ambiguous variants, hashes, casing collisions, Serato crate rewrite plan, Rekordbox XML bridge/re-import, verification and undo. No automatic renames.
-7. [ ] Separately review T5 backup-drive index, metadata completion, needs-check backlog, 9 VDBL leftovers and personal Atlas save/sync items; these do not block the current remote work.
+**Prerequisite:** These draft branches must be reviewed/integrated or intentionally checked out on the Mac. The launcher is not available in an older `main` checkout. Do not execute an audio mover from the review report.
+
+1. [ ] **One-time launcher setup**, from the `remix-edit-sort` repo directory after the code is available:
+
+   ```bash
+   chmod +x "DJ Library Review.command"
+   ```
+
+2. [ ] Run it in Finder by double-clicking `DJ Library Review.command`, or from the same directory:
+
+   ```bash
+   bash "DJ Library Review.command"
+   ```
+
+   Select `~/Downloads` or the **verified existing** `music to move` folder. Supply the *existing* SQLite library-index path if known; without it, cross-library duplicates and DJ import drift are **not checked**. Reports default to `~/Desktop/DJ-Library-Reports`, never the music folders. Start with a **small throwaway/supervised read-only sample**.
+
+3. [ ] Confirm `genre-folders.txt`: exact live destination folder spelling, capitalization, whitespace, version subfolders, counts, and both Atlanta Bass/Miami Bass if present. Do not populate `folder_names` from history/guesses.
+
+4. [ ] Inspect the current trusted local library index, a fresh Serato `database V2`/Subcrates snapshot, and a newly exported Rekordbox **collection XML**. Compare #42 drift, reimport separately after review if changed. An absent index or stale XML never counts as proof of unchanged application state.
+
+5. [ ] Privately save **one original Serato History CSV/TXT** and **one real Rekordbox Histories artifact** with installed Serato/Rekordbox versions, Mac OS version, export time, relevant device/mode and source hashes. Do **not** commit them, music tracks, personal paths or private bookings. Confirm the difference between actual histories and Rekordbox collection XML. Inspect which rows are manual/unplayed, if exposed.
+
+6. [ ] Verify at least one real DJ set's **actual start AND end**, event ID, correct IANA time zone, and explicit calendar dates for an after-midnight set. Confirm ambiguous/nonexistent DST wall times instead of guessing. Only then compare authenticated individual play records; overlap, inaccurate clocks, duplicate versions and weak IDs remain `REVIEW`.
+
+7. [ ] Use #41's landing preview and **existing** physical folder map to review a candidate batch. Before any physical movement: close DJ apps; verify scoped source+_Serato_ backups with **PASS** manifest, both source/destination locks, complete transaction journal, current SHA-256, planned Serato crate/database rewrite and Rekordbox bridge/relocation, preservation of cues/beatgrids, explicit approval, and **tested undo**. Run a supervised **maximum-five-track** throwaway/on-volume canary; zero overwrites/deletions, stop on first failed check. No unattended mover.
+
+8. [ ] Record real observed results and unresolved IDs/paths; only then consider larger approved batches. The 9 VDBL leftovers, T5 evidence/index and other historical maintenance are separate later backlog items; do not block this bounded remote phase on them.
 
 ## Completion criteria
 
-**Remote phase ends** when vendor evidence/unknowns are recorded, synthetic event-play candidate matching is tested and remains evidence-limited, #42 change-detector checks are reviewed, and the folder-rename preview gate is specified.
+- **Remote milestone:** PR stacks documented, redundant old PRs closed, #42 security review resolved, Linux/macOS checks at each modified head, exact Mac command saved. **Stop remote work here.**
+- **On-device milestone:** first actual reviewed report from a real, selected folder and current snapshots with all unknowns visible.
+- **Physical-move milestone (later):** explicit trusted genre/destination approvals, backup/locking/rollback evidence, and integrity of every DJ path and media file in a successful supervised canary.
+- **Performance-history milestone (later):** real export schema and provenance verified; only unique, corroborated track-to-set associations, with uncertainty retained.
 
-**Integration is not called complete** until real export samples validate the parsers, track identity and per-play times are proven, ambiguous matches remain unassigned, DJ software changes are detected on the Mac, and a physical rename can be previewed/undone on an approved throwaway copy.
-
-No additional scheduler, autonomous filesystem watcher, paid service, or production database table is justified by this phase.
+No further background job, new database, or ongoing watcher is justified by these gates. A manual run can be repeated after every download or fresh export.
