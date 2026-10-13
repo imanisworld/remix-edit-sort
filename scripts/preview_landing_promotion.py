@@ -18,7 +18,7 @@ import os
 from pathlib import Path
 import unicodedata
 
-from build_version_genre_plan import VERSION_CATEGORIES, classify_version
+from build_version_genre_plan import NEEDS_VERSION, VERSION_CATEGORIES, classify_version
 from inventory_library import AUDIO_EXTS, audio_ext
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -164,21 +164,33 @@ def make_preview(
         genre = row["genre"].strip()
         approval = approved.get(rel)
         hold = protected.get(rel)
-        version = next(
-            (part for part in source.relative_to(landing).parts[:-1] if part in VERSION_CATEGORIES),
-            None,
+        folder_versions = {
+            part for part in source.relative_to(landing).parts[:-1]
+            if part in VERSION_CATEGORIES and part != NEEDS_VERSION
+        }
+        named_version = classify_version(source.stem, row.get("title", ""))[0]
+        version = next(iter(folder_versions)) if len(folder_versions) == 1 else named_version
+        version_conflict = len(folder_versions) > 1 or (
+            len(folder_versions) == 1
+            and named_version != NEEDS_VERSION
+            and named_version != version
         )
-        if version is None:
-            version = classify_version(source.stem, row.get("title", ""))[0]
         outcome = {"source_relative": rel, "sha256": row["sha256"], "genre": genre,
                    "version": version, "status": "BLOCKED", "destination": None, "reason": None}
 
+        if approval is not None and approval["sha256"].casefold() != row["sha256"].casefold():
+            raise PromotionRefused(f"approval content hash is stale for {rel}")
         if hold is not None:
             if hold["sha256"].casefold() != row["sha256"].casefold():
                 raise PromotionRefused(f"event hold content hash is stale for {rel}")
             outcome["status"], outcome["reason"] = "EVENT_HOLD", "explicit upcoming-event hold"
         elif any(part.casefold() == "events" for part in source.relative_to(landing).parts[:-1]):
             outcome["status"], outcome["reason"] = "EVENT_HOLD", "event subfolder requires explicit history/active review"
+        elif version_conflict:
+            outcome["status"], outcome["reason"] = "NEEDS_REVIEW", (
+                "version evidence conflicts between file name and existing folder; "
+                "no route until separately reviewed"
+            )
         else:
             route = destinations["routes"].get(genre)
             approved_usable = (
