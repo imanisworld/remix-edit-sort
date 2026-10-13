@@ -280,5 +280,50 @@ class LandingPromotionTests(unittest.TestCase):
         self.assertEqual(rules[0]["to"], candidate_map["renames"][0]["to"])
 
 
+    def test_non_text_approval_fields_never_authorize_a_move(self):
+        for approved_by, evidence in (
+            (None, "reviewed"), (True, "reviewed"), (123, "reviewed"),
+            ("operator", None), ("operator", False), ("operator", 3),
+            (" ", "reviewed"), ("operator", " "),
+        ):
+            with self.subTest(approved_by=approved_by, evidence=evidence):
+                self.rows.clear()
+                self.approvals["items"].clear()
+                item = self.add("test.mp3")
+                item["approved_by"] = approved_by
+                item["evidence"] = evidence
+                self.approvals["items"].append(item)
+                result = self.preview()
+                self.assertEqual(result["items"][0]["status"], "NEEDS_REVIEW")
+                self.assertIsNone(result["items"][0]["destination"])
+
+    def test_symlinked_landing_root_is_rejected_before_resolution(self):
+        self.add("test.mp3")
+        alias = self.lib / "landing-link"
+        alias.symlink_to(self.landing, target_is_directory=True)
+        with self.inventory.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(handle, fieldnames=("full_path", "sha256", "genre", "title"))
+            writer.writeheader()
+            writer.writerows(self.rows)
+        with self.assertRaisesRegex(promotion.PromotionRefused, "symlinks"):
+            promotion.make_preview(
+                self.lib, alias, self.inventory,
+                self.destinations, self.approvals, self.holds, self.master
+            )
+
+    def test_symlinked_library_root_is_rejected_before_resolution(self):
+        self.add("test.mp3")
+        alias = self.lib.parent / "music-link"
+        alias.symlink_to(self.lib, target_is_directory=True)
+        with self.inventory.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(handle, fieldnames=("full_path", "sha256", "genre", "title"))
+            writer.writeheader()
+            writer.writerows(self.rows)
+        with self.assertRaisesRegex(promotion.PromotionRefused, "symlinks"):
+            promotion.make_preview(
+                alias, self.landing, self.inventory,
+                self.destinations, self.approvals, self.holds, self.master
+            )
+
 if __name__ == "__main__":
     unittest.main()
