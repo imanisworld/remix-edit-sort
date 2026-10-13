@@ -75,9 +75,26 @@ def noncanonical_outputs(references: Path) -> list[dict[str, str]]:
     return sorted(rows, key=lambda row: (row["file"], row["field"], row["key"], row["target"]))
 
 
-def new_deviations(current: list[dict], baseline: list[dict]) -> list[dict]:
-    approved = {json.dumps(row, sort_keys=True, ensure_ascii=False) for row in baseline}
-    return [row for row in current if json.dumps(row, sort_keys=True, ensure_ascii=False) not in approved]
+def deviation_drift(current: list[dict], baseline: list[dict]) -> tuple[list[dict], list[dict]]:
+    """Both new deviations and stale exceptions must fail.
+
+    Without the stale check, a resolved spelling mistake could regress later
+    and stay whitelisted indefinitely.
+    """
+    def key(row: dict) -> str:
+        if not isinstance(row, dict) or set(row) != {"file", "field", "key", "target"}:
+            raise ValueError(f"invalid baseline entry: {row!r}")
+        if not all(isinstance(value, str) and value for value in row.values()):
+            raise ValueError(f"invalid baseline entry: {row!r}")
+        return json.dumps(row, sort_keys=True, ensure_ascii=False)
+
+    known = [key(row) for row in baseline]
+    if len(known) != len(set(known)):
+        raise ValueError("duplicate entries in genre naming baseline")
+    actual = [key(row) for row in current]
+    known_set, actual_set = set(known), set(actual)
+    return ([row for row in current if key(row) not in known_set],
+            [row for row in baseline if key(row) not in actual_set])
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -90,16 +107,16 @@ def main(argv: list[str] | None = None) -> int:
         baseline = read_json(args.baseline)
         if baseline.get("schema_version") != 1 or not isinstance(baseline.get("existing_deviations"), list):
             raise ValueError("invalid genre naming baseline")
-        extra = new_deviations(deviations, baseline["existing_deviations"])
+        extra, stale = deviation_drift(deviations, baseline["existing_deviations"])
     except (ValueError, KeyError, TypeError, OSError) as exc:
         print(f"Genre naming check failed: {exc}", file=sys.stderr)
         return 1
-    print(f"Genre naming: {len(deviations)} known noncanonical output references; {len(extra)} new.")
-    if extra:
-        for row in extra:
-            print(json.dumps(row, ensure_ascii=False, sort_keys=True), file=sys.stderr)
-        return 1
-    return 0
+    print(f"Genre naming: {len(deviations)} existing noncanonical output references; {len(extra)} new; {len(stale)} resolved-but-still-exempt.")
+    for row in extra:
+        print("NEW: " + json.dumps(row, ensure_ascii=False, sort_keys=True), file=sys.stderr)
+    for row in stale:
+        print("REMOVE STALE EXEMPTION: " + json.dumps(row, ensure_ascii=False, sort_keys=True), file=sys.stderr)
+    return 1 if extra or stale else 0
 
 
 if __name__ == "__main__":
