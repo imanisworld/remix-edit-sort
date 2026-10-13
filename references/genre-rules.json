@@ -4,7 +4,7 @@
   "canonical_genres": [
     "Vogue", "Jersey Club", "Atlanta Bass", "Miami Bass", "Baile Funk", "Cumbia",
     "Juke", "Ghetto Tech", "Jungle", "Drum & Bass", "UKG", "Amapiano", "Afrobeats",
-    "Bouyon", "Dancehall", "House", "Deep House", "Techno", "Hardgroove", "Electro",
+    "Bouyon", "Dancehall", "House", "Deep House", "Afro House", "Techno", "Hardgroove", "Electro",
     "Disco", "Funk", "Soul", "R&B", "Hip-Hop", "Latin", "Dub", "Bass", "Club", "Drum",
     "Country"
   ],
@@ -22,7 +22,8 @@
     {"genre": "Jungle",       "match": ["jungle", "amen break", "ragga jungle"]},
     {"genre": "UKG",          "match": ["ukg", "uk garage", "2step", "2-step", "speed garage", "garage mix", "garage edit", "garage"]},
     {"genre": "Amapiano",     "match": ["amapiano", "piano mix", "log drum"]},
-    {"genre": "Afrobeats",    "match": ["afrobeat", "afrobeats", "afro house", "afrotech", "afro mix"]},
+    {"genre": "Afro House",   "match": ["afro house"]},
+    {"genre": "Afrobeats",    "match": ["afrobeat", "afrobeats", "afro mix"]},
     {"genre": "Bouyon",       "match": ["bouyon"]},
     {"genre": "Dancehall",    "match": ["dancehall", "bashment", "riddim", "soca"]},
     {"genre": "Deep House",   "match": ["deep house", "soulful house", "jazzy house", "lo-fi house", "lofi house"]},
@@ -38,7 +39,7 @@
     {"genre": "Hip-Hop",      "match": ["hip hop", "hip-hop", "trap", "drill", "instru", "boom bap", "phonk"]},
     {"genre": "Soul",         "match": ["soul", "motown", "northern soul"]},
     {"genre": "Funk",         "match": ["funk", "boogie", "p-funk"]},
-    {"genre": "Club",         "match": ["club edit", "club mix", "club remix", "bounce", "twerk", "club"]},
+    {"genre": "Club",         "match": ["club edit", "club mix", "club remix", "club"]},
     {"genre": "Bass",         "match": ["bassline", "bass"]},
     {"genre": "Country",      "match": ["country", "country trap", "country rap", "yeehaw"]}
   ],
