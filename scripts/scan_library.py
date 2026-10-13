@@ -64,6 +64,26 @@ LABEL_REMAP = {
 }
 ARTIST_GENRE = {}
 
+# Input aliases are for interpreting existing tags, never a license to
+# overwrite them using a producer name, folder, or title keyword.
+_VERSION_RULES_PATH = os.path.join(HERE, "..", "references", "version-genre-rules.json")
+with open(_VERSION_RULES_PATH, encoding="utf-8") as _version_file:
+    _VERSION_RULES = json.load(_version_file)
+
+_UNDECIDED_EXISTING_TAGS = {"afrobeat", "funk", "soul", "boogie"}
+
+
+def canonical_existing_genre(value):
+    raw = (value or "").strip()
+    if not raw or raw.casefold() in {"other", "unknown"}:
+        return None
+    if raw.casefold() in _UNDECIDED_EXISTING_TAGS:
+        return None
+    mapped = _VERSION_RULES.get("tag_aliases", {}).get(raw.casefold(), raw)
+    if isinstance(mapped, str) and mapped in RULES["canonical_genres"]:
+        return mapped
+    return None
+
 
 def canonical_artist_genre(value):
     """Interpret legacy artist style names without inventing a Genre."""
@@ -205,11 +225,22 @@ def split_artists(field):
 
 
 def classify_genre(track):
-    """Return (genre, source), best signal first.
+    """Return (genre, source) without overriding an existing meaningful tag.
 
-    A remixer's own genre suffix beats the original artist's genre: an edit of a
-    Baby Keem record by 'maxcy House' is House, not rap.
+    Existing accepted Genre outranks producer/folder/title heuristics.
+    Unrecognized or disputed legacy tags are held for review. A conflicting
+    explicit filename genre never authorizes an automatic genre switch.
     """
+    original = (track.get("existing_genre") or "").strip()
+    if original and original.casefold() != "other":
+        canonical = canonical_existing_genre(original)
+        if canonical is None:
+            return None, "existing_tag_requires_review"
+        filename = (track.get("filename") or "").casefold()
+        for hint in _VERSION_RULES.get("filename_keywords", []):
+            if hint["contains"].casefold() in filename and hint["genre"] != canonical:
+                return None, "existing_tag_filename_conflict"
+        return canonical, "existing_tag"
     if track["remixer_genre"]:
         return track["remixer_genre"], "remixer_suffix"
 
