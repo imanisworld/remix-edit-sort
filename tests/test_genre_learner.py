@@ -104,7 +104,12 @@ class GenreLearnerTaxonomyTests(unittest.TestCase):
         self.assertEqual(ambiguous["unknown"], ["Afrobeat"])
 
     def test_afro_and_phunk_operator_mappings(self):
-        self.assertEqual(self.parse("afro")["labels"], ["Afrobeats"])
+        ambiguous = self.parse("afro")
+        self.assertEqual(ambiguous["labels"], [])
+        self.assertEqual(ambiguous["unknown"], ["afro"])
+        self.assertEqual(self.parse("Afrobeats")["labels"], ["Afrobeats"])
+        self.assertEqual(self.parse("Afro House")["labels"], ["Afro House"])
+        self.assertEqual(self.parse("Afro Tech")["labels"], ["Afro Tech"])
         phunk = self.parse("phunk")
         self.assertEqual(phunk["labels"], ["Breaks"])
         self.assertEqual(phunk["grouping"], ["Phunk"])
