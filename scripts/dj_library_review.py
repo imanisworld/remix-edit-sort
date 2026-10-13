@@ -274,12 +274,10 @@ def _normalize_play_identities(plays: list[dict], index: dict, sources: list[dic
     return normalized, rejected
 
 
-def inspect_history(events_file: Path, plays_file: Path, index: dict,
-                    raw_sources: list[dict]) -> dict:
+def inspect_history_from_values(events: list[dict], plays: list[dict],
+                                index: dict, raw_sources: list[dict]) -> dict:
     if not raw_sources:
         raise ReviewRefused("source History export required before playback matching")
-    events = json.loads(_regular_source(events_file).read_text(encoding="utf-8"))
-    plays = json.loads(_regular_source(plays_file).read_text(encoding="utf-8"))
     if not isinstance(events, list) or not isinstance(plays, list):
         raise ReviewRefused("events and normalized plays must both be JSON arrays")
     validated, validation = _normalize_play_identities(plays, index, raw_sources)
@@ -291,6 +289,13 @@ def inspect_history(events_file: Path, plays_file: Path, index: dict,
         "proof_of_play": False,
     })
     return candidates
+
+
+def inspect_history(events_file: Path, plays_file: Path, index: dict,
+                    raw_sources: list[dict]) -> dict:
+    events = json.loads(_regular_source(events_file).read_text(encoding="utf-8"))
+    plays = json.loads(_regular_source(plays_file).read_text(encoding="utf-8"))
+    return inspect_history_from_values(events, plays, index, raw_sources)
 
 
 def _safe_report_root(out_root: Path, restricted: list[Path]) -> Path:
