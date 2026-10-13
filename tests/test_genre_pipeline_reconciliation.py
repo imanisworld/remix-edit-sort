@@ -70,13 +70,17 @@ class GenreReconciliationTests(unittest.TestCase):
         for tag, expected in (
             ("ATL Bass", "Atlanta Bass"),
             ("atlanta bass", "Atlanta Bass"),
-            ("atl bass, old head party", "Atlanta Bass"),
             ("Miami Bass", "Miami Bass"),
         ):
             with self.subTest(tag=tag):
                 self.assertEqual(
                     self.version_result(tag)["proposed_genre"], expected
                 )
+        compound = self.version_result("atl bass, old head party")
+        self.assertEqual(compound["resolution_status"], "PARTIALLY_RESOLVED")
+        self.assertEqual(compound["recognized_genres"], ["Atlanta Bass"])
+        self.assertEqual(compound["known_contexts"], ["Old Head"])
+        self.assertIsNone(compound["proposed_genre"])
         self.assertEqual(self.remix_result("ATL Bass Edit"), "Atlanta Bass")
         self.assertEqual(self.remix_result("Miami Bass Edit"), "Miami Bass")
 
