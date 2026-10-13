@@ -137,7 +137,7 @@
     {
       "file": "genre-rules.json",
       "field": "keyword_rules",
-      "key": "afrobeat|afrobeats|afro house|afrotech|afro mix",
+      "key": "afrobeat|afrobeats|afro mix",
       "target": "Afrobeats"
     },
     {
@@ -155,7 +155,7 @@
     {
       "file": "genre-rules.json",
       "field": "keyword_rules",
-      "key": "club edit|club mix|club remix|bounce|twerk|club",
+      "key": "club edit|club mix|club remix|club",
       "target": "Club"
     },
     {
@@ -275,12 +275,6 @@
     {
       "file": "version-genre-rules.json",
       "field": "tag_aliases",
-      "key": "garage jungle",
-      "target": "Garage Jungle"
-    },
-    {
-      "file": "version-genre-rules.json",
-      "field": "tag_aliases",
       "key": "garage volume 1",
       "target": "Garage"
     },
@@ -391,18 +385,6 @@
       "field": "tag_aliases",
       "key": "tech house",
       "target": "Tech House"
-    },
-    {
-      "file": "version-genre-rules.json",
-      "field": "tag_aliases",
-      "key": "twerk",
-      "target": "Twerk"
-    },
-    {
-      "file": "version-genre-rules.json",
-      "field": "tag_aliases",
-      "key": "twerk, old head party",
-      "target": "Twerk"
     }
   ]
 }
