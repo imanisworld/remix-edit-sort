@@ -325,5 +325,39 @@ class LandingPromotionTests(unittest.TestCase):
                 self.destinations, self.approvals, self.holds, self.master
             )
 
+    def test_source_input_fingerprints_change_with_decisions(self):
+        approval = self.add("test.mp3")
+        self.approvals["items"].append(approval)
+        initial = self.preview()
+        fingerprints = initial["input_fingerprints"]
+        self.assertEqual(
+            set(fingerprints),
+            {
+                "inventory_csv_sha256",
+                "destinations_sha256",
+                "approvals_sha256",
+                "event_holds_sha256",
+                "genre_master_sha256",
+            },
+        )
+        self.assertTrue(all(len(value) == 64 for value in fingerprints.values()))
+        self.assertEqual(fingerprints, self.preview()["input_fingerprints"])
+        self.approvals["items"][0]["evidence"] = "reviewed against primary DJ source"
+        changed = self.preview()
+        self.assertNotEqual(
+            changed["input_fingerprints"]["approvals_sha256"],
+            fingerprints["approvals_sha256"],
+        )
+        self.assertEqual(
+            changed["input_fingerprints"]["inventory_csv_sha256"],
+            fingerprints["inventory_csv_sha256"],
+        )
+        self.destinations["routes"]["R&B"] = {}
+        route_changed = self.preview()
+        self.assertNotEqual(
+            route_changed["input_fingerprints"]["destinations_sha256"],
+            changed["input_fingerprints"]["destinations_sha256"],
+        )
+
 if __name__ == "__main__":
     unittest.main()
