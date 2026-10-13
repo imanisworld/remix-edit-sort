@@ -169,7 +169,7 @@ def make_preview(
             if part in VERSION_CATEGORIES and part != NEEDS_VERSION
         }
         named_version = classify_version(source.stem, row.get("title", ""))[0]
-        version = next(iter(folder_versions)) if len(folder_versions) == 1 else named_version
+        version = sorted(folder_versions)[0] if len(folder_versions) == 1 else named_version
         version_conflict = len(folder_versions) > 1 or (
             len(folder_versions) == 1
             and named_version != NEEDS_VERSION
@@ -252,17 +252,64 @@ def make_preview(
     }
 
 
+
+def serato_rename_map(preview: dict, volume_root: Path) -> dict:
+    """Generate a candidate map for the EXISTING Serato read-only rewrite preview.
+
+    No Serato file is inspected or changed here. The map is evidence for the
+    separate `rewrite_serato_paths.py preview` command only. Its match counts
+    must be reviewed against real Serato sources before approving any move.
+    """
+    from rewrite_serato_paths import normalize_rename_map
+
+    volume = Path(volume_root).resolve()
+    lib = Path(preview["library_root"]).resolve()
+    if not volume.is_dir() or (volume != lib and not inside(lib, volume)):
+        raise PromotionRefused("Serato volume root must exist and contain the music library")
+    renames = []
+    for row in preview["items"]:
+        if row["status"] != "ROUTE_CANDIDATE":
+            continue
+        source = Path(preview["source_root"]) / row["source_relative"]
+        destination = Path(row["destination"])
+        if not inside(source, volume) or not inside(destination, volume):
+            raise PromotionRefused(f"candidate path outside Serato volume: {source}")
+        old, new = source.relative_to(volume), destination.relative_to(volume)
+        renames.append({"from": old.as_posix(), "to": new.as_posix()})
+    if renames:
+        validated = normalize_rename_map({"renames": renames})
+        if len(validated) != len(renames):
+            raise PromotionRefused("incomplete Serato rename-map normalization")
+    return {
+        "renames": renames,
+        "_note": ("CANDIDATES ONLY: review Serato database/crate reference counts "
+                  "with rewrite_serato_paths.py preview before considering a move. "
+                  "This document authorizes no audio or Serato mutations."),
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("library-root", "landing-root", "inventory", "destinations",
                  "approvals", "event-holds", "out"):
         parser.add_argument("--" + name, required=True, type=Path)
     parser.add_argument("--master", type=Path, default=DEFAULT_MASTER)
+    parser.add_argument("--serato-volume-root", type=Path,
+                        help="Optional verified volume root for Serato path candidates")
+    parser.add_argument("--rename-map-out", type=Path,
+                        help="Optional candidate map for separate Serato read-only preview")
     args = parser.parse_args()
     try:
         library = args.library_root.resolve()
         if inside(args.out.resolve(), library):
             raise PromotionRefused("preview output must stay outside the music library")
+        if bool(args.rename_map_out) != bool(args.serato_volume_root):
+            raise PromotionRefused("Serato candidate map requires BOTH --serato-volume-root and --rename-map-out")
+        if args.rename_map_out and (
+            inside(args.rename_map_out.resolve(), library)
+            or args.rename_map_out.resolve() == args.out.resolve()
+        ):
+            raise PromotionRefused("Serato candidate map output must be outside Music and distinct from preview")
         report = make_preview(
             args.library_root, args.landing_root, args.inventory,
             read_json(args.destinations), read_json(args.approvals),
@@ -270,8 +317,18 @@ def main() -> int:
         )
     except (ValueError, OSError, json.JSONDecodeError, KeyError) as exc:
         parser.exit(1, f"REFUSED: {exc}\n")
+    try:
+        candidate_map = serato_rename_map(report, args.serato_volume_root) if args.rename_map_out else None
+    except (ValueError, OSError, KeyError) as exc:
+        parser.exit(1, f"REFUSED: {exc}\n")
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    if candidate_map is not None:
+        args.rename_map_out.parent.mkdir(parents=True, exist_ok=True)
+        args.rename_map_out.write_text(
+            json.dumps(candidate_map, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
     print(json.dumps(report["counts"], indent=2))
     print(f"PREVIEW ONLY; no move or Serato relink authorized. {args.out}")
     return 0
