@@ -147,7 +147,8 @@ def make_preview(
     for genre in destinations["routes"]:
         if genre not in canonical:
             raise PromotionRefused(f"destination map has noncanonical genre: {genre!r}")
-    review_dir = verified_directory(lib, landing, destinations.get("review_destination"))
+    # Needs-review is a queue/status, never a newly invented physical folder.
+    # Keep unapproved tracks where they are until a review confirms Genre and route.
     approved = records(approvals, "approvals")
     protected = records(event_holds, "event_holds")
     rows = inventory_rows(inventory, landing)
@@ -176,7 +177,7 @@ def make_preview(
             if hold["sha256"].casefold() != row["sha256"].casefold():
                 raise PromotionRefused(f"event hold content hash is stale for {rel}")
             outcome["status"], outcome["reason"] = "EVENT_HOLD", "explicit upcoming-event hold"
-        elif "Events" in source.relative_to(landing).parts[:-1]:
+        elif any(part.casefold() == "events" for part in source.relative_to(landing).parts[:-1]):
             outcome["status"], outcome["reason"] = "EVENT_HOLD", "event subfolder requires explicit history/active review"
         else:
             route = destinations["routes"].get(genre)
@@ -193,27 +194,38 @@ def make_preview(
                 if not isinstance(versions, dict):
                     raise PromotionRefused(f"invalid version route map for {genre}")
                 target_rel = versions.get(version, route.get("default"))
-            try:
-                destination_dir = verified_directory(
-                    lib, landing,
-                    target_rel if target_rel else destinations["review_destination"],
+            if not target_rel:
+                outcome["status"] = "NEEDS_REVIEW"
+                outcome["reason"] = (
+                    "genre unapproved, noncanonical, or no verified destination; "
+                    "leave in landing folder until resolved"
                 )
-            except PromotionRefused as exc:
-                outcome["reason"] = str(exc)
             else:
-                dest = destination_dir / source.name
-                key = unicodedata.normalize("NFC", str(dest)).casefold()
-                if dest.exists() or dest.is_symlink() or key in used_destinations:
-                    outcome["reason"] = f"destination collision or occupied: {dest}"
+                try:
+                    destination_dir = verified_directory(lib, landing, target_rel)
+                except PromotionRefused as exc:
+                    outcome["reason"] = str(exc)
                 else:
-                    used_destinations[key] = rel
-                    outcome["destination"] = str(dest)
-                    outcome["status"] = "ROUTE_CANDIDATE" if target_rel else "REVIEW_CANDIDATE"
-                    outcome["reason"] = (
-                        "approved canonical genre and explicit confirmed destination"
-                        if target_rel else
-                        "genre or destination not approved; central review queue"
-                    )
+                    dest = destination_dir / source.name
+                    key = unicodedata.normalize("NFC", str(dest)).casefold()
+                    # APFS may be case/Unicode-insensitive. Treat an existing
+                    # case-only name collision as occupied even on Linux CI.
+                    existing_names = {
+                        unicodedata.normalize("NFC", child.name).casefold()
+                        for child in destination_dir.iterdir()
+                    }
+                    name_key = unicodedata.normalize("NFC", source.name).casefold()
+                    if (dest.exists() or dest.is_symlink()
+                            or name_key in existing_names or key in used_destinations):
+                        outcome["reason"] = f"destination collision or occupied: {dest}"
+                    else:
+                        used_destinations[key] = rel
+                        outcome["destination"] = str(dest)
+                        outcome["status"] = "ROUTE_CANDIDATE"
+                        outcome["reason"] = (
+                            "approved canonical genre and explicit confirmed destination; "
+                            "Serato/Rekordbox path review still required"
+                        )
         items.append(outcome)
     summary = dict(Counter(item["status"] for item in items))
     return {
