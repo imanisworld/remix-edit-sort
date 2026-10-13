@@ -65,12 +65,12 @@ def verified_directory(lib: Path, landing: Path, relative: str) -> Path:
 
 def inventory_rows(path: Path, landing: Path) -> list[dict]:
     with path.open(newline="", encoding="utf-8-sig") as file:
-        rows = list(csv.DictReader(file))
-    if not rows:
-        raise PromotionRefused("inventory is empty; verify the landing folder explicitly")
+        reader = csv.DictReader(file)
+        fields = set(reader.fieldnames or [])
+        rows = list(reader)
     must = {"full_path", "sha256", "genre", "title"}
-    if not must.issubset(rows[0]):
-        raise PromotionRefused(f"inventory missing columns: {sorted(must - set(rows[0]))}")
+    if not must.issubset(fields):
+        raise PromotionRefused(f"inventory missing columns: {sorted(must - fields)}")
     seen = set()
     for row in rows:
         raw = Path(row["full_path"]).absolute()
@@ -260,12 +260,12 @@ def serato_rename_map(preview: dict, volume_root: Path) -> dict:
     separate `rewrite_serato_paths.py preview` command only. Its match counts
     must be reviewed against real Serato sources before approving any move.
     """
-    from rewrite_serato_paths import normalize_rename_map
+    from rewrite_serato_paths import SeratoRewriteError, normalize_rename_map
 
     volume = Path(volume_root).resolve()
     lib = Path(preview["library_root"]).resolve()
-    if not volume.is_dir() or (volume != lib and not inside(lib, volume)):
-        raise PromotionRefused("Serato volume root must exist and contain the music library")
+    if not volume.is_dir() or not os.path.ismount(volume) or not inside(lib, volume):
+        raise PromotionRefused("Serato volume root must be a mounted volume root containing the music library")
     renames = []
     for row in preview["items"]:
         if row["status"] != "ROUTE_CANDIDATE":
@@ -277,7 +277,10 @@ def serato_rename_map(preview: dict, volume_root: Path) -> dict:
         old, new = source.relative_to(volume), destination.relative_to(volume)
         renames.append({"from": old.as_posix(), "to": new.as_posix()})
     if renames:
-        validated = normalize_rename_map({"renames": renames})
+        try:
+            validated = normalize_rename_map({"renames": renames})
+        except SeratoRewriteError as exc:
+            raise PromotionRefused(f"Serato candidate rename map unsafe: {exc}") from exc
         if len(validated) != len(renames):
             raise PromotionRefused("incomplete Serato rename-map normalization")
     return {
