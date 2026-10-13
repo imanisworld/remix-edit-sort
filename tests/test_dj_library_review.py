@@ -7,7 +7,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 import sqlite3
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -280,6 +282,34 @@ class LibraryReviewTests(unittest.TestCase):
         self.assertEqual(rc, 1)
         self.assertFalse(target.exists())
         self.assertTrue(file.exists())
+
+
+    def test_existing_db_without_imports_reports_missing_baselines(self):
+        self.audio()
+        self.index()
+        result = check.build_report(
+            self.incoming, self.db, None, None, None, None, [], 25
+        )
+        self.assertEqual(result["source_drift"]["serato"]["state"], "NO_BASELINE")
+        self.assertEqual(result["source_drift"]["rekordbox"]["state"], "NO_BASELINE")
+        self.assertTrue(result["index"]["snapshot_only"])
+        self.assertEqual(result["downloads"]["audio_files_scanned"], 1)
+
+    def test_alias_parent_cannot_bypass_private_report_root_guard(self):
+        alias = self.home / "alias"
+        alias.symlink_to(self.music, target_is_directory=True)
+        with self.assertRaisesRegex(check.ReviewRefused, "outside"):
+            check._safe_report_root(alias / "report-output", [self.music])
+
+    def test_mac_launcher_has_valid_bash_syntax(self):
+        if shutil.which("bash") is None:
+            self.skipTest("bash unavailable")
+        script = ROOT / "DJ Library Review.command"
+        result = subprocess.run(
+            ["bash", "-n", str(script)],
+            capture_output=True, text=True, check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
 
 
 if __name__ == "__main__":
