@@ -41,6 +41,14 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def manifest_sha256(value: dict) -> str:
+    """Evidence fingerprint for a review, never a signature or approval."""
+    canonical = json.dumps(
+        value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    return hashlib.sha256(canonical).hexdigest()
+
+
 def inside(path: Path, root: Path) -> bool:
     try:
         path.relative_to(root)
@@ -251,6 +259,15 @@ def make_preview(
         "mode": "preview-only",
         "source_root": str(landing),
         "library_root": str(lib),
+        # Bind this preview to the exact inventory and decisions observed.
+        # A hash proves reproducibility, not the operator's consent to move.
+        "input_fingerprints": {
+            "inventory_csv_sha256": sha256(inventory),
+            "destinations_sha256": manifest_sha256(destinations),
+            "approvals_sha256": manifest_sha256(approvals),
+            "event_holds_sha256": manifest_sha256(event_holds),
+            "genre_master_sha256": manifest_sha256(master),
+        },
         "counts": {"scanned": len(items), **summary},
         "serato_dependency": "Every proposed physical move requires separate verified Serato path-impact review and preservation/relink plan.",
         "approved_apply": False,
