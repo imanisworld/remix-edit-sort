@@ -40,6 +40,13 @@ ILLEGAL = re.compile(r'[/\\:*?"<>|\x00-\x1f]')
 # Names already settled in genre-rules.json are the canonical spelling —
 # TRAADSARU and NuBASS are stylized, not shouting.
 ALIAS_CANON = {v.upper(): v for v in RULES["remixer_aliases"].values()}
+# Genre tags use the master names; a genre whose folder still has an older
+# name is mapped here so a sort keeps landing in the existing folder.
+FOLDER_NAMES = RULES.get("folder_names", {})
+
+
+def genre_dir(genre):
+    return safe(FOLDER_NAMES.get(genre, genre), 40)
 
 
 def smart_case(s):
@@ -103,18 +110,18 @@ def plan_one(t, bpm_rec):
         fname = safe(f"{og_str + ' - ' if og_str else ''}{title}") + ".mp3"
         bucket = "long_mix"
     elif t["is_remix"] and remixer_name:
-        folder = os.path.join(REMIX_DIR, safe(genre, 40), safe(remixer_name, 60))
+        folder = os.path.join(REMIX_DIR, genre_dir(genre), safe(remixer_name, 60))
         credit = f"{title} ({remixer_name} {t['remix_type']})"
         fname = safe(f"{credit} - {og_str}" if og_str else credit) + ".mp3"
         bucket = "remix"
     elif t["is_remix"]:
         # "(Club Edit)" / "(Vogue Remix)" — a genre label, not a person
-        folder = os.path.join(REMIX_DIR, safe(genre, 40), UNKNOWN_REMIXER)
+        folder = os.path.join(REMIX_DIR, genre_dir(genre), UNKNOWN_REMIXER)
         credit = f"{title} ({t['remixer_raw']} {t['remix_type']})" if t["remixer_raw"] else title
         fname = safe(f"{credit} - {og_str}" if og_str else credit) + ".mp3"
         bucket = "remix_unknown"
     elif originals and title:
-        folder = os.path.join(ORIG_DIR, safe(genre, 40), safe(originals[0], 60))
+        folder = os.path.join(ORIG_DIR, genre_dir(genre), safe(originals[0], 60))
         fname = safe(f"{title} - {og_str}") + ".mp3"
         bucket = "original"
     else:

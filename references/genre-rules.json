@@ -132,5 +132,8 @@
     "audiowhores": "Audiowhores",
     "frankie knuckles": "Frankie Knuckles",
     "kenny dope": "Kenny Dope"
-  }
+  },
+
+  "_folder_names_comment": "Genre tag name -> existing folder name in the remix tree, for genres renamed in the master list whose folders have not been renamed yet. Fill ONLY from a live read-only listing. Empty means the folder is named after the Genre.",
+  "folder_names": {}
 }

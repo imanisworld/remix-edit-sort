@@ -31,6 +31,7 @@ AUDIO_EXT = (".mp3", ".m4a", ".wav", ".aiff", ".aif", ".flac")
 SKIP_DIRS = {"Remixes & Edits", "Originals", "_Unsorted", "outputs", ".git"}
 
 TYPES = RULES["remix_types"]
+FOLDER_GENRES = {folder: genre for genre, folder in RULES.get("folder_names", {}).items()}
 TYPE_RX = "|".join(sorted((re.escape(t) for t in TYPES), key=len, reverse=True))
 
 # "Title (Someone Special Remix)" — take the LAST parenthetical so
@@ -209,8 +210,9 @@ def classify_genre(track):
             return hit, "artist_map"
 
     folder = track.get("source_folder") or ""
-    if folder and folder in RULES["canonical_genres"]:
-        return folder, "existing_folder"
+    folder_genre = FOLDER_GENRES.get(folder, folder)
+    if folder_genre and folder_genre in RULES["canonical_genres"]:
+        return folder_genre, "existing_folder"
 
     haystack = norm(" ".join(filter(None, [
         track["title_clean"], track["remixer_raw"] or "", track["artist_raw"],

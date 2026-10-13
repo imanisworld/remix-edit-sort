@@ -199,6 +199,15 @@ def analyze_genre(row: dict, rules: dict, assume_genre: str | None = None) -> di
     }
 
 
+def genre_folder_for(genre: str | None, rules: dict) -> str:
+    """Folder for a proposed Genre. Tags use the master Genre names; a Genre
+    whose library folder still has an older name is mapped in folder_names so
+    the plan keeps it in that folder until a separately gated folder rename."""
+    if not genre:
+        return NEEDS_GENRE
+    return rules.get("folder_names", {}).get(genre, genre)
+
+
 def classify_genre(row: dict, rules: dict, assume_genre: str | None) -> tuple[str | None, str, str]:
     result = analyze_genre(row, rules, assume_genre)
     return result["proposed_genre"], result["evidence"], result["confidence"]
@@ -350,7 +359,7 @@ def main() -> None:
             genre = args.assume_genre_fallback
             genre_evidence = f"no tag/filename match; folder is a confirmed {args.assume_genre_fallback} crate"
             genre_confidence = "fallback"
-        genre_folder = genre or NEEDS_GENRE
+        genre_folder = genre_folder_for(genre, rules)
 
         # Idempotency: preserve-top-level-subfolder mode must recognize a file
         # that's already been sorted, in TWO shapes, or a second run corrupts

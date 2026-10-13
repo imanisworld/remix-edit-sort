@@ -187,5 +187,8 @@
     {"contains": "juke edit", "genre": "Juke", "evidence": "filename explicitly says Juke"},
     {"contains": "juke mix", "genre": "Juke", "evidence": "filename explicitly says Juke"},
     {"contains": "atl bass", "genre": "Miami Bass", "evidence": "filename explicitly says ATL Bass; existing tag says Miami Bass"}
-  ]
+  ],
+
+  "_folder_names_comment": "Genre tag name -> existing library folder name, for genres renamed in the master list (genre-learner-rules.json) whose folders have not been renamed yet. Fill ONLY from a live read-only listing of the library, never from memory or old handoff paths. Empty means the folder is named after the Genre.",
+  "folder_names": {}
 }
