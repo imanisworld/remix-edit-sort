@@ -70,7 +70,7 @@ _VERSION_RULES_PATH = os.path.join(HERE, "..", "references", "version-genre-rule
 with open(_VERSION_RULES_PATH, encoding="utf-8") as _version_file:
     _VERSION_RULES = json.load(_version_file)
 
-_UNDECIDED_EXISTING_TAGS = {"afrobeat", "funk", "soul", "boogie"}
+_UNDECIDED_EXISTING_TAGS = {"afrobeat", "funk", "soul", "boogie", "dub"}
 
 
 def canonical_existing_genre(value):
