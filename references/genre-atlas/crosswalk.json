@@ -107,6 +107,59 @@
         }
       ]
     },
+    "Classic Rock": {
+      "match": "none",
+      "note": "Library genre. The atlas has no Classic Rock card; it treats it as a radio format. Nearest cards: rock:Hard rock, rock:Hard rock > Arena rock.",
+      "atlas": []
+    },
+    "Soft Rock": {
+      "match": "exact",
+      "note": "",
+      "atlas": [
+        {
+          "path": "rock:Soft rock & yacht rock > Soft rock",
+          "n": "Soft rock",
+          "y": "1970s",
+          "l": "Bread, America, Carpenters, Seals and Crofts",
+          "e": [
+            "America – A Horse with No Name",
+            "Bread – Make It with You"
+          ]
+        },
+        {
+          "path": "pop-experimental:Soft Rock",
+          "n": "Soft Rock",
+          "o": "USA (Los Angeles)",
+          "y": "late 1960s–1980s",
+          "rt": "Singer-songwriter, folk rock, sunshine pop, easy listening",
+          "l": "Carpenters, Bread, America, Elton John, Fleetwood Mac",
+          "e": [
+            "Carpenters – Close to You",
+            "Bread – Make It with You",
+            "America – A Horse with No Name"
+          ]
+        }
+      ]
+    },
+    "Pop Rock": {
+      "match": "exact",
+      "note": "",
+      "atlas": [
+        {
+          "path": "pop-experimental:Pop Rock",
+          "n": "Pop Rock",
+          "o": "USA and UK",
+          "y": "1960s–present",
+          "rt": "Rock and roll, Brill Building pop, folk rock",
+          "l": "The Beatles, Fleetwood Mac, Bon Jovi, Kelly Clarkson, Maroon 5",
+          "e": [
+            "The Beatles – Hey Jude",
+            "Kelly Clarkson – Since U Been Gone",
+            "Fleetwood Mac – Go Your Own Way"
+          ]
+        }
+      ]
+    },
     "Alternative": {
       "match": "uncertain",
       "note": "Master 'Alternative' may be broader than alternative rock.",
@@ -182,6 +235,24 @@
         }
       ]
     },
+    "Tech House": {
+      "match": "exact",
+      "note": "",
+      "atlas": [
+        {
+          "path": "electronic:House > Tech House",
+          "n": "Tech House",
+          "o": "UK (London)",
+          "y": "1990s–present",
+          "l": "Terry Francis, Mr. C, FISHER, Chris Lake, Green Velvet",
+          "e": [
+            "FISHER – Losing It",
+            "Green Velvet – La La Land",
+            "Chris Lake – Turn Off the Lights"
+          ]
+        }
+      ]
+    },
     "Bass House": {
       "match": "exact",
       "note": "",
@@ -223,6 +294,25 @@
             "Black Coffee – Superman",
             "Black Coffee – Drive"
           ]
+        }
+      ]
+    },
+    "Afro Tech": {
+      "match": "exact",
+      "note": "",
+      "atlas": [
+        {
+          "path": "electronic:House > Afro House > Afro Tech",
+          "n": "Afro Tech",
+          "o": "South Africa",
+          "y": "2010s–present",
+          "l": "Enoo Napa, Shimza, Black Motion, Da Capo"
+        },
+        {
+          "path": "africa:South African house > Afro house > Afro tech",
+          "n": "Afro tech",
+          "y": "2010s",
+          "l": "Shimza, Kususa, Enoo Napa"
         }
       ]
     },
@@ -544,6 +634,25 @@
         }
       ]
     },
+    "Latin Pop": {
+      "match": "exact",
+      "note": "",
+      "atlas": [
+        {
+          "path": "latin:Latin Pop & Balada",
+          "n": "Latin Pop & Balada",
+          "o": "Mexico, Spain & pan-Latin",
+          "y": "1960s–",
+          "rt": "Bolero, Italian and French canzone, Anglo-American pop and rock",
+          "l": "José José, Juan Gabriel, Shakira, Thalía, Juanes",
+          "e": [
+            "José José – El Triste",
+            "Juan Gabriel – Querida",
+            "Shakira – Hips Don't Lie"
+          ]
+        }
+      ]
+    },
     "Cumbia": {
       "match": "exact",
       "note": "",
@@ -625,22 +734,10 @@
         }
       ]
     },
-    "Afrobeat": {
-      "match": "uncertain",
-      "note": "Atlas splits Afrobeat (Lagos, late 1960s) from Afrobeats (Lagos/Accra, 2000s). Master folds both into 'Afrobeat'. Pending review sheet item 'afrobeats'.",
+    "Afrobeats": {
+      "match": "exact",
+      "note": "Renamed from Afrobeat on 2026-10-13. The atlas's separate Afrobeat card (Lagos, late 1960s, Fela Kuti era) is not a master genre; add it only if the library holds Fela-era records.",
       "atlas": [
-        {
-          "path": "africa:Afrobeat",
-          "n": "Afrobeat",
-          "o": "Lagos, Nigeria",
-          "y": "Late 1960s",
-          "rt": "Highlife, jazz, funk, Yoruba music",
-          "l": "Fela Kuti, Tony Allen, Femi Kuti, Seun Kuti, Antibalas",
-          "e": [
-            "Fela Kuti – Zombie",
-            "Fela Kuti – Water No Get Enemy"
-          ]
-        },
         {
           "path": "africa:Afrobeats",
           "n": "Afrobeats",
@@ -745,9 +842,9 @@
       "note": "Library-defined; no atlas card.",
       "atlas": []
     },
-    "Ballroom": {
+    "Ballroom Vogue": {
       "match": "exact",
-      "note": "",
+      "note": "Renamed from Ballroom on 2026-10-13. No slash: the learner splits Genre text on '/'.",
       "atlas": [
         {
           "path": "electronic:House > Ballroom / Vogue House",
@@ -801,6 +898,23 @@
             "Bob Marley & the Wailers – Exodus",
             "Toots & the Maytals – Pressure Drop",
             "Jimmy Cliff – The Harder They Come"
+          ]
+        }
+      ]
+    },
+    "Dub": {
+      "match": "exact",
+      "note": "The genre for actual Jamaican dub records. 'Dub mix', 'dub version' and 'dubplate' are version labels, never this genre.",
+      "atlas": [
+        {
+          "path": "caribbean:Dub",
+          "n": "Dub",
+          "o": "Kingston, Jamaica",
+          "y": "late 1960s–present",
+          "rt": "Roots reggae, sound system 'version' B-sides",
+          "l": "King Tubby, Lee 'Scratch' Perry, Errol Thompson, Scientist, Prince Jammy",
+          "e": [
+            "Augustus Pablo – King Tubby Meets Rockers Uptown"
           ]
         }
       ]
@@ -963,6 +1077,25 @@
             "Sam Cooke – A Change Is Gonna Come",
             "Aretha Franklin – Respect",
             "Otis Redding – Try a Little Tenderness"
+          ]
+        }
+      ]
+    },
+    "Blues": {
+      "match": "exact",
+      "note": "",
+      "atlas": [
+        {
+          "path": "north-america:Blues",
+          "n": "Blues",
+          "o": "Mississippi Delta & US South",
+          "y": "1890s–1910s",
+          "rt": "Work songs, field hollers, spirituals, ring shouts, minstrel and songster traditions",
+          "l": "Robert Johnson, Muddy Waters, B.B. King, Bessie Smith, Howlin' Wolf",
+          "e": [
+            "Robert Johnson – Cross Road Blues",
+            "Muddy Waters – Hoochie Coochie Man",
+            "B.B. King – The Thrill Is Gone"
           ]
         }
       ]

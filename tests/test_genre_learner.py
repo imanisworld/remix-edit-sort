@@ -53,7 +53,7 @@ class GenreLearnerTaxonomyTests(unittest.TestCase):
     def test_genuine_multi_style_metadata_is_not_forced_single(self):
         parsed = self.parse("Ballroom; House")
         self.assertEqual(parsed["status"], "multi_label")
-        self.assertEqual(set(parsed["labels"]), {"Ballroom", "House"})
+        self.assertEqual(set(parsed["labels"]), {"Ballroom Vogue", "House"})
 
     def test_context_terms_do_not_become_genre(self):
         self.assertEqual(self.parse("Twerk")["status"], "context_only")
@@ -88,7 +88,7 @@ class GenreLearnerTaxonomyTests(unittest.TestCase):
             "House Edit": (["House"], ["Edit"]),
             "R&B Remix": (["R&B"], ["Remix"]),
             "Juke Flip": (["Juke"], ["Remix"]),
-            "Afrobeat Bootleg": (["Afrobeat"], ["Remix"]),
+            "Afrobeat Bootleg": (["Afrobeats"], ["Remix"]),
             "Lounge Edit": ([], ["Lounge", "Edit"]),
         }
         for raw, (genres, grouping) in cases.items():
@@ -99,13 +99,13 @@ class GenreLearnerTaxonomyTests(unittest.TestCase):
                 self.assertFalse(parsed["unknown"])
 
     def test_afro_and_phunk_operator_mappings(self):
-        self.assertEqual(self.parse("afro")["labels"], ["Afrobeat"])
+        self.assertEqual(self.parse("afro")["labels"], ["Afrobeats"])
         phunk = self.parse("phunk")
         self.assertEqual(phunk["labels"], ["Breaks"])
         self.assertEqual(phunk["grouping"], ["Phunk"])
 
     def test_approved_legacy_normalizations(self):
-        self.assertEqual(self.parse("Afrobeats")["labels"], ["Afrobeat"])
+        self.assertEqual(self.parse("Afrobeats")["labels"], ["Afrobeats"])
         self.assertEqual(self.parse("Baile Funk")["labels"], ["Baile"])
         self.assertEqual(self.parse("ATL Bass")["labels"], ["Atlanta Bass"])
 
@@ -120,8 +120,8 @@ class GenreLearnerTaxonomyTests(unittest.TestCase):
         self.assertEqual(parsed["status"], "multi_label")
         self.assertEqual(parsed["labels"], ["Alternative R&B", "Pop"])
         parsed = self.parse("Nu R&B")
-        self.assertEqual(parsed["status"], "unknown")
-        self.assertEqual(parsed["unknown"], ["Nu R&B"])
+        self.assertEqual(parsed["status"], "single")
+        self.assertEqual(parsed["labels"], ["Alternative R&B"])
         parsed = self.parse("Drum & Bass / Jungle, funk & soul")
         self.assertEqual(parsed["status"], "multi_label")
         self.assertEqual(parsed["labels"], ["Drum & Bass", "Jungle", "Funk & Soul"])

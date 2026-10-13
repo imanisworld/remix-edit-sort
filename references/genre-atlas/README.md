@@ -44,5 +44,6 @@ When the master Genre list changes (a genre added, renamed or retired), `check` 
 
 ## Open items
 
-- Pending genre-list decisions are being collected in the "Genre Master Review" sheet (claude.ai artifact `6LCrw6CSkDmeytr6YK4QMX`, owner-only). Notably, the atlas splits Afrobeat (Lagos, late 1960s) from Afrobeats (2000s); the master currently folds both into `Afrobeat`.
+- Genre Master Review decisions (2026-10-13) are applied to the master list. Afrobeat was renamed Afrobeats; Ballroom was renamed Ballroom Vogue (no slash, because the learner splits Genre text on `/`). Added: Tech House, Afro Tech, Latin Pop, Blues, Dub, Classic Rock, Soft Rock, Pop Rock. Twerk, Dance and Club are Grouping, not Genre. Garage, Garage Jungle, Bass and Drum need a check and are never guessed. `tests/test_learner_taxonomy_20261013.py` locks these in.
+- `genre-rules.json` and `version-genre-rules.json` still use the old names. Both use the genre name as the destination folder name, so renaming there changes where files get sorted. That waits on a folder decision.
 - No license is stated for the atlas. Keep this repository private, as `CLAUDE.md` already requires.
