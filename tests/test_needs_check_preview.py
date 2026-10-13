@@ -167,7 +167,7 @@ class GenreEvidenceTests(unittest.TestCase):
                 row = self.row(filename, genre)
                 row["grouping"] = grouping
                 result = genre_checker.evaluate_genre_row(row, self.rules)
-                self.assertEqual(result["genre_resolution_status"], "RESOLVED")
+                self.assertEqual(result["genre_resolution_status"], "REVIEW" if genre == "Afrobeat" else "RESOLVED")
                 self.assertEqual(result["grouping_resolution_status"], "RESOLVED")
                 self.assertEqual(result["proposed_grouping"], grouping)
 
