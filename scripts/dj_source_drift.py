@@ -15,25 +15,73 @@ import hashlib
 import json
 import os
 import sqlite3
+import stat
 import sys
 from pathlib import Path
 from urllib.parse import quote
 
 
 def _hash_stable(path: Path) -> str:
+    """Hash a regular file without following symlink swaps during the read."""
     if path.is_symlink() or not path.is_file():
         raise ValueError(f"not a regular non-symlink source: {path}")
     before = path.stat(follow_symlinks=False)
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        while chunk := handle.read(4 * 1024 * 1024):
-            digest.update(chunk)
-    after = path.stat(follow_symlinks=False)
-    if (before.st_size, before.st_mtime_ns, before.st_dev, before.st_ino) != (
-        after.st_size, after.st_mtime_ns, after.st_dev, after.st_ino
-    ):
-        raise ValueError(f"source changed during hashing: {path}")
-    return digest.hexdigest()
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    fd = os.open(path, flags)
+    try:
+        opened = os.fstat(fd)
+        identity = lambda row: (
+            row.st_size, row.st_mtime_ns, row.st_dev, row.st_ino
+        )
+        if not stat.S_ISREG(opened.st_mode) or identity(before) != identity(opened):
+            raise ValueError(f"source changed before hashing: {path}")
+        digest = hashlib.sha256()
+        with os.fdopen(fd, "rb") as handle:
+            fd = -1
+            while chunk := handle.read(4 * 1024 * 1024):
+                digest.update(chunk)
+            after_open = os.fstat(handle.fileno())
+        after = path.stat(follow_symlinks=False)
+        if not stat.S_ISREG(after.st_mode) or (
+            identity(opened) != identity(after_open)
+            or identity(opened) != identity(after)
+        ):
+            raise ValueError(f"source changed during hashing: {path}")
+        return digest.hexdigest()
+    finally:
+        if fd >= 0:
+            os.close(fd)
+
+
+def _valid_sha(value: object) -> bool:
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(char in "0123456789abcdefABCDEF" for char in value)
+    )
+
+
+def _validate_index(conn: sqlite3.Connection) -> dict:
+    """Reject arbitrary or unbound SQLite files; never initialize a database."""
+    try:
+        meta = dict(conn.execute("SELECT key, value FROM meta"))
+        row = conn.execute(
+            "SELECT scan_id, completed_at FROM scans "
+            "WHERE completed_successfully=1 ORDER BY scan_id DESC LIMIT 1"
+        ).fetchone()
+    except sqlite3.Error as exc:
+        raise ValueError("not a trusted root-bound DJ library index") from exc
+    if meta.get("schema_version") != "3":
+        raise ValueError("unsupported DJ library index schema")
+    root = meta.get("root_canonical")
+    if not isinstance(root, str) or not Path(root).is_absolute():
+        raise ValueError("DJ library index has no trusted absolute root")
+    if row is None or not row["completed_at"]:
+        raise ValueError("DJ library index has no completed source scan")
+    return {
+        "library_root": root, "completed_scan_id": int(row["scan_id"]),
+        "completed_scan_at": row["completed_at"]
+    }
 
 
 def _latest(conn: sqlite3.Connection, table: str) -> sqlite3.Row | None:
@@ -51,6 +99,8 @@ def _serato(root: Path | None, row: sqlite3.Row | None) -> dict:
     if row is None:
         return {"state": "NO_BASELINE", "reimport_required": False}
     original_root = Path(row["serato_dir"])
+    if not original_root.is_absolute() or not original_root.name:
+        raise ValueError("invalid Serato baseline root")
     source_root = root or original_root
     if source_root.is_symlink() or not source_root.is_dir():
         return {"state": "SOURCE_UNAVAILABLE", "reimport_required": False}
@@ -63,7 +113,13 @@ def _serato(root: Path | None, row: sqlite3.Row | None) -> dict:
     if not isinstance(manifest, list) or not manifest:
         raise ValueError("invalid Serato source manifest")
     for item in manifest:
-        if not isinstance(item, dict) or not isinstance(item.get("sha256"), str):
+        if (
+            not isinstance(item, dict)
+            or not isinstance(item.get("path"), str)
+            or not _valid_sha(item.get("sha256"))
+            or type(item.get("size_bytes")) is not int
+            or item["size_bytes"] < 0
+        ):
             raise ValueError("invalid Serato source manifest entry")
         try:
             relative = Path(item["path"]).relative_to(original_root)
@@ -72,6 +128,11 @@ def _serato(root: Path | None, row: sqlite3.Row | None) -> dict:
         if relative.is_absolute() or ".." in relative.parts:
             raise ValueError("unsafe Serato manifest relative path")
         name = relative.as_posix()
+        if name != "database V2" and not (
+            len(relative.parts) == 2 and relative.parts[0] == "Subcrates"
+            and relative.suffix == ".crate" and not relative.name.startswith("._")
+        ):
+            raise ValueError("unexpected Serato baseline source path")
         if name in expected:
             raise ValueError("duplicate Serato source path in baseline")
         expected[name] = item["sha256"]
@@ -110,7 +171,14 @@ def _rekordbox(xml: Path | None, row: sqlite3.Row | None) -> dict:
     if row is None:
         return {"state": "NO_BASELINE", "reimport_required": False}
     fingerprint = json.loads(row["source_fingerprint_json"])
-    if not isinstance(fingerprint, dict) or not isinstance(fingerprint.get("sha256"), str):
+    if (
+        not isinstance(fingerprint, dict)
+        or not _valid_sha(fingerprint.get("sha256"))
+        or type(fingerprint.get("size_bytes")) is not int
+        or fingerprint["size_bytes"] < 0
+        or not isinstance(row["xml_path"], str)
+        or not Path(row["xml_path"]).is_absolute()
+    ):
         raise ValueError("invalid Rekordbox source fingerprint")
     source = xml or Path(row["xml_path"])
     if not source.exists() and not source.is_symlink():
@@ -133,6 +201,7 @@ def report(db: Path, *, serato_dir: Path | None = None, rekordbox_xml: Path | No
     conn = sqlite3.connect(uri, uri=True)
     conn.row_factory = sqlite3.Row
     try:
+        index = _validate_index(conn)
         serato = _serato(serato_dir, _latest(conn, "serato_imports"))
         rekordbox = _rekordbox(rekordbox_xml, _latest(conn, "rekordbox_imports"))
     finally:
@@ -140,6 +209,7 @@ def report(db: Path, *, serato_dir: Path | None = None, rekordbox_xml: Path | No
     return {
         "schema_version": 1,
         "safety": "read-only",
+        "index": index,
         "serato": serato,
         "rekordbox": rekordbox,
         "requires_attention": any(
@@ -148,6 +218,7 @@ def report(db: Path, *, serato_dir: Path | None = None, rekordbox_xml: Path | No
         "note": (
             "A changed export/source requires a new trusted import for per-track comparisons. "
             "Rekordbox XML is a point-in-time export, not the live collection. "
+            "An UNCHANGED export cannot prove the current app is unchanged. "
             "No playback, folder move, or tag change is inferred."
         ),
     }
