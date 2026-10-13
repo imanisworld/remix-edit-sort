@@ -264,6 +264,13 @@ def classify_raw_genre(raw: str, rules: dict) -> dict:
                     if value not in grouping:
                         grouping.append(value)
                 continue
+            # An explicit version is still useful even when the musical
+            # style needs review: "Afrobeat Bootleg" proves a version marker,
+            # not that historical Afrobeat equals contemporary Afrobeats.
+            unknown.append(match.group(1))
+            if modifier not in grouping:
+                grouping.append(modifier)
+            continue
         unknown.append(token)
 
     if unknown and labels:
