@@ -18,6 +18,14 @@ Status: source-only review, 2026-10-13. No music or software data changes approv
   successful imports. It reports changed/new/removed Serato sources and
   changed Rekordbox XML, without reimporting, moving or retagging anything.
 
+## Vendor evidence and limits (checked 2026-10-13)
+
+- Serato's official [History guide](https://support.serato.com/hc/en-us/articles/223455687-History) documents session and track **Start Time**, **End Time**, **Playtime**, **Deck**, manual *played/unplayed* marks, inserted tracks and CSV/TXT/M3U exports. Since history can be edited and the exact exported CSV/TXT columns still need a real sample, **do not automatically equate an exported row with an authenticated performance**. Serato's separate [technical session logs](https://support.serato.com/hc/en-us/articles/5583242327951-Locating-providing-session-logs-for-Serato-DJ) are troubleshooting records, **not** interchangeable with History.
+- The [Rekordbox 7 manual](https://cdn.rekordbox.com/files/20260409151936/rekordbox7.214_manual_EN.pdf) documents a **Histories** view listing eligible played tracks; a normal *collection XML* export is not a timestamped playback-session log. Record which specific history export format and timestamp granularity can actually be verified from a sample before implementing a Rekordbox history parser.
+- Neither app's crate/playlist membership, LastPlayed/PlayCount, or genre metadata proves **where, when and for whom** a track was played. A match is a candidate requiring corroborated source and set time.
+
+The current active work list, agent division, review gates, and done criteria are in [dj-integration-work-plan.md](dj-integration-work-plan.md).
+
 ## Event-to-playback association: required evidence
 
 An internal event export needs: event ID, event timezone, confirmed *DJ set*
