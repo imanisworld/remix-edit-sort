@@ -134,11 +134,15 @@ def make_preview(
     event_holds: dict,
     master: dict,
 ) -> dict:
+    # Check the literal root paths *before* resolving them. Once resolved,
+    # is_symlink() cannot detect that an operator selected an alias/symlink.
+    if library_root.is_symlink() or landing_root.is_symlink():
+        raise PromotionRefused("library and landing roots must be real directories, not symlinks")
     lib, landing = library_root.resolve(), landing_root.resolve()
     if lib == landing or not inside(landing, lib):
         raise PromotionRefused("landing must be a subfolder of library_root")
-    if landing.is_symlink() or not landing.is_dir():
-        raise PromotionRefused("landing must be an existing non-symlink directory")
+    if not lib.is_dir() or not landing.is_dir():
+        raise PromotionRefused("library and landing roots must be existing directories")
     if destinations.get("schema_version") != 1 or not isinstance(destinations.get("routes"), dict):
         raise PromotionRefused("destination map requires schema_version 1 and routes object")
     if not isinstance(master.get("canonical_genres"), list):
@@ -197,8 +201,10 @@ def make_preview(
                 approval is not None
                 and approval.get("sha256", "").casefold() == row["sha256"].casefold()
                 and approval.get("genre") == genre
-                and bool(str(approval.get("approved_by", "")).strip())
-                and bool(str(approval.get("evidence", "")).strip())
+                and isinstance(approval.get("approved_by"), str)
+                and bool(approval["approved_by"].strip())
+                and isinstance(approval.get("evidence"), str)
+                and bool(approval["evidence"].strip())
             )
             target_rel = None
             if genre in canonical and approved_usable and isinstance(route, dict):
