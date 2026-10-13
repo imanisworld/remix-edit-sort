@@ -34,14 +34,25 @@ read -r -p "Folder to scan [~/Downloads]: " INCOMING
 if [[ -z "$INCOMING" ]]; then INCOMING="$HOME/Downloads"; fi
 INCOMING="$(expand_home "$INCOMING")"
 
-read -r -p "Existing DJ library-index SQLite path [blank to skip]: " INDEX_PATH
+INDEX_HINT="$HOME/Library/Application Support/DJ Library Tool/library.sqlite3"
+if [[ -f "$INDEX_HINT" ]]; then
+  read -r -p "Existing DJ index [$INDEX_HINT]: " INDEX_PATH
+  if [[ -z "$INDEX_PATH" ]]; then INDEX_PATH="$INDEX_HINT"; fi
+else
+  read -r -p "Existing DJ library-index SQLite path [blank to skip]: " INDEX_PATH
+fi
 INDEX_PATH="$(expand_home "$INDEX_PATH")"
 
-read -r -p "Fresh Rekordbox collection XML [blank to skip]: " RB_XML
-RB_XML="$(expand_home "$RB_XML")"
-
-read -r -p "Serato _Serato_ directory [blank to skip]: " SERATO_DIR
-SERATO_DIR="$(expand_home "$SERATO_DIR")"
+RB_XML=""
+SERATO_DIR=""
+if [[ -n "$INDEX_PATH" ]]; then
+  read -r -p "Fresh Rekordbox collection XML [blank to use last indexed source]: " RB_XML
+  RB_XML="$(expand_home "$RB_XML")"
+  read -r -p "Serato _Serato_ directory [blank to use last indexed source]: " SERATO_DIR
+  SERATO_DIR="$(expand_home "$SERATO_DIR")"
+else
+  echo "No index supplied: DJ snapshot drift and cross-library duplicate checks will be skipped."
+fi
 
 REPORTS="$HOME/Desktop/DJ-Library-Reports"
 read -r -p "Report location [$REPORTS]: " CUSTOM_REPORTS
@@ -52,6 +63,28 @@ set -- --incoming "$INCOMING" --out-dir "$REPORTS"
 if [[ -n "$INDEX_PATH" ]]; then set -- "$@" --db "$INDEX_PATH"; fi
 if [[ -n "$RB_XML" ]]; then set -- "$@" --rekordbox-xml "$RB_XML"; fi
 if [[ -n "$SERATO_DIR" ]]; then set -- "$@" --serato-dir "$SERATO_DIR"; fi
+
+read -r -p "Include original DJ History export(s) in this review? [y/N]: " INCLUDE_HISTORY
+if [[ "$INCLUDE_HISTORY" == "y" || "$INCLUDE_HISTORY" == "Y" ]]; then
+  echo "Original exports will be hashed only; no unverified rows are interpreted."
+  for COUNT in 1 2 3 4 5; do
+    read -r -p "History export file $COUNT [blank to finish]: " HIST_PATH
+    if [[ -z "$HIST_PATH" ]]; then break; fi
+    HIST_PATH="$(expand_home "$HIST_PATH")"
+    set -- "$@" --history-export "$HIST_PATH"
+  done
+  if [[ -n "$INDEX_PATH" ]]; then
+    read -r -p "Reviewed actual DJ set windows JSON [blank to skip]: " SETS_JSON
+    if [[ -n "$SETS_JSON" ]]; then
+      read -r -p "Normalized playback fixture JSON: " PLAYS_JSON
+      if [[ -n "$PLAYS_JSON" ]]; then
+        set -- "$@" --events "$(expand_home "$SETS_JSON")" --plays "$(expand_home "$PLAYS_JSON")"
+      else
+        echo "Normalized playback input absent: set-time matching skipped."
+      fi
+    fi
+  fi
+fi
 
 echo ""
 python3 "$ROOT/scripts/dj_library_review.py" "$@"
