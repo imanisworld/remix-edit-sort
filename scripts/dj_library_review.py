@@ -304,8 +304,12 @@ def _safe_report_root(out_root: Path, restricted: list[Path]) -> Path:
         raise ReviewRefused("report destination cannot be a symlink")
     canonical = target.resolve()
     for source in restricted:
-        if within(canonical, source) or canonical == source:
-            raise ReviewRefused(f"report must stay outside music/data source: {source}")
+        # macOS commonly exposes /var through /private/var. Compare canonical
+        # ancestry on BOTH sides or a report path under the music tree can
+        # bypass the safety check when the caller used an unresolved alias.
+        protected = source.expanduser().absolute().resolve()
+        if within(canonical, protected):
+            raise ReviewRefused(f"report must stay outside music/data source: {protected}")
     return canonical
 
 
