@@ -73,8 +73,10 @@ def inventory_rows(path: Path, landing: Path) -> list[dict]:
         raise PromotionRefused(f"inventory missing columns: {sorted(must - set(rows[0]))}")
     seen = set()
     for row in rows:
-        raw = Path(row["full_path"])
-        source = raw.absolute()
+        raw = Path(row["full_path"]).absolute()
+        # macOS may expose /var as /private/var. Canonicalize the parent only
+        # so the final filename's literal spelling is still verified.
+        source = raw.parent.resolve() / raw.name
         if source in seen:
             raise PromotionRefused(f"duplicate inventory path: {source}")
         seen.add(source)
