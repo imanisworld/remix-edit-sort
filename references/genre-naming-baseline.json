@@ -1,0 +1,408 @@
+{
+  "schema_version": 1,
+  "description": "Pre-existing noncanonical output references from 2026-10-13, recorded for review only. Not approvals; new mismatches fail CI. Remove entries as they are corrected and tested.",
+  "existing_deviations": [
+    {
+      "file": "genre-rules.json",
+      "field": "bpm_ranges",
+      "key": "Afrobeats",
+      "target": "Afrobeats"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "bpm_ranges",
+      "key": "Baile Funk",
+      "target": "Baile Funk"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "bpm_ranges",
+      "key": "Bass",
+      "target": "Bass"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "bpm_ranges",
+      "key": "Club",
+      "target": "Club"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "bpm_ranges",
+      "key": "Drum",
+      "target": "Drum"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "bpm_ranges",
+      "key": "Dub",
+      "target": "Dub"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "bpm_ranges",
+      "key": "Funk",
+      "target": "Funk"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "bpm_ranges",
+      "key": "Ghetto Tech",
+      "target": "Ghetto Tech"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "bpm_ranges",
+      "key": "Soul",
+      "target": "Soul"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "bpm_ranges",
+      "key": "UKG",
+      "target": "UKG"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "bpm_ranges",
+      "key": "Vogue",
+      "target": "Vogue"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "canonical_genres",
+      "key": "Afrobeats",
+      "target": "Afrobeats"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "canonical_genres",
+      "key": "Baile Funk",
+      "target": "Baile Funk"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "canonical_genres",
+      "key": "Bass",
+      "target": "Bass"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "canonical_genres",
+      "key": "Club",
+      "target": "Club"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "canonical_genres",
+      "key": "Drum",
+      "target": "Drum"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "canonical_genres",
+      "key": "Dub",
+      "target": "Dub"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "canonical_genres",
+      "key": "Funk",
+      "target": "Funk"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "canonical_genres",
+      "key": "Ghetto Tech",
+      "target": "Ghetto Tech"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "canonical_genres",
+      "key": "Soul",
+      "target": "Soul"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "canonical_genres",
+      "key": "UKG",
+      "target": "UKG"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "canonical_genres",
+      "key": "Vogue",
+      "target": "Vogue"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "keyword_rules",
+      "key": "afrobeat|afrobeats|afro house|afrotech|afro mix",
+      "target": "Afrobeats"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "keyword_rules",
+      "key": "baile funk|baile|funk brasil|brazilian funk|brasileiro|montagem|bregafunk",
+      "target": "Baile Funk"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "keyword_rules",
+      "key": "bassline|bass",
+      "target": "Bass"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "keyword_rules",
+      "key": "club edit|club mix|club remix|bounce|twerk|club",
+      "target": "Club"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "keyword_rules",
+      "key": "dubplate|dub mix|dub version|dubwise",
+      "target": "Dub"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "keyword_rules",
+      "key": "funk|boogie|p-funk",
+      "target": "Funk"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "keyword_rules",
+      "key": "ghettotech|ghetto tech|ghetto house|detroit booty|booty tech",
+      "target": "Ghetto Tech"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "keyword_rules",
+      "key": "mq vogue|vogue|ballroom|ha crash|kiki|runway|cunt beat",
+      "target": "Vogue"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "keyword_rules",
+      "key": "soul|motown|northern soul",
+      "target": "Soul"
+    },
+    {
+      "file": "genre-rules.json",
+      "field": "keyword_rules",
+      "key": "ukg|uk garage|2step|2-step|speed garage|garage mix|garage edit|garage",
+      "target": "UKG"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "filename_keywords",
+      "key": "ghettotech",
+      "target": "Ghetto Tech"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "afro beats",
+      "target": "Afrobeats"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "afrobeats",
+      "target": "Afrobeats"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "alternative hip hop",
+      "target": "Alternative Hip-Hop"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "alternative hip-hop",
+      "target": "Alternative Hip-Hop"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "blues",
+      "target": "Blues"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "boogie 80's",
+      "target": "Boogie"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "classic rock",
+      "target": "Classic Rock"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "classic rock, old head party",
+      "target": "Classic Rock"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "dance",
+      "target": "Dance"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "dance, old head party",
+      "target": "Dance"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "funk",
+      "target": "Funk"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "garage",
+      "target": "Garage"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "garage jungle",
+      "target": "Garage Jungle"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "garage volume 1",
+      "target": "Garage"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "garage volume 3",
+      "target": "Garage"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "garage volume 5",
+      "target": "Garage"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "garage volume 6",
+      "target": "Garage"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "ghetto tech",
+      "target": "Ghetto Tech"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "ghettotech",
+      "target": "Ghetto Tech"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "jazzy house",
+      "target": "Jazzy House"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "latin pop",
+      "target": "Latin Pop"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "new wave",
+      "target": "Nu Wave"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "nu disco",
+      "target": "Nu Disco"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "nu r&b",
+      "target": "Nu R&B"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "nu wave",
+      "target": "Nu Wave"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "nu wave, old head party",
+      "target": "Nu Wave"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "pop rock",
+      "target": "Pop Rock"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "r&b throwbacks",
+      "target": "R&B Throwbacks"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "r&b throwbacks, old head party",
+      "target": "R&B Throwbacks"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "soft rock",
+      "target": "Soft Rock"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "soul",
+      "target": "Soul"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "tech house",
+      "target": "Tech House"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "twerk",
+      "target": "Twerk"
+    },
+    {
+      "file": "version-genre-rules.json",
+      "field": "tag_aliases",
+      "key": "twerk, old head party",
+      "target": "Twerk"
+    }
+  ]
+}
