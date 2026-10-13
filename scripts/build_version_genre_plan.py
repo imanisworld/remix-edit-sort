@@ -166,6 +166,29 @@ def analyze_genre(row: dict, rules: dict, assume_genre: str | None = None) -> di
     known_contexts = _dedupe(known_contexts)
 
     if recognized and not known_contexts and not unknown:
+        # Filename hints are secondary evidence. A disagreement means REVIEW,
+        # never either a silent overwrite or a silently ignored contradiction.
+        filename = (row.get("filename") or "").casefold()
+        filename_styles = _dedupe([
+            rule["genre"] for rule in rules.get("filename_keywords", [])
+            if rule["contains"].casefold() in filename
+        ])
+        conflicts = [style for style in filename_styles if style not in recognized]
+        if conflicts:
+            return {
+                "resolution_status": "REVIEW",
+                "category": "conflicting_genre_evidence",
+                "proposed_genre": None,
+                "recognized_genres": recognized,
+                "known_contexts": [],
+                "unknown_tokens": conflicts,
+                "evidence": (
+                    f"existing Genre: {', '.join(recognized)}; explicit filename "
+                    f"suggests conflicting style(s): {', '.join(conflicts)}; "
+                    "human review required before any Genre or folder change"
+                ),
+                "confidence": "review",
+            }
         proposed = "; ".join(recognized)
         category = "valid_multi_genre" if len(tokens) > 1 or len(recognized) > 1 else "valid_single_genre"
         return {
