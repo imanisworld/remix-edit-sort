@@ -313,6 +313,8 @@ def build_report(incoming: Path | None, db: Path | None, serato_dir: Path | None
         raise ReviewRefused("--events and --plays must be supplied together")
     if events is not None and db is None:
         raise ReviewRefused("track-history matching requires the existing DJ library index")
+    if (serato_dir is not None or rekordbox_xml is not None) and db is None:
+        raise ReviewRefused("Serato/Rekordbox source comparison requires an existing library index")
     index = read_index(db)
     downloads = inspect_downloads(incoming, index, max_files) if incoming else None
     sources = fingerprints(history_exports)
