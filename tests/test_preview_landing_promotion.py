@@ -66,7 +66,7 @@ class LandingPromotionTests(unittest.TestCase):
         result = self.preview()
         row = result["items"][0]
         self.assertEqual(row["status"], "ROUTE_CANDIDATE")
-        self.assertEqual(row["destination"], str(self.final / "test.mp3"))
+        self.assertEqual(row["destination"], str(self.final.resolve() / "test.mp3"))
         self.assertFalse(result["approved_apply"])
         self.assertTrue((self.landing / "test.mp3").exists())
         self.assertFalse((self.final / "test.mp3").exists())
@@ -78,7 +78,7 @@ class LandingPromotionTests(unittest.TestCase):
         self.assertEqual(result["counts"]["REVIEW_CANDIDATE"], 2)
         self.assertEqual(
             {row["destination"] for row in result["items"]},
-            {str(self.review / "unreviewed.mp3"), str(self.review / "ambiguous.mp3")},
+            {str(self.review.resolve() / "unreviewed.mp3"), str(self.review.resolve() / "ambiguous.mp3")},
         )
 
     def test_stale_or_wrong_genre_approval_cannot_route(self):
