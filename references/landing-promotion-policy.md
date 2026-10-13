@@ -193,6 +193,40 @@ a production cross-folder relocation lane:
    from event-prep crate membership. Do not date or invent a play from a folder
    name alone.
 
+## Proposed operator parameters for the first live test
+
+These are **release gates for a future apply implementation**. They are
+documented defaults, **not active auto-move controls**, because no
+cross-folder apply command exists in this PR.
+
+| Gate | First live run |
+|---|---|
+| Authorization | Default **OFF**; an explicit reviewed plan and per-batch approval |
+| First batch size | **Up to 5 tracks**, each individually approved; no silent expansion |
+| Classification | Canonical Genre + reviewed evidence; conflict or uncertainty = HOLD |
+| Physical destinations | Existing, exact, verified folder paths; no new folders |
+| Collisions | **0** allowed; no replacement, suffix auto-rename or deletion |
+| DJ apps | Both closed before path changes; Serato and Rekordbox path impact reviewed |
+| Backups | Full affected source/metadata and DJ-reference backups; manifest **PASS** |
+| Path protection | Exclusive source **and** destination folder locks and undo journal |
+| Integrity | For move-only tracks, exact full-file SHA-256 after relocation |
+| DJ metadata | Artwork, cue points, beatgrids, custom Serato frames and playlist links preserved |
+| Stop rule | First failed verification = stop and recover; never skip a failed item |
+| Event exceptions | Upcoming holds honored; a crate association does not claim a recorded play |
+| Automatic unattended mode | **DISABLED** until a real supervised canary succeeds |
+
+After the first supervised pass, review **all five results** and test a real
+undo/restore before approving any larger batch. Only then consider a
+25-track supervised batch; no scheduled watcher or unattended filesystem
+moves are part of this milestone. A read-only report may cover the entire
+library, while the apply budget remains limited.
+
+`input_fingerprints` in each preview records SHA-256 evidence for the exact
+inventory CSV, approved route map, approvals, event holds and master genre
+rules. These are comparison fingerprints, **not an operator signature**.
+An apply implementation must revalidate current source hashes, rules,
+destinations and DJ reference snapshots immediately before each move.
+
 **Completion criterion:** one verified physical copy per intended track,
 the landing area free of processed tracks, only explicit temporary event
 holds remaining there, Serato/Rekordbox references intact, and a complete
