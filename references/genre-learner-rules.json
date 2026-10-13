@@ -105,16 +105,22 @@
     "afro": "Afrobeats",
     "breakbeat": "Breaks",
     "nu wave": "New Wave",
-    "afrobeat": "Afrobeats",
     "ballroom": "Ballroom Vogue",
     "vogue": "Ballroom Vogue",
-    "funk": "Funk & Soul",
-    "soul": "Funk & Soul",
-    "boogie": "Funk & Soul",
     "nu disco": "Disco",
     "nu r&b": "Alternative R&B"
   },
-  "legacy_compounds_requiring_audio_review": [],
+  "legacy_compounds_requiring_audio_review": [
+    "Afrobeat",
+    "Funk",
+    "Soul",
+    "Boogie",
+    "Dub",
+    "Jazzy House",
+    "R&B Throwbacks",
+    "Alternative Hip Hop",
+    "Alternative Hip-Hop"
+  ],
   "target_excluded_folders": [
     "bae re work",
     "Imani Drops",
