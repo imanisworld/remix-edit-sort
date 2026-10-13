@@ -50,6 +50,12 @@ class LandingPromotionTests(unittest.TestCase):
                 "genre": genre, "approved_by": "operator",
                 "evidence": "explicit reviewed track and genre"}
 
+    def rows_as_approved(self, relative):
+        row = next(row for row in self.rows if Path(row["full_path"]).relative_to(self.landing).as_posix() == relative)
+        return {"source_relative": relative, "sha256": row["sha256"],
+                "genre": row["genre"], "approved_by": "operator",
+                "evidence": "explicit reviewed track and genre"}
+
     def preview(self):
         with self.inventory.open("w", newline="", encoding="utf-8") as handle:
             writer = csv.DictWriter(handle, fieldnames=("full_path", "sha256", "genre", "title"))
@@ -75,17 +81,16 @@ class LandingPromotionTests(unittest.TestCase):
         self.add("unreviewed.mp3")
         self.add("ambiguous.mp3", genre="Garage Jungle", data=b"another")
         result = self.preview()
-        self.assertEqual(result["counts"]["REVIEW_CANDIDATE"], 2)
-        self.assertEqual(
-            {row["destination"] for row in result["items"]},
-            {str(self.review.resolve() / "unreviewed.mp3"), str(self.review.resolve() / "ambiguous.mp3")},
-        )
+        self.assertEqual(result["counts"]["NEEDS_REVIEW"], 2)
+        self.assertTrue(all(row["destination"] is None for row in result["items"]))
+        self.assertTrue((self.landing / "unreviewed.mp3").exists())
+        self.assertTrue((self.landing / "ambiguous.mp3").exists())
 
     def test_stale_or_wrong_genre_approval_cannot_route(self):
         item = self.add("test.mp3")
         item["genre"] = "House"
         self.approvals["items"].append(item)
-        self.assertEqual(self.preview()["items"][0]["status"], "REVIEW_CANDIDATE")
+        self.assertEqual(self.preview()["items"][0]["status"], "NEEDS_REVIEW")
 
     def test_named_active_event_is_held_in_landing(self):
         item = self.add("gig.mp3")
@@ -114,7 +119,7 @@ class LandingPromotionTests(unittest.TestCase):
         item = self.add("test.mp3")
         self.destinations["routes"]["R&B"] = {"versions": {"CLEAN": "R&b"}}
         self.approvals["items"].append(item)
-        self.assertEqual(self.preview()["items"][0]["status"], "REVIEW_CANDIDATE")
+        self.assertEqual(self.preview()["items"][0]["status"], "NEEDS_REVIEW")
 
     def test_existing_destination_is_never_overwritten(self):
         item = self.add("test.mp3")
@@ -164,25 +169,47 @@ class LandingPromotionTests(unittest.TestCase):
 
     def test_destination_outside_library_or_in_landing_is_rejected(self):
         self.add("test.mp3")
+        approved = self.add("safe.mp3", data=b"safe")
+        self.approvals["items"].append(approved)
         for invalid in ("../elsewhere", "music to move", "/tmp"):
             with self.subTest(invalid=invalid):
-                self.destinations["review_destination"] = invalid
-                with self.assertRaises(promotion.PromotionRefused):
-                    self.preview()
+                self.destinations["routes"]["R&B"] = {"default": invalid}
+                self.assertEqual(self.preview()["items"][-1]["status"], "BLOCKED")
 
     def test_missing_real_destination_fails_closed(self):
         self.add("test.mp3")
-        self.destinations["review_destination"] = "does not exist"
-        with self.assertRaises(promotion.PromotionRefused):
-            self.preview()
+        self.destinations["routes"]["R&B"] = {"default": "does not exist"}
+        self.approvals["items"].append(self.rows_as_approved("test.mp3"))
+        self.assertEqual(self.preview()["items"][0]["status"], "BLOCKED")
 
     def test_symlinked_destination_is_rejected(self):
         self.add("test.mp3")
         link = self.lib / "shortcut"
         link.symlink_to(self.review, target_is_directory=True)
-        self.destinations["review_destination"] = "shortcut"
-        with self.assertRaises(promotion.PromotionRefused):
-            self.preview()
+        self.destinations["routes"]["R&B"] = {"default": "shortcut"}
+        self.approvals["items"].append(self.rows_as_approved("test.mp3"))
+        self.assertEqual(self.preview()["items"][0]["status"], "BLOCKED")
+
+
+    def test_casefold_existing_filename_collision_is_blocked(self):
+        approval = self.add("test.mp3")
+        self.approvals["items"].append(approval)
+        (self.final / "TEST.MP3").write_bytes(b"other")
+        row = self.preview()["items"][0]
+        self.assertEqual(row["status"], "BLOCKED")
+        self.assertIsNone(row["destination"])
+
+    def test_lowercase_events_folder_is_held(self):
+        self.add("events/private wedding/track.mp3")
+        self.assertEqual(self.preview()["items"][0]["status"], "EVENT_HOLD")
+
+    def test_empty_destination_map_does_not_make_new_folders(self):
+        self.add("test.mp3")
+        self.destinations = {"schema_version": 1, "routes": {}}
+        row = self.preview()["items"][0]
+        self.assertEqual(row["status"], "NEEDS_REVIEW")
+        self.assertIsNone(row["destination"])
+        self.assertFalse((self.lib / "test.mp3").exists())
 
 
 if __name__ == "__main__":
