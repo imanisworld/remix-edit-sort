@@ -41,8 +41,9 @@ class GenreMasterReviewTests(unittest.TestCase):
     def test_afrobeats_is_the_master_name(self):
         self.assertIn('Afrobeats', self.canonical)
         self.assertNotIn('Afrobeat', self.canonical)
-        for raw in ('Afrobeats', 'Afrobeat', 'Afro Beats'):
+        for raw in ('Afrobeats', 'Afro Beats'):
             self.assertSingle(raw, 'Afrobeats')
+        self.assertNeedsCheck('Afrobeat')
 
     def test_ballroom_vogue_has_no_slash(self):
         self.assertIn('Ballroom Vogue', self.canonical)
@@ -51,25 +52,29 @@ class GenreMasterReviewTests(unittest.TestCase):
             self.assertSingle(raw, 'Ballroom Vogue')
 
     def test_new_master_genres(self):
-        for genre in ('Tech House', 'Afro Tech', 'Latin Pop', 'Blues', 'Dub',
+        for genre in ('Tech House', 'Afro Tech', 'Latin Pop', 'Blues',
                       'Classic Rock', 'Soft Rock', 'Pop Rock'):
             self.assertIn(genre, self.canonical)
             self.assertSingle(genre, genre)
+        self.assertIn('Dub', self.canonical)
+        self.assertNeedsCheck('Dub')
 
     def test_tech_house_and_afro_tech_stay_distinct(self):
         self.assertSingle('Tech House', 'Tech House')
         self.assertSingle('Afrotech', 'Afro Tech')
         self.assertSingle('Afro House', 'Afro House')
 
-    def test_funk_soul_boogie_stay_merged(self):
-        for raw in ('Funk', 'Soul', 'Boogie', 'Funk & Soul'):
-            self.assertSingle(raw, 'Funk & Soul')
+    def test_unapproved_funk_soul_boogie_merges_wait_for_review(self):
+        self.assertSingle('Funk & Soul', 'Funk & Soul')
+        for raw in ('Funk', 'Soul', 'Boogie'):
+            self.assertNeedsCheck(raw)
 
-    def test_style_moves_to_grouping(self):
-        self.assertSingle('R&B Throwbacks', 'R&B', ['Throwback'])
-        self.assertSingle('Alternative Hip Hop', 'Hip-Hop', ['Alternative'])
-        self.assertSingle('Alternative Hip-Hop', 'Hip-Hop', ['Alternative'])
-        self.assertSingle('Jazzy House', 'Deep House', ['Jazzy'])
+    def test_proposed_compound_to_grouping_moves_wait_for_review(self):
+        for raw in ('R&B Throwbacks', 'Alternative Hip Hop',
+                    'Alternative Hip-Hop', 'Jazzy House'):
+            parsed = self.parse(raw)
+            self.assertEqual(parsed['status'], 'legacy_compound_review')
+            self.assertNeedsCheck(raw)
 
     def test_function_tags_are_grouping_not_genre(self):
         self.assertContextOnly('Twerk', 'Twerk')
