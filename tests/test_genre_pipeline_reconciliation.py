@@ -85,16 +85,49 @@ class GenreReconciliationTests(unittest.TestCase):
         self.assertEqual(self.remix_result("Miami Bass Edit"), "Miami Bass")
 
     def test_filename_cannot_override_a_conflicting_real_genre_tag(self):
-        result = self.version_result(
-            "Miami Bass", "DJ - ATL Bass 2026 Remix.mp3"
+        for existing, filename, alternative in (
+            ("Miami Bass", "DJ - ATL Bass 2026 Remix.mp3", "Atlanta Bass"),
+            ("Atlanta Bass", "DJ - Miami Bass Version.mp3", "Miami Bass"),
+        ):
+            with self.subTest(existing=existing):
+                result = self.version_result(existing, filename)
+                self.assertEqual(result["resolution_status"], "REVIEW")
+                self.assertEqual(result["category"], "conflicting_genre_evidence")
+                self.assertIsNone(result["proposed_genre"])
+                self.assertEqual(result["recognized_genres"], [existing])
+                self.assertIn(alternative, result["unknown_tokens"])
+
+    def test_remix_sorter_preserves_confirmed_existing_genre(self):
+        fields = {
+            "remixer_genre": "Atlanta Bass",
+            "remixer": "DJ House", "remixer_raw": "",
+            "original_artists": [], "source_folder": "House",
+            "title_clean": "Song", "artist_raw": "",
+            "album_raw": "", "uploader": "",
+            "filename": "DJ - Song.mp3",
+            "existing_genre": "Miami Bass",
+        }
+        genre, source = remix_sort.classify_genre(fields)
+        self.assertEqual((genre, source), ("Miami Bass", "existing_tag"))
+        fields["existing_genre"] = "Ghetto Tech"
+        self.assertEqual(
+            remix_sort.classify_genre(fields), ("Ghettotech", "existing_tag")
         )
-        self.assertEqual(result["resolution_status"], "RESOLVED")
-        self.assertEqual(result["proposed_genre"], "Miami Bass")
-        self.assertEqual(result["confidence"], "tag")
-        result = self.version_result(
-            "Atlanta Bass", "DJ - Miami Bass Version.mp3"
-        )
-        self.assertEqual(result["proposed_genre"], "Atlanta Bass")
+
+    def test_remix_sorter_holds_unknown_or_disputed_existing_tag(self):
+        fields = {
+            "remixer_genre": "House", "remixer": "", "remixer_raw": "",
+            "original_artists": [], "source_folder": "House",
+            "title_clean": "Song", "artist_raw": "",
+            "album_raw": "", "uploader": "", "filename": "Song.mp3",
+            "existing_genre": "Garage Jungle",
+        }
+        self.assertEqual(remix_sort.classify_genre(fields), (None, "existing_tag_requires_review"))
+        fields["existing_genre"] = "Afrobeat"
+        self.assertEqual(remix_sort.classify_genre(fields), (None, "existing_tag_requires_review"))
+        fields["existing_genre"] = "Miami Bass"
+        fields["filename"] = "Artist - ATL Bass Edit.mp3"
+        self.assertEqual(remix_sort.classify_genre(fields), (None, "existing_tag_filename_conflict"))
 
     def test_explicit_filename_recovers_only_blank_or_other(self):
         for raw in ("", "Other"):
