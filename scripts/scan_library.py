@@ -52,11 +52,26 @@ NOISE_RX = re.compile(
 
 # music-library-sort's vocabulary -> ours
 LABEL_REMAP = {
-    "hip-hop/rap": "Hip-Hop", "ghetto house": "Ghetto Tech", "vogue": "Vogue",
-    "jersey/atl club": "Atlanta Bass", "house": "House", "techno": "Techno",
-    "blues": None, "electronic": None, "r&b/soul": "R&B", "funk/soul": "Funk",
+    "hip-hop/rap": "Hip-Hop", "ghetto house": "Ghetto House",
+    "ghetto tech": "Ghettotech", "ukg": "UK Garage",
+    "baile funk": "Baile", "vogue": "Ballroom Vogue",
+    "jersey/atl club": None,  # compound: do not select either club style
+    "house": "House", "techno": "Techno",
+    "blues": None, "electronic": None,
+    "r&b/soul": "R&B", "funk/soul": "Funk & Soul",
+    # Named genres without an approved correspondence stay unclassified.
+    "club": None, "soul": None,
 }
 ARTIST_GENRE = {}
+
+
+def canonical_artist_genre(value):
+    """Interpret legacy artist style names without inventing a Genre."""
+    if not isinstance(value, str):
+        return None
+    raw = value.strip()
+    mapped = LABEL_REMAP.get(raw.casefold(), raw)
+    return mapped if mapped in RULES["canonical_genres"] else None
 
 
 def norm(s):
@@ -74,13 +89,14 @@ def load_artist_map():
         for artist, label in raw.items():
             if not isinstance(label, str):
                 continue
-            g = LABEL_REMAP.get(label.strip().lower(), label.strip())
-            if g and g in RULES["canonical_genres"]:
+            g = canonical_artist_genre(label)
+            if g:
                 ARTIST_GENRE[norm(artist)] = g
     local = os.path.join(HERE, "..", "references", "artist-genre-extra.json")
     if os.path.exists(local):
-        for artist, g in json.load(open(local)).items():
-            if g in RULES["canonical_genres"]:
+        for artist, label in json.load(open(local)).items():
+            g = canonical_artist_genre(label)
+            if g:
                 ARTIST_GENRE[norm(artist)] = g
 
 
