@@ -62,10 +62,8 @@
     "classic funk-soul": "Funk & Soul",
     "soul & funk, old head party": "Funk & Soul",
     "electronica, old head party": "Electronic",
-    "atl bass, old head party": "Miami Bass",
+    "atl bass, old head party": "Atlanta Bass",
     "dancehall, old head party": "Dancehall",
-    "twerk, old head party": "Twerk",
-    "twerk": "Twerk",
     "classic rock, old head party": "Classic Rock",
     "r&b throwbacks, old head party": "R&B Throwbacks",
     "r&b throwbacks": "R&B Throwbacks",
@@ -94,8 +92,8 @@
     "footwork; juke; electronic": "Footwork; Juke; Electronic",
     "boogie 80's": "Boogie",
     "nu disco": "Nu Disco",
-    "atl bass": "Miami Bass",
-    "atlanta bass": "Miami Bass",
+    "atl bass": "Atlanta Bass",
+    "atlanta bass": "Atlanta Bass",
     "blues": "Blues",
     "bouyon": "Bouyon",
     "r&b, old steppers": "R&B",
@@ -128,7 +126,6 @@
     "jungle": "Jungle",
     "garage house": "Garage House",
     "speed garage": "Speed Garage",
-    "garage jungle": "Garage Jungle",
     "hiphop/rap": "Hip-Hop",
     "alternative hip-hop": "Alternative Hip-Hop",
     "footwork; juke": "Footwork; Juke",
@@ -138,6 +135,7 @@
     "baile": "Baile"
   },
   "context_aliases": {
+    "twerk": "Twerk",
     "old head": "Old Head",
     "old head party": "Old Head",
     "plex": "Plex",
@@ -150,6 +148,7 @@
     "top 40": "Top 40"
   },
   "grouping_terms": {
+    "twerk": "Twerk",
     "old head": "Old Head",
     "plex": "Plex",
     "lounge": "Lounge",
@@ -186,6 +185,6 @@
     {"contains": "bankhead bounce", "genre": "Bounce", "evidence": "filename explicitly names a Bounce style"},
     {"contains": "juke edit", "genre": "Juke", "evidence": "filename explicitly says Juke"},
     {"contains": "juke mix", "genre": "Juke", "evidence": "filename explicitly says Juke"},
-    {"contains": "atl bass", "genre": "Miami Bass", "evidence": "filename explicitly says ATL Bass; existing tag says Miami Bass"}
+    {"contains": "atl bass", "genre": "Atlanta Bass", "evidence": "filename explicitly says ATL Bass; Atlanta Bass is distinct from Miami Bass"}
   ]
 }
