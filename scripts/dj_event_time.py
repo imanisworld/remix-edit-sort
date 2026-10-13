@@ -46,16 +46,17 @@ def resolve_wall_clock(local_iso: str, zone: str, fold: int | None = None) -> da
     tz = _zone(zone)
     candidates = {}
     for side in (0, 1):
-        resolved = wall.replace(tzinfo=tz, fold=side)
+        resolved = datetime(wall.year, wall.month, wall.day, wall.hour, wall.minute, wall.second, wall.microsecond, tzinfo=tz, fold=side)
         instant = resolved.astimezone(timezone.utc)
-        if instant.astimezone(tz).replace(tzinfo=None) == wall:
+        back = instant.astimezone(tz)
+        if (back.year, back.month, back.day, back.hour, back.minute, back.second, back.microsecond) == (wall.year, wall.month, wall.day, wall.hour, wall.minute, wall.second, wall.microsecond):
             candidates[instant] = resolved
     if not candidates:
         raise ClockEvidenceError(f"nonexistent spring-forward time: {local_iso} {zone}")
     if len(candidates) == 2:
         if type(fold) is not int or fold not in (0, 1):
             raise ClockEvidenceError(f"ambiguous fall-back time requires explicit fold: {local_iso}")
-        result = wall.replace(tzinfo=tz, fold=fold)
+        result = datetime(wall.year, wall.month, wall.day, wall.hour, wall.minute, wall.second, wall.microsecond, tzinfo=tz, fold=fold)
         if result.astimezone(timezone.utc) not in candidates:
             raise ClockEvidenceError("DST fold did not resolve to a real instant")
         return result
