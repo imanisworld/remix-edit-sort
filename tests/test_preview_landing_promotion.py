@@ -212,5 +212,73 @@ class LandingPromotionTests(unittest.TestCase):
         self.assertFalse((self.lib / "test.mp3").exists())
 
 
+    def test_stale_approval_hash_is_refused(self):
+        item = self.add("track.mp3")
+        item["sha256"] = "f" * 64
+        self.approvals["items"].append(item)
+        with self.assertRaisesRegex(promotion.PromotionRefused, "approval content hash is stale"):
+            self.preview()
+
+    def test_conflicting_folder_and_filename_versions_are_reviewed(self):
+        item = self.add("CLEAN/Artist - Song (Dirty).mp3")
+        self.approvals["items"].append(item)
+        row = self.preview()["items"][0]
+        self.assertEqual(row["status"], "NEEDS_REVIEW")
+        self.assertIn("version evidence conflicts", row["reason"])
+        self.assertIsNone(row["destination"])
+
+    def test_multiple_version_folder_markers_require_review(self):
+        item = self.add("CLEAN/DIRTY/test.mp3")
+        self.approvals["items"].append(item)
+        row = self.preview()["items"][0]
+        self.assertEqual(row["status"], "NEEDS_REVIEW")
+
+    def test_empty_inventory_is_valid_when_landing_is_empty(self):
+        result = self.preview()
+        self.assertEqual(result["counts"], {"scanned": 0})
+        self.assertEqual(result["items"], [])
+
+    def test_unlisted_file_in_empty_inventory_fails_closed(self):
+        (self.landing / "extra.mp3").write_bytes(b"not in inventory")
+        with self.assertRaisesRegex(promotion.PromotionRefused, "stale inventory"):
+            self.preview()
+
+    def test_serato_map_uses_volume_relative_paths_only_for_ready_tracks(self):
+        approved = self.add("Ready.mp3")
+        self.approvals["items"].append(approved)
+        self.add("Needs Review.mp3", data=b"needs")
+        held = self.add("Next Set.mp3", data=b"gig")
+        self.holds["items"].append(held)
+        preview = self.preview()
+        result = promotion.serato_rename_map(preview, Path("/"))
+        self.assertEqual(len(result["renames"]), 1)
+        mapping = result["renames"][0]
+        self.assertEqual(mapping["from"], str(self.landing.resolve() / "Ready.mp3").lstrip("/"))
+        self.assertEqual(mapping["to"], str(self.final.resolve() / "Ready.mp3").lstrip("/"))
+        self.assertTrue((self.landing / "Ready.mp3").exists())
+
+    def test_serato_map_uses_no_references_when_all_need_review(self):
+        self.add("unreviewed.mp3")
+        self.assertEqual(
+            promotion.serato_rename_map(self.preview(), Path("/"))["renames"], []
+        )
+
+    def test_serato_volume_root_cannot_be_an_arbitrary_subdirectory(self):
+        approved = self.add("test.mp3")
+        self.approvals["items"].append(approved)
+        with self.assertRaisesRegex(promotion.PromotionRefused, "mounted volume root"):
+            promotion.serato_rename_map(self.preview(), self.lib)
+
+    def test_serato_candidate_map_is_accepted_by_existing_rewrite_validator(self):
+        from rewrite_serato_paths import normalize_rename_map
+        approved = self.add("test.mp3")
+        self.approvals["items"].append(approved)
+        candidate_map = promotion.serato_rename_map(self.preview(), Path("/"))
+        rules = normalize_rename_map(candidate_map)
+        self.assertEqual(len(rules), 1)
+        self.assertEqual(rules[0]["from"], candidate_map["renames"][0]["from"])
+        self.assertEqual(rules[0]["to"], candidate_map["renames"][0]["to"])
+
+
 if __name__ == "__main__":
     unittest.main()
