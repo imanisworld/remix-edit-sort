@@ -32,6 +32,15 @@ This is the **single current task list** for connecting the website's event reco
 
 ## Mac-only acceptance queue — do later
 
+**Run first when the Mac is available (draft PR #44 must be approved and present in the local checkout):**
+
+- [ ] From the `remix-edit-sort` repository directory, make the manual launcher executable (one time):
+  ```bash
+  chmod +x "DJ Library Review.command"
+  ```
+- [ ] Double-click `DJ Library Review.command` (or run `bash "DJ Library Review.command"`). Choose the actual `music to move` folder or `~/Downloads`. Start with a small read-only sample, then review the HTML/JSON under `~/Desktop/DJ-Library-Reports`.
+- [ ] Confirm the source paths, existing library-index availability, duplicate evidence, Serato/Rekordbox snapshot inputs, and any unreadable tracks before considering a real-library move. **Do not approve a move from the initial report alone.**
+
 1. [ ] Obtain current, read-only `genre-folders.txt`: exact folders, physical track counts, and both Afrobeat/Afrobeats if present. Populate maps only after review; reconcile older `genre-rules.json` and `version-genre-rules.json` with the approved master and correct misrouted keywords.
 2. [ ] Export one **real Serato History** session (CSV/TXT) with start/end/deck/played status columns shown where available, and one representative **Rekordbox Histories** artifact. Inspect samples before writing parsers. Never commit actual history files, private paths, crates, or music.
 3. [ ] Confirm actual DJ **set** windows (event start time is insufficient), including clock/timezone, and compare with real playback rows in a **read-only** end-to-end run.
