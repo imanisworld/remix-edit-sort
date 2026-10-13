@@ -119,17 +119,20 @@ def analyze_genre(row: dict, rules: dict, assume_genre: str | None = None) -> di
             "confidence": "assumed",
         }
 
-    lower_name = row.get("filename", "").casefold()
-    for rule in rules.get("filename_keywords", []):
-        if rule["contains"].casefold() in lower_name:
-            return {
-                "resolution_status": "RESOLVED", "category": "valid_single_genre",
-                "proposed_genre": rule["genre"], "recognized_genres": [rule["genre"]],
-                "known_contexts": [], "unknown_tokens": [],
-                "evidence": rule["evidence"], "confidence": "high",
-            }
-
     raw = (row.get("genre") or "").strip()
+    # Strong existing metadata outranks the filename; only blank/Other is
+    # eligible for explicit filename recovery. Unknown tags remain reviewable.
+    if not raw or raw.casefold() == "other":
+        lower_name = row.get("filename", "").casefold()
+        for rule in rules.get("filename_keywords", []):
+            if rule["contains"].casefold() in lower_name:
+                return {
+                    "resolution_status": "RESOLVED", "category": "valid_single_genre",
+                    "proposed_genre": rule["genre"], "recognized_genres": [rule["genre"]],
+                    "known_contexts": [], "unknown_tokens": [],
+                    "evidence": rule["evidence"], "confidence": "high",
+                }
+
     if not raw:
         return {
             "resolution_status": "REVIEW", "category": "blank",
