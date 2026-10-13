@@ -91,7 +91,7 @@ class GenreEvidenceTests(unittest.TestCase):
     def test_filename_keyword_can_resolve_blank_tag(self):
         result = genre_checker.evaluate_genre_row(self.row("Artist - Track Ghettotech Edit.mp3", ""), self.rules)
         self.assertEqual(result["genre_status"], "HIGH_CONFIDENCE_PROPOSAL")
-        self.assertEqual(result["proposed_genre"], "Ghetto Tech")
+        self.assertEqual(result["proposed_genre"], "Ghettotech")
         self.assertEqual(result["genre_confidence"], "high")
 
     def assert_resolved(self, genre, expected):
@@ -145,7 +145,7 @@ class GenreEvidenceTests(unittest.TestCase):
         row["grouping"] = "Plex; Edit"
         result = genre_checker.evaluate_genre_row(row, self.rules)
         self.assertEqual(result["genre_resolution_status"], "RESOLVED")
-        self.assertEqual(result["proposed_genre"], "Jungle; Ghetto Tech; Jersey Club")
+        self.assertEqual(result["proposed_genre"], "Jungle; Ghettotech; Jersey Club")
         self.assertEqual(result["grouping_resolution_status"], "RESOLVED")
 
     def test_post_canary_beautiful_liar(self):
