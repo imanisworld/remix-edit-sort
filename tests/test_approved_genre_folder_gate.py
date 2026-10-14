@@ -1,0 +1,148 @@
+"""Only explicitly approved Genre-to-folder destinations may appear in a sort.
+
+Synthetic tests only; does not open, write, or move real music.
+"""
+from __future__ import annotations
+
+SAFETY_CLASSIFICATION = "read-only"
+
+import csv
+import json
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+from unittest import mock
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+import build_plan as remix  # noqa: E402
+import build_version_genre_plan as version  # noqa: E402
+import check_genre_naming as naming  # noqa: E402
+import scan_library  # noqa: E402
+
+EXPECTED = {"R&B": "R&b", "Neo Soul": "neo soul", "Alternative": "alternative"}
+
+
+def read_rules(name):
+    return json.loads((ROOT / "references" / name).read_text(encoding="utf-8"))
+
+
+class ApprovedGenreFolderTests(unittest.TestCase):
+    def test_both_committed_rule_files_contain_only_the_three_entries(self):
+        old, new = read_rules("genre-rules.json"), read_rules("version-genre-rules.json")
+        self.assertEqual(old["folder_names"], EXPECTED)
+        self.assertEqual(new["folder_names"], EXPECTED)
+        self.assertEqual(naming.noncanonical_outputs(ROOT / "references"), [])
+
+    def test_all_other_master_genres_hold_even_if_the_folder_name_matches(self):
+        master = read_rules("genre-learner-rules.json")["canonical_genres"]
+        self.assertEqual(len(master), 76)
+        version_rules = read_rules("version-genre-rules.json")
+        with mock.patch.dict(remix.FOLDER_NAMES, EXPECTED, clear=True):
+            for genre in master:
+                with self.subTest(genre=genre):
+                    expected = EXPECTED.get(genre)
+                    self.assertEqual(remix.genre_dir(genre), expected)
+                    self.assertEqual(
+                        version.genre_folder_for(genre, version_rules),
+                        expected if expected is not None else version.NEEDS_GENRE,
+                    )
+        for held in ("House", "Pop", "Trance", "Drum & Bass", "Ghettotech",
+                     "Atlanta Bass", "Miami Bass", "Ballroom Vogue", "Afrobeats"):
+            self.assertNotIn(held, EXPECTED)
+        self.assertEqual(version.genre_folder_for("R&B; Alternative", version_rules),
+                         version.NEEDS_GENRE)
+
+    def test_malformed_or_missing_rule_map_denies_destination(self):
+        for rules in ({}, {"folder_names": None}, {"folder_names": []},
+                      {"folder_names": {"House": ""}},
+                      {"folder_names": {"House": "../Other"}},
+                      {"folder_names": {"House": "Other/Thing"}}):
+            with self.subTest(rules=rules):
+                self.assertEqual(version.genre_folder_for("House", rules), version.NEEDS_GENRE)
+
+    def test_remix_plan_holds_recognized_genre_without_retaging_it(self):
+        source = {
+            "path": "/synthetic/Song.mp3", "filename": "Song.mp3",
+            "title_clean": "Song", "original_artists": ["Artist"],
+            "remixer": None, "remixer_raw": "", "remix_type": "",
+            "is_remix": False, "is_long_mix": False, "duration": 200,
+            "genre": "Drum & Bass", "existing_genre": "Drum & Bass",
+            "existing_bpm": None, "year": "",
+        }
+        result = remix.plan_one(source, {})
+        self.assertEqual(result["bucket"], "genre_needs_check")
+        self.assertTrue(result["needs_review"])
+        self.assertFalse(result["folder_approved"])
+        self.assertEqual(result["held_genre"], "Drum & Bass")
+        self.assertEqual(result["dest_dir"], "_Unsorted/_GENRE NEEDS CHECK")
+        self.assertEqual(result["tags"]["genre"], "Drum & Bass")
+        self.assertNotIn("#genre-drum", result["tags"]["comment_tags"])
+
+        source["genre"] = "R&B"
+        source["existing_genre"] = "R&B"
+        approved = remix.plan_one(source, {})
+        self.assertEqual(approved["bucket"], "original")
+        self.assertTrue(approved["folder_approved"])
+        self.assertEqual(approved["dest_dir"], "Originals/R&b/Artist")
+
+    def test_existing_folder_name_is_not_genre_proof(self):
+        track = {
+            "existing_genre": "", "filename": "Song.mp3",
+            "remixer_genre": None, "remixer": None, "remixer_raw": "",
+            "original_artists": [], "source_folder": "House",
+            "title_clean": "Song", "artist_raw": "", "album_raw": "", "uploader": "",
+        }
+        self.assertEqual(scan_library.classify_genre(track), (None, "unclassified"))
+        track["source_folder"] = "R&b"
+        self.assertEqual(scan_library.classify_genre(track), ("R&B", "existing_folder"))
+
+    def test_version_cli_routes_held_to_review_without_genre_write(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "library"
+            root.mkdir()
+            source_rows = []
+            for style in ("R&B", "Neo Soul", "Alternative", "Drum & Bass",
+                          "Ghettotech", "House", "Afrobeats", "Miami Bass"):
+                path = root / (style + " (Clean).mp3")
+                path.write_bytes(b"synthetic not audio")
+                source_rows.append([str(path), path.name, style, "Synthetic", "a" * 64])
+            inventory = Path(tmp) / "inventory.csv"
+            with inventory.open("w", encoding="utf-8", newline="") as handle:
+                writer = csv.writer(handle)
+                writer.writerow(["full_path", "filename", "genre", "title", "sha256"])
+                writer.writerows(source_rows)
+            out = Path(tmp) / "output"
+            with mock.patch.object(sys, "argv", [
+                "build_version_genre_plan.py", "--root", str(root),
+                "--inventory", str(inventory), "--out-dir", str(out),
+            ]):
+                version.main()
+            by_genre = {
+                item["current_genre"]: item
+                for item in json.loads((out / "plan.json").read_text())["items"]
+            }
+            for style, physical in EXPECTED.items():
+                item = by_genre[style]
+                self.assertEqual(item["proposed_genre"], style)
+                self.assertIsNone(item["held_genre"])
+                self.assertEqual(item["destination_relative"],
+                                 f"CLEAN/{physical}/{style} (Clean).mp3")
+            for held in ("Drum & Bass", "Ghettotech", "House",
+                         "Afrobeats", "Miami Bass"):
+                item = by_genre[held]
+                self.assertEqual(item["destination_relative"],
+                                 f"CLEAN/_GENRE NEEDS CHECK/{held} (Clean).mp3")
+                self.assertIsNone(item["proposed_genre"])
+                self.assertEqual(item["held_genre"], held)
+                self.assertFalse(item["tag_change"])
+                self.assertIn("not approved", item["genre_evidence"])
+            # The builder may create only local reports, never touch source bytes.
+            for style in by_genre:
+                self.assertEqual((root / (style + " (Clean).mp3")).read_bytes(),
+                                 b"synthetic not audio")
+
+
+if __name__ == "__main__":
+    unittest.main()
