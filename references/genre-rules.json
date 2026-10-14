@@ -161,6 +161,10 @@
     "kenny dope": "Kenny Dope"
   },
 
-  "_folder_names_comment": "Genre tag name -> existing folder name in the remix tree, for genres renamed in the master list whose folders have not been renamed yet. Fill ONLY from a live read-only listing. Empty means the folder is named after the Genre.",
-  "folder_names": {}
+  "_folder_names_comment": "EXPLICIT DESTINATION APPROVAL ONLY. Mappings preserve three verified case-only live folder spellings; every other Genre has NO authorized destination and must route to _GENRE NEEDS CHECK or _Unsorted review. Do not infer a folder from a Genre name. No physical folder rename is approved.",
+  "folder_names": {
+    "R&B": "R&b",
+    "Neo Soul": "neo soul",
+    "Alternative": "alternative"
+  }
 }
