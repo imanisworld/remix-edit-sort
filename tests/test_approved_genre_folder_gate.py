@@ -16,6 +16,7 @@ from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
+import apply_version_genre_plan as apply_version  # noqa: E402
 import build_plan as remix  # noqa: E402
 import build_version_genre_plan as version  # noqa: E402
 import check_genre_naming as naming  # noqa: E402
@@ -86,6 +87,38 @@ class ApprovedGenreFolderTests(unittest.TestCase):
         self.assertEqual(approved["bucket"], "original")
         self.assertTrue(approved["folder_approved"])
         self.assertEqual(approved["dest_dir"], "Originals/R&b/Artist")
+
+    def test_apply_rejects_old_plans_and_wrong_case_destinations(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "Source.mp3"
+            source.write_bytes(b"sample")
+            import hashlib
+            digest = hashlib.sha256(source.read_bytes()).hexdigest()
+            plan = {
+                "mode": "preview-only", "rules": {"approval_required": True},
+                "items": [{
+                    "source": str(source), "sha256": digest,
+                    "destination": str(root / "CLEAN" / "House" / "Source.mp3"),
+                    "destination_relative": "CLEAN/House/Source.mp3",
+                    "version_category": "CLEAN",
+                    "proposed_genre": "House", "tag_change": False,
+                    "move": True,
+                }],
+            }
+            plan_path = root / "plan.json"
+            plan_path.write_text(json.dumps(plan))
+            with self.assertRaisesRegex(RuntimeError, "unapproved Genre folder"):
+                apply_version.load_and_validate(root, plan_path)
+
+            # Even an approved canonical tag must not use its default name
+            # when the disk's approved spelling differs only in case.
+            plan["items"][0]["proposed_genre"] = "R&B"
+            plan["items"][0]["destination"] = str(root / "CLEAN" / "R&B" / "Source.mp3")
+            plan["items"][0]["destination_relative"] = "CLEAN/R&B/Source.mp3"
+            plan_path.write_text(json.dumps(plan))
+            with self.assertRaisesRegex(RuntimeError, "unapproved Genre folder"):
+                apply_version.load_and_validate(root, plan_path)
 
     def test_existing_folder_name_is_not_genre_proof(self):
         track = {
