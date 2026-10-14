@@ -45,6 +45,7 @@ from mutagen.id3 import ID3, ID3NoHeaderError, TCON
 from mutagen.mp4 import MP4
 
 import backup_manifest
+import build_version_genre_plan as version_plan
 import lock_guard
 import mutation_engine
 
@@ -289,6 +290,33 @@ def load_and_validate(root: Path, plan_path: Path) -> tuple[dict, list[dict]]:
     if plan.get("mode") != "preview-only" or not plan.get("rules", {}).get("approval_required"):
         raise RuntimeError("unexpected plan mode")
     items = plan["items"]
+
+    # Re-check destination authorization at apply-time. A historical plan
+    # built before the explicit-folder gate must never bypass newer rules.
+    rules = version_plan.load_genre_rules(None)
+    errors = []
+    for item in items:
+        proposed = item.get("proposed_genre")
+        physical = version_plan.genre_folder_for(proposed, rules)
+        if proposed and physical == version_plan.NEEDS_GENRE:
+            errors.append(f"unapproved Genre folder destination: {proposed!r}")
+        if not proposed and item.get("tag_change"):
+            errors.append("unresolved Genre cannot request a tag write")
+        relative = item.get("destination_relative")
+        category = item.get("version_category")
+        if not isinstance(relative, str) or not isinstance(category, str):
+            errors.append("plan missing destination_relative or version_category")
+            continue
+        parts = Path(relative).parts
+        try:
+            idx = parts.index(category)
+        except ValueError:
+            errors.append(f"plan destination missing version bucket: {relative!r}")
+            continue
+        if idx + 1 >= len(parts) or parts[idx + 1] != physical:
+            errors.append(f"unapproved Genre folder in plan destination: {relative!r}")
+    if errors:
+        raise RuntimeError("Plan validation failed:\n" + "\n".join(errors))
 
     errors = []
     destinations: dict[str, str] = {}
