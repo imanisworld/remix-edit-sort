@@ -257,7 +257,10 @@ def classify_genre(track):
             return hit, "artist_map"
 
     folder = track.get("source_folder") or ""
-    folder_genre = FOLDER_GENRES.get(folder, folder)
+    # A same-spelling physical folder is not sufficient Genre evidence.
+    # Only an explicitly approved folder_names entry may supply a folder
+    # hint; otherwise leave classification to actual tag/filename evidence.
+    folder_genre = FOLDER_GENRES.get(folder)
     if folder_genre and folder_genre in RULES["canonical_genres"]:
         return folder_genre, "existing_folder"
 
