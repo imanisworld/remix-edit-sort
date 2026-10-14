@@ -157,7 +157,7 @@ class ApplyEndToEndTests(unittest.TestCase):
         destination_name = "BT005.mp3"
         original_hash = backup_manifest.sha256_file(self.paths[source_name])
         plan = self.build_plan([
-            self.item(source_name, "R&B", move_to=destination_name, tag_change=False),
+            self.item(source_name, None, move_to=destination_name, tag_change=False),
         ])
 
         result = self.apply_plan(plan)
@@ -186,7 +186,7 @@ class ApplyEndToEndTests(unittest.TestCase):
         destination_name = "MIX — 日本語.mp3"
         original_hash = backup_manifest.sha256_file(self.paths[source_name])
         result = self.apply_plan(self.build_plan([
-            self.item(source_name, "R&B", move_to=destination_name, tag_change=False),
+            self.item(source_name, None, move_to=destination_name, tag_change=False),
         ]))
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         literal_names = {entry.name for entry in self.root.iterdir()}
