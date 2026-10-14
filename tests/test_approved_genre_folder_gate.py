@@ -135,6 +135,7 @@ class ApprovedGenreFolderTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "library"
             root.mkdir()
+            root = root.resolve()  # macOS /var -> /private/var symlink identity
             source_rows = []
             for style in ("R&B", "Neo Soul", "Alternative", "Drum & Bass",
                           "Ghettotech", "House", "Afrobeats", "Miami Bass"):
