@@ -266,7 +266,7 @@ def classify_genre(track):
 
     haystack = norm(" ".join(filter(None, [
         track["title_clean"], track["remixer_raw"] or "", track["artist_raw"],
-        track["album_raw"], track["uploader"] or "", folder])))
+        track["album_raw"], track["uploader"] or ""])))
     for rule in RULES["keyword_rules"]:
         for kw in rule["match"]:
             k = norm(kw)
