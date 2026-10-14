@@ -302,6 +302,13 @@ def load_and_validate(root: Path, plan_path: Path) -> tuple[dict, list[dict]]:
             errors.append(f"unapproved Genre folder destination: {proposed!r}")
         if not proposed and item.get("tag_change"):
             errors.append("unresolved Genre cannot request a tag write")
+        # A tag-only operation or literal filename rename in the SAME folder
+        # does not choose a Genre folder. All directory relocations must use
+        # an explicit approved physical Genre destination from current rules.
+        source_path = Path(item["source"]).absolute()
+        destination_path = Path(item["destination"]).absolute()
+        if source_path.parent == destination_path.parent:
+            continue
         relative = item.get("destination_relative")
         category = item.get("version_category")
         if not isinstance(relative, str) or not isinstance(category, str):
