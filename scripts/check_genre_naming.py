@@ -17,6 +17,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCES = ROOT / "references"
 
+# Only these three existing physical folder spellings have approval in this
+# source-only change. Expanding the map requires a separately reviewed patch.
+APPROVED_FOLDER_NAMES = {
+    "R&B": "R&b",
+    "Neo Soul": "neo soul",
+    "Alternative": "alternative",
+}
+
 
 def read_json(path: Path) -> dict:
     data = json.loads(path.read_text(encoding="utf-8"))
@@ -56,6 +64,13 @@ def noncanonical_outputs(references: Path) -> list[dict[str, str]]:
                 raise ValueError(f"{config_name} folder_names has noncanonical key {genre!r}")
             if not isinstance(folder, str) or not folder.strip():
                 raise ValueError(f"{config_name} folder_names has blank path for {genre!r}")
+    # Canonical Genre spelling never implies an approved physical folder.
+    # Both active pipelines must have exactly the same three explicit entries.
+    if legacy["folder_names"] != APPROVED_FOLDER_NAMES:
+        raise ValueError("genre-rules.json folder_names differ from the three explicitly approved destinations")
+    if version["folder_names"] != APPROVED_FOLDER_NAMES:
+        raise ValueError("version-genre-rules.json folder_names differ from the three explicitly approved destinations")
+
     rows = []
 
     def add(file: str, field: str, key: str, raw: str) -> None:
