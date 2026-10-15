@@ -127,7 +127,7 @@ class MutationSurfaceTests(unittest.TestCase):
         """Deletion primitives may only appear where deletion is the explicit,
         human-approved purpose -- or against files the tool owns itself."""
         allowed = {
-            "scripts/delete_verified_duplicates.py",  # manual, EXACT_DUPLICATE only
+            "scripts/delete_verified_duplicates.py",  # manual, EXACT_DUPLICATE or owner audio-match rule
             "scripts/folder_lock.py",                 # removes its own lock files
             "scripts/detect_bpm.py",                  # removes its own temp wav
             "scripts/metadata_batch.py",              # removes only a failed owned atomic-write temp file

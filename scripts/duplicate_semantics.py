@@ -24,10 +24,11 @@ EXACT_DUPLICATE
 AUDIO_EQUIVALENT
     Bytes differ, but strong audio-fingerprint evidence says the decoded
     audio is the same recording (e.g. the same master with different tags or
-    a different container). No fingerprinting exists in this repo yet, so
-    nothing currently produces this verdict; it is defined so that when
-    fingerprinting is added it lands in an already-named slot rather than
-    being smuggled in as "duplicate". Never authorizes deletion on its own.
+    a different container). Produced by `classify_audio_match` from
+    Chromaprint evidence (scripts/audio_fingerprint.py). Never authorizes
+    deletion on its own; only the owner's audio-match rule below can make an
+    AUDIO_EQUIVALENT pair removable, through
+    `delete_verified_duplicates.py --mode audio-match`.
 
 RELATED_VERSION
     An intentional, meaningful variant: Clean / Dirty / Intro / Outro /
@@ -45,6 +46,23 @@ REVIEW
 Filename, title, artist and duration similarity -- in any combination, at any
 threshold -- can produce at most REVIEW. Only a byte-identical SHA-256 can
 produce EXACT_DUPLICATE.
+
+## Owner audio-match rule (approved by Imani, 2026-10-15 16:57 ET)
+
+One narrow, owner-approved extension. A file may be removed in favour of a
+kept copy when ALL of these hold, re-checked at delete time:
+
+  1. Same version markers (filename + Title tag). Clean vs Dirty, Intro,
+     Remix, Edit, ... still always differ and are never removable.
+  2. Either the audio payload (tags ignored) is identical, OR
+       - Chromaprint similarity >= 0.85, AND
+       - durations within 3 s, AND
+       - the removed copy is lower quality: lower bitrate, or the kept copy
+         is lossless and the removed copy is not.
+  3. The kept copy exists, and a human approved the exact keep/remove list.
+
+Anything else stays REVIEW. Ties in bitrate with differing audio are NOT
+removable.
 """
 
 from __future__ import annotations
@@ -173,3 +191,41 @@ def assert_not_called_duplicate(verdict: str, label: str) -> None:
             f"refusing to label a {verdict} pair {label!r}: only EXACT_DUPLICATE "
             "(identical SHA-256) may be called a duplicate"
         )
+
+
+MIN_FINGERPRINT_SIMILARITY = 0.85
+MAX_DURATION_DIFF_SECONDS = 3.0
+OWNER_AUDIO_MATCH_RULE = "owner-audio-match-2026-10-15"
+
+
+def classify_audio_match(*, delete: dict, keep: dict, similarity: float) -> dict:
+    """Apply the owner audio-match rule to two probes (see module docstring).
+
+    `delete`/`keep` carry: markers, payload_sha256, duration, bitrate, lossless.
+    Returns {"verdict", "reason", "owner_rule_removable"}.
+    """
+    if sorted(delete["markers"]) != sorted(keep["markers"]):
+        return {"verdict": RELATED_VERSION, "owner_rule_removable": False,
+                "reason": f"different version markers ({sorted(delete['markers'])} vs {sorted(keep['markers'])})"}
+    if delete["payload_sha256"] and delete["payload_sha256"] == keep["payload_sha256"]:
+        return {"verdict": AUDIO_EQUIVALENT, "owner_rule_removable": True,
+                "reason": "identical audio payload (tags differ)"}
+    if similarity < MIN_FINGERPRINT_SIMILARITY:
+        return {"verdict": REVIEW, "owner_rule_removable": False,
+                "reason": f"fingerprint similarity {similarity} < {MIN_FINGERPRINT_SIMILARITY}"}
+    if abs(float(delete["duration"]) - float(keep["duration"])) > MAX_DURATION_DIFF_SECONDS:
+        return {"verdict": REVIEW, "owner_rule_removable": False,
+                "reason": "durations differ by more than 3 s"}
+    lower = (keep["lossless"] and not delete["lossless"]) or (
+        delete["lossless"] == keep["lossless"] and int(delete["bitrate"]) < int(keep["bitrate"]))
+    if not lower:
+        return {"verdict": AUDIO_EQUIVALENT, "owner_rule_removable": False,
+                "reason": "same recording but the removed copy is not lower quality"}
+    return {"verdict": AUDIO_EQUIVALENT, "owner_rule_removable": True,
+            "reason": f"fingerprint {similarity}, durations within 3 s, removed copy lower quality"}
+
+
+def may_authorize_audio_match_deletion(result: dict) -> bool:
+    """True only for an AUDIO_EQUIVALENT verdict that satisfies the owner rule.
+    Still needs a human-approved keep/remove list; nothing deletes automatically."""
+    return result.get("verdict") == AUDIO_EQUIVALENT and bool(result.get("owner_rule_removable"))

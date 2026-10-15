@@ -38,7 +38,14 @@ they do not fabricate or trust an unverified restore path.
 - **No automatic deletion.** Nothing in this repository deletes on its own.
   `delete_verified_duplicates.py` is the only deletion tool, it operates on a
   human-approved pair list, and it refuses any pair that is not a proven
-  EXACT_DUPLICATE.
+  EXACT_DUPLICATE — except under `--mode audio-match`, the owner rule below.
+- **Owner audio-match rule (Imani, 2026-10-15 16:57 ET).** A file may be removed
+  in favour of a kept copy when, re-checked from fresh probes at delete time:
+  same version markers (filename + Title), AND either identical audio payload
+  (tags ignored) OR Chromaprint similarity ≥ 0.85 + durations within 3 s + the
+  removed copy is lower quality (lower bitrate, or keeper lossless). The kept
+  copy must exist and the exact keep/remove list must be human-approved. Same
+  backup, journal, rollback and undo as exact mode. Everything else stays REVIEW.
 - **EXACT_DUPLICATE means identical SHA-256 over the whole file. Nothing else.**
   Filename, title, artist and duration similarity — in any combination, at any
   threshold — produce REVIEW at most. See `scripts/duplicate_semantics.py`.
@@ -75,7 +82,8 @@ they do not fabricate or trust an unverified restore path.
 | `rewrite_serato_paths.py` | engine-user | Reviewed, hash-bound `pfil`/`ptrk` path rewrites in Serato database/crates. Fails closed if Serato is running. |
 | `rewrite_serato_sqlite_paths.py` | engine-user | Reviewed, hash-bound `asset.portable_id` rewrites in Serato's `master.sqlite`/`root.sqlite`; one SQLite transaction per database inside an engine item. |
 | `apply_folder_rename_plan.py` | engine-user | Whole-folder renames (including case-only, via a temp name) through `MutationEngine.folder_item()`; preview, apply, undo, crash recovery. See `references/folder-rename-runbook.md`. |
-| `delete_verified_duplicates.py` | engine-user | Manual EXACT_DUPLICATE deletion. |
+| `delete_verified_duplicates.py` | engine-user | Manual EXACT_DUPLICATE deletion; `--mode audio-match` for the owner audio-match rule. |
+| `audio_fingerprint.py` | read-only | Chromaprint/duration/bitrate/payload probes for the audio-match rule. |
 | `apply_plan.py` | disabled-legacy | Hard-disabled. Read-only `--report` only. |
 | `merge_events_duplicates.py` | disabled-legacy | Hard-disabled completed one-off. |
 | `standardize_names.py` | preview-only | Proposes filename/Artist/Title cleanups. Applies nothing. |

@@ -14,7 +14,7 @@ These rules apply to every coding agent working in this repository: Codex, Curso
 
 - Every library mutation goes through `scripts/mutation_engine.py`, with a lock and a PASS backup manifest. No script renames, tags or deletes on its own.
 - Show a preview and get explicit approval before any move or metadata write.
-- `EXACT_DUPLICATE` means identical SHA-256 and nothing else.
+- `EXACT_DUPLICATE` means identical SHA-256 and nothing else. The only other removable case is the owner audio-match rule (2026-10-15, see SAFETY-MODEL.md): same version markers + identical audio payload, or Chromaprint ≥ 0.85 + durations within 3 s + lower-quality copy removed, via `delete_verified_duplicates.py --mode audio-match` on a human-approved list.
 - Never guess a genre, artist, title, event or version. Use needs-check.
 - `handoff/` is historical evidence and never executable.
 - Several agents work this library at once. Check and acquire folder locks (`scripts/folder_lock.py`) before touching a source folder.
