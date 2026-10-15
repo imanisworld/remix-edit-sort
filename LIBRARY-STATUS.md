@@ -6,6 +6,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 
 2026-10-15 15:20 EDT — Grok (DJ B.A.E. Library)
 2026-10-15 ~15:45 EDT — Claude (cloud, repo only): genre folder approval, PR #55 (see Waiting on Imani). No library files touched.
+2026-10-15 ~16:30 EDT — Claude (cloud, repo only): junk-Grouping removal tool (PR #57). No library files touched.
 2026-10-15 ~15:55 EDT — Claude (cloud, repo only): PR #55 merged (also reads a plain "Afrobeat" tag as Afrobeats; "Dub" stays held). No library files touched.
 
 ## Rules every AI must follow
@@ -13,7 +14,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 - **Metadata first.** Tags (Genre, Grouping, Year) before folder moves so Serato smart crates pick tracks up.
 - **Era = Year field only**, clean 4-digit. No Era tags, no era folders long-term.
 - Spellings: top folder and Genre **`R&B`** (not R&b); **`Afrobeats`** (Afrobeat = same thing).
-- **Grouping is append-only.** Never overwrite existing Grouping text.
+- **Grouping is append-only.** Never overwrite existing Grouping text. One exception (Imani, 2026-10-15): `scripts/build_grouping_removal_plan.py` removes only exact values Imani listed by hand after seeing the survey; everything else stays.
 - Music changes **only** via `scripts/mutation_engine.py` (lock, verified backup, journal, audio + Serato hash checks). No ad-hoc tag edits.
 - **Backups:** changed files + `_Serato_` only, on T5 EVO (`/Volumes/T5 EVO/DJ-backups/…`). Delete each backup after Imani confirms Serato looks right. Do not keep whole-folder copies.
 - **Close-check Serato** before any write. Stop if Serato DJ Pro is open.
@@ -86,6 +87,11 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
 
 ## Waiting on Imani
 
+- **Junk Grouping removal ("November", record-pool watermarks)** — Imani said yes to a narrow exception. Tool is in PR #57 (merge it, then `git pull`). Steps, Pop / Cat Calls Inspo / Y2K, after the `Source:` write:
+  1. `python3 scripts/build_grouping_removal_plan.py survey --root "$LIB/<folder>" --out-dir "$W/grouping-survey"` (read-only) → show Imani `GROUPING-VALUES.md`.
+  2. Imani picks the exact junk values → one per line in `$W/remove.txt`.
+  3. `python3 scripts/build_grouping_removal_plan.py plan --root "$LIB/<folder>" --remove "$W/remove.txt" --out-dir "$W/grouping-removal"` → show `GROUPING-REMOVAL-PREVIEW.md`; Imani says go.
+  4. Scoped backup + PASS manifest, then `apply_grouping_plan.py --apply` with the lock, as for any Grouping write. Serato rescan.
 - **575** R&B "NEEDS YOU" rows (`rnb-tag-apply-20261015/deferred.csv` / preview v3).
 - Tyla 128 kbps vs 320 kbps pairs (not hash dupes) — keep/delete call.
 - Fix Serato smart crates: `Clean R&B` / `r&b edits` need `"r&b "` with trailing space; `Clean R&B` should match ALL not ANY; `90s`/`2000s` use Grouping not Year.
