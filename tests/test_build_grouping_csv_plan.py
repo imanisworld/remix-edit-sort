@@ -17,6 +17,7 @@ for entry in (str(TESTS_DIR), str(SCRIPTS_DIR)):
         sys.path.insert(0, entry)
 
 import fixtures  # noqa: E402
+import media_fixtures  # noqa: E402
 import apply_grouping_plan  # noqa: E402
 
 BUILD = SCRIPTS_DIR / "build_grouping_csv_plan.py"
@@ -197,6 +198,73 @@ class EndToEndThroughApplyGroupingPlan(unittest.TestCase):
         self.assertEqual(undone.returncode, 0, undone.stdout + undone.stderr)
         self.assertEqual(a.read_bytes(), before_bytes[a])
         self.assertEqual(b.read_bytes(), before_bytes[b])
+
+
+class FlacM4aSupport(unittest.TestCase):
+    """#51 taught apply_grouping_plan.py to write FLAC and M4A Grouping; the
+    CSV builder must plan them too (id3_version null) and still skip others."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.tmp = Path(self._tmp.name)
+        self.root = self.tmp / "World music"
+        self.flac = media_fixtures.write_tiny(self.root / "CLEAN/World/a.flac", "flac")
+        self.m4a = media_fixtures.write_tiny(self.root / "DIRTY/World/b.m4a", "m4a")
+        apply_grouping_plan.write_grouping(self.flac, "Clean", None)
+        self.wav = self.root / "c.wav"
+        self.wav.write_bytes(b"RIFF0000WAVE")
+
+    def tearDown(self):
+        run(FOLDER_LOCK, "release", "--folder", LOCK_FOLDER, "--session", SESSION, "--force",
+            "--reason", "test teardown")
+        self._tmp.cleanup()
+
+    def build(self, rows):
+        decisions = self.tmp / "d.csv"
+        with decisions.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.writer(handle)
+            writer.writerow(["full_path", "grouping_value"])
+            writer.writerows([[str(p), v] for p, v in rows])
+        out = self.tmp / "out"
+        result = run(BUILD, "--root", self.root, "--decisions", decisions, "--out-dir", out)
+        return result, out / "grouping-plan.json"
+
+    def test_plans_flac_and_m4a_and_skips_other_formats(self):
+        result, plan_path = self.build([(self.flac, "Energy: Peak"), (self.m4a, "Energy: Warmup"),
+                                        (self.wav, "Energy: Peak")])
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        plan = json.loads(plan_path.read_text(encoding="utf-8"))
+        by_name = {Path(i["path"]).name: i for i in plan["items"]}
+        self.assertEqual(set(by_name), {"a.flac", "b.m4a"})
+        self.assertIsNone(by_name["a.flac"]["id3_version"])
+        self.assertEqual(by_name["a.flac"]["current_grouping"], ["Clean"])
+        self.assertEqual(by_name["a.flac"]["combined_grouping"], "Clean; Energy: Peak")
+        self.assertEqual(by_name["b.m4a"]["combined_grouping"], "Energy: Warmup")
+        self.assertEqual(sum(plan["counts"]["skipped"].values()), 1)
+        self.assertIn("unsupported format", next(iter(plan["counts"]["skipped"])))
+
+    def test_flac_and_m4a_plan_applies_through_engine_and_undoes(self):
+        before = {p: p.read_bytes() for p in (self.flac, self.m4a)}
+        before_audio = {p: apply_grouping_plan.audio_payload(p) for p in before}
+        _, plan_path = self.build([(self.flac, "Energy: Peak"), (self.m4a, "Energy: Warmup")])
+        backup = fixtures.mirror_backup(self.root, self.tmp / "backup")
+        manifest = fixtures.passing_manifest(self.root, backup, self.tmp / "manifest.json")
+        acquire = run(FOLDER_LOCK, "acquire", "--folder", LOCK_FOLDER, "--session", SESSION, "--agent", "test")
+        self.assertEqual(acquire.returncode, 0, acquire.stdout + acquire.stderr)
+        applied = run(APPLY, "--root", self.root, "--plan", plan_path, "--backup", backup,
+                      "--backup-manifest", manifest, "--apply",
+                      "--lock-folder", LOCK_FOLDER, "--session", SESSION, "--label", "t")
+        self.assertEqual(applied.returncode, 0, applied.stdout + applied.stderr)
+        payload = json.loads(applied.stdout)
+        self.assertEqual(payload["grouping_tags_changed"], 2)
+        self.assertEqual(apply_grouping_plan.read_grouping(self.flac), (["Clean; Energy: Peak"], None))
+        self.assertEqual(apply_grouping_plan.read_grouping(self.m4a), (["Energy: Warmup"], None))
+        for p in before:
+            self.assertEqual(apply_grouping_plan.audio_payload(p), before_audio[p])
+        undone = run(APPLY, "--undo", payload["undo_log"], "--lock-folder", LOCK_FOLDER, "--session", SESSION)
+        self.assertEqual(undone.returncode, 0, undone.stdout + undone.stderr)
+        for p in before:
+            self.assertEqual(p.read_bytes(), before[p])
 
 
 if __name__ == "__main__":
