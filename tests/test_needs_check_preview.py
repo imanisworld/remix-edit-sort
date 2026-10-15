@@ -167,7 +167,10 @@ class GenreEvidenceTests(unittest.TestCase):
                 row = self.row(filename, genre)
                 row["grouping"] = grouping
                 result = genre_checker.evaluate_genre_row(row, self.rules)
-                self.assertEqual(result["genre_resolution_status"], "REVIEW" if genre == "Afrobeat" else "RESOLVED")
+                # Owner 2026-10-15: a bare "Afrobeat" tag is Afrobeats ("same thing").
+                self.assertEqual(result["genre_resolution_status"], "RESOLVED")
+                if genre == "Afrobeat":
+                    self.assertEqual(result["proposed_genre"], "Afrobeats")
                 self.assertEqual(result["grouping_resolution_status"], "RESOLVED")
                 self.assertEqual(result["proposed_grouping"], grouping)
 

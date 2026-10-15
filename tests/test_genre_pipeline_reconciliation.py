@@ -123,8 +123,10 @@ class GenreReconciliationTests(unittest.TestCase):
             "existing_genre": "Garage Jungle",
         }
         self.assertEqual(remix_sort.classify_genre(fields), (None, "existing_tag_requires_review"))
-        fields["existing_genre"] = "Afrobeat"
+        fields["existing_genre"] = "Dub"
         self.assertEqual(remix_sort.classify_genre(fields), (None, "existing_tag_requires_review"))
+        fields["existing_genre"] = "Afrobeat"  # owner 2026-10-15: same as Afrobeats
+        self.assertEqual(remix_sort.classify_genre(fields), ("Afrobeats", "existing_tag"))
         fields["existing_genre"] = "Miami Bass"
         fields["filename"] = "Artist - ATL Bass Edit.mp3"
         self.assertEqual(remix_sort.classify_genre(fields), (None, "existing_tag_filename_conflict"))

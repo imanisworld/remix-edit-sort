@@ -59,7 +59,7 @@ Repo: **`imanisworld/remix-edit-sort`** on GitHub (private; never publish it or 
 - **ChatGPT's PR #41** brought both older rule files in line with the 76 names, added a CI check for genre names, and added a landing-folder move preview. That preview only writes a report. **But #41 misread several of the owner's decisions** (it only saw a paste, not their answers).
 - **Codex's PR #47** allows a track into a genre folder only if that folder is on the approved list. Only 3 folders are approved: R&B → `R&b`, Neo Soul → `neo soul`, Alternative → `alternative`. **Every other genre goes to `_GENRE NEEDS CHECK` and gets no genre tag written** until more folders are approved.
 - **My PR #49** puts the owner's real decisions back over #41 (Funk & Soul kept merged, Blues allowed, the Grouping descriptors) and rewrites the decision record file.
-- **None of #37, #41, #47 or #49 is merged.** All pass CI.
+- **Update 2026-10-15 afternoon:** #37, #41, #47 and #49 are all **merged into `main`** (771 tests pass on `main`). Also merged since: #50 (R&B folder spelling is now `R&B`; `R&b`/`r&b` normalize to it), #51 (Grouping and Year/BPM writers handle FLAC and M4A), #52/#53 (per-track CSV Grouping plan builder, `scripts/build_grouping_csv_plan.py`).
 
 ### Set prep for October gigs [reported, done in Grok/Cursor, not by me]
 - Set lists built for Oct 15 (Open Decks), Oct 16 (Cat Calls, The Neon Veil), Oct 18 (Garden of Eatin, for Al), Oct 31 (Spring Wilder's 75th birthday, clean versions), and "Inna Space".
@@ -128,7 +128,7 @@ Repo: **`imanisworld/remix-edit-sort`** on GitHub (private; never publish it or 
 
 **Known limits:**
 - The version/genre sorter (`build_version_genre_plan.py`) can't write Grouping. It holds R&B Throwbacks, Alternative Hip Hop and Jazzy House for review instead of dropping the descriptor.
-- After #47, only 3 genres have an approved folder, so genre tagging and filing is effectively paused (section 5, step 2).
+- After #47, only 3 genres had an approved folder; the 2026-10-15 folder approval raised that to 59 (section 5, step 3).
 
 ---
 
@@ -160,16 +160,12 @@ Repo: **`imanisworld/remix-edit-sort`** on GitHub (private; never publish it or 
 ## 5. What's left, in order
 
 1. **Gig prep first (time-critical):** download the missing tracks (Oct 15 first, then Oct 16) per `~/Desktop/need-to-get-oct.txt`. Then build one Serato crate per set. [reported]
-2. **Merge the genre PR stack so it lands on `main`.** These PRs are stacked, so merging #41 straight after #37 can put it on #37's branch instead of `main`. Either:
-   - top-down: merge **#49 → #47 → #41 → #37**; or
-   - bottom-up: merge #37, then change each next PR's base to `main` before merging it.
-
-   Then confirm `main` contains `references/genre-atlas/`, `AGENTS.md` and #49's decision record. (A reminder to check this is scheduled in the old session for 2026-10-16 00:50 UTC.)
-3. **Unpause genre filing:** get the list of ~24 "keep as-is" folders from Cursor's folder-mapping draft. The owner approved adding them. Add each to `folder_names` in **both** rule files **and** to `APPROVED_FOLDER_NAMES` in `scripts/check_genre_naming.py`, then run the tests. Held by design: DNB/Ghettotech, Afrobeat/Afrobeats, Hip Hop → Hip-Hop, Riddim. [reported]
+2. ~~Merge the genre PR stack~~ **Done** (all on `main` as of 2026-10-15).
+3. **Unpause genre filing (done in the repo, 2026-10-15; merged once its PR lands):** from a read-only listing of the live top-level folders (`handoff/live-top-level-folders-2026-10-15.md`), the owner approved 59 Genre → folder entries: 36 into their own folder (Afrobeats → `Afrobeat`: owner says Afrobeat and Afrobeats are the same thing), 23 smaller styles into a parent folder (tag kept exact). 17 Genres stay held (Dub; Breaks; Electro; Dubstep; Miami/Atlanta Bass; Afro Tech; Gqom; Kuduro; Afro Baile; New Wave; Drill styles). The live listing shows `Ghettotech` and `Drum & Bass` folders already exist, so those two renames are done; `Amapiano` has no trailing space now. [verified listing; owner-approved in chat]
 4. **Merge the DJ-integration chain** #42 → #43 → #46 → #44. Same stacked-merge caution.
 5. **Set-history exports (#48):** the owner exports Serato History (CSV + TXT) into the history-exports inbox folder, then runs `scripts/dj_history_export_stage.py stage`. [reported]
 6. **Mac test run** (`MAC-CANARY.md`) before any real move or rename. CI runs on Linux; the library is on macOS/APFS.
-7. **T5 backup index** (Mac-local), per `handoff/CURRENT-STATUS.md`.
+7. **T5 backup index** (Mac-local), per `handoff/CURRENT-STATUS.md`. The owner reports the T5 is plugged in (2026-10-15); whether the index was built is not recorded in the repo [unsure].
 8. **Owner's open set decisions [reported]:**
    - Cat Calls: MikeQ remixes of Pure/Honey and Alien Superstar instead of the album versions?
    - Oct 18: use the owned Bidi Bidi Bom Bom / Como La Flor?

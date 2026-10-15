@@ -56,13 +56,11 @@ python3 scripts/folder_lock.py release --folder "$F" --session "$SESSION"
 
 Undo: `apply_version_genre_plan.py --undo <undo .jsonl from step 4>` (same `--root/--plan/--lock-folder/--session`).
 
-**Expect most tracks to land in `_GENRE NEEDS CHECK`** until the approved folder list grows. After #47, only R&B → `R&b`, Neo Soul → `neo soul` and Alternative → `alternative` are approved.
+**Approved folders (2026-10-15):** 59 Genres now have a destination, using the live folder spellings (e.g. Hip-Hop → `Hip Hop`, Afrobeats → `Afrobeat`, Deep House → `House`). The 17 still held (Dub, Breaks, Electro, Dubstep, Miami/Atlanta Bass, Afro Tech, Gqom, Kuduro, Afro Baile, New Wave, Drill styles) go to `_GENRE NEEDS CHECK` with no tag write. The full list is `folder_names` in `references/version-genre-rules.json`. `git pull` before the next plan.
 
-**First job:** rebuild the "keep as-is" folder list from the live library (read-only):
-```bash
-cd "$LIB" && find . -mindepth 1 -maxdepth 3 -type d ! -name '_Serato_*' | sort
-```
-For each folder the owner approves, add an entry to `folder_names` in **both** `references/genre-rules.json` and `references/version-genre-rules.json`, **and** to `APPROVED_FOLDER_NAMES` in `scripts/check_genre_naming.py`. Then run the tests.
+To approve more later: add the entry to `folder_names` in **both** `references/genre-rules.json` and `references/version-genre-rules.json`, **and** to `APPROVED_FOLDER_NAMES` in `scripts/check_genre_naming.py`, then run the tests. Use the exact on-disk spelling.
+
+**Serato:** after tags are written, Serato shows the new Genre only once it re-reads the files. Select the tracks in Serato and use **Rescan ID3 Tags** (Files panel).
 
 ## Folder renames (e.g. `Afrobeat/` → `Afrobeats/`)
 
@@ -70,7 +68,7 @@ A rename changes file paths, so Serato's database and crates must be updated too
 
 1. Decide the exact old → new folder pairs **with the owner**. Not decided yet: Afrobeat→Afrobeats, Ghetto Tech→Ghettotech, DNB→Drum & Bass, Hip Hop→Hip-Hop.
    - Do Hip Hop last; it has ~5,900 tracks.
-   - Bare `Afrobeat` tags are held for review, so the owner must confirm that folder holds modern Afrobeats.
+   - Owner confirmed 2026-10-15: the `Afrobeat` folder is Afrobeats ("same thing").
 2. Move the files with the per-folder steps above (approved destination, PASS backup).
 3. **With Serato closed**, update Serato's paths:
    ```bash

@@ -41,9 +41,9 @@ class GenreMasterReviewTests(unittest.TestCase):
     def test_afrobeats_is_the_master_name(self):
         self.assertIn('Afrobeats', self.canonical)
         self.assertNotIn('Afrobeat', self.canonical)
-        for raw in ('Afrobeats', 'Afro Beats'):
+        # Owner 2026-10-15: a bare "Afrobeat" tag is Afrobeats ("same thing").
+        for raw in ('Afrobeats', 'Afro Beats', 'Afrobeat'):
             self.assertSingle(raw, 'Afrobeats')
-        self.assertNeedsCheck('Afrobeat')
 
     def test_ballroom_vogue_has_no_slash(self):
         self.assertIn('Ballroom Vogue', self.canonical)
@@ -77,10 +77,8 @@ class GenreMasterReviewTests(unittest.TestCase):
         self.assertSingle('Jazzy House', 'Deep House', ['Jazzy'])
 
     def test_undecided_bare_tags_stay_held(self):
-        # The user decided the master names, not what a bare legacy tag means:
-        # "Afrobeat" may be Fela-era, "Dub" may be a dub mix.
-        for raw in ('Afrobeat', 'Dub'):
-            self.assertEqual(self.parse(raw)['status'], 'legacy_compound_review')
+        # "Dub" may be a dub mix. ("Afrobeat" was decided 2026-10-15: Afrobeats.)
+        self.assertEqual(self.parse('Dub')['status'], 'legacy_compound_review')
 
     def test_function_tags_are_grouping_not_genre(self):
         self.assertContextOnly('Twerk', 'Twerk')
