@@ -34,6 +34,54 @@ repository. If any other document contradicts it, it wins. In short:
 - SQLite library-index databases and journals
 - Backups, undo payloads, and per-run reports
 - Local credentials or configuration
+- Serato/rekordbox History exports staged for set building
+
+## Grok set-history staging (read-only)
+
+For building sets, Grok needs **official Serato/rekordbox History exports**
+(CSV/TXT/m3u/m3u8) — not crates, not collection XML, not binary `.session`
+files. See [references/grok-set-history.md](references/grok-set-history.md).
+
+```bash
+STAGE="$HOME/Documents/DJ-library-project-20260825/history-exports-for-grok"
+python3 scripts/dj_history_export_stage.py inventory \
+  --search "$HOME/Documents/DJ-library-project-20260825/history-exports/inbox" \
+  --json-out "$STAGE/last-inventory.json"
+
+python3 scripts/dj_history_export_stage.py stage \
+  --staging-dir "$STAGE" \
+  --search "$HOME/Documents/DJ-library-project-20260825/history-exports/inbox"
+```
+
+Staging copies only official export files into a private folder outside Music
+and outside Git, and writes `GROK-SET-HISTORY.md` + `manifest.json` for Grok.
+
+## Run a DJ Library Review when you choose
+
+The [manual DJ Library Review](references/manual-dj-library-review.md)
+adds a Mac double-click launcher (`DJ Library Review.command`) and one
+read-only report for a chosen `Downloads` or `music to move` folder,
+exact-byte duplicate review, optional Serato/Rekordbox snapshot drift,
+and strictly evidence-limited normalized playback/event matching.
+
+There is no background watcher, automatic move, new database, retagging or
+app rewrite. Original History exports are fingerprinted only; their
+installed-version playback row formats remain to be verified on the Mac.
+Added by PR #44, which also carries #43 (time matching) and #46 (exact-identity play matching); #42 (drift) is on `main`.
+
+## Active DJ integration work (source-only)
+
+For the **current priorities, pending decisions, Grok/Cursor handoff and Mac-only
+acceptance gates**, see [DJ integration work plan](references/dj-integration-work-plan.md).
+The [event/playback evidence and folder-rename specification](references/event-history-and-folder-renames.md)
+distinguishes website event times, Serato History playback timestamps,
+Rekordbox exports, and verified track identity.
+
+GitHub PR #37 contains pending genre ontology changes and empty folder maps;
+draft PR #42 contains read-only Serato/Rekordbox *source snapshot* drift detection.
+Neither PR authorizes a live folder rename or auto-retagging. Do not create a
+duplicate watch daemon, history parser, or Serato path rewriter before reviewing
+the existing scripts and the linked work plan.
 
 ## Persistent read-only library index
 
@@ -195,6 +243,23 @@ Release-year, event, artist/title, genre, and similar research follows `referenc
 
 Reusable release-year decisions live in `references/year-evidence.json` and are validated by `scripts/validate_year_evidence.py`.
 
+Store/catalog research must pass the reissue-year guard before it enters that registry:
+
+```bash
+python3 scripts/guard_reissue_years.py \
+  --input reviewed-store-hits.json \
+  --registry references/year-evidence.json \
+  --out guarded-year-evidence.json
+python3 scripts/validate_year_evidence.py guarded-year-evidence.json
+```
+
+The guard flags album titles containing Remaster, Deluxe, Anniversary, Greatest Hits, or
+Live; any store year later than the embedded year; and disagreement among store years. A
+flagged item retains every candidate and source but is written with `year: null`,
+`evidence_grade: unknown`, and `review_status: reissue_review_required`, so it cannot feed a
+year write accidentally. Unflagged, agreeing store hits retain the most conservative source
+grade and still require the normal reviewed-plan approval before metadata changes.
+
 ## Proving a backup before any apply
 
 ```bash
@@ -279,7 +344,7 @@ The reusable standalone prompt is available at `music-sort-prompt.md`. Session-s
   - `serato_index.py` / `rekordbox_index.py` — separately versioned, read-only relationship snapshot adapters for Serato's local data and Rekordbox's supported collection XML export.
   - `scan_library.py` / `build_plan.py` / `detect_bpm.py` — the read-only/preview half of the Genre/Remixer pipeline for flat SoundCloud/DJ-pool downloads, documented in `SKILL.md`. `apply_plan.py` is **hard-disabled** (read-only `--report` only); `reclassify.py` and `standardize_names.py` are **preview/plan builders only** — they no longer move or retag anything. Route those mutations through the engine family below.
   - `inventory_library.py` / `build_version_genre_plan.py` / `apply_version_genre_plan.py` — the Version+Genre pipeline actually used for the library cleanup in `handoff/`, generalized from nine near-duplicate per-folder scripts. Use this for the next source folder instead of writing a new one-off apply script.
-  - `build_grouping_plan.py` / `apply_grouping_plan.py`, `build_artist_title_plan.py` / `apply_artist_title_plan.py`, `build_year_bpm_plan.py` / `apply_year_bpm_plan.py` — the metadata-completeness pass, run against folders already sorted by the pipeline above.
+  - `build_grouping_plan.py` / `apply_grouping_plan.py` (plus `build_grouping_removal_plan.py` for owner-listed junk Grouping values), `build_artist_title_plan.py` / `apply_artist_title_plan.py`, `build_year_bpm_plan.py` / `apply_year_bpm_plan.py` — the metadata-completeness pass, run against folders already sorted by the pipeline above.
   - `delete_verified_duplicates.py` — the only deletion tool. Manual, human-approved pair list, and it refuses any pair that is not a proven EXACT_DUPLICATE (identical SHA-256).
   - `audit_library.py` / `run_verified_audit.py` — the read-only whole-library audit; `run_verified_audit.py` is the required entry point (see above).
   - `validate_year_evidence.py` — validates `references/year-evidence.json` / `references/release-year-evidence.json` entries have a source and evidence grade.

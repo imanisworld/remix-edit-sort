@@ -48,7 +48,7 @@ class GenreExternalManifestTests(unittest.TestCase):
         self.assertEqual(report["rejected_rows"], 0)
         self.assertEqual(report["conflicting_paths"], 0)
         self.assertEqual(len(examples), 1)
-        self.assertEqual(examples[0]["genre"], "Afrobeat")
+        self.assertEqual(examples[0]["genre"], "Afrobeats")
         self.assertEqual(examples[0]["source"], "bandcamp")
 
     def test_unique_artist_title_can_match_when_path_is_absent(self):
@@ -92,7 +92,7 @@ class GenreExternalManifestTests(unittest.TestCase):
         self.assertEqual(report["conflicting_paths"], 1)
         self.assertEqual(
             report["conflicts"][0]["genres"],
-            ["Afrobeat", "Gqom"],
+            ["Afrobeats", "Gqom"],
         )
 
     def test_two_sources_agree_and_provenance_is_preserved(self):

@@ -51,6 +51,8 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import ctypes
+import errno
 import hashlib
 import json
 import os
@@ -76,8 +78,16 @@ ARTIST_TITLE = "artist_title"
 YEAR_BPM = "year_bpm"
 DELETE = "delete"
 METADATA = "metadata"
+SERATO_PATHS = "serato_paths"
+FOLDER_RENAME = "folder_rename"
 
-MUTATION_CLASSES = frozenset({RELOCATE, GENRE, GROUPING, ARTIST_TITLE, YEAR_BPM, DELETE, METADATA})
+MUTATION_CLASSES = frozenset({
+    RELOCATE, GENRE, GROUPING, ARTIST_TITLE, YEAR_BPM, DELETE, METADATA,
+    SERATO_PATHS, FOLDER_RENAME,
+})
+
+# Names that carry no library content and that Finder may create at any time.
+INVENTORY_IGNORED_NAMES = frozenset({".DS_Store"})
 
 JOURNAL_VERSION = 2
 
@@ -148,6 +158,206 @@ def literal_path_is_file(path: Path) -> bool:
             return any(entry.name == path.name and entry.is_file(follow_symlinks=False) for entry in entries)
     except OSError:
         return False
+
+
+def literal_path_is_dir(path: Path) -> bool:
+    """Directory-entry check for a real (non-symlink) directory.
+
+    ``Path.is_dir()`` on a case-insensitive APFS volume answers True for ANY
+    spelling of the name, so it cannot prove that ``R&B`` rather than ``R&b``
+    is the entry on disk. This scans the parent and compares the stored name.
+    """
+    path = Path(path)
+    try:
+        with os.scandir(path.parent) as entries:
+            return any(
+                entry.name == path.name and entry.is_dir(follow_symlinks=False)
+                for entry in entries
+            )
+    except OSError:
+        return False
+
+
+def literal_entry_exists(path: Path) -> bool:
+    """True if the parent directory has an entry named exactly ``path.name``."""
+    path = Path(path)
+    try:
+        with os.scandir(path.parent) as entries:
+            return any(entry.name == path.name for entry in entries)
+    except OSError:
+        return False
+
+
+def literal_entry_names(directory: Path) -> set[str]:
+    """Exact on-disk entry names of ``directory`` (empty set if unreadable)."""
+    try:
+        with os.scandir(directory) as entries:
+            return {entry.name for entry in entries}
+    except OSError:
+        return set()
+
+
+def literal_path_components_exist(path: Path) -> bool:
+    """Every component of an absolute path is spelled exactly as on disk.
+
+    A path typed or stored with the wrong case still resolves on APFS, so a
+    plan built from it would silently carry that spelling into Serato's
+    stored paths. This walks the chain from the root and compares each name.
+    """
+    path = Path(os.path.abspath(os.fspath(path)))
+    current = Path(path.anchor)
+    for part in path.parts[1:]:
+        names = literal_entry_names(current)
+        if part not in names:
+            return False
+        current = current / part
+    return True
+
+
+def directory_inventory(root: Path, *, hash_contents: bool = False) -> dict:
+    """Content fingerprint of a directory tree, independent of its own name.
+
+    Records every entry's relative path, type, and for files size and
+    ``mtime_ns`` (plus SHA-256 when ``hash_contents``). A whole-folder rename
+    must leave this digest unchanged; any file added, removed, resized, or
+    retagged between preview and apply -- or lost by the rename itself --
+    changes it. Symlinks are recorded, never followed.
+    """
+    import stat as stat_module
+
+    root = Path(root)
+    entries: list[list] = []
+    counts = {"file_count": 0, "directory_count": 0, "symlink_count": 0, "total_bytes": 0}
+
+    def fail(error: OSError):
+        raise error
+
+    for current, dirnames, filenames in os.walk(root, followlinks=False, onerror=fail):
+        dirnames.sort()
+        for name in dirnames:
+            full = os.path.join(current, name)
+            relative = os.path.relpath(full, root)
+            info = os.lstat(full)
+            if stat_module.S_ISLNK(info.st_mode):
+                counts["symlink_count"] += 1
+                entries.append([relative, "l", os.readlink(full)])
+            else:
+                counts["directory_count"] += 1
+                entries.append([relative, "d"])
+        for name in sorted(filenames):
+            if name in INVENTORY_IGNORED_NAMES:
+                continue
+            full = os.path.join(current, name)
+            relative = os.path.relpath(full, root)
+            info = os.lstat(full)
+            if stat_module.S_ISLNK(info.st_mode):
+                counts["symlink_count"] += 1
+                entries.append([relative, "l", os.readlink(full)])
+                continue
+            counts["file_count"] += 1
+            counts["total_bytes"] += info.st_size
+            entry = [relative, "f", info.st_size, info.st_mtime_ns]
+            if hash_contents:
+                entry.append(sha256_file(Path(full)))
+            entries.append(entry)
+    entries.sort(key=lambda entry: entry[0])
+    payload = json.dumps(entries, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    return {**counts, "hash_contents": bool(hash_contents), "sha256": sha256_bytes(payload)}
+
+
+def rename_noreplace(source: Path, destination: Path) -> None:
+    """Rename that the kernel refuses if ``destination`` exists (any type).
+
+    ``os.rename`` silently replaces an empty destination directory, so a
+    check-then-rename leaves a window in which a folder created by another
+    process is lost. macOS ``renamex_np(RENAME_EXCL)`` and Linux
+    ``renameat2(RENAME_NOREPLACE)`` make the check and the rename one atomic
+    step. If neither is available (or the filesystem does not support the
+    flag) this fails closed rather than falling back to ``os.rename``.
+    """
+    src, dst = os.fsencode(source), os.fsencode(destination)
+    try:
+        libc = ctypes.CDLL(None, use_errno=True)
+        if sys.platform == "darwin":
+            call = libc.renamex_np
+            call.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_uint]
+            call.restype = ctypes.c_int
+            result = call(src, dst, 0x4)  # RENAME_EXCL
+        elif sys.platform.startswith("linux"):
+            call = libc.renameat2
+            call.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
+            call.restype = ctypes.c_int
+            result = call(-100, src, -100, dst, 1)  # AT_FDCWD, RENAME_NOREPLACE
+        else:
+            raise AttributeError(sys.platform)
+    except (AttributeError, OSError) as exc:
+        raise MutationRefused(
+            f"no atomic no-replace rename is available on this platform ({exc}); refusing "
+            f"to rename a folder with a check-then-rename"
+        ) from exc
+    if result != 0:
+        code = ctypes.get_errno()
+        if code == errno.EEXIST:
+            raise MutationRefused(f"destination already exists: {destination}")
+        if code in (errno.ENOTSUP, errno.EINVAL, errno.ENOSYS):
+            raise MutationRefused(
+                f"this filesystem does not support an atomic no-replace rename ({os.strerror(code)}); "
+                f"refusing to rename a folder here: {source}"
+            )
+        raise OSError(code, os.strerror(code), os.fspath(source), None, os.fspath(destination))
+
+
+def check_folder_rename(source: Path, destination: Path) -> bool:
+    """Refuse anything but a safe in-place folder rename; return case_only.
+
+    Pure read-only precondition check (literal directory entries, no aliases).
+    """
+    if os.path.abspath(os.fspath(source.parent)) != os.path.abspath(os.fspath(destination.parent)):
+        raise MutationRefused(
+            f"folder rename must stay inside one parent directory: {source} -> {destination}"
+        )
+    if os.path.abspath(os.fspath(source)) == os.path.abspath(os.fspath(destination)):
+        raise MutationRefused(f"source and destination are identical: {source}")
+    if source.is_symlink() or not literal_path_is_dir(source):
+        raise MutationRefused(f"missing rename source folder (literal directory entry): {source}")
+    case_only = is_case_or_normalization_only_rename(source, destination)
+    if case_only:
+        # On a case-insensitive volume the destination spelling resolves to
+        # the source itself, which is not a collision; a literal entry with
+        # the destination spelling, or any other occupant, is.
+        if literal_entry_exists(destination) or destination_conflicts(source, destination):
+            raise MutationRefused(f"destination already exists: {destination}")
+    elif os.path.lexists(destination):
+        raise MutationRefused(f"destination already exists: {destination}")
+    return case_only
+
+
+def _prove_manifest_backup(manifest: dict, source_root: Path, source: Path, actual: str) -> tuple[str, Path]:
+    """Prove ``source`` (currently hashing to ``actual``) has a verified backup.
+
+    Returns ``(manifest_sha256, concrete_backup_path)``. Raises MutationRefused
+    unless the manifest's evidence for this file matches the live bytes and the
+    concrete backup copy still exists and still hashes to the same value.
+    """
+    backup_sha = backup_manifest.require_item_backed_up(manifest, source_root, source)
+    if backup_sha != actual:
+        raise MutationRefused(
+            f"verified backup for {source} records {backup_sha}, but the file on disk "
+            f"is now {actual} -- it changed after the backup was taken"
+        )
+    # A PASS manifest proves that this copy existed and matched when
+    # verification ran. Re-check the real copy immediately before this
+    # mutation as well: the backup may have been moved, removed, or damaged
+    # after the manifest was written. Recording the concrete path also makes
+    # crash recovery actionable instead of merely naming a backup id/hash.
+    manifest_backup = backup_manifest.backup_path_for_item(manifest, source_root, source)
+    if not manifest_backup.is_file():
+        raise MutationRefused(f"per-item backup copy missing: {manifest_backup}")
+    if sha256_file(manifest_backup) != actual:
+        raise MutationRefused(
+            f"per-item backup copy no longer matches manifest evidence: {manifest_backup}"
+        )
+    return backup_sha, manifest_backup
 
 
 class RecoveryJournal:
@@ -224,8 +434,14 @@ class _ItemTransaction:
         """Attach result fields to the completion record."""
         self.outcome.update(fields)
 
-    def _rename_step(self, source: Path, destination: Path, purpose: str) -> None:
-        """Journal and heartbeat one physical rename before performing it."""
+    def _rename_step(
+        self, source: Path, destination: Path, purpose: str, *, exclusive: bool = False
+    ) -> None:
+        """Journal and heartbeat one physical rename before performing it.
+
+        ``exclusive`` (used for every folder rename) makes the kernel refuse an
+        existing destination atomically instead of trusting an earlier check.
+        """
         self.engine.journal.append({
             "type": "rename_step_intent",
             "run_id": self.engine.run_id,
@@ -236,7 +452,10 @@ class _ItemTransaction:
         })
         if self.engine.heartbeat is not None:
             self.engine.heartbeat.beat()
-        os.rename(source, destination)
+        if exclusive:
+            rename_noreplace(source, destination)
+        else:
+            os.rename(source, destination)
         self.mark_mutated()
         self.engine.journal.append({
             "type": "rename_step_completed",
@@ -306,6 +525,77 @@ class _ItemTransaction:
             self._rename_step(temporary, destination, f"{purpose}:temp-to-case")
         except BaseException:
             restore_interrupted_case_step()
+            raise
+
+    def _folder_restorer(self, source: Path, destination: Path, temporary: Path | None, purpose: str):
+        """Return a callback that puts the folder back under its original name.
+
+        It decides from the literal directory entries actually on disk, so it
+        is correct after a failed second step, after a verified-then-rejected
+        rename, and when called twice.
+        """
+        def restore() -> None:
+            names = literal_entry_names(source.parent)
+            if source.name in names:
+                return
+            if temporary is not None and temporary.name in names:
+                self._rename_step(temporary, source, f"{purpose}:rollback-temp-to-source", exclusive=True)
+                return
+            if destination.name in names:
+                if temporary is not None:
+                    self._rename_step(destination, temporary, f"{purpose}:rollback-case-to-temp", exclusive=True)
+                    self._rename_step(temporary, source, f"{purpose}:rollback-temp-to-source", exclusive=True)
+                else:
+                    self._rename_step(destination, source, f"{purpose}:rollback-destination-to-source", exclusive=True)
+                return
+            raise MutationVerificationError(
+                f"cannot restore folder {source}: neither the original, temporary nor "
+                f"destination entry exists"
+            )
+        return restore
+
+    def rename_dir_no_overwrite(self, source: Path, destination: Path, *, purpose: str = "folder_rename") -> None:
+        """Rename one directory in place without overwriting or trusting aliases.
+
+        The source and destination must share a parent. Existence is decided
+        from literal directory entries, never ``Path.exists()``, because on
+        APFS ``R&B`` "exists" whenever ``R&b`` does. A case- or normalization-
+        only change always goes through a unique temporary name (two journaled
+        physical renames), on Linux and macOS alike. Registers its own
+        rollback so a failure at any point puts the original name back.
+        """
+        source, destination = Path(source), Path(destination)
+        case_only = check_folder_rename(source, destination)
+        temporary = None
+        if case_only:
+            temporary = source.with_name(f".{source.name}.mutation-{uuid.uuid4().hex}.tmp")
+            while os.path.lexists(temporary):
+                temporary = source.with_name(f".{source.name}.mutation-{uuid.uuid4().hex}.tmp")
+            self.engine.journal.append({
+                "type": "case_rename_intent",
+                "run_id": self.engine.run_id,
+                "index": self.index,
+                "source": str(source),
+                "temporary": str(temporary),
+                "destination": str(destination),
+                "purpose": purpose,
+            })
+        restore = self._folder_restorer(source, destination, temporary, purpose)
+        self.on_rollback(restore)
+        if temporary is None:
+            # Repeat immediately before os.rename so the preflight is not the
+            # only collision guard.
+            if os.path.lexists(destination):
+                raise MutationRefused(f"destination already exists: {destination}")
+            self._rename_step(source, destination, purpose, exclusive=True)
+            return
+        self._rename_step(source, temporary, f"{purpose}:case-to-temp", exclusive=True)
+        try:
+            if os.path.lexists(destination):
+                raise MutationRefused(f"destination became occupied during case-only rename: {destination}")
+            self._rename_step(temporary, destination, f"{purpose}:temp-to-case", exclusive=True)
+        except BaseException:
+            restore()
             raise
 
     def do_rollback(self, reason: str) -> None:
@@ -442,30 +732,9 @@ class MutationEngine:
         backup_sha = None
         if require_backup:
             if self.manifest is not None and self.source_root is not None:
-                backup_sha = backup_manifest.require_item_backed_up(
-                    self.manifest, self.source_root, source
+                backup_sha, manifest_backup = _prove_manifest_backup(
+                    self.manifest, self.source_root, source, actual
                 )
-                if backup_sha != actual:
-                    raise MutationRefused(
-                        f"verified backup for {source} records {backup_sha}, but the file on disk "
-                        f"is now {actual} -- it changed after the backup was taken"
-                    )
-                # A PASS manifest proves that this copy existed and matched
-                # when verification ran. Re-check the real copy immediately
-                # before this mutation as well: the backup may have been
-                # moved, removed, or damaged after the manifest was written.
-                # Recording the concrete path also makes crash recovery
-                # actionable instead of merely naming a backup id/hash.
-                manifest_backup = (
-                    Path(self.manifest["backup_root"])
-                    / source.resolve().relative_to(self.source_root.resolve())
-                )
-                if not manifest_backup.is_file():
-                    raise MutationRefused(f"per-item backup copy missing: {manifest_backup}")
-                if sha256_file(manifest_backup) != actual:
-                    raise MutationRefused(
-                        f"per-item backup copy no longer matches manifest evidence: {manifest_backup}"
-                    )
                 if backup_path is None:
                     backup_path = manifest_backup
             elif not self.allow_unbacked:
@@ -523,6 +792,123 @@ class MutationEngine:
         self.completed.append(completion)
 
 
+    @contextlib.contextmanager
+    def folder_item(
+        self,
+        index: int,
+        source: Path,
+        destination: Path,
+        *,
+        expected_inventory: dict,
+        guard_files=(),
+        extra_intent: dict | None = None,
+    ):
+        """One journaled whole-folder rename.
+
+        ``expected_inventory`` is ``{"sha256": ..., "hash_contents": bool}`` from
+        ``directory_inventory()`` at preview time: the folder is refused if its
+        contents drifted. ``guard_files`` are the data this rename can orphan
+        (for the library: Serato's database and crates); each is a dict with
+        ``path`` and optionally ``manifest``/``source_root`` (defaulting to the
+        engine's) and must have verified backup evidence that still matches the
+        live bytes. After the body runs the engine itself re-checks that the
+        destination spelling is the literal entry, the old spelling is gone, and
+        the inventory is unchanged -- otherwise the folder is renamed back.
+        """
+        if not self._started:
+            raise MutationRefused("MutationEngine.start() must be called before the first item")
+        source, destination = Path(source), Path(destination)
+        if self.heartbeat is not None:
+            self.heartbeat.beat()
+
+        expected_sha = (expected_inventory or {}).get("sha256")
+        hash_contents = bool((expected_inventory or {}).get("hash_contents"))
+        if not expected_sha:
+            raise MutationRefused("folder rename requires the preview's expected inventory digest")
+        check_folder_rename(source, destination)
+        inventory = directory_inventory(source, hash_contents=hash_contents)
+        if inventory["sha256"] != expected_sha:
+            raise MutationRefused(
+                f"folder contents changed since preview, refusing to rename: {source} "
+                f"({inventory['sha256']} != {expected_sha})"
+            )
+
+        guards = []
+        for guard in guard_files:
+            guard_path = Path(guard["path"])
+            manifest = guard.get("manifest") or self.manifest
+            root = guard.get("source_root") or self.source_root
+            if manifest is None or root is None:
+                raise MutationRefused(f"no backup manifest available to authorize renaming around {guard_path}")
+            if not guard_path.is_file():
+                raise MutationRefused(f"missing guarded file: {guard_path}")
+            actual = sha256_file(guard_path)
+            backup_sha, backup_copy = _prove_manifest_backup(manifest, Path(root), guard_path, actual)
+            guards.append({
+                "path": str(guard_path),
+                "sha256": actual,
+                "backup_path": str(backup_copy),
+                "backup_sha256": backup_sha,
+                "backup_id": manifest.get("backup_id"),
+            })
+        if not guards and not self.allow_unbacked:
+            raise MutationRefused(
+                "folder rename requires verified backup evidence of the data it can orphan "
+                "(no guard files were supplied)"
+            )
+
+        intent = {
+            "type": "intent",
+            "run_id": self.run_id,
+            "index": index,
+            "kind": FOLDER_RENAME,
+            "source": str(source),
+            "destination": str(destination),
+            "before_sha256": inventory["sha256"],
+            "inventory": inventory,
+            "backup_path": None,
+            "backup_sha256": None,
+            "backup_id": (self.manifest or {}).get("backup_id"),
+            "guard_backups": guards,
+            **(extra_intent or {}),
+        }
+        self.journal.append(intent)
+
+        txn = _ItemTransaction(self, index, intent)
+        try:
+            yield txn
+            if not txn.mutated:
+                raise MutationVerificationError(f"planned folder rename did not happen: {source}")
+            if not literal_path_is_dir(destination):
+                raise MutationVerificationError(f"renamed folder is not a literal directory entry: {destination}")
+            if source.name in literal_entry_names(source.parent):
+                raise MutationVerificationError(f"old folder spelling still present after rename: {source}")
+            after = directory_inventory(destination, hash_contents=hash_contents)
+            if after["sha256"] != expected_sha:
+                raise MutationVerificationError(
+                    f"folder contents differ after rename: {destination} "
+                    f"({after['file_count']} files vs {inventory['file_count']} before)"
+                )
+            txn.record(after_inventory=after)
+        except BaseException as exc:  # noqa: BLE001 - journal, restore, re-raise
+            txn.do_rollback(f"{type(exc).__name__}: {exc}")
+            raise
+        completion = {
+            "type": "completed",
+            "run_id": self.run_id,
+            "index": index,
+            "kind": FOLDER_RENAME,
+            "source": str(source),
+            "destination": str(destination),
+            "before_sha256": inventory["sha256"],
+            "backup_path": None,
+            "mutated": txn.mutated,
+            **txn.outcome,
+        }
+        self.journal.append(completion)
+        self.completed.append(completion)
+
+
 def restore_from_backup(backup: Path, target: Path, expected_sha256: str) -> None:
     """Standard rollback: copy the verified backup back and prove it landed."""
     backup, target = Path(backup), Path(target)
@@ -548,12 +934,14 @@ def recover(journal_path: Path) -> dict:
 
     An item is settled by a `completed` record, or by a `rolled_back` record
     that reports `restored: true`. A `rolled_back` record with
-    `restored: false` does NOT settle it: that means the engine mutated the
+    `restored: false` after a `mutated` marker means the engine mutated the
     file, verification failed, and the automatic restore then failed too (a
     corrupted backup, a permissions error, a backup copy that vanished). The
     file is on disk in its broken mutated state and needs a human. Those items
     are reported with `state: "ROLLBACK_FAILED"` and the original
-    `rollback_error`, and they keep `clean` false.
+    `rollback_error`. If no mutation marker and no rollback error exist, the
+    item is instead reported as `ABORTED_BEFORE_MUTATION`: still visible for
+    hash confirmation, but never mislabeled as a failed restore.
     """
     journal = RecoveryJournal(Path(journal_path))
     records = journal.read()
@@ -561,7 +949,9 @@ def recover(journal_path: Path) -> dict:
     mutated: set[tuple] = set()
     settled: set[tuple] = set()
     failed_rollbacks: dict[tuple, dict] = {}
+    prewrite_aborts: dict[tuple, dict] = {}
     case_renames: dict[tuple, dict] = {}
+    rename_steps: dict[tuple, list] = {}
     torn = 0
     runs: dict[str, dict] = {}
 
@@ -581,22 +971,29 @@ def recover(journal_path: Path) -> dict:
             intents[key] = record
         elif kind == "case_rename_intent":
             case_renames[key] = record
+        elif kind == "rename_step_completed":
+            rename_steps.setdefault(key, []).append(
+                [record.get("source"), record.get("destination"), record.get("purpose")]
+            )
         elif kind == "mutated":
             mutated.add(key)
         elif kind == "completed":
             settled.add(key)
         elif kind == "rolled_back":
             # A rollback record only settles an item if the rollback actually
-            # RESTORED it. do_rollback() journals this record either way -- with
-            # restored: false and a rollback_error when the restore itself threw
-            # (a corrupted backup, a permissions failure, a vanished backup
-            # copy). Treating that as settled was a real hole: the file is still
-            # sitting on disk in its broken, half-mutated state, and recovery
-            # would have cheerfully reported "clean": true. An item whose
-            # rollback failed is the single most urgent thing a human needs to
-            # see, so it stays in-flight.
+            # RESTORED it. do_rollback() also uses this record shape for an
+            # exception before mark_mutated(), when no restore is attempted;
+            # that must stay visible without being called ROLLBACK_FAILED.
+            # A real failed restore remains the single most urgent thing a
+            # human needs to see, so it stays in-flight under that state.
             if record.get("restored"):
                 settled.add(key)
+            elif key not in mutated and not record.get("rollback_error"):
+                # The transaction raised after its durable intent but before
+                # mark_mutated(), so no restore was attempted or needed. Keep
+                # it visible for hash verification, but do not call it a
+                # rollback failure: no rollback took place and none failed.
+                prewrite_aborts[key] = record
             else:
                 failed_rollbacks[key] = record
 
@@ -605,6 +1002,7 @@ def recover(journal_path: Path) -> dict:
         if key in settled:
             continue
         failed = failed_rollbacks.get(key)
+        prewrite_abort = prewrite_aborts.get(key)
         entry = {
             "run_id": intent.get("run_id"),
             "index": intent.get("index"),
@@ -616,10 +1014,18 @@ def recover(journal_path: Path) -> dict:
             "backup_sha256": intent.get("backup_sha256"),
             "backup_id": intent.get("backup_id"),
             "mutation_had_started": key in mutated,
-            "restorable": bool(intent.get("backup_path") or intent.get("backup_sha256")),
+            # A whole-folder rename has no file backup: renaming it back, checked
+            # against the inventory digest in before_sha256, is its restore.
+            "restorable": bool(
+                intent.get("backup_path") or intent.get("backup_sha256")
+                or intent.get("kind") == FOLDER_RENAME
+            ),
             "rollback_attempted": failed is not None,
             "rollback_error": failed.get("rollback_error") if failed else None,
-            "failure_reason": failed.get("reason") if failed else None,
+            "failure_reason": (
+                failed.get("reason") if failed else
+                prewrite_abort.get("reason") if prewrite_abort else None
+            ),
         }
         case_rename = case_renames.get(key)
         if case_rename is not None:
@@ -628,6 +1034,8 @@ def recover(journal_path: Path) -> dict:
             # never asks a human to guess where the bytes went.
             entry["case_rename_temporary_path"] = case_rename.get("temporary")
             entry["case_rename_final_path"] = case_rename.get("destination")
+        if intent.get("kind") == FOLDER_RENAME:
+            entry["rename_steps_completed"] = rename_steps.get(key, [])
         if failed is not None:
             entry["state"] = "ROLLBACK_FAILED"
             entry["action_required"] = (
@@ -635,6 +1043,13 @@ def recover(journal_path: Path) -> dict:
                 "restore ALSO failed. This file is on disk in its mutated state. "
                 "Restore it manually from backup_path and confirm it hashes to "
                 "before_sha256 before doing anything else with this folder."
+            )
+        elif prewrite_abort is not None:
+            entry["state"] = "ABORTED_BEFORE_MUTATION"
+            entry["action_required"] = (
+                "The item failed after its intent was journaled, but no mutation marker "
+                "was written and no rollback was attempted. Confirm the source still "
+                "hashes to before_sha256; no restore is needed if it does."
             )
         else:
             entry["state"] = "INTERRUPTED"

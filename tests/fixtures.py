@@ -88,14 +88,17 @@ def write_id3v22_mp3(
     title: str = "",
     artist: str = "",
     grouping: str = "",
+    year: str = "",
+    comment: str = "",
+    picture_data: bytes | None = None,
+    geob_data: bytes | None = None,
 ) -> Path:
     """Write a real ID3v2.2 file by hand.
 
     mutagen refuses to SAVE v2.2 ("Only 3 or 4 allowed for v2_version"), which
-    is exactly why the production code must skip rather than rewrite these:
-    any tag write to a v2.2 file necessarily upgrades it and destroys the
-    original block. Building the bytes directly is the only way to test that
-    the engines really do leave them alone.
+    is why the production code must either skip these byte-for-byte or carry
+    an explicit, reviewed v2.2 -> v2.3 upgrade item. Building the bytes
+    directly is the only way to test both paths with a real v2.2 source.
 
     v2.2 frames are 3-character IDs (TCO = genre, TT2 = title, TT1 = grouping)
     with a 3-byte big-endian size, unlike v2.3/v2.4's 4-character IDs and
@@ -104,11 +107,24 @@ def write_id3v22_mp3(
     frames = bytearray()
     for frame_id, text in (
         ("TCO", genre), ("TT2", title), ("TP1", artist), ("TT1", grouping),
+        ("TYE", year),
     ):
         if not text:
             continue
         body = b"\x00" + text.encode("latin-1", "replace")
         frames += frame_id.encode("ascii") + len(body).to_bytes(3, "big") + body
+    if picture_data is not None:
+        body = b"\x00PNG\x03cover\x00" + picture_data
+        frames += b"PIC" + len(body).to_bytes(3, "big") + body
+    if comment:
+        body = b"\x00eng\x00" + comment.encode("latin-1", "replace")
+        frames += b"COM" + len(body).to_bytes(3, "big") + body
+    if geob_data is not None:
+        body = (
+            b"\x00application/octet-stream\x00\x00Serato Markers2\x00"
+            + geob_data
+        )
+        frames += b"GEO" + len(body).to_bytes(3, "big") + body
     padding = b"\x00" * 32
     body = bytes(frames) + padding
     header = b"ID3" + bytes((2, 0, 0)) + _synchsafe(len(body))

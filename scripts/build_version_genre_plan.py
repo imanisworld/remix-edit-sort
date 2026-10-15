@@ -119,17 +119,20 @@ def analyze_genre(row: dict, rules: dict, assume_genre: str | None = None) -> di
             "confidence": "assumed",
         }
 
-    lower_name = row.get("filename", "").casefold()
-    for rule in rules.get("filename_keywords", []):
-        if rule["contains"].casefold() in lower_name:
-            return {
-                "resolution_status": "RESOLVED", "category": "valid_single_genre",
-                "proposed_genre": rule["genre"], "recognized_genres": [rule["genre"]],
-                "known_contexts": [], "unknown_tokens": [],
-                "evidence": rule["evidence"], "confidence": "high",
-            }
-
     raw = (row.get("genre") or "").strip()
+    # Strong existing metadata outranks the filename; only blank/Other is
+    # eligible for explicit filename recovery. Unknown tags remain reviewable.
+    if not raw or raw.casefold() == "other":
+        lower_name = row.get("filename", "").casefold()
+        for rule in rules.get("filename_keywords", []):
+            if rule["contains"].casefold() in lower_name:
+                return {
+                    "resolution_status": "RESOLVED", "category": "valid_single_genre",
+                    "proposed_genre": rule["genre"], "recognized_genres": [rule["genre"]],
+                    "known_contexts": [], "unknown_tokens": [],
+                    "evidence": rule["evidence"], "confidence": "high",
+                }
+
     if not raw:
         return {
             "resolution_status": "REVIEW", "category": "blank",
@@ -163,6 +166,29 @@ def analyze_genre(row: dict, rules: dict, assume_genre: str | None = None) -> di
     known_contexts = _dedupe(known_contexts)
 
     if recognized and not known_contexts and not unknown:
+        # Filename hints are secondary evidence. A disagreement means REVIEW,
+        # never either a silent overwrite or a silently ignored contradiction.
+        filename = (row.get("filename") or "").casefold()
+        filename_styles = _dedupe([
+            rule["genre"] for rule in rules.get("filename_keywords", [])
+            if rule["contains"].casefold() in filename
+        ])
+        conflicts = [style for style in filename_styles if style not in recognized]
+        if conflicts:
+            return {
+                "resolution_status": "REVIEW",
+                "category": "conflicting_genre_evidence",
+                "proposed_genre": None,
+                "recognized_genres": recognized,
+                "known_contexts": [],
+                "unknown_tokens": conflicts,
+                "evidence": (
+                    f"existing Genre: {', '.join(recognized)}; explicit filename "
+                    f"suggests conflicting style(s): {', '.join(conflicts)}; "
+                    "human review required before any Genre or folder change"
+                ),
+                "confidence": "review",
+            }
         proposed = "; ".join(recognized)
         category = "valid_multi_genre" if len(tokens) > 1 or len(recognized) > 1 else "valid_single_genre"
         return {
@@ -197,6 +223,25 @@ def analyze_genre(row: dict, rules: dict, assume_genre: str | None = None) -> di
         "evidence": f"no recognized musical Genre{context_note}; unknown token(s): {unknown_note}",
         "confidence": "review",
     }
+
+
+def genre_folder_for(genre: str | None, rules: dict) -> str:
+    """Return an EXPLICITLY approved physical folder or needs-check.
+
+    A matching canonical genre name is never permission to route into a
+    physical directory. An absent/invalid mapping must fail closed.
+    """
+    if not genre:
+        return NEEDS_GENRE
+    mapping = rules.get("folder_names")
+    if not isinstance(mapping, dict):
+        return NEEDS_GENRE
+    folder = mapping.get(genre)
+    if (not isinstance(folder, str) or not folder.strip()
+            or folder != folder.strip() or folder in (".", "..")
+            or "/" in folder or "\\" in folder):
+        return NEEDS_GENRE
+    return folder
 
 
 def classify_genre(row: dict, rules: dict, assume_genre: str | None) -> tuple[str | None, str, str]:
@@ -350,7 +395,16 @@ def main() -> None:
             genre = args.assume_genre_fallback
             genre_evidence = f"no tag/filename match; folder is a confirmed {args.assume_genre_fallback} crate"
             genre_confidence = "fallback"
-        genre_folder = genre or NEEDS_GENRE
+        # A resolved tag is not destination approval. Hold the candidate for
+        # review without authorizing a Genre tag change or a genre folder.
+        genre_folder = genre_folder_for(genre, rules)
+        held_genre = genre if genre and genre_folder == NEEDS_GENRE else None
+        if held_genre:
+            genre = None
+            genre_evidence += (
+                f"; recognized {held_genre} but physical folder is not approved"
+            )
+            genre_confidence = "review"
 
         # Idempotency: preserve-top-level-subfolder mode must recognize a file
         # that's already been sorted, in TWO shapes, or a second run corrupts
@@ -401,6 +455,7 @@ def main() -> None:
                 "version_evidence": version_evidence,
                 "current_genre": current_genre,
                 "proposed_genre": genre,
+                "held_genre": held_genre,
                 "genre_evidence": genre_evidence,
                 "genre_confidence": genre_confidence,
                 "move": move,
