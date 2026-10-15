@@ -260,6 +260,24 @@ flagged item retains every candidate and source but is written with `year: null`
 year write accidentally. Unflagged, agreeing store hits retain the most conservative source
 grade and still require the normal reviewed-plan approval before metadata changes.
 
+### Explicit ID3v2.2 to v2.3 upgrades
+
+`apply_new_music_intake_plan.py` preserves ID3v2.2 MP3s byte-for-byte by default. A reviewed
+Genre/Grouping/Year plan may opt one file into the approved conversion by adding this field to
+that actionable item:
+
+```json
+"id3_upgrade": {"from": "2.2", "to": "2.3"}
+```
+
+Apply refuses any other version pair, a non-MP3 target, a standalone format conversion with
+no metadata fix, or a source that is no longer v2.2. The conversion and requested metadata
+changes happen in one backed-up mutation-engine transaction. Verification requires v2.3 on
+disk, unchanged audio, unchanged Serato payloads, and semantic preservation of every ID3
+frame other than the explicitly replaced Genre (`TCON`) and Grouping (`TIT1`) frames, plus the
+Year frames (`TDRC`/`TYER`) when the item also writes a Year. The
+undo record journals `"id3_upgraded": "2.2->2.3"` and restores the original v2.2 bytes.
+
 ## Proving a backup before any apply
 
 ```bash
