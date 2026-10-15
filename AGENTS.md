@@ -1,5 +1,7 @@
 # Agent instructions
 
+Read LIBRARY-STATUS.md first. Any assistant that changes the library or this repo updates it before stopping, and commits it.
+
 These rules apply to every coding agent working in this repository: Codex, Cursor, Claude, ChatGPT, or any other.
 
 `CLAUDE.md` is the full instruction file. Despite its name, it is written for all agents. Read it completely before changing anything. Then read, in order:

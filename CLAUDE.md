@@ -1,5 +1,7 @@
 # Claude continuation instructions
 
+Read LIBRARY-STATUS.md first. Any assistant that changes the library or this repo updates it before stopping, and commits it.
+
 This repository contains the reusable remix/edit sorting skill plus the local handoff from the 2026-08-15 DJ-library cleanup.
 
 Before changing anything:
