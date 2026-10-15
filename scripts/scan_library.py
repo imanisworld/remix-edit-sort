@@ -31,7 +31,9 @@ AUDIO_EXT = (".mp3", ".m4a", ".wav", ".aiff", ".aif", ".flac")
 SKIP_DIRS = {"Remixes & Edits", "Originals", "_Unsorted", "outputs", ".git"}
 
 TYPES = RULES["remix_types"]
-FOLDER_GENRES = {folder: genre for genre, folder in RULES.get("folder_names", {}).items()}
+# A folder hints a Genre only when explicitly listed; an approved destination
+# (folder_names) is not evidence that every track inside it is that Genre.
+FOLDER_GENRES = dict(RULES.get("folder_genre_hints", {}))
 # Pre-rename live spellings (e.g. R&b) still hint their canonical Genre.
 FOLDER_GENRES.update({folder: genre for folder, genre in RULES.get("legacy_folder_names", {}).items() if folder not in FOLDER_GENRES})
 TYPE_RX = "|".join(sorted((re.escape(t) for t in TYPES), key=len, reverse=True))

@@ -128,7 +128,7 @@ Repo: **`imanisworld/remix-edit-sort`** on GitHub (private; never publish it or 
 
 **Known limits:**
 - The version/genre sorter (`build_version_genre_plan.py`) can't write Grouping. It holds R&B Throwbacks, Alternative Hip Hop and Jazzy House for review instead of dropping the descriptor.
-- After #47, only 3 genres have an approved folder, so genre tagging and filing is effectively paused (section 5, step 2).
+- After #47, only 3 genres had an approved folder; the 2026-10-15 folder approval raised that to 58 (section 5, step 3).
 
 ---
 
@@ -161,7 +161,7 @@ Repo: **`imanisworld/remix-edit-sort`** on GitHub (private; never publish it or 
 
 1. **Gig prep first (time-critical):** download the missing tracks (Oct 15 first, then Oct 16) per `~/Desktop/need-to-get-oct.txt`. Then build one Serato crate per set. [reported]
 2. ~~Merge the genre PR stack~~ **Done** (all on `main` as of 2026-10-15).
-3. **Unpause genre filing (still open):** approved folders are still only R&B → `R&B`, Neo Soul → `neo soul`, Alternative → `alternative`. Get the list of ~24 "keep as-is" folders from Cursor's folder-mapping draft. The owner approved adding them. Add each to `folder_names` in **both** rule files **and** to `APPROVED_FOLDER_NAMES` in `scripts/check_genre_naming.py`, then run the tests. Held by design: DNB/Ghettotech, Afrobeat/Afrobeats, Hip Hop → Hip-Hop, Riddim. [reported]
+3. **Unpause genre filing (done in the repo, 2026-10-15; merged once its PR lands):** from a read-only listing of the live top-level folders (`handoff/live-top-level-folders-2026-10-15.md`), the owner approved 58 Genre → folder entries: 35 into their own folder, 23 smaller styles into a parent folder (tag kept exact). 18 Genres stay held (Afrobeats pending the owner's answer on what the `Afrobeat` folder holds; Dub; Breaks; Electro; Dubstep; Miami/Atlanta Bass; Afro Tech; Gqom; Kuduro; Afro Baile; New Wave; Drill styles). The live listing shows `Ghettotech` and `Drum & Bass` folders already exist, so those two renames are done; `Amapiano` has no trailing space now. [verified listing; owner-approved in chat]
 4. **Merge the DJ-integration chain** #42 → #43 → #46 → #44. Same stacked-merge caution.
 5. **Set-history exports (#48):** the owner exports Serato History (CSV + TXT) into the history-exports inbox folder, then runs `scripts/dj_history_export_stage.py stage`. [reported]
 6. **Mac test run** (`MAC-CANARY.md`) before any real move or rename. CI runs on Linux; the library is on macOS/APFS.

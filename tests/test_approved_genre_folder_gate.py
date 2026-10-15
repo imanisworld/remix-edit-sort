@@ -22,7 +22,12 @@ import build_version_genre_plan as version  # noqa: E402
 import check_genre_naming as naming  # noqa: E402
 import scan_library  # noqa: E402
 
-EXPECTED = {"R&B": "R&B", "Neo Soul": "neo soul", "Alternative": "alternative"}
+EXPECTED = naming.APPROVED_FOLDER_NAMES
+# Owner decisions 2026-10-15: these stay held (no destination, no Genre write).
+HELD = ("Afrobeats", "Dub", "Breaks", "Electro", "Dubstep", "Miami Bass",
+        "Atlanta Bass", "Afro Tech", "Gqom", "Kuduro", "Afro Baile",
+        "New Wave", "Chicago Drill", "UK Drill", "NY Drill", "Sexy Drill",
+        "Bronx Drill", "Jersey Drill")
 
 
 def read_rules(name):
@@ -30,11 +35,31 @@ def read_rules(name):
 
 
 class ApprovedGenreFolderTests(unittest.TestCase):
-    def test_both_committed_rule_files_contain_only_the_three_entries(self):
+    def test_both_committed_rule_files_contain_only_the_approved_entries(self):
         old, new = read_rules("genre-rules.json"), read_rules("version-genre-rules.json")
         self.assertEqual(old["folder_names"], EXPECTED)
         self.assertEqual(new["folder_names"], EXPECTED)
         self.assertEqual(naming.noncanonical_outputs(ROOT / "references"), [])
+        # Spot-check the owner's exact live spellings and parent-folder choices.
+        self.assertEqual(len(EXPECTED), 58)
+        for genre, folder in (("Hip-Hop", "Hip Hop"), ("R&B", "R&B"),
+                              ("Ballroom Vogue", "Ballroom"), ("Funk & Soul", "Funk"),
+                              ("Bounce", "New Orleans Bounce"), ("Hardgroove", "Hard GROOVE"),
+                              ("Riddim", "RIDDIM"), ("Deep House", "House"),
+                              ("Alternative R&B", "R&B"), ("UK Garage", "GarageJungle")):
+            self.assertEqual(EXPECTED[genre], folder)
+        for genre in HELD:
+            self.assertNotIn(genre, EXPECTED)
+        # Every master Genre is either approved or explicitly held.
+        master = read_rules("genre-learner-rules.json")["canonical_genres"]
+        self.assertEqual(set(master), set(EXPECTED) | set(HELD))
+
+    def test_every_approved_genre_tag_is_recognized_by_the_version_pipeline(self):
+        rules = read_rules("version-genre-rules.json")
+        for genre in EXPECTED:
+            with self.subTest(genre=genre):
+                result = version.analyze_genre({"genre": genre, "filename": "x.mp3"}, rules)
+                self.assertEqual(result["proposed_genre"], genre)
 
     def test_all_other_master_genres_hold_even_if_the_folder_name_matches(self):
         master = read_rules("genre-learner-rules.json")["canonical_genres"]
@@ -49,9 +74,9 @@ class ApprovedGenreFolderTests(unittest.TestCase):
                         version.genre_folder_for(genre, version_rules),
                         expected if expected is not None else version.NEEDS_GENRE,
                     )
-        for held in ("House", "Pop", "Trance", "Drum & Bass", "Ghettotech",
-                     "Atlanta Bass", "Miami Bass", "Ballroom Vogue", "Afrobeats"):
+        for held in HELD:
             self.assertNotIn(held, EXPECTED)
+            self.assertEqual(version.genre_folder_for(held, version_rules), version.NEEDS_GENRE)
         self.assertEqual(version.genre_folder_for("R&B; Alternative", version_rules),
                          version.NEEDS_GENRE)
 
@@ -69,17 +94,25 @@ class ApprovedGenreFolderTests(unittest.TestCase):
             "title_clean": "Song", "original_artists": ["Artist"],
             "remixer": None, "remixer_raw": "", "remix_type": "",
             "is_remix": False, "is_long_mix": False, "duration": 200,
-            "genre": "Drum & Bass", "existing_genre": "Drum & Bass",
+            "genre": "Dubstep", "existing_genre": "Dubstep",
             "existing_bpm": None, "year": "",
         }
         result = remix.plan_one(source, {})
         self.assertEqual(result["bucket"], "genre_needs_check")
         self.assertTrue(result["needs_review"])
         self.assertFalse(result["folder_approved"])
-        self.assertEqual(result["held_genre"], "Drum & Bass")
+        self.assertEqual(result["held_genre"], "Dubstep")
         self.assertEqual(result["dest_dir"], "_Unsorted/_GENRE NEEDS CHECK")
-        self.assertEqual(result["tags"]["genre"], "Drum & Bass")
-        self.assertNotIn("#genre-drum", result["tags"]["comment_tags"])
+        self.assertEqual(result["tags"]["genre"], "Dubstep")
+        self.assertNotIn("#genre-dubstep", result["tags"]["comment_tags"])
+
+        # A smaller style files into its parent folder and keeps its own tag.
+        source["genre"] = "Deep House"
+        source["existing_genre"] = "Deep House"
+        parent = remix.plan_one(source, {})
+        self.assertTrue(parent["folder_approved"])
+        self.assertEqual(parent["dest_dir"], "Originals/House/Artist")
+        self.assertEqual(parent["tags"]["genre"], "Deep House")
 
         source["genre"] = "R&B"
         source["existing_genre"] = "R&B"
@@ -99,10 +132,10 @@ class ApprovedGenreFolderTests(unittest.TestCase):
                 "mode": "preview-only", "rules": {"approval_required": True},
                 "items": [{
                     "source": str(source), "sha256": digest,
-                    "destination": str(root / "CLEAN" / "House" / "Source.mp3"),
-                    "destination_relative": "CLEAN/House/Source.mp3",
+                    "destination": str(root / "CLEAN" / "Dubstep" / "Source.mp3"),
+                    "destination_relative": "CLEAN/Dubstep/Source.mp3",
                     "version_category": "CLEAN",
-                    "proposed_genre": "House", "tag_change": False,
+                    "proposed_genre": "Dubstep", "tag_change": False,
                     "move": True,
                 }],
             }
@@ -121,6 +154,8 @@ class ApprovedGenreFolderTests(unittest.TestCase):
                 apply_version.load_and_validate(root, plan_path)
 
     def test_existing_folder_name_is_not_genre_proof(self):
+        # House is an approved destination, but that does not make every
+        # untagged track already in the House folder a House track.
         track = {
             "existing_genre": "", "filename": "Song.mp3",
             "remixer_genre": None, "remixer": None, "remixer_raw": "",
@@ -137,8 +172,9 @@ class ApprovedGenreFolderTests(unittest.TestCase):
             root.mkdir()
             root = root.resolve()  # macOS /var -> /private/var symlink identity
             source_rows = []
-            for style in ("R&B", "Neo Soul", "Alternative", "Drum & Bass",
-                          "Ghettotech", "House", "Afrobeats", "Miami Bass"):
+            approved = ("R&B", "Neo Soul", "Alternative", "Drum & Bass",
+                        "Ghettotech", "House", "Deep House", "Latin")
+            for style in approved + ("Afrobeats", "Miami Bass", "Dubstep"):
                 path = root / (style + " (Clean).mp3")
                 path.write_bytes(b"synthetic not audio")
                 source_rows.append([str(path), path.name, style, "Synthetic", "a" * 64])
@@ -157,21 +193,21 @@ class ApprovedGenreFolderTests(unittest.TestCase):
                 item["current_genre"]: item
                 for item in json.loads((out / "plan.json").read_text())["items"]
             }
-            for style, physical in EXPECTED.items():
+            for style in approved:
+                physical = EXPECTED[style]
                 item = by_genre[style]
                 self.assertEqual(item["proposed_genre"], style)
                 self.assertIsNone(item["held_genre"])
                 self.assertEqual(item["destination_relative"],
                                  f"CLEAN/{physical}/{style} (Clean).mp3")
-            for held in ("Drum & Bass", "Ghettotech", "House",
-                         "Afrobeats", "Miami Bass"):
+            for held in ("Afrobeats", "Miami Bass", "Dubstep"):
                 item = by_genre[held]
                 self.assertEqual(item["destination_relative"],
                                  f"CLEAN/_GENRE NEEDS CHECK/{held} (Clean).mp3")
                 self.assertIsNone(item["proposed_genre"])
                 self.assertFalse(item["tag_change"])
-                if held == "Drum & Bass":
-                    # The current version rules do not yet recognize this tag;
+                if held == "Dubstep":
+                    # The current version rules do not recognize this tag;
                     # unknown evidence is held by the pre-existing path.
                     self.assertIsNone(item["held_genre"])
                 else:

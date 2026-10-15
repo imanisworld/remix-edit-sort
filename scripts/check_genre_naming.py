@@ -17,12 +17,77 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCES = ROOT / "references"
 
-# Only these three existing physical folder spellings have approval in this
-# source-only change. Expanding the map requires a separately reviewed patch.
+# Owner-approved 2026-10-15 from a read-only listing of the live library's
+# top-level folders. Value = exact on-disk spelling. Smaller styles file into
+# a parent folder and keep their own Genre tag. Expanding the map requires a
+# separately reviewed patch.
 APPROVED_FOLDER_NAMES = {
+    "Hip-Hop": "Hip Hop",
     "R&B": "R&B",
     "Neo Soul": "neo soul",
     "Alternative": "alternative",
+    "Pop": "Pop",
+    "Rock": "Rock",
+    "House": "House",
+    "Electronic": "Electronic",
+    "Jersey Club": "Jersey Club",
+    "Juke": "Juke",
+    "Ghettotech": "Ghettotech",
+    "Drum & Bass": "Drum & Bass",
+    "Latin": "Latin",
+    "Reggaeton": "Reggaeton",
+    "Amapiano": "Amapiano",
+    "Baile": "Baile",
+    "Dancehall": "Dancehall",
+    "Reggae": "Reggae",
+    "Soca": "Soca",
+    "Bouyon": "Bouyon",
+    "Kompa": "Kompa",
+    "Techno": "Techno",
+    "Rave": "Rave",
+    "Trance": "Trance",
+    "Blues": "Blues",
+    "Disco": "Disco",
+    "Gospel": "Gospel",
+    "Jazz": "Jazz",
+    "Country": "Country",
+    "Groovy Bounce": "Groovy Bounce",
+    "Ballroom Vogue": "Ballroom",
+    "Funk & Soul": "Funk",
+    "Bounce": "New Orleans Bounce",
+    "Hardgroove": "Hard GROOVE",
+    "Riddim": "RIDDIM",
+    "Deep House": "House",
+    "Tech House": "House",
+    "Bass House": "House",
+    "Garage House": "House",
+    "Ghetto House": "House",
+    "Afro House": "House",
+    "Classic Rock": "Rock",
+    "Soft Rock": "Rock",
+    "Pop Rock": "Rock",
+    "Dance Pop": "Pop",
+    "Alternative R&B": "R&B",
+    "Baltimore Club": "Jersey Club",
+    "Philly Club": "Jersey Club",
+    "Footwork": "Juke",
+    "Latin Pop": "Latin",
+    "Cumbia": "Latin",
+    "Dembow": "Latin",
+    "Guaracha": "Latin",
+    "3Ball": "Latin",
+    "UK Garage": "GarageJungle",
+    "Speed Garage": "GarageJungle",
+    "Bassline": "GarageJungle",
+    "Jungle": "GarageJungle",
+}
+
+# Folders whose name alone may hint a Genre for an otherwise untagged track.
+# Deliberately narrower than the destination map above.
+APPROVED_FOLDER_GENRE_HINTS = {
+    "R&B": "R&B",
+    "neo soul": "Neo Soul",
+    "alternative": "Alternative",
 }
 
 
@@ -65,11 +130,13 @@ def noncanonical_outputs(references: Path) -> list[dict[str, str]]:
             if not isinstance(folder, str) or not folder.strip():
                 raise ValueError(f"{config_name} folder_names has blank path for {genre!r}")
     # Canonical Genre spelling never implies an approved physical folder.
-    # Both active pipelines must have exactly the same three explicit entries.
+    # Both active pipelines must have exactly the same explicit entries.
     if legacy["folder_names"] != APPROVED_FOLDER_NAMES:
-        raise ValueError("genre-rules.json folder_names differ from the three explicitly approved destinations")
+        raise ValueError("genre-rules.json folder_names differ from the explicitly approved destinations")
     if version["folder_names"] != APPROVED_FOLDER_NAMES:
-        raise ValueError("version-genre-rules.json folder_names differ from the three explicitly approved destinations")
+        raise ValueError("version-genre-rules.json folder_names differ from the explicitly approved destinations")
+    if legacy.get("folder_genre_hints") != APPROVED_FOLDER_GENRE_HINTS:
+        raise ValueError("genre-rules.json folder_genre_hints differ from the explicitly approved hints")
 
     rows = []
 
