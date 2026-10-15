@@ -4,6 +4,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 
 ## Last updated
 
+2026-10-15 16:41 EDT — Grok (DJ B.A.E. Library): junk Grouping removal written (211 files); see GROK-DJ-LIBRARY-LOG.md.
 2026-10-15 16:22 EDT — Grok (DJ B.A.E. Library): Pop new-adds tag write (Genre/Year/Source Grouping) done; see GROK-DJ-LIBRARY-LOG.md.
 2026-10-15 ~15:45 EDT — Claude (cloud, repo only): genre folder approval, PR #55 (see Waiting on Imani). No library files touched.
 2026-10-15 ~16:45 EDT — Claude (cloud, repo only): junk-Grouping removal tool + docs (PR #57); recorded the Mac session's Pop progress report. No library files touched.
@@ -42,10 +43,12 @@ Marks: **verified** = Grok checked the result file or the disk directly. **repor
 | Pop new adds: Genre → Pop (Pop Girl At Heart 982, Cat Calls Inspo 81, Y2K 130) | 1,193 | 0 failed; 4 wav skipped (Pop from) | verified (readback + journals) |
 | Pop new adds: Year (Pop from 28, Pop Girl At Heart 254) | 282 | 0 failed; 23 still no Year (17 Pop from, 6 Pop Girl) | verified |
 | Pop new adds: Grouping append `Source: <playlist>` | 1,193 | 0 failed; 0 audio or Serato frames changed. Watermark (9) / GRP1 "November" (16) strips NOT done | verified |
+| Junk Grouping removal (21 owner-listed values; TIT1/FLAC/M4A only, not GRP1, not Plex) | 211 (88 left with no Grouping) | 0 failed; 0 audio or Serato frames changed | verified (readback + 18 journals) |
 
 ### Files backed up (changed files + `_Serato_` only)
 | Backup | Files | Status | Mark |
 |---|---|---|---|
+| `2026-10-15-junk-grouping/` (211 files, 18 manifests · `_Serato_` 664) | 211 + `_Serato_` | all PASS; delete after Imani's Serato rescan | verified |
 | `2026-10-15-pop-tags/` (pre-genre 1,221 · pre-year 282 · pre-grouping 1,193 · `_Serato_` 664) | 3,360 | all PASS; delete after Imani's Serato rescan of Pop, Cat Calls Inspo, Y2K | verified |
 | T5 `2026-10-15-genre-fixes` | 377 + `_Serato_` | deleted after Imani's Serato check | reported (deletion), verified (377 count) |
 | T5 `2026-10-15-rnb-tags` | 545 + `_Serato_` | deleted after Imani's Serato check | verified (545 in target-files.txt) |
@@ -97,6 +100,7 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
 
 ## Waiting on Imani
 
+- **Junk Grouping removal:** rescan ID3 tags in Serato on the 18 affected folders (mainly Hip Hop, R&b, Pop) and confirm, then delete T5 `2026-10-15-junk-grouping/`.
 - **Pop new adds:** rescan ID3 tags in Serato (Pop, Cat Calls Inspo, Y2K) and confirm, then delete T5 `2026-10-15-pop-tags/`. Decide: ~440 dupes (keep best, merge tags), Clean/Dirty for ~1,190 unmarked, watermark/November Grouping strips (needs writer change + append-only exception).
 - **Merge PR #57** (junk Grouping removal tool; CI green), then `git pull` on the Mac.
 - **Junk Grouping removal ("November", record-pool watermarks)** — Imani said yes to a narrow exception. Tool is in PR #57. Steps, Pop / Cat Calls Inspo / Y2K, after the `Source:` write:
