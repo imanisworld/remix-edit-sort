@@ -80,6 +80,7 @@
     "Jersey Drill"
   ],
   "aliases": {
+    "afrobeat": "Afrobeats",
     "rap": "Hip-Hop",
     "trap": "Hip-Hop",
     "hip hop": "Hip-Hop",
@@ -113,7 +114,6 @@
     "boogie": "Funk & Soul"
   },
   "legacy_compounds_requiring_audio_review": [
-    "Afrobeat",
     "Dub"
   ],
   "target_excluded_folders": [
