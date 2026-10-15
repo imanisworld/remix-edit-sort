@@ -5,6 +5,8 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 ## Last updated
 
 2026-10-15 15:20 EDT — Grok (DJ B.A.E. Library)
+2026-10-15 ~15:45 EDT — Claude (cloud, repo only): genre folder approval, PR #55 (see Waiting on Imani). No library files touched.
+2026-10-15 — Claude (cloud, repo only): PR #55 also reads a plain "Afrobeat" tag as Afrobeats (owner: "same thing"). "Dub" stays held. No library files touched.
 
 ## Rules every AI must follow
 
@@ -83,6 +85,7 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
 
 ## Waiting on Imani
 
+- **Merge PR #55: approved genre folders.** Until it lands, the sorter's plan builder still files only R&B / Neo Soul / Alternative; everything else goes to `_GENRE NEEDS CHECK` with no Genre write. #55 approves 59 Genres into their existing folders, by exact on-disk spelling (Hip-Hop → `Hip Hop`, Afrobeats → `Afrobeat`, Ballroom Vogue → `Ballroom`, Funk & Soul → `Funk`, Riddim → `RIDDIM`; smaller styles into a parent folder with their exact tag kept, e.g. Deep House → `House`). 17 stay held. A plain "Afrobeat" tag now reads as Afrobeats. Evidence: `handoff/live-top-level-folders-2026-10-15.md`. After merge: `git pull` before building the next plan. If the `Afrobeat` folder is later renamed to `Afrobeats`, update `folder_names` in the same change.
 - **575** R&B "NEEDS YOU" rows (`rnb-tag-apply-20261015/deferred.csv` / preview v3).
 - Tyla 128 kbps vs 320 kbps pairs (not hash dupes) — keep/delete call.
 - Fix Serato smart crates: `Clean R&B` / `r&b edits` need `"r&b "` with trailing space; `Clean R&B` should match ALL not ANY; `90s`/`2000s` use Grouping not Year.

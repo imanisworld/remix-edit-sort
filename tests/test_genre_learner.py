@@ -96,12 +96,11 @@ class GenreLearnerTaxonomyTests(unittest.TestCase):
                 self.assertEqual(parsed["labels"], genres)
                 self.assertEqual(parsed["grouping"], grouping)
                 self.assertFalse(parsed["unknown"])
-        # Historical Afrobeat has not been approved as interchangeable with
-        # Afrobeats. Keep the version context, but review the style.
-        ambiguous = self.parse("Afrobeat Bootleg")
-        self.assertEqual(ambiguous["labels"], [])
-        self.assertEqual(ambiguous["grouping"], ["Remix"])
-        self.assertEqual(ambiguous["unknown"], ["Afrobeat"])
+        # Owner 2026-10-15: a bare Afrobeat tag is Afrobeats ("same thing").
+        afrobeat = self.parse("Afrobeat Bootleg")
+        self.assertEqual(afrobeat["labels"], ["Afrobeats"])
+        self.assertEqual(afrobeat["grouping"], ["Remix"])
+        self.assertEqual(afrobeat["unknown"], [])
 
     def test_afro_and_phunk_operator_mappings(self):
         ambiguous = self.parse("afro")
