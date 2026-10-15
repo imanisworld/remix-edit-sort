@@ -6,7 +6,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 
 2026-10-15 15:20 EDT — Grok (DJ B.A.E. Library)
 2026-10-15 ~15:45 EDT — Claude (cloud, repo only): genre folder approval, PR #55 (see Waiting on Imani). No library files touched.
-2026-10-15 ~16:30 EDT — Claude (cloud, repo only): junk-Grouping removal tool (PR #57). No library files touched.
+2026-10-15 ~16:45 EDT — Claude (cloud, repo only): junk-Grouping removal tool + docs (PR #57); recorded the Mac session's Pop progress report. No library files touched.
 2026-10-15 ~15:55 EDT — Claude (cloud, repo only): PR #55 merged (also reads a plain "Afrobeat" tag as Afrobeats; "Dub" stays held). No library files touched.
 
 ## Rules every AI must follow
@@ -81,13 +81,16 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
 ## In progress
 
 - **New Pop music** (Imani adding): `Pop/Pop from ` · `Cat Calls Inspo/` · `Pop/00_s Music/Pop Girl At Heart/` (**982 files**, was still copying at 471) · top-level `Y2K/`.
-- **Approved plan** (Imani): Genre → Pop; append `Source: <playlist>` to Grouping; 4-digit Years; strip "November" / record-pool watermark Groupings. Preview: `pop-new-preview-20261015.csv` (rescan Pop Girl before writing — count grew).
+- **Approved plan** (Imani): Genre → Pop; append `Source: <playlist>` to Grouping; 4-digit Years; strip "November" / record-pool watermark Groupings (now its own step, see Waiting on Imani).
+- (reported by the Mac session, ~16:00 EDT) **Written, then paused:** Genre → Pop on **1,193** files (all of Pop Girl At Heart, Cat Calls Inspo, Y2K) and **238** Pop Girl Years cut to 4 digits. All read back correctly, backed up, undoable. Imani to rescan those three in Serato.
+- **Refreshed Pop preview, waiting on Imani's go:** 44 Pop Girl Years; 1,202 `Source:` Grouping appends (Pop Girl 982, Cat Calls 81, Y2K 130, Pop from 9). 23 tracks have no year (left blank); 4 wav skipped.
 - **Duplicates (~440):** keep best copy (bitrate / clean-dirty), merge good tags + Source onto keeper; Imani approves delete list before any remove. Check Serato crates pointing at losers.
 - **Inbox genre/year lookup** still running (`inbox-genre-lookup/`, ~325+/514). When done: `merge.py` → preview → write only after approval.
 
 ## Waiting on Imani
 
-- **Junk Grouping removal ("November", record-pool watermarks)** — Imani said yes to a narrow exception. Tool is in PR #57 (merge it, then `git pull`). Steps, Pop / Cat Calls Inspo / Y2K, after the `Source:` write:
+- **Merge PR #57** (junk Grouping removal tool; CI green), then `git pull` on the Mac.
+- **Junk Grouping removal ("November", record-pool watermarks)** — Imani said yes to a narrow exception. Tool is in PR #57. Steps, Pop / Cat Calls Inspo / Y2K, after the `Source:` write:
   1. `python3 scripts/build_grouping_removal_plan.py survey --root "$LIB/<folder>" --out-dir "$W/grouping-survey"` (read-only) → show Imani `GROUPING-VALUES.md`.
   2. Imani picks the exact junk values → one per line in `$W/remove.txt`.
   3. `python3 scripts/build_grouping_removal_plan.py plan --root "$LIB/<folder>" --remove "$W/remove.txt" --out-dir "$W/grouping-removal"` → show `GROUPING-REMOVAL-PREVIEW.md`; Imani says go.

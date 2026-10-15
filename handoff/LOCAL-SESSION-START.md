@@ -60,6 +60,10 @@ Undo: `apply_version_genre_plan.py --undo <undo .jsonl from step 4>` (same `--ro
 
 To approve more later: add the entry to `folder_names` in **both** `references/genre-rules.json` and `references/version-genre-rules.json`, **and** to `APPROVED_FOLDER_NAMES` in `scripts/check_genre_naming.py`, then run the tests. Use the exact on-disk spelling.
 
+A plain "Afrobeat" tag is read as Afrobeats (owner: "same thing"). "Dub" stays held.
+
+**Junk Grouping removal** (the one exception to append-only): `scripts/build_grouping_removal_plan.py survey` lists every Grouping value with counts (read-only); the owner picks exact junk values into a text file; `... plan --remove <file>` builds the preview; apply with `apply_grouping_plan.py` like any Grouping write (lock, PASS backup, `--apply`). Steps are in `LIBRARY-STATUS.md`.
+
 **Serato:** after tags are written, Serato shows the new Genre only once it re-reads the files. Select the tracks in Serato and use **Rescan ID3 Tags** (Files panel).
 
 ## Folder renames (e.g. `Afrobeat/` → `Afrobeats/`)

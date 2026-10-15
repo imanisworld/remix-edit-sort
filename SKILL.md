@@ -274,7 +274,7 @@ Keep musical classification separate from working context:
 
 - Write musical style to `TCON` / Genre: `Hip-Hop`, `R&B`, `Rave`, and so on.
 - Write evidenced event, crate, or source context to `TIT1` / Grouping: `Event: IYG PROM` or `Source: Nigeria`.
-- Preserve existing Grouping text. Append new values once with `; ` and deduplicate case-insensitively; never overwrite blindly.
+- Preserve existing Grouping text. Append new values once with `; ` and deduplicate case-insensitively; never overwrite blindly. Only exception: exact junk values the owner listed by hand, removed with `scripts/build_grouping_removal_plan.py` (approved 2026-10-15).
 - Use the exact source folder or an explicit user correction as evidence. Do not turn an ambiguous country, client, download batch, or acronym into a genre or event type.
 
 Treat Grouping backfill as a separate tags-only operation. Reconstruct context from the approved plan or undo log, generate a per-file preview, and require approval. Make a fresh verified folder plus `_Serato_` backup before writing. For every changed MP3, verify the audio payload and embedded Serato frames before recording the undo entry. Preserve ID3v2.2 files unless conversion is separately approved, and skip non-MP3 formats until a format-specific writer and payload verifier are tested.
