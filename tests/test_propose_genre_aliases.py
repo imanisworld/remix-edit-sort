@@ -27,9 +27,9 @@ class GenreAliasProposalTests(unittest.TestCase):
 
     def test_aggregates_normalized_variants_without_losing_counts(self):
         report = self.build([
-            {"token": "Dance", "count": 100, "example": "a.mp3"},
-            {"token": "dance", "count": 2, "example": "b.mp3"},
-            {"token": "DANCE!", "count": 1, "example": "c.mp3"},
+            {"token": "Garage", "count": 100, "example": "a.mp3"},
+            {"token": "garage", "count": 2, "example": "b.mp3"},
+            {"token": "GARAGE!", "count": 1, "example": "c.mp3"},
         ])
         self.assertEqual(report["summary"]["source_rows"], 3)
         self.assertEqual(report["summary"]["normalized_tokens"], 1)
@@ -37,7 +37,7 @@ class GenreAliasProposalTests(unittest.TestCase):
         row = report["proposals"][0]
         self.assertEqual(row["count"], 103)
         self.assertEqual(row["status"], "decision_required")
-        self.assertEqual(row["variants"], ["Dance", "dance", "DANCE!"])
+        self.assertEqual(row["variants"], ["Garage", "garage", "GARAGE!"])
 
     def test_approved_and_operator_directed_mappings_are_separate(self):
         report = self.build([
