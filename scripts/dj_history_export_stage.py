@@ -12,7 +12,10 @@ have already been overplayed — without guessing from crates or PlayCount.
 """
 from __future__ import annotations
 
-SAFETY_CLASSIFICATION = "read-only"
+# Read-only toward DJ app data and music. Its only writes are copies into a
+# caller-chosen staging directory that _assert_staging_safe() keeps outside
+# Music and Git, and removing its own just-copied file when verification fails.
+SAFETY_CLASSIFICATION = "infrastructure"
 
 import argparse
 import hashlib
