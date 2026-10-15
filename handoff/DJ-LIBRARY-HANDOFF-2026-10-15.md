@@ -59,7 +59,7 @@ Repo: **`imanisworld/remix-edit-sort`** on GitHub (private; never publish it or 
 - **ChatGPT's PR #41** brought both older rule files in line with the 76 names, added a CI check for genre names, and added a landing-folder move preview. That preview only writes a report. **But #41 misread several of the owner's decisions** (it only saw a paste, not their answers).
 - **Codex's PR #47** allows a track into a genre folder only if that folder is on the approved list. Only 3 folders are approved: R&B → `R&b`, Neo Soul → `neo soul`, Alternative → `alternative`. **Every other genre goes to `_GENRE NEEDS CHECK` and gets no genre tag written** until more folders are approved.
 - **My PR #49** puts the owner's real decisions back over #41 (Funk & Soul kept merged, Blues allowed, the Grouping descriptors) and rewrites the decision record file.
-- **Update 2026-10-15 afternoon:** #37, #41, #47 and #49 are all **merged into `main`** (771 tests pass on `main`). Also merged since: #50 (R&B folder spelling is now `R&B`; `R&b`/`r&b` normalize to it), #51 (Grouping and Year/BPM writers handle FLAC and M4A), #52/#53 (per-track CSV Grouping plan builder, `scripts/build_grouping_csv_plan.py`).
+- **Update 2026-10-15 afternoon:** #37, #41, #47 and #49 are all **merged into `main`** (771 tests pass on `main`). Also merged since: #50 (R&B folder spelling is now `R&B`; `R&b`/`r&b` normalize to it), #51 (Grouping and Year/BPM writers handle FLAC and M4A), #52/#53 (per-track CSV Grouping plan builder, `scripts/build_grouping_csv_plan.py`), #54 (`LIBRARY-STATUS.md`, the shared status file), #55 (59 approved genre folders; a plain "Afrobeat" tag reads as Afrobeats). Open: #57 (junk Grouping removal tool).
 
 ### Set prep for October gigs [reported, done in Grok/Cursor, not by me]
 - Set lists built for Oct 15 (Open Decks), Oct 16 (Cat Calls, The Neon Veil), Oct 18 (Garden of Eatin, for Al), Oct 31 (Spring Wilder's 75th birthday, clean versions), and "Inna Space".
@@ -92,7 +92,7 @@ Repo: **`imanisworld/remix-edit-sort`** on GitHub (private; never publish it or 
 | Pop/rock | Pop, Dance Pop, Rock, Classic Rock, Soft Rock, Pop Rock, Alternative, Country, New Wave |
 
 ### Core rules [verified, `CLAUDE.md`]
-- **Genre** = musical style only. **Grouping** = event/crate/source/purpose context, and is always **added to, never overwritten**.
+- **Genre** = musical style only. **Grouping** = event/crate/source/purpose context, and is always **added to, never overwritten**. Only exception: exact junk values (e.g. "November", record-pool watermarks) the owner lists by hand, via `scripts/build_grouping_removal_plan.py` (approved 2026-10-15).
 - **Never guess.** Anything uncertain goes to `_NEEDS CHECK` (version) or `_GENRE NEEDS CHECK` (genre).
 - Keep Clean, Dirty, Intro, Remix, Edit, Instrumental and Acapella versions separate.
 - Keep meaningful numbers in names: `21 Savage`, `112`, years, BPM, part numbers.
@@ -161,7 +161,7 @@ Repo: **`imanisworld/remix-edit-sort`** on GitHub (private; never publish it or 
 
 1. **Gig prep first (time-critical):** download the missing tracks (Oct 15 first, then Oct 16) per `~/Desktop/need-to-get-oct.txt`. Then build one Serato crate per set. [reported]
 2. ~~Merge the genre PR stack~~ **Done** (all on `main` as of 2026-10-15).
-3. **Unpause genre filing (done in the repo, 2026-10-15; merged once its PR lands):** from a read-only listing of the live top-level folders (`handoff/live-top-level-folders-2026-10-15.md`), the owner approved 59 Genre → folder entries: 36 into their own folder (Afrobeats → `Afrobeat`: owner says Afrobeat and Afrobeats are the same thing), 23 smaller styles into a parent folder (tag kept exact). 17 Genres stay held (Dub; Breaks; Electro; Dubstep; Miami/Atlanta Bass; Afro Tech; Gqom; Kuduro; Afro Baile; New Wave; Drill styles). The live listing shows `Ghettotech` and `Drum & Bass` folders already exist, so those two renames are done; `Amapiano` has no trailing space now. [verified listing; owner-approved in chat]
+3. **Unpause genre filing (merged as PR #55, 2026-10-15):** from a read-only listing of the live top-level folders (`handoff/live-top-level-folders-2026-10-15.md`), the owner approved 59 Genre → folder entries: 36 into their own folder (Afrobeats → `Afrobeat`: owner says Afrobeat and Afrobeats are the same thing), 23 smaller styles into a parent folder (tag kept exact). 17 Genres stay held (Dub; Breaks; Electro; Dubstep; Miami/Atlanta Bass; Afro Tech; Gqom; Kuduro; Afro Baile; New Wave; Drill styles). The live listing shows `Ghettotech` and `Drum & Bass` folders already exist, so those two renames are done; `Amapiano` has no trailing space now. [verified listing; owner-approved in chat]
 4. **Merge the DJ-integration chain** #42 → #43 → #46 → #44. Same stacked-merge caution.
 5. **Set-history exports (#48):** the owner exports Serato History (CSV + TXT) into the history-exports inbox folder, then runs `scripts/dj_history_export_stage.py stage`. [reported]
 6. **Mac test run** (`MAC-CANARY.md`) before any real move or rename. CI runs on Linux; the library is on macOS/APFS.

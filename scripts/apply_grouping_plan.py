@@ -149,19 +149,27 @@ def read_grouping(path: Path) -> tuple[list[str], int | None]:
 
 
 def write_grouping(path: Path, value: str, version: int | None) -> None:
+    """Write Grouping as one value. An empty value (only reachable from an
+    owner-approved removal plan) deletes the field instead of writing ""."""
     file_kind = tag_formats.kind(path)
     if file_kind == "flac":
         audio = FLAC(path)
         if audio.tags is None:
             audio.add_tags()
-        audio.tags["GROUPING"] = [value]
+        if value:
+            audio.tags["GROUPING"] = [value]
+        elif "GROUPING" in audio.tags:
+            del audio.tags["GROUPING"]
         audio.save()
         return
     if file_kind == "m4a":
         audio = MP4(path)
         if audio.tags is None:
             audio.add_tags()
-        audio.tags["\xa9grp"] = [value]
+        if value:
+            audio.tags["\xa9grp"] = [value]
+        elif "\xa9grp" in audio.tags:
+            del audio.tags["\xa9grp"]
         audio.save()
         return
     if version is None:
@@ -172,8 +180,28 @@ def write_grouping(path: Path, value: str, version: int | None) -> None:
         tags = ID3()
     encoding = 3 if version == 4 else 1
     tags.delall("TIT1")
-    tags.add(TIT1(encoding=encoding, text=[value]))
+    if value:
+        tags.add(TIT1(encoding=encoding, text=[value]))
     tags.save(path, v2_version=version)
+
+
+def removal_errors(plan: dict, item: dict) -> list[str]:
+    """Grouping is append-only except through an owner-approved removal list
+    (build_grouping_removal_plan.py). An item may drop only listed values,
+    and must keep every other value in order."""
+    if "removed_values" not in item and item["combined_grouping"]:
+        return []
+    approved = {v.casefold() for v in plan.get("rules", {}).get("grouping_removal", {}).get("approved_values", [])}
+    if not approved:
+        return [f"removes Grouping without an approved removal list: {item['path']}"]
+    removed = item.get("removed_values", [])
+    parts = [p.strip() for raw in item["current_grouping"] for p in raw.split(";") if p.strip()]
+    kept = [p for p in parts if p.casefold() not in approved]
+    errors = [f"value not on the approved removal list: {item['path']}: {v!r}"
+              for v in removed if v.casefold() not in approved]
+    if "; ".join(kept) != item["combined_grouping"] or not removed:
+        errors.append(f"removal item does not match its approved list: {item['path']}")
+    return errors
 
 
 def load_and_validate(plan_path: Path, root: Path) -> tuple[dict, list[dict]]:
@@ -184,6 +212,7 @@ def load_and_validate(plan_path: Path, root: Path) -> tuple[dict, list[dict]]:
 
     errors = []
     for item in items:
+        errors.extend(removal_errors(plan, item))
         path = Path(item["path"]).resolve()
         if root not in path.parents and path.parent != root:
             errors.append(f"outside target root: {path}")
@@ -253,7 +282,8 @@ def apply(plan_path: Path, manifest: dict, backup: Path, root: Path, out_dir: Pa
                 write_grouping(path, item["combined_grouping"], item["id3_version"])
                 txn.mark_mutated()
                 after_values, after_version = read_grouping(path)
-                if after_values != [item["combined_grouping"]] or after_version != item["id3_version"]:
+                expected = [item["combined_grouping"]] if item["combined_grouping"] else []
+                if after_values != expected or after_version != item["id3_version"]:
                     raise RuntimeError("Grouping verification failed")
                 if sha256_bytes(audio_payload(path)) != before_audio:
                     raise RuntimeError("audio payload changed")
