@@ -34,6 +34,9 @@ jobs:
       - name: Run safety tests
         run: python -m unittest discover -s tests -v
 
+      - name: Enforce single canonical genre naming
+        run: python scripts/check_genre_naming.py
+
       - name: Validate reusable evidence registry
         run: python scripts/validate_year_evidence.py references/year-evidence.json
 

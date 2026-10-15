@@ -5,7 +5,13 @@ Generalizes the write/verify/rollback logic proven in the historical
 apply_events_grouping.py and handoff/pending/apply_nigeria_plan.py: every
 write is verified against the audio payload and Serato frames before being
 recorded, and rolled back immediately on any mismatch. No file is ever moved
-or renamed by this script — it only writes the TIT1 frame.
+or renamed by this script — it only writes the Grouping field.
+
+Formats: MP3 (ID3 TIT1, existing behaviour), FLAC (``GROUPING`` Vorbis
+comment) and M4A (``\xa9grp`` atom). For FLAC/M4A the plan item's
+``id3_version`` must be null; Serato's own data (``SERATO_*`` Vorbis comments
+and APPLICATION blocks in FLAC, ``----:com.serato.dj:*`` atoms in M4A) is
+hashed before and after every write and must be byte-identical.
 """
 
 from __future__ import annotations
@@ -30,7 +36,11 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
+from mutagen.flac import FLAC
 from mutagen.id3 import ID3, ID3NoHeaderError, TIT1
+from mutagen.mp4 import MP4
+
+import tag_formats
 
 import backup_manifest
 import lock_guard
@@ -50,6 +60,8 @@ def sha256_file(path: Path) -> str:
 
 
 def audio_payload(path: Path) -> bytes:
+    if tag_formats.kind(path) in {"flac", "m4a"}:
+        return tag_formats.audio_payload(path)
     data = path.read_bytes()
     start, end = 0, len(data)
     if data[:3] == b"ID3" and len(data) >= 10:
@@ -122,7 +134,9 @@ class SeratoEncodingOnlyChange(Exception):
     pass
 
 
-def read_grouping(path: Path) -> tuple[list[str], int]:
+def read_grouping(path: Path) -> tuple[list[str], int | None]:
+    if tag_formats.kind(path) in {"flac", "m4a"}:
+        return tag_formats.read_grouping(path), None
     try:
         tags = ID3(path)
     except ID3NoHeaderError:
@@ -134,15 +148,60 @@ def read_grouping(path: Path) -> tuple[list[str], int]:
     return values, tags.version[1]
 
 
-def write_grouping(path: Path, value: str, version: int) -> None:
+def write_grouping(path: Path, value: str, version: int | None) -> None:
+    """Write Grouping as one value. An empty value (only reachable from an
+    owner-approved removal plan) deletes the field instead of writing ""."""
+    file_kind = tag_formats.kind(path)
+    if file_kind == "flac":
+        audio = FLAC(path)
+        if audio.tags is None:
+            audio.add_tags()
+        if value:
+            audio.tags["GROUPING"] = [value]
+        elif "GROUPING" in audio.tags:
+            del audio.tags["GROUPING"]
+        audio.save()
+        return
+    if file_kind == "m4a":
+        audio = MP4(path)
+        if audio.tags is None:
+            audio.add_tags()
+        if value:
+            audio.tags["\xa9grp"] = [value]
+        elif "\xa9grp" in audio.tags:
+            del audio.tags["\xa9grp"]
+        audio.save()
+        return
+    if version is None:
+        raise RuntimeError(f"ID3 write needs an id3_version: {path}")
     try:
         tags = ID3(path)
     except ID3NoHeaderError:
         tags = ID3()
     encoding = 3 if version == 4 else 1
     tags.delall("TIT1")
-    tags.add(TIT1(encoding=encoding, text=[value]))
+    if value:
+        tags.add(TIT1(encoding=encoding, text=[value]))
     tags.save(path, v2_version=version)
+
+
+def removal_errors(plan: dict, item: dict) -> list[str]:
+    """Grouping is append-only except through an owner-approved removal list
+    (build_grouping_removal_plan.py). An item may drop only listed values,
+    and must keep every other value in order."""
+    if "removed_values" not in item and item["combined_grouping"]:
+        return []
+    approved = {v.casefold() for v in plan.get("rules", {}).get("grouping_removal", {}).get("approved_values", [])}
+    if not approved:
+        return [f"removes Grouping without an approved removal list: {item['path']}"]
+    removed = item.get("removed_values", [])
+    parts = [p.strip() for raw in item["current_grouping"] for p in raw.split(";") if p.strip()]
+    kept = [p for p in parts if p.casefold() not in approved]
+    errors = [f"value not on the approved removal list: {item['path']}: {v!r}"
+              for v in removed if v.casefold() not in approved]
+    if "; ".join(kept) != item["combined_grouping"] or not removed:
+        errors.append(f"removal item does not match its approved list: {item['path']}")
+    return errors
 
 
 def load_and_validate(plan_path: Path, root: Path) -> tuple[dict, list[dict]]:
@@ -153,6 +212,7 @@ def load_and_validate(plan_path: Path, root: Path) -> tuple[dict, list[dict]]:
 
     errors = []
     for item in items:
+        errors.extend(removal_errors(plan, item))
         path = Path(item["path"]).resolve()
         if root not in path.parents and path.parent != root:
             errors.append(f"outside target root: {path}")
@@ -209,20 +269,28 @@ def apply(plan_path: Path, manifest: dict, backup: Path, root: Path, out_dir: Pa
                 mutation_engine.restore_from_backup(b, p, h)
             )
             before_audio = sha256_bytes(audio_payload(path))
-            before_tags = ID3(path)
-            before_serato = serato_digest(before_tags)
-            before_serato_payload = serato_payload_digest(before_tags)
+            non_id3 = tag_formats.kind(path) in {"flac", "m4a"}
+            if non_id3:
+                before_serato = tag_formats.serato_digest(path)
+                before_serato_payload = before_serato
+            else:
+                before_tags = ID3(path)
+                before_serato = serato_digest(before_tags)
+                before_serato_payload = serato_payload_digest(before_tags)
 
             try:
                 write_grouping(path, item["combined_grouping"], item["id3_version"])
                 txn.mark_mutated()
                 after_values, after_version = read_grouping(path)
-                if after_values != [item["combined_grouping"]] or after_version != item["id3_version"]:
+                expected = [item["combined_grouping"]] if item["combined_grouping"] else []
+                if after_values != expected or after_version != item["id3_version"]:
                     raise RuntimeError("Grouping verification failed")
                 if sha256_bytes(audio_payload(path)) != before_audio:
                     raise RuntimeError("audio payload changed")
-                after_tags = ID3(path)
-                if serato_digest(after_tags) != before_serato:
+                if non_id3:
+                    if tag_formats.serato_digest(path) != before_serato:
+                        raise RuntimeError("Serato data changed")
+                elif serato_digest(after_tags := ID3(path)) != before_serato:
                     if serato_payload_digest(after_tags) == before_serato_payload:
                         raise SeratoEncodingOnlyChange(
                             "Grouping write forced an ID3-version-compliance re-encoding of a Serato "
@@ -267,6 +335,9 @@ def apply(plan_path: Path, manifest: dict, backup: Path, root: Path, out_dir: Pa
         "undo_log": str(undo_path),
     }
     result_path.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    # Every other engine-user records run_complete; without it the recovery
+    # journal can't distinguish a finished grouping run from an abandoned one.
+    engine.finish(result)
     print(json.dumps({**result, "result_path": str(result_path)}, indent=2))
 
 
@@ -329,7 +400,7 @@ def _dry_run_backup_gate(manifest_path, root) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, help="folder root the plan's paths live under (required unless --undo)")
-    parser.add_argument("--plan", type=Path, help="grouping-plan.json from build_grouping_plan.py")
+    parser.add_argument("--plan", type=Path, help="grouping-plan.json from build_grouping_plan.py or build_grouping_csv_plan.py")
     parser.add_argument("--backup", type=Path,
                         help="pre-apply backup directory the per-item copies live in "
                              "(required with --apply, alongside --backup-manifest)")
@@ -383,7 +454,9 @@ def main() -> None:
             raise SystemExit(f"REFUSING TO MUTATE: {exc}") from exc
         apply(args.plan, manifest, args.backup.resolve(), root, out_dir, label, heartbeat)
     else:
-        plan, items = load_and_validate(args.plan, args.backup.resolve(), root) if args.backup else (
+        # load_and_validate takes (plan_path, root); passing the backup dir here
+        # used to raise TypeError on every dry run that included --backup.
+        plan, items = load_and_validate(args.plan, root) if args.backup else (
             json.loads(args.plan.read_text(encoding="utf-8")), None
         )
         items = items if items is not None else plan["items"]

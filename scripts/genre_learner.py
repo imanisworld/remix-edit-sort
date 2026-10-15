@@ -71,6 +71,8 @@ def load_rules(path: Path) -> dict:
     if not rules.get("training", {}).get("never_fold_to_parent_for_sample_count"):
         raise LearnerError("rules must explicitly forbid sample-count taxonomy folding")
     alias_index(rules)
+    context_index(rules)
+    compound_index(rules)
     genre_to_family(rules)
     return rules
 
@@ -89,6 +91,50 @@ def alias_index(rules: dict) -> dict[str, str]:
         if key in index and index[key] != genre:
             raise LearnerError(f"alias normalization collision: {raw!r}")
         index[key] = genre
+    return index
+
+
+def context_index(rules: dict) -> dict[str, str]:
+    """Normalized Genre-field context token -> canonical Grouping term."""
+    index = {}
+    for raw in rules.get("context_tokens_not_genre", []):
+        key = norm(raw)
+        if key:
+            index[key] = str(raw).strip()
+    for raw, grouping in rules.get("context_aliases", {}).items():
+        key = norm(raw)
+        value = str(grouping).strip()
+        if not key or not value:
+            raise LearnerError("context aliases must have non-empty keys and values")
+        # Explicit aliases deliberately canonicalize legacy spellings from the
+        # compatibility list (for example Old Head Party -> Old Head).
+        index[key] = value
+    return index
+
+
+def compound_index(rules: dict) -> dict[str, dict]:
+    """Validate explicit tokens that yield both Genre and Grouping values."""
+    index = {}
+    for raw, mapping in rules.get("compound_aliases", {}).items():
+        if not isinstance(mapping, dict):
+            raise LearnerError(f"compound alias {raw!r} must be an object")
+        genres = mapping.get("genres", [])
+        grouping = mapping.get("grouping", [])
+        if not isinstance(genres, list) or not isinstance(grouping, list):
+            raise LearnerError(f"compound alias {raw!r} values must be lists")
+        unknown = [genre for genre in genres if genre not in rules["canonical_genres"]]
+        if unknown:
+            raise LearnerError(f"compound alias {raw!r} targets noncanonical Genre {unknown!r}")
+        key = norm(raw)
+        value = {
+            "genres": list(dict.fromkeys(genres)),
+            "grouping": list(dict.fromkeys(str(term).strip() for term in grouping if str(term).strip())),
+        }
+        if not key or (not value["genres"] and not value["grouping"]):
+            raise LearnerError(f"compound alias {raw!r} has no mapping")
+        if key in index and index[key] != value:
+            raise LearnerError(f"compound normalization collision: {raw!r}")
+        index[key] = value
     return index
 
 
@@ -137,7 +183,7 @@ def classify_raw_genre(raw: str, rules: dict) -> dict:
     """Interpret metadata without inventing or folding a Genre."""
     raw = (raw or "").strip()
     if not raw:
-        return {"status": "blank", "labels": [], "unknown": [], "raw": raw}
+        return {"status": "blank", "labels": [], "grouping": [], "unknown": [], "raw": raw}
 
     legacy = {
         norm(value): value for value in rules.get("legacy_compounds_requiring_audio_review", [])
@@ -146,20 +192,52 @@ def classify_raw_genre(raw: str, rules: dict) -> dict:
         return {
             "status": "legacy_compound_review",
             "labels": [],
+            "grouping": [],
             "unknown": [raw],
             "raw": raw,
         }
 
     aliases = alias_index(rules)
+    contexts = context_index(rules)
+    compounds = compound_index(rules)
+    whole_compound = compounds.get(norm(raw))
+    if whole_compound:
+        labels = whole_compound["genres"]
+        grouping = whole_compound["grouping"]
+        return {
+            "status": "single" if len(labels) == 1 else "multi_label" if labels else "context_only",
+            "labels": labels, "grouping": grouping, "unknown": [], "raw": raw,
+        }
+    whole_context = contexts.get(norm(raw))
+    if whole_context:
+        return {
+            "status": "context_only", "labels": [], "grouping": [whole_context],
+            "unknown": [], "raw": raw,
+        }
     whole = aliases.get(norm(raw))
     if whole:
-        return {"status": "single", "labels": [whole], "unknown": [], "raw": raw}
+        return {
+            "status": "single", "labels": [whole], "grouping": [],
+            "unknown": [], "raw": raw,
+        }
 
-    context = {norm(value) for value in rules.get("context_tokens_not_genre", [])}
-    labels, unknown = [], []
+    modifier_grouping = {
+        "edit": "Edit", "remix": "Remix", "flip": "Remix", "bootleg": "Remix",
+    }
+    labels, grouping, unknown = [], [], []
     for token in _split_genre_string(raw):
         key = norm(token)
-        if not key or key in context:
+        if not key:
+            continue
+        compound = compounds.get(key)
+        if compound:
+            labels.extend(value for value in compound["genres"] if value not in labels)
+            grouping.extend(value for value in compound["grouping"] if value not in grouping)
+            continue
+        context = contexts.get(key)
+        if context:
+            if context not in grouping:
+                grouping.append(context)
             continue
         if key in legacy:
             unknown.append(token)
@@ -168,8 +246,32 @@ def classify_raw_genre(raw: str, rules: dict) -> dict:
         if genre:
             if genre not in labels:
                 labels.append(genre)
-        else:
-            unknown.append(token)
+            continue
+        match = re.fullmatch(r"(.+?)\s+(edit|remix|flip|bootleg)", token, flags=re.I)
+        if match:
+            stem_key = norm(match.group(1))
+            modifier = modifier_grouping[match.group(2).casefold()]
+            stem_genre = aliases.get(stem_key)
+            stem_context = contexts.get(stem_key)
+            if stem_genre:
+                if stem_genre not in labels:
+                    labels.append(stem_genre)
+                if modifier not in grouping:
+                    grouping.append(modifier)
+                continue
+            if stem_context:
+                for value in (stem_context, modifier):
+                    if value not in grouping:
+                        grouping.append(value)
+                continue
+            # An explicit version is still useful even when the musical
+            # style needs review: "Afrobeat Bootleg" proves a version marker,
+            # not that historical Afrobeat equals contemporary Afrobeats.
+            unknown.append(match.group(1))
+            if modifier not in grouping:
+                grouping.append(modifier)
+            continue
+        unknown.append(token)
 
     if unknown and labels:
         status = "mixed_unknown"
@@ -181,7 +283,10 @@ def classify_raw_genre(raw: str, rules: dict) -> dict:
         status = "single"
     else:
         status = "context_only"
-    return {"status": status, "labels": labels, "unknown": unknown, "raw": raw}
+    return {
+        "status": status, "labels": labels, "grouping": grouping,
+        "unknown": unknown, "raw": raw,
+    }
 
 
 def training_status(counts: dict[str, int], rules: dict) -> dict[str, str]:

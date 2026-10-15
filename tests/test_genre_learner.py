@@ -45,15 +45,15 @@ class GenreLearnerTaxonomyTests(unittest.TestCase):
         self.assertEqual(self.parse("NYC Drill")["labels"], ["NY Drill"])
         self.assertEqual(self.parse("Drill")["status"], "unknown")
 
-    def test_juke_footwork_legacy_compound_is_not_training_label(self):
+    def test_juke_footwork_uses_operator_approved_juke_mapping(self):
         parsed = self.parse("Juke & Footwork")
-        self.assertEqual(parsed["status"], "legacy_compound_review")
-        self.assertEqual(parsed["labels"], [])
+        self.assertEqual(parsed["status"], "single")
+        self.assertEqual(parsed["labels"], ["Juke"])
 
     def test_genuine_multi_style_metadata_is_not_forced_single(self):
         parsed = self.parse("Ballroom; House")
         self.assertEqual(parsed["status"], "multi_label")
-        self.assertEqual(set(parsed["labels"]), {"Ballroom", "House"})
+        self.assertEqual(set(parsed["labels"]), {"Ballroom Vogue", "House"})
 
     def test_context_terms_do_not_become_genre(self):
         self.assertEqual(self.parse("Twerk")["status"], "context_only")
@@ -61,8 +61,60 @@ class GenreLearnerTaxonomyTests(unittest.TestCase):
         self.assertEqual(self.parse("Lounge Vibe")["status"], "context_only")
         self.assertNotIn("Lounge", self.rules["canonical_genres"])
 
+    def test_operator_context_aliases_return_canonical_grouping_terms(self):
+        cases = {
+            "Holiday": ["Holiday"],
+            "Y2K": ["Y2K"],
+            "Black Y2K": ["Black Y2K"],
+            "White OOtz": ["White OOtz"],
+            "white": ["White OOtz"],
+            "wch": ["White OOtz"],
+            "white edits": ["White OOtz"],
+            "white club": ["White OOtz"],
+            "white club house": ["White OOtz"],
+            "dnb white": ["White OOtz"],
+            "Women": ["Women"],
+            "Old Head Party": ["Old Head"],
+        }
+        for raw, expected in cases.items():
+            with self.subTest(raw=raw):
+                parsed = self.parse(raw)
+                self.assertEqual(parsed["status"], "context_only")
+                self.assertEqual(parsed["labels"], [])
+                self.assertEqual(parsed["grouping"], expected)
+
+    def test_genre_modifier_and_context_modifier_patterns(self):
+        cases = {
+            "House Edit": (["House"], ["Edit"]),
+            "R&B Remix": (["R&B"], ["Remix"]),
+            "Juke Flip": (["Juke"], ["Remix"]),
+            "Lounge Edit": ([], ["Lounge", "Edit"]),
+        }
+        for raw, (genres, grouping) in cases.items():
+            with self.subTest(raw=raw):
+                parsed = self.parse(raw)
+                self.assertEqual(parsed["labels"], genres)
+                self.assertEqual(parsed["grouping"], grouping)
+                self.assertFalse(parsed["unknown"])
+        # Owner 2026-10-15: a bare Afrobeat tag is Afrobeats ("same thing").
+        afrobeat = self.parse("Afrobeat Bootleg")
+        self.assertEqual(afrobeat["labels"], ["Afrobeats"])
+        self.assertEqual(afrobeat["grouping"], ["Remix"])
+        self.assertEqual(afrobeat["unknown"], [])
+
+    def test_afro_and_phunk_operator_mappings(self):
+        ambiguous = self.parse("afro")
+        self.assertEqual(ambiguous["labels"], [])
+        self.assertEqual(ambiguous["unknown"], ["afro"])
+        self.assertEqual(self.parse("Afrobeats")["labels"], ["Afrobeats"])
+        self.assertEqual(self.parse("Afro House")["labels"], ["Afro House"])
+        self.assertEqual(self.parse("Afro Tech")["labels"], ["Afro Tech"])
+        phunk = self.parse("phunk")
+        self.assertEqual(phunk["labels"], ["Breaks"])
+        self.assertEqual(phunk["grouping"], ["Phunk"])
+
     def test_approved_legacy_normalizations(self):
-        self.assertEqual(self.parse("Afrobeats")["labels"], ["Afrobeat"])
+        self.assertEqual(self.parse("Afrobeats")["labels"], ["Afrobeats"])
         self.assertEqual(self.parse("Baile Funk")["labels"], ["Baile"])
         self.assertEqual(self.parse("ATL Bass")["labels"], ["Atlanta Bass"])
 
@@ -77,8 +129,8 @@ class GenreLearnerTaxonomyTests(unittest.TestCase):
         self.assertEqual(parsed["status"], "multi_label")
         self.assertEqual(parsed["labels"], ["Alternative R&B", "Pop"])
         parsed = self.parse("Nu R&B")
-        self.assertEqual(parsed["status"], "unknown")
-        self.assertEqual(parsed["unknown"], ["Nu R&B"])
+        self.assertEqual(parsed["status"], "single")
+        self.assertEqual(parsed["labels"], ["Alternative R&B"])
         parsed = self.parse("Drum & Bass / Jungle, funk & soul")
         self.assertEqual(parsed["status"], "multi_label")
         self.assertEqual(parsed["labels"], ["Drum & Bass", "Jungle", "Funk & Soul"])

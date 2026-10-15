@@ -5,10 +5,10 @@ it, this one is right and the other one is stale.
 
 ## The five invariants
 
-Every production mutation of the DJ library — moving a file, renaming a file,
-writing Genre, Grouping, Artist/Title, or Year/BPM, or deleting a verified
-duplicate — satisfies all five of these. There is no approved path that skips
-any of them.
+Every production mutation of the DJ library or its Serato path index — moving
+a file, renaming a file or a whole folder, writing Genre, Grouping, Artist/Title, or
+Year/BPM, rewriting an explicit Serato path (binaries or SQLite), or deleting a verified duplicate — satisfies
+all five of these. There is no approved path that skips any of them.
 
 1. **One engine.** All mutations go through `scripts/mutation_engine.py`. No
    apply script performs its own rename, tag write, or unlink outside a
@@ -57,14 +57,14 @@ they do not fabricate or trust an unverified restore path.
 
 | Module | Classification | Role |
 | --- | --- | --- |
-| `mutation_engine.py` | mutation-engine | The transaction core. WAL journal, preconditions, verification, rollback, recovery. |
+| `mutation_engine.py` | mutation-engine | The transaction core. WAL journal, preconditions, verification, rollback, recovery. `item()` for one file, `folder_item()` for one whole-folder rename. |
 | `folder_lock.py` | infrastructure | Per-folder cross-process lock. `verify_and_renew()` is the atomic ownership primitive. |
 | `lock_guard.py` | infrastructure | The gate every mutation script calls. `LockHeartbeat` per item. |
 | `backup_manifest.py` | read-only | Builds and verifies backup evidence. PASS is computed, never asserted. |
 | `duplicate_semantics.py` | read-only | The duplicate truth model. |
 | `mutation_surface.py` | read-only | AST scan of every mutation path in the repo. Enforced by CI. |
 | `apply_version_genre_plan.py` | engine-user | File relocation/rename + Genre. |
-| `apply_grouping_plan.py` | engine-user | Grouping. |
+| `apply_grouping_plan.py` | engine-user | Grouping. Appends; removes only values on a plan's owner-approved removal list (`build_grouping_removal_plan.py`), and refuses any other removal item. |
 | `apply_artist_title_plan.py` | engine-user | Artist/Title. |
 | `apply_year_bpm_plan.py` | engine-user | Year/BPM. |
 | `apply_genre_refinement_plan.py` | engine-user | Genre refinement. |
@@ -72,6 +72,9 @@ they do not fabricate or trust an unverified restore path.
 | `apply_genre_needs_check_folder_plan.py` | engine-user | Folder-scoped Genre recheck from a hashed survey. |
 | `apply_clean_dirty_move_plan.py` | engine-user | Clean/Dirty relocation plus additive Grouping. |
 | `apply_new_music_intake_plan.py` | engine-user | One-save Genre/Grouping intake metadata transaction. |
+| `rewrite_serato_paths.py` | engine-user | Reviewed, hash-bound `pfil`/`ptrk` path rewrites in Serato database/crates. Fails closed if Serato is running. |
+| `rewrite_serato_sqlite_paths.py` | engine-user | Reviewed, hash-bound `asset.portable_id` rewrites in Serato's `master.sqlite`/`root.sqlite`; one SQLite transaction per database inside an engine item. |
+| `apply_folder_rename_plan.py` | engine-user | Whole-folder renames (including case-only, via a temp name) through `MutationEngine.folder_item()`; preview, apply, undo, crash recovery. See `references/folder-rename-runbook.md`. |
 | `delete_verified_duplicates.py` | engine-user | Manual EXACT_DUPLICATE deletion. |
 | `apply_plan.py` | disabled-legacy | Hard-disabled. Read-only `--report` only. |
 | `merge_events_duplicates.py` | disabled-legacy | Hard-disabled completed one-off. |

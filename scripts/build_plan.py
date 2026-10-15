@@ -40,6 +40,18 @@ ILLEGAL = re.compile(r'[/\\:*?"<>|\x00-\x1f]')
 # Names already settled in genre-rules.json are the canonical spelling —
 # TRAADSARU and NuBASS are stylized, not shouting.
 ALIAS_CANON = {v.upper(): v for v in RULES["remixer_aliases"].values()}
+# Folder destinations require an explicit entry; canonical spelling alone
+# does not authorize a sort into an existing library folder.
+FOLDER_NAMES = RULES.get("folder_names", {})
+
+
+def genre_dir(genre):
+    folder = FOLDER_NAMES.get(genre)
+    if (not isinstance(folder, str) or not folder.strip()
+            or folder != folder.strip() or folder in (".", "..")
+            or "/" in folder or "\\" in folder):
+        return None
+    return safe(folder, 40)
 
 
 def smart_case(s):
@@ -88,6 +100,7 @@ def slug(s):
 
 def plan_one(t, bpm_rec):
     genre = t["genre"] or UNCLASSIFIED
+    approved_folder = genre_dir(genre)
     title = smart_case(t["title_clean"])
     originals = [smart_case(a) for a in t["original_artists"] if a]
     og_str = ", ".join(originals[:3])
@@ -102,19 +115,25 @@ def plan_one(t, bpm_rec):
         folder = os.path.join(UNSORTED, "Mixes & Radio Sets")
         fname = safe(f"{og_str + ' - ' if og_str else ''}{title}") + ".mp3"
         bucket = "long_mix"
+    elif approved_folder is None:
+        # Fail closed: keep the track in the review lane rather than invent
+        # a genre destination from its recognized Genre tag or a keyword.
+        folder = os.path.join(UNSORTED, "_GENRE NEEDS CHECK")
+        fname = safe(t["filename"].rsplit(".", 1)[0]) + ".mp3"
+        bucket = "genre_needs_check"
     elif t["is_remix"] and remixer_name:
-        folder = os.path.join(REMIX_DIR, safe(genre, 40), safe(remixer_name, 60))
+        folder = os.path.join(REMIX_DIR, approved_folder, safe(remixer_name, 60))
         credit = f"{title} ({remixer_name} {t['remix_type']})"
         fname = safe(f"{credit} - {og_str}" if og_str else credit) + ".mp3"
         bucket = "remix"
     elif t["is_remix"]:
         # "(Club Edit)" / "(Vogue Remix)" — a genre label, not a person
-        folder = os.path.join(REMIX_DIR, safe(genre, 40), UNKNOWN_REMIXER)
+        folder = os.path.join(REMIX_DIR, approved_folder, UNKNOWN_REMIXER)
         credit = f"{title} ({t['remixer_raw']} {t['remix_type']})" if t["remixer_raw"] else title
         fname = safe(f"{credit} - {og_str}" if og_str else credit) + ".mp3"
         bucket = "remix_unknown"
     elif originals and title:
-        folder = os.path.join(ORIG_DIR, safe(genre, 40), safe(originals[0], 60))
+        folder = os.path.join(ORIG_DIR, approved_folder, safe(originals[0], 60))
         fname = safe(f"{title} - {og_str}") + ".mp3"
         bucket = "original"
     else:
@@ -131,13 +150,13 @@ def plan_one(t, bpm_rec):
         "album": remixer_name if bucket == "remix" else (originals[0] if originals else ""),
         "remixer": remixer_name,
         "composer": remixer_name,
-        "genre": t["genre"] or "",
+        "genre": (t["genre"] or "") if approved_folder else (t.get("existing_genre") or ""),
         "bpm": bpm,
         "year": t["year"],
         "comment_tags": " ".join(filter(None, [
             f"#remix-by-{slug(remixer_name)}" if remixer_name else "",
             f"#og-{slug(originals[0])}" if originals else "",
-            f"#genre-{slug(t['genre'])}" if t["genre"] else "",
+            f"#genre-{slug(t['genre'])}" if t["genre"] and approved_folder else "",
             f"#{slug(t['remix_type'])}" if t["remix_type"] else "",
         ])),
     }
@@ -148,6 +167,8 @@ def plan_one(t, bpm_rec):
         "dest_dir": folder,
         "dest_name": fname,
         "genre": genre,
+        "folder_approved": approved_folder is not None,
+        "held_genre": t["genre"] if approved_folder is None else None,
         "remixer": remixer_name,
         "original_artists": originals,
         "duration": t.get("duration", 0),
@@ -157,7 +178,7 @@ def plan_one(t, bpm_rec):
         "bpm_conflict": (bpm_rec or {}).get("conflict"),
         "needs_review": bool(
             t["genre"] is None or (bpm and conf < 0.35) or t.get("is_long_mix")
-            or bucket in ("unsorted", "remix_unknown")),
+            or bucket in ("unsorted", "remix_unknown", "genre_needs_check")),
     }
 
 

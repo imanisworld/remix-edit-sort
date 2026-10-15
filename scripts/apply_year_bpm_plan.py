@@ -13,6 +13,13 @@ each file's existing tag version -- never converting version. BPM is written
 as TBPM, which is version-independent. A plan item may propose only one of
 the two fields; only the proposed field(s) are written.
 
+FLAC and M4A are supported too: Year goes to the FLAC ``DATE`` Vorbis comment
+or the M4A ``\xa9day`` atom, BPM to FLAC ``BPM`` or M4A ``tmpo`` (integer BPM
+only; a fractional BPM for M4A is refused). For those files the plan item's
+``id3_version`` must be null, and Serato's own data (``SERATO_*`` comments and
+APPLICATION blocks in FLAC, ``----:com.serato.dj:*`` atoms in M4A) must be
+byte-identical after the write.
+
 Requires an owned, non-stale folder_lock.py lock via lock_guard.py for both
 --apply and --undo, matching the other three mutation-capable scripts.
 """
@@ -40,12 +47,15 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from mutagen.flac import FLAC
 from mutagen.id3 import ID3, ID3NoHeaderError, TYER, TDRC, TBPM
+from mutagen.mp4 import MP4
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import backup_manifest
 import lock_guard
 import mutation_engine
+import tag_formats
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -61,6 +71,8 @@ def sha256_file(path: Path) -> str:
 
 
 def audio_payload(path: Path) -> bytes:
+    if tag_formats.kind(path) in {"flac", "m4a"}:
+        return tag_formats.audio_payload(path)
     data = path.read_bytes()
     start, end = 0, len(data)
     if data[:3] == b"ID3" and len(data) >= 10:
@@ -130,7 +142,10 @@ class SeratoEncodingOnlyChange(Exception):
     pass
 
 
-def read_year_bpm(path: Path) -> tuple[str, str, int]:
+def read_year_bpm(path: Path) -> tuple[str, str, int | None]:
+    if tag_formats.kind(path) in {"flac", "m4a"}:
+        year, bpm = tag_formats.read_year_bpm(path)
+        return year, bpm, None
     try:
         tags = ID3(path)
     except ID3NoHeaderError:
@@ -142,7 +157,32 @@ def read_year_bpm(path: Path) -> tuple[str, str, int]:
     return year, bpm, tags.version[1]
 
 
-def write_year_bpm(path: Path, year: str | None, bpm: str | None, version: int) -> None:
+def write_year_bpm(path: Path, year: str | None, bpm: str | None, version: int | None) -> None:
+    file_kind = tag_formats.kind(path)
+    if file_kind == "flac":
+        audio = FLAC(path)
+        if audio.tags is None:
+            audio.add_tags()
+        if year:
+            audio.tags["DATE"] = [year]
+        if bpm:
+            audio.tags["BPM"] = [bpm]
+        audio.save()
+        return
+    if file_kind == "m4a":
+        if bpm and not bpm.isdigit():
+            raise RuntimeError(f"M4A tmpo needs an integer BPM, got {bpm!r}: {path}")
+        audio = MP4(path)
+        if audio.tags is None:
+            audio.add_tags()
+        if year:
+            audio.tags["\xa9day"] = [year]
+        if bpm:
+            audio.tags["tmpo"] = [int(bpm)]
+        audio.save()
+        return
+    if version is None:
+        raise RuntimeError(f"ID3 write needs an id3_version: {path}")
     try:
         tags = ID3(path)
     except ID3NoHeaderError:
@@ -224,10 +264,16 @@ def apply(plan_path: Path, manifest: dict, backup: Path, backup_relative_to: Pat
                 mutation_engine.restore_from_backup(b, p, h)
             )
             before_audio = sha256_bytes(audio_payload(path))
-            before_tags = ID3(path)
-            before_serato = serato_digest(before_tags)
-            before_serato_payload = serato_payload_digest(before_tags)
-            version = before_tags.version[1]
+            non_id3 = tag_formats.kind(path) in {"flac", "m4a"}
+            if non_id3:
+                before_serato = tag_formats.serato_digest(path)
+                before_serato_payload = before_serato
+                version = None
+            else:
+                before_tags = ID3(path)
+                before_serato = serato_digest(before_tags)
+                before_serato_payload = serato_payload_digest(before_tags)
+                version = before_tags.version[1]
 
             try:
                 write_year_bpm(path, item["proposed_year"], item["proposed_bpm"], version)
@@ -241,8 +287,10 @@ def apply(plan_path: Path, manifest: dict, backup: Path, backup_relative_to: Pat
                     raise RuntimeError("ID3 version changed")
                 if sha256_bytes(audio_payload(path)) != before_audio:
                     raise RuntimeError("audio payload changed")
-                after_tags = ID3(path)
-                if serato_digest(after_tags) != before_serato:
+                if non_id3:
+                    if tag_formats.serato_digest(path) != before_serato:
+                        raise RuntimeError("Serato data changed")
+                elif serato_digest(after_tags := ID3(path)) != before_serato:
                     if serato_payload_digest(after_tags) == before_serato_payload:
                         raise SeratoEncodingOnlyChange(
                             "Year/BPM write forced an ID3-version-compliance re-encoding of a "
