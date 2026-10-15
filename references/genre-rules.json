@@ -161,10 +161,15 @@
     "kenny dope": "Kenny Dope"
   },
 
-  "_folder_names_comment": "EXPLICIT DESTINATION APPROVAL ONLY. Mappings preserve three verified case-only live folder spellings; every other Genre has NO authorized destination and must route to _GENRE NEEDS CHECK or _Unsorted review. Do not infer a folder from a Genre name. No physical folder rename is approved.",
+  "_folder_names_comment": "EXPLICIT DESTINATION APPROVAL ONLY. Mappings preserve two verified case-only live folder spellings plus the user-approved canonical R&B spelling (2026-10-15; physical R&b->R&B rename pending a reviewed mutation_engine two-step case rename); every other Genre has NO authorized destination and must route to _GENRE NEEDS CHECK or _Unsorted review. Do not infer a folder from a Genre name. No physical folder rename is approved.",
   "folder_names": {
-    "R&B": "R&b",
+    "R&B": "R&B",
     "Neo Soul": "neo soul",
     "Alternative": "alternative"
+  },
+  "_legacy_folder_names_comment": "Live folders still spelled with the pre-2026-10-15 case. They are read-only folder hints for the canonical Genre and are never a write destination; they normalize to the canonical folder_names spelling.",
+  "legacy_folder_names": {
+    "R&b": "R&B",
+    "r&b": "R&B"
   }
 }

@@ -22,7 +22,7 @@ import build_version_genre_plan as version  # noqa: E402
 import check_genre_naming as naming  # noqa: E402
 import scan_library  # noqa: E402
 
-EXPECTED = {"R&B": "R&b", "Neo Soul": "neo soul", "Alternative": "alternative"}
+EXPECTED = {"R&B": "R&B", "Neo Soul": "neo soul", "Alternative": "alternative"}
 
 
 def read_rules(name):
@@ -86,7 +86,7 @@ class ApprovedGenreFolderTests(unittest.TestCase):
         approved = remix.plan_one(source, {})
         self.assertEqual(approved["bucket"], "original")
         self.assertTrue(approved["folder_approved"])
-        self.assertEqual(approved["dest_dir"], "Originals/R&b/Artist")
+        self.assertEqual(approved["dest_dir"], "Originals/R&B/Artist")
 
     def test_apply_rejects_old_plans_and_wrong_case_destinations(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -114,8 +114,8 @@ class ApprovedGenreFolderTests(unittest.TestCase):
             # Even an approved canonical tag must not use its default name
             # when the disk's approved spelling differs only in case.
             plan["items"][0]["proposed_genre"] = "R&B"
-            plan["items"][0]["destination"] = str(root / "CLEAN" / "R&B" / "Source.mp3")
-            plan["items"][0]["destination_relative"] = "CLEAN/R&B/Source.mp3"
+            plan["items"][0]["destination"] = str(root / "CLEAN" / "R&b" / "Source.mp3")
+            plan["items"][0]["destination_relative"] = "CLEAN/R&b/Source.mp3"
             plan_path.write_text(json.dumps(plan))
             with self.assertRaisesRegex(RuntimeError, "unapproved Genre folder"):
                 apply_version.load_and_validate(root, plan_path)
