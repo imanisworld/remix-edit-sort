@@ -20,7 +20,7 @@ REFERENCES = ROOT / "references"
 # Only these three existing physical folder spellings have approval in this
 # source-only change. Expanding the map requires a separately reviewed patch.
 APPROVED_FOLDER_NAMES = {
-    "R&B": "R&b",
+    "R&B": "R&B",
     "Neo Soul": "neo soul",
     "Alternative": "alternative",
 }

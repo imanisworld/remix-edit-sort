@@ -17,7 +17,7 @@ holding folder is needed. An upcoming-event hold is temporary and intentional.
   The inbox therefore did not automatically empty into the main library.
 - The real library's destination layouts are **not uniform**:
   the historical verified VDBL merge used `Hip Hop/CLEAN/Hip-Hop/` etc.,
-  `R&b/` flat, and `Amapiano /` with its actual trailing space.
+  `R&b/` flat (canonical spelling is now `R&B/`, approved 2026-10-15; the live folder keeps `R&b` until a reviewed two-step case rename), and `Amapiano /` with its actual trailing space.
   Do not manufacture new folder names from genre labels or change these
   structures without a current Mac inventory and a reviewed migration.
 - Existing `Events` history is partly represented by Grouping:
@@ -61,7 +61,7 @@ Example routing map shape (ILLUSTRATIVE; verify actual folders first):
 {
   "schema_version": 1,
   "routes": {
-    "R&B": {"default": "R&b"},
+    "R&B": {"default": "R&B"},
     "Hip-Hop": {
       "versions": {
         "CLEAN": "Hip Hop/CLEAN/Hip-Hop",

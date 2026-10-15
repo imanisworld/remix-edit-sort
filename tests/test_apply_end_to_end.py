@@ -130,22 +130,22 @@ class ApplyEndToEndTests(unittest.TestCase):
 
     def test_clean_and_dirty_versions_both_survive_a_run(self):
         plan = self.build_plan([
-            self.item("Song (Clean).mp3", "R&B", move_to="CLEAN/R&b/Song (Clean).mp3"),
-            self.item("Song (Dirty).mp3", "R&B", move_to="DIRTY/R&b/Song (Dirty).mp3"),
+            self.item("Song (Clean).mp3", "R&B", move_to="CLEAN/R&B/Song (Clean).mp3"),
+            self.item("Song (Dirty).mp3", "R&B", move_to="DIRTY/R&B/Song (Dirty).mp3"),
         ])
         result = self.apply_plan(plan)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertTrue((self.root / "CLEAN/R&b/Song (Clean).mp3").is_file())
-        self.assertTrue((self.root / "DIRTY/R&b/Song (Dirty).mp3").is_file())
+        self.assertTrue((self.root / "CLEAN/R&B/Song (Clean).mp3").is_file())
+        self.assertTrue((self.root / "DIRTY/R&B/Song (Dirty).mp3").is_file())
 
     def test_number_heavy_names_survive_a_move(self):
         """21 Savage / 112 / a year in the title must come through intact."""
         relative = "21 Savage - 112 (2016).mp3"
         before = backup_manifest.sha256_file(self.paths[relative])
-        plan = self.build_plan([self.item(relative, "R&B", move_to=f"CLEAN/R&b/{relative}")])
+        plan = self.build_plan([self.item(relative, "R&B", move_to=f"CLEAN/R&B/{relative}")])
         result = self.apply_plan(plan)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        moved = self.root / "CLEAN" / "R&b" / relative
+        moved = self.root / "CLEAN" / "R&B" / relative
         self.assertTrue(moved.is_file())
         self.assertNotEqual(backup_manifest.sha256_file(moved), before)  # genre was written
         self.assertIn("21 Savage", moved.name)
@@ -216,7 +216,7 @@ class ApplyEndToEndTests(unittest.TestCase):
         originals = {relative: backup_manifest.sha256_file(path)
                      for relative, path in self.paths.items()}
         plan = self.build_plan([
-            self.item("Song (Clean).mp3", "R&B", move_to="CLEAN/R&b/Song (Clean).mp3"),
+            self.item("Song (Clean).mp3", "R&B", move_to="CLEAN/R&B/Song (Clean).mp3"),
             self.item("Song (Dirty).mp3", "R&B"),
         ])
         result = self.apply_plan(plan)
@@ -261,18 +261,18 @@ class ApplyEndToEndTests(unittest.TestCase):
 
     def test_apply_is_refused_on_a_destination_collision_within_the_plan(self):
         plan = self.build_plan([
-            self.item("Song (Clean).mp3", "R&B", move_to="CLEAN/R&b/Same.mp3"),
-            self.item("Song (Dirty).mp3", "R&B", move_to="CLEAN/R&b/Same.mp3"),
+            self.item("Song (Clean).mp3", "R&B", move_to="CLEAN/R&B/Same.mp3"),
+            self.item("Song (Dirty).mp3", "R&B", move_to="CLEAN/R&B/Same.mp3"),
         ])
         result = self.apply_plan(plan)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("destination collision", result.stdout + result.stderr)
 
     def test_apply_is_refused_when_the_destination_already_exists(self):
-        existing = self.root / "CLEAN" / "R&b" / "Taken.mp3"
+        existing = self.root / "CLEAN" / "R&B" / "Taken.mp3"
         fixtures.write_mp3(existing, seed=200)
         plan = self.build_plan([
-            self.item("Song (Clean).mp3", "R&B", move_to="CLEAN/R&b/Taken.mp3"),
+            self.item("Song (Clean).mp3", "R&B", move_to="CLEAN/R&B/Taken.mp3"),
         ])
         result = self.apply_plan(plan)
         self.assertNotEqual(result.returncode, 0)

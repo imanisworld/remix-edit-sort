@@ -5,7 +5,13 @@ Generalizes the write/verify/rollback logic proven in the historical
 apply_events_grouping.py and handoff/pending/apply_nigeria_plan.py: every
 write is verified against the audio payload and Serato frames before being
 recorded, and rolled back immediately on any mismatch. No file is ever moved
-or renamed by this script — it only writes the TIT1 frame.
+or renamed by this script — it only writes the Grouping field.
+
+Formats: MP3 (ID3 TIT1, existing behaviour), FLAC (``GROUPING`` Vorbis
+comment) and M4A (``\xa9grp`` atom). For FLAC/M4A the plan item's
+``id3_version`` must be null; Serato's own data (``SERATO_*`` Vorbis comments
+and APPLICATION blocks in FLAC, ``----:com.serato.dj:*`` atoms in M4A) is
+hashed before and after every write and must be byte-identical.
 """
 
 from __future__ import annotations
@@ -30,7 +36,11 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
+from mutagen.flac import FLAC
 from mutagen.id3 import ID3, ID3NoHeaderError, TIT1
+from mutagen.mp4 import MP4
+
+import tag_formats
 
 import backup_manifest
 import lock_guard
@@ -50,6 +60,8 @@ def sha256_file(path: Path) -> str:
 
 
 def audio_payload(path: Path) -> bytes:
+    if tag_formats.kind(path) in {"flac", "m4a"}:
+        return tag_formats.audio_payload(path)
     data = path.read_bytes()
     start, end = 0, len(data)
     if data[:3] == b"ID3" and len(data) >= 10:
@@ -122,7 +134,9 @@ class SeratoEncodingOnlyChange(Exception):
     pass
 
 
-def read_grouping(path: Path) -> tuple[list[str], int]:
+def read_grouping(path: Path) -> tuple[list[str], int | None]:
+    if tag_formats.kind(path) in {"flac", "m4a"}:
+        return tag_formats.read_grouping(path), None
     try:
         tags = ID3(path)
     except ID3NoHeaderError:
@@ -134,7 +148,24 @@ def read_grouping(path: Path) -> tuple[list[str], int]:
     return values, tags.version[1]
 
 
-def write_grouping(path: Path, value: str, version: int) -> None:
+def write_grouping(path: Path, value: str, version: int | None) -> None:
+    file_kind = tag_formats.kind(path)
+    if file_kind == "flac":
+        audio = FLAC(path)
+        if audio.tags is None:
+            audio.add_tags()
+        audio.tags["GROUPING"] = [value]
+        audio.save()
+        return
+    if file_kind == "m4a":
+        audio = MP4(path)
+        if audio.tags is None:
+            audio.add_tags()
+        audio.tags["\xa9grp"] = [value]
+        audio.save()
+        return
+    if version is None:
+        raise RuntimeError(f"ID3 write needs an id3_version: {path}")
     try:
         tags = ID3(path)
     except ID3NoHeaderError:
@@ -209,9 +240,14 @@ def apply(plan_path: Path, manifest: dict, backup: Path, root: Path, out_dir: Pa
                 mutation_engine.restore_from_backup(b, p, h)
             )
             before_audio = sha256_bytes(audio_payload(path))
-            before_tags = ID3(path)
-            before_serato = serato_digest(before_tags)
-            before_serato_payload = serato_payload_digest(before_tags)
+            non_id3 = tag_formats.kind(path) in {"flac", "m4a"}
+            if non_id3:
+                before_serato = tag_formats.serato_digest(path)
+                before_serato_payload = before_serato
+            else:
+                before_tags = ID3(path)
+                before_serato = serato_digest(before_tags)
+                before_serato_payload = serato_payload_digest(before_tags)
 
             try:
                 write_grouping(path, item["combined_grouping"], item["id3_version"])
@@ -221,8 +257,10 @@ def apply(plan_path: Path, manifest: dict, backup: Path, root: Path, out_dir: Pa
                     raise RuntimeError("Grouping verification failed")
                 if sha256_bytes(audio_payload(path)) != before_audio:
                     raise RuntimeError("audio payload changed")
-                after_tags = ID3(path)
-                if serato_digest(after_tags) != before_serato:
+                if non_id3:
+                    if tag_formats.serato_digest(path) != before_serato:
+                        raise RuntimeError("Serato data changed")
+                elif serato_digest(after_tags := ID3(path)) != before_serato:
                     if serato_payload_digest(after_tags) == before_serato_payload:
                         raise SeratoEncodingOnlyChange(
                             "Grouping write forced an ID3-version-compliance re-encoding of a Serato "
