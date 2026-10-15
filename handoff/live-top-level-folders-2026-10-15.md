@@ -95,7 +95,7 @@ This is the evidence for the 2026-10-15 `folder_names` approval. It is a snapsho
 ## Owner decisions on this listing (chat, 2026-10-15)
 
 1. Every genre folder offered as-is: **yes** (Hip Hop, Pop, Rock, House, Electronic, Jersey Club, Juke, Ghettotech, Drum & Bass, Latin, Reggaeton, Amapiano, Baile, Dancehall, Reggae, Soca, Bouyon, Kompa, Techno, Rave, Trance, Blues, Disco, Gospel, Jazz, Country, Groovy Bounce, Ballroom, Funk, New Orleans Bounce, Hard GROOVE).
-2. `Afrobeat` folder content (modern Afrobeats, Fela-era Afrobeat, or both): answered "yes", which does not pick one. **Afrobeats stays held** until clarified.
+2. `Afrobeat` folder content (modern Afrobeats, Fela-era Afrobeat, or both): first answered "yes"; asked again, the owner said **"same thing"**: the folder is Afrobeats. Afrobeats → `Afrobeat`.
 3. `RIDDIM` folder: **dancehall** riddims. Riddim → `RIDDIM`.
 4. Smaller styles: **put them in the bigger folder**. The owner's stated priority is the Genre metadata shown in Serato, not the folder.
 

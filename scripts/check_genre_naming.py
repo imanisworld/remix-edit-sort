@@ -57,6 +57,7 @@ APPROVED_FOLDER_NAMES = {
     "Bounce": "New Orleans Bounce",
     "Hardgroove": "Hard GROOVE",
     "Riddim": "RIDDIM",
+    "Afrobeats": "Afrobeat",
     "Deep House": "House",
     "Tech House": "House",
     "Bass House": "House",

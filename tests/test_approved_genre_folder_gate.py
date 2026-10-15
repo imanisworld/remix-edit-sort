@@ -24,7 +24,7 @@ import scan_library  # noqa: E402
 
 EXPECTED = naming.APPROVED_FOLDER_NAMES
 # Owner decisions 2026-10-15: these stay held (no destination, no Genre write).
-HELD = ("Afrobeats", "Dub", "Breaks", "Electro", "Dubstep", "Miami Bass",
+HELD = ("Dub", "Breaks", "Electro", "Dubstep", "Miami Bass",
         "Atlanta Bass", "Afro Tech", "Gqom", "Kuduro", "Afro Baile",
         "New Wave", "Chicago Drill", "UK Drill", "NY Drill", "Sexy Drill",
         "Bronx Drill", "Jersey Drill")
@@ -41,8 +41,9 @@ class ApprovedGenreFolderTests(unittest.TestCase):
         self.assertEqual(new["folder_names"], EXPECTED)
         self.assertEqual(naming.noncanonical_outputs(ROOT / "references"), [])
         # Spot-check the owner's exact live spellings and parent-folder choices.
-        self.assertEqual(len(EXPECTED), 58)
+        self.assertEqual(len(EXPECTED), 59)
         for genre, folder in (("Hip-Hop", "Hip Hop"), ("R&B", "R&B"),
+                              ("Afrobeats", "Afrobeat"),
                               ("Ballroom Vogue", "Ballroom"), ("Funk & Soul", "Funk"),
                               ("Bounce", "New Orleans Bounce"), ("Hardgroove", "Hard GROOVE"),
                               ("Riddim", "RIDDIM"), ("Deep House", "House"),
@@ -174,7 +175,7 @@ class ApprovedGenreFolderTests(unittest.TestCase):
             source_rows = []
             approved = ("R&B", "Neo Soul", "Alternative", "Drum & Bass",
                         "Ghettotech", "House", "Deep House", "Latin")
-            for style in approved + ("Afrobeats", "Miami Bass", "Dubstep"):
+            for style in approved + ("Atlanta Bass", "Miami Bass", "Dubstep"):
                 path = root / (style + " (Clean).mp3")
                 path.write_bytes(b"synthetic not audio")
                 source_rows.append([str(path), path.name, style, "Synthetic", "a" * 64])
@@ -200,7 +201,7 @@ class ApprovedGenreFolderTests(unittest.TestCase):
                 self.assertIsNone(item["held_genre"])
                 self.assertEqual(item["destination_relative"],
                                  f"CLEAN/{physical}/{style} (Clean).mp3")
-            for held in ("Afrobeats", "Miami Bass", "Dubstep"):
+            for held in ("Atlanta Bass", "Miami Bass", "Dubstep"):
                 item = by_genre[held]
                 self.assertEqual(item["destination_relative"],
                                  f"CLEAN/_GENRE NEEDS CHECK/{held} (Clean).mp3")
