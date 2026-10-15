@@ -22,9 +22,11 @@ class VersionPlanFolderTests(unittest.TestCase):
         rules = {"folder_names": {"Afrobeats": "Afrobeat"}}
         self.assertEqual(version_plan.genre_folder_for("Afrobeats", rules), "Afrobeat")
 
-    def test_unmapped_genre_uses_its_own_name(self):
-        self.assertEqual(version_plan.genre_folder_for("House", {"folder_names": {}}), "House")
-        self.assertEqual(version_plan.genre_folder_for("House", {}), "House")
+    def test_unmapped_genre_is_held_for_review(self):
+        self.assertEqual(version_plan.genre_folder_for("House", {"folder_names": {}}), version_plan.NEEDS_GENRE)
+        self.assertEqual(version_plan.genre_folder_for("House", {}), version_plan.NEEDS_GENRE)
+        self.assertEqual(version_plan.genre_folder_for("Drum & Bass", {}), version_plan.NEEDS_GENRE)
+        self.assertEqual(version_plan.genre_folder_for("Ghettotech", {}), version_plan.NEEDS_GENRE)
 
     def test_no_genre_routes_to_needs_check(self):
         self.assertEqual(version_plan.genre_folder_for(None, {"folder_names": {"x": "y"}}), version_plan.NEEDS_GENRE)
@@ -34,7 +36,9 @@ class RemixTreeFolderTests(unittest.TestCase):
     def test_genre_dir_uses_map(self):
         with mock.patch.dict(build_plan.FOLDER_NAMES, {"Ballroom Vogue": "Vogue"}, clear=True):
             self.assertEqual(build_plan.genre_dir("Ballroom Vogue"), "Vogue")
-            self.assertEqual(build_plan.genre_dir("House"), "House")
+            self.assertIsNone(build_plan.genre_dir("House"))
+            self.assertIsNone(build_plan.genre_dir("Drum & Bass"))
+            self.assertIsNone(build_plan.genre_dir("Ghettotech"))
 
     def test_existing_old_folder_reads_back_as_its_genre(self):
         with mock.patch.dict(scan_library.FOLDER_GENRES, {"Vogue": "Ballroom Vogue"}, clear=True), \

@@ -41,8 +41,9 @@ class GenreMasterReviewTests(unittest.TestCase):
     def test_afrobeats_is_the_master_name(self):
         self.assertIn('Afrobeats', self.canonical)
         self.assertNotIn('Afrobeat', self.canonical)
-        for raw in ('Afrobeats', 'Afrobeat', 'Afro Beats'):
+        for raw in ('Afrobeats', 'Afro Beats'):
             self.assertSingle(raw, 'Afrobeats')
+        self.assertNeedsCheck('Afrobeat')
 
     def test_ballroom_vogue_has_no_slash(self):
         self.assertIn('Ballroom Vogue', self.canonical)
@@ -51,10 +52,12 @@ class GenreMasterReviewTests(unittest.TestCase):
             self.assertSingle(raw, 'Ballroom Vogue')
 
     def test_new_master_genres(self):
-        for genre in ('Tech House', 'Afro Tech', 'Latin Pop', 'Blues', 'Dub',
+        for genre in ('Tech House', 'Afro Tech', 'Latin Pop', 'Blues',
                       'Classic Rock', 'Soft Rock', 'Pop Rock'):
             self.assertIn(genre, self.canonical)
             self.assertSingle(genre, genre)
+        self.assertIn('Dub', self.canonical)
+        self.assertNeedsCheck('Dub')
 
     def test_tech_house_and_afro_tech_stay_distinct(self):
         self.assertSingle('Tech House', 'Tech House')
@@ -62,14 +65,22 @@ class GenreMasterReviewTests(unittest.TestCase):
         self.assertSingle('Afro House', 'Afro House')
 
     def test_funk_soul_boogie_stay_merged(self):
+        # Decision 08, chosen directly by the user: keep merged as Funk & Soul.
         for raw in ('Funk', 'Soul', 'Boogie', 'Funk & Soul'):
             self.assertSingle(raw, 'Funk & Soul')
 
-    def test_style_moves_to_grouping(self):
+    def test_style_descriptor_moves_to_grouping(self):
+        # Decisions 15, 18, 19: the style stays Genre, the descriptor goes to Grouping.
         self.assertSingle('R&B Throwbacks', 'R&B', ['Throwback'])
         self.assertSingle('Alternative Hip Hop', 'Hip-Hop', ['Alternative'])
         self.assertSingle('Alternative Hip-Hop', 'Hip-Hop', ['Alternative'])
         self.assertSingle('Jazzy House', 'Deep House', ['Jazzy'])
+
+    def test_undecided_bare_tags_stay_held(self):
+        # The user decided the master names, not what a bare legacy tag means:
+        # "Afrobeat" may be Fela-era, "Dub" may be a dub mix.
+        for raw in ('Afrobeat', 'Dub'):
+            self.assertEqual(self.parse(raw)['status'], 'legacy_compound_review')
 
     def test_function_tags_are_grouping_not_genre(self):
         self.assertContextOnly('Twerk', 'Twerk')

@@ -52,11 +52,48 @@ NOISE_RX = re.compile(
 
 # music-library-sort's vocabulary -> ours
 LABEL_REMAP = {
-    "hip-hop/rap": "Hip-Hop", "ghetto house": "Ghetto Tech", "vogue": "Vogue",
-    "jersey/atl club": "Atlanta Bass", "house": "House", "techno": "Techno",
-    "blues": None, "electronic": None, "r&b/soul": "R&B", "funk/soul": "Funk",
+    "hip-hop/rap": "Hip-Hop", "ghetto house": "Ghetto House",
+    "ghetto tech": "Ghettotech", "ukg": "UK Garage",
+    "baile funk": "Baile", "vogue": "Ballroom Vogue",
+    "jersey/atl club": None,  # compound: do not select either club style
+    "house": "House", "techno": "Techno",
+    "blues": "Blues", "electronic": None,
+    "r&b/soul": "R&B", "funk/soul": "Funk & Soul",
+    # Decision 08 (2026-10-13): Funk, Soul and Boogie stay merged.
+    "funk": "Funk & Soul", "soul": "Funk & Soul", "boogie": "Funk & Soul",
+    # Named genres without an approved correspondence stay unclassified.
+    "club": None,
 }
 ARTIST_GENRE = {}
+
+# Input aliases are for interpreting existing tags, never a license to
+# overwrite them using a producer name, folder, or title keyword.
+_VERSION_RULES_PATH = os.path.join(HERE, "..", "references", "version-genre-rules.json")
+with open(_VERSION_RULES_PATH, encoding="utf-8") as _version_file:
+    _VERSION_RULES = json.load(_version_file)
+
+_UNDECIDED_EXISTING_TAGS = {"afrobeat", "dub"}
+
+
+def canonical_existing_genre(value):
+    raw = (value or "").strip()
+    if not raw or raw.casefold() in {"other", "unknown"}:
+        return None
+    if raw.casefold() in _UNDECIDED_EXISTING_TAGS:
+        return None
+    mapped = _VERSION_RULES.get("tag_aliases", {}).get(raw.casefold(), raw)
+    if isinstance(mapped, str) and mapped in RULES["canonical_genres"]:
+        return mapped
+    return None
+
+
+def canonical_artist_genre(value):
+    """Interpret legacy artist style names without inventing a Genre."""
+    if not isinstance(value, str):
+        return None
+    raw = value.strip()
+    mapped = LABEL_REMAP.get(raw.casefold(), raw)
+    return mapped if mapped in RULES["canonical_genres"] else None
 
 
 def norm(s):
@@ -74,13 +111,14 @@ def load_artist_map():
         for artist, label in raw.items():
             if not isinstance(label, str):
                 continue
-            g = LABEL_REMAP.get(label.strip().lower(), label.strip())
-            if g and g in RULES["canonical_genres"]:
+            g = canonical_artist_genre(label)
+            if g:
                 ARTIST_GENRE[norm(artist)] = g
     local = os.path.join(HERE, "..", "references", "artist-genre-extra.json")
     if os.path.exists(local):
-        for artist, g in json.load(open(local)).items():
-            if g in RULES["canonical_genres"]:
+        for artist, label in json.load(open(local)).items():
+            g = canonical_artist_genre(label)
+            if g:
                 ARTIST_GENRE[norm(artist)] = g
 
 
@@ -189,11 +227,22 @@ def split_artists(field):
 
 
 def classify_genre(track):
-    """Return (genre, source), best signal first.
+    """Return (genre, source) without overriding an existing meaningful tag.
 
-    A remixer's own genre suffix beats the original artist's genre: an edit of a
-    Baby Keem record by 'maxcy House' is House, not rap.
+    Existing accepted Genre outranks producer/folder/title heuristics.
+    Unrecognized or disputed legacy tags are held for review. A conflicting
+    explicit filename genre never authorizes an automatic genre switch.
     """
+    original = (track.get("existing_genre") or "").strip()
+    if original and original.casefold() != "other":
+        canonical = canonical_existing_genre(original)
+        if canonical is None:
+            return None, "existing_tag_requires_review"
+        filename = (track.get("filename") or "").casefold()
+        for hint in _VERSION_RULES.get("filename_keywords", []):
+            if hint["contains"].casefold() in filename and hint["genre"] != canonical:
+                return None, "existing_tag_filename_conflict"
+        return canonical, "existing_tag"
     if track["remixer_genre"]:
         return track["remixer_genre"], "remixer_suffix"
 
@@ -210,13 +259,16 @@ def classify_genre(track):
             return hit, "artist_map"
 
     folder = track.get("source_folder") or ""
-    folder_genre = FOLDER_GENRES.get(folder, folder)
+    # A same-spelling physical folder is not sufficient Genre evidence.
+    # Only an explicitly approved folder_names entry may supply a folder
+    # hint; otherwise leave classification to actual tag/filename evidence.
+    folder_genre = FOLDER_GENRES.get(folder)
     if folder_genre and folder_genre in RULES["canonical_genres"]:
         return folder_genre, "existing_folder"
 
     haystack = norm(" ".join(filter(None, [
         track["title_clean"], track["remixer_raw"] or "", track["artist_raw"],
-        track["album_raw"], track["uploader"] or "", folder])))
+        track["album_raw"], track["uploader"] or ""])))
     for rule in RULES["keyword_rules"]:
         for kw in rule["match"]:
             k = norm(kw)
