@@ -305,6 +305,9 @@ def apply(plan_path: Path, manifest: dict, backup: Path, root: Path, out_dir: Pa
         "undo_log": str(undo_path),
     }
     result_path.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    # Every other engine-user records run_complete; without it the recovery
+    # journal can't distinguish a finished grouping run from an abandoned one.
+    engine.finish(result)
     print(json.dumps({**result, "result_path": str(result_path)}, indent=2))
 
 
@@ -367,7 +370,7 @@ def _dry_run_backup_gate(manifest_path, root) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, help="folder root the plan's paths live under (required unless --undo)")
-    parser.add_argument("--plan", type=Path, help="grouping-plan.json from build_grouping_plan.py")
+    parser.add_argument("--plan", type=Path, help="grouping-plan.json from build_grouping_plan.py or build_grouping_csv_plan.py")
     parser.add_argument("--backup", type=Path,
                         help="pre-apply backup directory the per-item copies live in "
                              "(required with --apply, alongside --backup-manifest)")
@@ -421,7 +424,9 @@ def main() -> None:
             raise SystemExit(f"REFUSING TO MUTATE: {exc}") from exc
         apply(args.plan, manifest, args.backup.resolve(), root, out_dir, label, heartbeat)
     else:
-        plan, items = load_and_validate(args.plan, args.backup.resolve(), root) if args.backup else (
+        # load_and_validate takes (plan_path, root); passing the backup dir here
+        # used to raise TypeError on every dry run that included --backup.
+        plan, items = load_and_validate(args.plan, root) if args.backup else (
             json.loads(args.plan.read_text(encoding="utf-8")), None
         )
         items = items if items is not None else plan["items"]
