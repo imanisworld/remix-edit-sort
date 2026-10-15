@@ -35,6 +35,19 @@ repository. If any other document contradicts it, it wins. In short:
 - Backups, undo payloads, and per-run reports
 - Local credentials or configuration
 
+## Run a DJ Library Review when you choose
+
+The [manual DJ Library Review](references/manual-dj-library-review.md)
+adds a Mac double-click launcher (`DJ Library Review.command`) and one
+read-only report for a chosen `Downloads` or `music to move` folder,
+exact-byte duplicate review, optional Serato/Rekordbox snapshot drift,
+and strictly evidence-limited normalized playback/event matching.
+
+There is no background watcher, automatic move, new database, retagging or
+app rewrite. Original History exports are fingerprinted only; their
+installed-version playback row formats remain to be verified on the Mac.
+Added by PR #44, which also carries #43 (time matching) and #46 (exact-identity play matching); #42 (drift) is on `main`.
+
 ## Active DJ integration work (source-only)
 
 For the **current priorities, pending decisions, Grok/Cursor handoff and Mac-only

@@ -164,6 +164,56 @@ class SourceDriftTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "non-symlink"):
             drift.report(self.db)
 
+    def test_unchanged_fingerprints_do_not_claim_live_or_per_track_state(self):
+        result = drift.report(self.db)
+        self.assertEqual(result["serato"]["state"], "UNCHANGED")
+        self.assertEqual(result["rekordbox"]["state"], "UNCHANGED")
+        self.assertFalse(result["requires_attention"])
+        self.assertEqual(result["scope"]["per_track_metadata_deltas"], "UNSUPPORTED")
+        self.assertEqual(result["scope"]["live_rekordbox_collection"], "NOT_OBSERVED")
+        self.assertEqual(result["scope"]["playback_history"], "NOT_OBSERVED")
+        self.assertEqual(result["serato"]["baseline_path"], str(self.serato))
+        self.assertEqual(result["serato"]["inspected_path"], str(self.serato))
+        self.assertEqual(result["rekordbox"]["baseline_path"], str(self.xml))
+        self.assertEqual(result["rekordbox"]["inspected_path"], str(self.xml))
+
+    def test_relocated_source_records_baseline_and_inspected_paths(self):
+        relocated = self.serato.parent / "relocated-serato"
+        (relocated / "Subcrates").mkdir(parents=True)
+        (relocated / "database V2").write_bytes(self.database.read_bytes())
+        (relocated / "Subcrates" / "one.crate").write_bytes(self.crate.read_bytes())
+        other_xml = self.xml.parent / "relocated.xml"
+        other_xml.write_bytes(self.xml.read_bytes())
+        result = drift.report(self.db, serato_dir=relocated, rekordbox_xml=other_xml)
+        self.assertEqual(result["serato"]["state"], "UNCHANGED")
+        self.assertEqual(result["serato"]["baseline_path"], str(self.serato))
+        self.assertEqual(result["serato"]["inspected_path"], str(relocated))
+        self.assertEqual(result["rekordbox"]["baseline_path"], str(self.xml))
+        self.assertEqual(result["rekordbox"]["inspected_path"], str(other_xml))
+        self.assertNotEqual(result["serato"]["baseline_path"], result["serato"]["inspected_path"])
+
+    def test_uppercase_fingerprint_is_changed_not_silently_normalized(self):
+        with sqlite3.connect(self.db) as conn:
+            manifest = json.loads(conn.execute(
+                "SELECT source_manifest_json FROM serato_imports WHERE import_id=1"
+            ).fetchone()[0])
+            manifest[0]["sha256"] = manifest[0]["sha256"].upper()
+            conn.execute(
+                "UPDATE serato_imports SET source_manifest_json=? WHERE import_id=1",
+                (json.dumps(manifest),),
+            )
+        result = drift.report(self.db)
+        self.assertEqual(result["serato"]["state"], "CHANGED")
+        self.assertIn("database V2", result["serato"]["modified"])
+
+    def test_absent_baseline_paths_are_explicit(self):
+        with sqlite3.connect(self.db) as conn:
+            conn.execute("DELETE FROM serato_imports")
+            conn.execute("DELETE FROM rekordbox_imports")
+        result = drift.report(self.db)
+        self.assertIsNone(result["serato"]["baseline_path"])
+        self.assertIsNone(result["rekordbox"]["baseline_path"])
+        self.assertTrue(result["requires_attention"])
 
 
 if __name__ == "__main__":
