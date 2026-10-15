@@ -139,7 +139,7 @@ def build(root: Path, decisions: Path, require_prefix: str | None) -> dict:
                 continue
 
         items.append({
-            "path": str(path),
+            "path": str(resolved),  # resolved so apply can map it under the resolved root (macOS /var -> /private/var)
             "current_grouping": current,
             "proposed_grouping": value,
             "combined_grouping": combined_grouping(current, value),
