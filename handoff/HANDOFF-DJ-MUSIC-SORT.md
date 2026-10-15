@@ -276,7 +276,7 @@ Do this as a tags-only, preview-first pass. Do not reorganize the completed fold
 - For useful source collections, propose values such as `Source: RAP RN`, `Source: Nigeria`, and `Source: Rave`.
 - `NIGER` is a mistaken label for **Nigeria**. Its pending preview proposes `Grouping: Source: Nigeria`; Genre and Artist remain uninferred.
 - Do not add generic labels such as `Source: music to move`.
-- Preserve existing Grouping values. Append and deduplicate using one consistent delimiter; never overwrite blindly.
+- Preserve existing Grouping values. Append and deduplicate using one consistent delimiter; never overwrite blindly. Only exception: exact junk values the owner listed by hand, removed with `scripts/build_grouping_removal_plan.py` (approved 2026-10-15).
 - A track may have multiple event/source contexts, so preserve all evidenced values.
 - Make and verify a fresh scoped backup, generate a preview, and obtain explicit approval before writing tags.
 - Keep `Imani Drops` completely excluded.
