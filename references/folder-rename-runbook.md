@@ -75,6 +75,13 @@ points into it. Three things made the existing tooling insufficient:
   running `Serato*.app`, or an unreadable process table) and a literal check on
   destination *folders* in both the apply gate and the post-check.
 
+## Before the live run (review conditions)
+
+1. Make your own full copies of `_Serato_` and the music folder, separate from the tool's backups.
+2. Run the whole sequence, including `undo`, on a spare copy first.
+3. Open Serato on that copy and check whether it re-imports cleanly (Open question 1).
+4. Only then rename the real folders, with Serato fully quit.
+
 ## Approved sequence for the live run
 
 Nothing here has been run on the live library. Needs the owner's explicit go.
@@ -138,3 +145,11 @@ After a crash: `apply_folder_rename_plan.py recover --journal <journal>` (dry ru
    reported as `rows_already_missing`; the rename can neither create nor fix them.
 4. Locks are per checkout (`<checkout>/.locks`). A worktree does not share the main
    clone's locks; run the live sequence from the checkout every other session uses.
+
+## After the live run (follow-ups, not done here)
+
+* `folder_names` in `references/genre-rules.json` and `version-genre-rules.json`
+  still map Afrobeats to `Afrobeat` (and R&B to `R&b`); update them, the pins in
+  `scripts/check_genre_naming.py`, and `CLAUDE.md` once the folders are renamed,
+  not before, or the live pipeline would file tracks into folders that no longer exist.
+* Extend the Serato rewriter to SmartCrates and History if Serato needs them.

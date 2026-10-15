@@ -6,8 +6,8 @@ it, this one is right and the other one is stale.
 ## The five invariants
 
 Every production mutation of the DJ library or its Serato path index — moving
-a file, renaming a file, writing Genre, Grouping, Artist/Title, or Year/BPM,
-rewriting an explicit Serato path, or deleting a verified duplicate — satisfies
+a file, renaming a file or a whole folder, writing Genre, Grouping, Artist/Title, or
+Year/BPM, rewriting an explicit Serato path (binaries or SQLite), or deleting a verified duplicate — satisfies
 all five of these. There is no approved path that skips any of them.
 
 1. **One engine.** All mutations go through `scripts/mutation_engine.py`. No
