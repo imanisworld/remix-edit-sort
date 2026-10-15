@@ -35,6 +35,20 @@ repository. If any other document contradicts it, it wins. In short:
 - Backups, undo payloads, and per-run reports
 - Local credentials or configuration
 
+## Active DJ integration work (source-only)
+
+For the **current priorities, pending decisions, Grok/Cursor handoff and Mac-only
+acceptance gates**, see [DJ integration work plan](references/dj-integration-work-plan.md).
+The [event/playback evidence and folder-rename specification](references/event-history-and-folder-renames.md)
+distinguishes website event times, Serato History playback timestamps,
+Rekordbox exports, and verified track identity.
+
+GitHub PR #37 contains pending genre ontology changes and empty folder maps;
+draft PR #42 contains read-only Serato/Rekordbox *source snapshot* drift detection.
+Neither PR authorizes a live folder rename or auto-retagging. Do not create a
+duplicate watch daemon, history parser, or Serato path rewriter before reviewing
+the existing scripts and the linked work plan.
+
 ## Persistent read-only library index
 
 `scripts/library_index.py` is the read-only foundation for the future DJ Library Tool. It
