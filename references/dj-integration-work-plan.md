@@ -10,7 +10,8 @@ This is the **single current task list** for connecting the website's event reco
 - [ ] **PR #42:** read-only `dj_source_drift.py`, fixtures and this plan; draft/open, CI passed before this documentation update. Re-run/inspect current head checks before considering merge: https://github.com/imanisworld/remix-edit-sort/pull/42
 - [x] Library index can detect NEW, CHANGED, MOVED, REMOVED audio files in read-only scans.
 - [x] Serato `database V2`/Subcrates and Rekordbox *exported collection XML* have read-only snapshot importers; separate Serato path-rewrite and Rekordbox relocation/bridge tools already exist.
-- [ ] **One integrated, accepted end-to-end history matcher:** not built or verified. Do not claim current track-to-event associations.
+- [x] **Pure synthetic time normalization** in stacked PR #43: IANA/DST/overnight handling and fail-closed candidate event-window checks. No real History importer or actual plays-to-event association; PR remains unmerged.
+- [ ] **One integrated, accepted real-history matcher:** not built or verified. Do not claim current track-to-event associations.
 - [ ] **Live folder map / current Mac canary / current Serato & Rekordbox exports:** unavailable while the Mac is offline.
 
 ## Remote work — do now, without the Mac
@@ -18,10 +19,12 @@ This is the **single current task list** for connecting the website's event reco
 | Priority | Owner | Task | Done when |
 | --- | --- | --- | --- |
 | P0 | Grok **research only** | Verify official Serato History session CSV/TXT fields and track played/unplayed rules; verify official Rekordbox Histories capabilities and export limitations. Separate *History* from Serato support diagnostic session logs and Rekordbox collection XML. | Cite current vendor docs; list confirmed, unknown, and sample-required fields; no repository/data changes. |
-| P0 | Cursor Cloud **separate draft PR** | Implement pure, offline event/play evidence validation + deterministic event-window candidate matching against **synthetic normalized fixtures only**. Require event ID, explicit verified DJ set start/end and timezone; require playback timestamp, source/session provenance, and exact indexed identity when linking a track. | Fixture tests pass for DST/offsets, missing/ambiguous times, overlapping events, unplayed/manual entries, duplicate titles, and unmatched IDs. No changes to existing importer formats without actual samples. |
+| P0 | ChatGPT **draft PR #43**, stacked on #42 | Pure IANA/DST/overnight DJ set windows, offset-aware playback timestamps and fail-closed candidate matching with synthetic normalized fixtures. | Code + focused tests committed; CI and review required. Does **not** parse/validate real history exports or establish actual played-at-event records. |
 | P0 | Cursor Cloud **review, not rewrite** | Inspect PR #42 change detector for fail-closed behavior and missing coverage; keep source-fingerprint drift separate from per-track metadata deltas and live Rekordbox changes. | Focused review findings, tests for any code fixes, clear unsupported cases. |
 | P1 | Cursor Cloud **preview design** | Plan idempotent folder moves and Serato/Rekordbox reference verification using existing utilities; do not generate hardcoded live folder mappings. | Written gates, test cases and proposed artifact shapes, with **no** applied moves/rewrites. |
 | P1 | Website code owner **later, separate PR** | Design a private read-only export of event metadata *and confirmed actual DJ set times* if available; never expose private booking links or playback data via the public events API. | Reviewed access design and tests; no production DB change in this stage. |
+
+**Source-status boundary:** PR #43 includes code/tests for **synthetic time evidence only** and documents the remaining Grok gaps in [event-history-and-folder-renames.md](event-history-and-folder-renames.md). Do not treat a claimed `EXACT_INDEXED_FILE` field in arbitrary JSON as verified; upstream trusted importers must establish it from the existing index first. Real Serato/Rekordbox histories and DJ set times are still required.
 
 **Agent separation:** `bae-agenda/docs/GROK_MANAGER_SCOUT_PROMPT.md` is for finding paid DJ opportunities. The Grok research task above is a one-off **music-library technical research** request and must not replace that existing Manager automation/prompt. Cursor must read open PRs and current repo safety docs first, and use a different branch from #37 and #42.
 

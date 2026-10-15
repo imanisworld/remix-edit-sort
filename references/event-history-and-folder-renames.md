@@ -91,3 +91,132 @@ must remain unknown rather than falsely reporting unchanged.
 - Synthetic overlap and ambiguity tests plus one real read-only join.
 - Actual folder listing and trusted Serato/Rekordbox snapshots.
 - No production deploy, music edits, or folder renames from this PR.
+
+
+## Clock normalization and match policy (source-only implementation in PR #43)
+
+`scripts/dj_event_time.py` normalizes **reviewed DJ set windows** and
+**already normalized playback rows** with only Python's standard-library
+`zoneinfo` (IANA rules). It operates on supplied private JSON fixtures and
+prints candidate results. It does not parse actual Serato/Rekordbox histories,
+index tracks, import private website bookings, or write any media or databases.
+The official website's `event_date` is not a verified DJ set interval.
+
+Required set evidence:
+
+```json
+[{
+  "event_id": "<real website event ID>",
+  "event_timezone": "America/Indiana/Indianapolis",
+  "set_time_verified": true,
+  "set_start_local": "2026-11-21T22:00:00",
+  "set_end_local": "2026-11-22T02:00:00"
+}]
+```
+
+This is an illustrative schema, not a real booking. **Both local calendar
+dates must be explicit**. The first date is the `performance_date` (the night
+the set belongs to); a track played after midnight retains its actual
+`played_local_date` and offset-aware `played_at_utc`. Never subtract a day
+from a playback record or silently assume an end before a start means "next
+day." A future UI may offer *next-day* as an editable suggestion, confirmed
+before writing the set window.
+
+For spring-forward nonexistent times, refuse the window; for repeated
+fall-back local times, require a reviewed `set_start_fold` /
+`set_end_fold` (0 = earlier occurrence; 1 = later occurrence). UTC offset
+abbreviations like EST and EDT are insufficient for the event time zone. Use
+actual elapsed UTC time through DST shifts. A naive Serato CSV wall clock
+without offset must be reviewed with confirmed venue/device clock context
+before normalizing its playback timestamp.
+
+Normalized playback records supplied by a future **trusted import** require
+a unique `play_id`, offset-aware `played_at`, `played_status` of
+`PLAYED`, `identity_status` of `EXACT_INDEXED_FILE`, positive
+`file_id` from this repo's **same library index**, `session_id`, and
+`source_artifact_sha256` referencing the original export. The script only
+returns `CANDIDATE_ONLY` for exactly one confirmed set window with all
+these fields; overlapping sets, unplayed/manual-uncertain records, missing
+sources and ambiguous file matches remain `REVIEW`. These caller fields
+are assertions and **not cryptographic proof of DJ playback**; verify them
+in the upstream Serato/Rekordbox importer before operational use.
+
+Command (private fixture paths, never commit real exports):
+
+```bash
+python3 scripts/dj_event_time.py \
+  --events "<private reviewed-set-windows.json>" \
+  --plays "<private normalized-playback-fixture.json>"
+```
+
+### Cross-application track identity
+
+- Rekordbox exported collection XML's `TrackID` is its **own** integer
+  identifying a track **inside its exported collection/playlist schema**.
+  The XML also supplies `Location`, `PlayCount`, and date-only
+  `LastPlayed`: https://cdn.rekordbox.com/files/20200410160904/xml_format_list.pdf
+- The current Serato `database V2` parser uses `pfil` paths, and
+  `ptrk` crate references. Serato History is a separate play-session
+  source: https://support.serato.com/hc/en-us/articles/223455687-History
+- There is **no proven native ID shared by both DJ applications**.
+  The project already has a local SQLite `file_id` from
+  `library_index.py`, resolved separately by `serato_index.py` and
+  `rekordbox_index.py`. `serato_rekordbox_crosswalk.py` permits an
+  exact cross-app relationship **only through that same resolved file_id**,
+  tied to trusted import snapshots; duplicate titles/artist names do not
+  establish identity. Do not assume the integer Rekordbox `TrackID` equals
+  the local `file_id`, or that matching audio duration proves identity.
+- A changed/moved audio file requires a fresh verified index resolution;
+  cached file IDs are local index keys, not portable permanent recording IDs.
+  Re-exports and provenance are necessary after library edits.
+
+### Histories may be incomplete or changed
+
+- Serato explicitly permits `Insert Track`, `Mark as Played / Unplayed`,
+  notes and deletion of sessions: its History export can be a *manually
+  corrected performance narrative*. An inserted record may not appear in
+  M3U export. Preserve raw CSV/TXT bytes and whether a field's source/status
+  is original, adjusted, or unknown where the app format exposes it.
+  https://support.serato.com/hc/en-us/articles/223455687-History
+- Rekordbox documentation describes date-named histories for tracks played
+  about a minute or more in PERFORMANCE or LINK EXPORT, with device-history
+  import, history-to-playlist copying, and device-history deletion. USB
+  history imports may by default **delete the USB original**; change the
+  setting on the Mac before importing if the original is to be preserved.
+  https://rekordbox.com/en/support/faq/operation-hints-7/
+  https://rekordbox.com/en/support/faq/rekordbox7/
+- Individual-row editing of a Rekordbox original history (as distinct from
+  editing a playlist copy or deleting a device history) is **unverified**.
+  Do not claim it is editable or immutable without an installed-version
+  UI test and a before/after export. Rekordbox collection XML and diagnostic
+  logs remain separate from actual playback histories.
+
+### Grok research still needed (vendor docs do not establish these details)
+
+The repo assigns **one-off technical research** to Grok, separate from its
+website DJ-manager scouting prompt. A completed Grok technical research
+response was not available in the evidence reviewed here; these are
+**questions, not asserted vendor behavior**.
+
+1. On the *installed* Serato version, export one sample CSV/TXT and confirm
+   exact headers, session identifiers, raw date/time representation, local
+   offsets, daylight-saving handling, and presence/absence of manual/played
+   status indicators. Determine if edits affect re-exported history.
+2. On the *installed* Rekordbox version and device, identify the true
+   history artifact/export path, original record editing capabilities (if
+   any), when import duplicates/skips, what the history rows actually
+   timestamp, and whether time/date changes on device/host affect imports.
+3. Test a disposable session crossing midnight and the DST clock change:
+   does each app report track **date plus time**, only the date of the
+   session, a fixed local wall time, or a UTC-aware instant? Record
+   actual version, OS, device model, mode and sample hashes.
+4. Test mixed sources, multiple versions of the same song, renamed/moved
+   tracks, two copies of equal-length audio, and whether history entries
+   expose enough path/file provenance to bind to the existing local
+   `file_id`. **No guessed global track GUID.**
+5. Note vendor docs vs. experimentally observed vs. community-reported
+   behavior separately, with links and anonymized evidence. Do not edit
+   original playback data or ship a write-capable app-database parser.
+
+**Stop condition:** final parsers and automatic played-at-event associations
+wait for these real samples; synthetic time normalization can be tested now.
