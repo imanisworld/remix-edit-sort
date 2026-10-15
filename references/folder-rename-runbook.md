@@ -38,6 +38,10 @@ points into it. Three things made the existing tooling insufficient:
   * Existence and collisions are decided from **literal directory entries**
     (`literal_path_is_dir`, `literal_entry_exists`, `literal_path_components_exist`),
     never from alias-following `exists()`.
+  * The rename itself is `renamex_np(RENAME_EXCL)` (macOS) / `renameat2(RENAME_NOREPLACE)`
+    (Linux), so the kernel refuses an existing destination atomically; `os.rename`
+    would silently replace an empty directory created in the check-to-rename window.
+    It fails closed if the primitive or filesystem support is missing.
   * A case- or normalization-only change always goes through a unique temporary
     name: two journaled physical renames, restored if the second fails, on Linux
     and macOS alike.

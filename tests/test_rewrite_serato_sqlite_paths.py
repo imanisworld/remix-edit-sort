@@ -385,6 +385,42 @@ class ApplyTests(SqliteFixtureCase):
         self.assertEqual(connection.execute("PRAGMA integrity_check").fetchall(), [("ok",)])
         connection.close()
 
+    def test_incomplete_wal_checkpoint_is_a_failure_and_restores_the_backup(self):
+        plan, _ = self.write_plan()
+        manifest, _ = self.make_manifest()
+        self.move_folders()
+        original = sha(self.master)
+        reader = sqlite3.connect(str(self.master), isolation_level=None)
+        self.addCleanup(reader.close)
+        reader.execute("BEGIN")
+        reader.execute("SELECT count(*) FROM asset").fetchone()  # holds a WAL read snapshot
+        with self.assertRaisesRegex(mutation_engine.MutationVerificationError, "checkpoint did not complete"):
+            self.apply(plan, manifest)
+        # Checked while the (unrealistic: Serato is closed) reader is still attached;
+        # closing it afterwards would let SQLite write its orphaned handles back.
+        self.assertEqual(sha(self.master), original)
+        reader.close()
+
+    def test_rollback_restores_from_the_exact_backup_path_the_engine_verified(self):
+        plan, _ = self.write_plan()
+        manifest, backup = self.make_manifest()
+        self.move_folders()
+        used = []
+        real_restore = mutation_engine.restore_from_backup
+
+        def spy(backup_path, target, expected):
+            used.append(Path(backup_path))
+            return real_restore(backup_path, target, expected)
+
+        with mock.patch.object(sqlite_rewrite, "verify_database",
+                               side_effect=mutation_engine.MutationVerificationError("boom")), \
+                mock.patch.object(mutation_engine, "restore_from_backup", side_effect=spy):
+            with self.assertRaises(mutation_engine.MutationVerificationError):
+                self.apply(plan, manifest)
+        journal_paths = [Path(r["backup_path"]) for r in mutation_engine.RecoveryJournal(
+            self.tmp / "journal.jsonl").read() if r["type"] == "intent"]
+        self.assertEqual(used, journal_paths[:1])
+
     def test_a_writer_holding_the_database_blocks_apply_without_corruption(self):
         plan, _ = self.write_plan()
         manifest, _ = self.make_manifest()

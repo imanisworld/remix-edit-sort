@@ -51,6 +51,8 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import ctypes
+import errno
 import hashlib
 import json
 import os
@@ -263,6 +265,48 @@ def directory_inventory(root: Path, *, hash_contents: bool = False) -> dict:
     return {**counts, "hash_contents": bool(hash_contents), "sha256": sha256_bytes(payload)}
 
 
+def rename_noreplace(source: Path, destination: Path) -> None:
+    """Rename that the kernel refuses if ``destination`` exists (any type).
+
+    ``os.rename`` silently replaces an empty destination directory, so a
+    check-then-rename leaves a window in which a folder created by another
+    process is lost. macOS ``renamex_np(RENAME_EXCL)`` and Linux
+    ``renameat2(RENAME_NOREPLACE)`` make the check and the rename one atomic
+    step. If neither is available (or the filesystem does not support the
+    flag) this fails closed rather than falling back to ``os.rename``.
+    """
+    src, dst = os.fsencode(source), os.fsencode(destination)
+    try:
+        libc = ctypes.CDLL(None, use_errno=True)
+        if sys.platform == "darwin":
+            call = libc.renamex_np
+            call.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_uint]
+            call.restype = ctypes.c_int
+            result = call(src, dst, 0x4)  # RENAME_EXCL
+        elif sys.platform.startswith("linux"):
+            call = libc.renameat2
+            call.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
+            call.restype = ctypes.c_int
+            result = call(-100, src, -100, dst, 1)  # AT_FDCWD, RENAME_NOREPLACE
+        else:
+            raise AttributeError(sys.platform)
+    except (AttributeError, OSError) as exc:
+        raise MutationRefused(
+            f"no atomic no-replace rename is available on this platform ({exc}); refusing "
+            f"to rename a folder with a check-then-rename"
+        ) from exc
+    if result != 0:
+        code = ctypes.get_errno()
+        if code == errno.EEXIST:
+            raise MutationRefused(f"destination already exists: {destination}")
+        if code in (errno.ENOTSUP, errno.EINVAL, errno.ENOSYS):
+            raise MutationRefused(
+                f"this filesystem does not support an atomic no-replace rename ({os.strerror(code)}); "
+                f"refusing to rename a folder here: {source}"
+            )
+        raise OSError(code, os.strerror(code), os.fspath(source), None, os.fspath(destination))
+
+
 def check_folder_rename(source: Path, destination: Path) -> bool:
     """Refuse anything but a safe in-place folder rename; return case_only.
 
@@ -390,8 +434,14 @@ class _ItemTransaction:
         """Attach result fields to the completion record."""
         self.outcome.update(fields)
 
-    def _rename_step(self, source: Path, destination: Path, purpose: str) -> None:
-        """Journal and heartbeat one physical rename before performing it."""
+    def _rename_step(
+        self, source: Path, destination: Path, purpose: str, *, exclusive: bool = False
+    ) -> None:
+        """Journal and heartbeat one physical rename before performing it.
+
+        ``exclusive`` (used for every folder rename) makes the kernel refuse an
+        existing destination atomically instead of trusting an earlier check.
+        """
         self.engine.journal.append({
             "type": "rename_step_intent",
             "run_id": self.engine.run_id,
@@ -402,7 +452,10 @@ class _ItemTransaction:
         })
         if self.engine.heartbeat is not None:
             self.engine.heartbeat.beat()
-        os.rename(source, destination)
+        if exclusive:
+            rename_noreplace(source, destination)
+        else:
+            os.rename(source, destination)
         self.mark_mutated()
         self.engine.journal.append({
             "type": "rename_step_completed",
@@ -486,14 +539,14 @@ class _ItemTransaction:
             if source.name in names:
                 return
             if temporary is not None and temporary.name in names:
-                self._rename_step(temporary, source, f"{purpose}:rollback-temp-to-source")
+                self._rename_step(temporary, source, f"{purpose}:rollback-temp-to-source", exclusive=True)
                 return
             if destination.name in names:
                 if temporary is not None:
-                    self._rename_step(destination, temporary, f"{purpose}:rollback-case-to-temp")
-                    self._rename_step(temporary, source, f"{purpose}:rollback-temp-to-source")
+                    self._rename_step(destination, temporary, f"{purpose}:rollback-case-to-temp", exclusive=True)
+                    self._rename_step(temporary, source, f"{purpose}:rollback-temp-to-source", exclusive=True)
                 else:
-                    self._rename_step(destination, source, f"{purpose}:rollback-destination-to-source")
+                    self._rename_step(destination, source, f"{purpose}:rollback-destination-to-source", exclusive=True)
                 return
             raise MutationVerificationError(
                 f"cannot restore folder {source}: neither the original, temporary nor "
@@ -534,13 +587,13 @@ class _ItemTransaction:
             # only collision guard.
             if os.path.lexists(destination):
                 raise MutationRefused(f"destination already exists: {destination}")
-            self._rename_step(source, destination, purpose)
+            self._rename_step(source, destination, purpose, exclusive=True)
             return
-        self._rename_step(source, temporary, f"{purpose}:case-to-temp")
+        self._rename_step(source, temporary, f"{purpose}:case-to-temp", exclusive=True)
         try:
             if os.path.lexists(destination):
                 raise MutationRefused(f"destination became occupied during case-only rename: {destination}")
-            self._rename_step(temporary, destination, f"{purpose}:temp-to-case")
+            self._rename_step(temporary, destination, f"{purpose}:temp-to-case", exclusive=True)
         except BaseException:
             restore()
             raise

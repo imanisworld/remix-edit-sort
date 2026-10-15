@@ -469,10 +469,18 @@ def _apply_sqlite_update(txn, database: Path, entry: dict) -> None:
         txn.mark_mutated()
         connection.execute("COMMIT")
         in_transaction = False
-        connection.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+        busy = connection.execute("PRAGMA wal_checkpoint(TRUNCATE)").fetchone()
+        if busy is None or busy[0] != 0:
+            raise mutation_engine.MutationVerificationError(
+                f"{database.name}: WAL checkpoint did not complete (result {busy!r}); "
+                "another connection still has the database open"
+            )
     except BaseException:
         if in_transaction:
-            connection.execute("ROLLBACK")
+            try:
+                connection.execute("ROLLBACK")
+            except sqlite3.Error:
+                pass  # never let a failed ROLLBACK mask the error being raised
         raise
     finally:
         connection.close()
@@ -562,7 +570,6 @@ def apply_sqlite_plan(
         if not entry["rows"]:
             continue
         database = databases[entry["name"]]
-        backup_path = Path(manifest["backup_root"]) / entry["name"]
         with engine.item(
             index,
             kind=mutation_engine.SERATO_PATHS,
@@ -574,6 +581,10 @@ def apply_sqlite_plan(
                 "table": f"{TABLE}.{COLUMN}",
             },
         ) as txn:
+            # Restore from the exact copy engine.item just hashed and recorded, not
+            # from a path rebuilt from the manifest (explicit-path manifests differ).
+            backup_path = Path(txn.intent["backup_path"])
+
             def restore(database=database, backup_path=backup_path, expected=entry["sha256"]):
                 # Sidecars belong to the state being discarded: a WAL or journal
                 # left beside a restored main file would be replayed over it.

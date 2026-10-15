@@ -189,16 +189,16 @@ class FolderRenameTests(FolderTestCase):
 
     def test_second_step_failure_restores_the_original_spelling(self):
         engine = self.engine()
-        real_rename = os.rename
+        real_rename = mutation_engine.rename_noreplace
         calls = []
 
-        def flaky(source, destination, *args, **kwargs):
+        def flaky(source, destination):
             calls.append((os.fspath(source), os.fspath(destination)))
             if len(calls) == 2:  # the temp -> final step
                 raise OSError("simulated rename failure")
-            return real_rename(source, destination, *args, **kwargs)
+            return real_rename(source, destination)
 
-        with mock.patch.object(mutation_engine.os, "rename", side_effect=flaky):
+        with mock.patch.object(mutation_engine, "rename_noreplace", side_effect=flaky):
             with self.assertRaises(OSError):
                 self.rename(engine, "R&b", "R&B")
         self.assertEqual(names(self.library), {"R&b", "Afrobeat"})
@@ -233,6 +233,84 @@ class FolderRenameTests(FolderTestCase):
                 expected_inventory=self.inventory("R&b"), guard_files=self.guards,
             ):
                 pass
+        self.assertEqual(names(self.library), {"R&b", "Afrobeat"})
+
+
+class AtomicNoReplaceTests(FolderTestCase):
+    """The destination check and the rename are one kernel call, not check-then-rename."""
+
+    def appear_before_rename(self, name, content=None):
+        real = mutation_engine.rename_noreplace
+        created = self.library / name
+
+        def racing(source, destination):
+            if Path(destination).name == name:
+                created.mkdir()  # another process creates the name in the window
+                if content is not None:
+                    (created / "theirs.mp3").write_bytes(content)
+            return real(source, destination)
+
+        return mock.patch.object(mutation_engine, "rename_noreplace", side_effect=racing)
+
+    def test_an_empty_destination_dir_appearing_before_the_rename_is_not_replaced(self):
+        # os.rename would silently replace an empty directory; the kernel must refuse.
+        engine = self.engine()
+        before = self.inventory("Afrobeat")
+        with self.appear_before_rename("Afrobeats"):
+            with self.assertRaisesRegex(mutation_engine.MutationRefused, "destination already exists"):
+                self.rename(engine, "Afrobeat", "Afrobeats")
+        self.assertEqual(names(self.library), {"R&b", "Afrobeat", "Afrobeats"})
+        self.assertEqual(os.listdir(self.library / "Afrobeats"), [])  # theirs, still there
+        self.assertEqual(self.inventory("Afrobeat")["sha256"], before["sha256"])
+        (item,) = mutation_engine.recover(self.journal)["in_flight"]
+        self.assertEqual(item["state"], "ABORTED_BEFORE_MUTATION")  # visible, but nothing to restore
+
+    def test_a_case_only_destination_appearing_between_the_steps_loses_nothing(self):
+        engine = self.engine()
+        before = self.inventory("R&b")
+        with self.appear_before_rename("R&B", content=b"theirs"):
+            with self.assertRaises(mutation_engine.MutationRefused):
+                self.rename(engine, "R&b", "R&B")
+        # Their folder is untouched and ours is intact (stranded under its temp name,
+        # because the original name is now occupied) -- recoverable, nothing lost.
+        self.assertEqual((self.library / "R&B" / "theirs.mp3").read_bytes(), b"theirs")
+        stranded = [n for n in names(self.library) if n.startswith(".R&b.mutation-")]
+        if stranded:
+            self.assertEqual(
+                mutation_engine.directory_inventory(self.library / stranded[0])["sha256"], before["sha256"]
+            )
+        else:  # case-sensitive volume: original name restored
+            self.assertEqual(self.inventory("R&b")["sha256"], before["sha256"])
+
+    def test_primitive_refuses_any_existing_destination_and_allows_a_free_name(self):
+        (self.library / "Taken").mkdir()
+        with self.assertRaises(mutation_engine.MutationRefused):
+            mutation_engine.rename_noreplace(self.library / "Afrobeat", self.library / "Taken")
+        (self.library / "TakenFile").write_bytes(b"x")
+        with self.assertRaises(mutation_engine.MutationRefused):
+            mutation_engine.rename_noreplace(self.library / "Afrobeat", self.library / "TakenFile")
+        mutation_engine.rename_noreplace(self.library / "Afrobeat", self.library / "Free")
+        self.assertIn("Free", names(self.library))
+        self.assertNotIn("Afrobeat", names(self.library))
+
+    def test_it_fails_closed_when_no_atomic_primitive_exists(self):
+        engine = self.engine()
+        with mock.patch.object(mutation_engine.sys, "platform", "win32"):
+            with self.assertRaisesRegex(mutation_engine.MutationRefused, "no atomic no-replace"):
+                self.rename(engine, "Afrobeat", "Afrobeats")
+        self.assertEqual(names(self.library), {"R&b", "Afrobeat"})
+
+    def test_an_unsupporting_filesystem_fails_closed(self):
+        import ctypes
+        import errno
+
+        engine = self.engine()
+        with mock.patch.object(ctypes, "get_errno", return_value=errno.ENOTSUP), \
+                mock.patch.object(ctypes, "CDLL") as cdll:
+            cdll.return_value.renamex_np.return_value = -1
+            cdll.return_value.renameat2.return_value = -1
+            with self.assertRaisesRegex(mutation_engine.MutationRefused, "does not support"):
+                self.rename(engine, "Afrobeat", "Afrobeats")
         self.assertEqual(names(self.library), {"R&b", "Afrobeat"})
 
 
@@ -339,10 +417,10 @@ class CrashRecoveryTests(FolderTestCase):
         crash_after = {crash_after!r}
         original = mutation_engine._ItemTransaction._rename_step
 
-        def dying(self, source, destination, purpose):
+        def dying(self, source, destination, purpose, **kwargs):
             if crash_after == "before-first-rename":
                 os._exit(137)
-            original(self, source, destination, purpose)
+            original(self, source, destination, purpose, **kwargs)
             if purpose.endswith(crash_after):
                 os._exit(137)  # the process dies; no rollback runs
 
