@@ -17,7 +17,8 @@ Rules, matching the rest of this project:
     touches library media.
   - Existing Grouping is preserved and appended to, deduplicated
     case-insensitively on the "; " delimiter. Nothing is overwritten.
-  - Only mp3 (the Grouping writer is mp3-only). ID3v2.2 is skipped, not converted.
+  - mp3, FLAC and M4A (the formats apply_grouping_plan.py can write). ID3v2.2
+    is skipped, not converted. FLAC/M4A items carry id3_version null.
   - Values may not contain ";" (it is the delimiter).
   - --require-prefix (e.g. "Energy: ") rejects any value without that prefix.
   - If a track already carries a DIFFERENT value with the same prefix
@@ -40,9 +41,15 @@ from pathlib import Path
 
 from mutagen.id3 import ID3, ID3NoHeaderError
 
+import tag_formats
 
-def read_grouping(path: Path) -> tuple[list[str], int]:
+SUPPORTED_SUFFIXES = {".mp3", ".flac", ".m4a"}
+
+
+def read_grouping(path: Path) -> tuple[list[str], int | None]:
     """Same shape apply_grouping_plan.load_and_validate compares against."""
+    if tag_formats.kind(path) in {"flac", "m4a"}:
+        return tag_formats.read_grouping(path), None
     try:
         tags = ID3(path)
     except ID3NoHeaderError:
@@ -120,8 +127,8 @@ def build(root: Path, decisions: Path, require_prefix: str | None) -> dict:
         if not path.is_file():
             errors.append(f"missing file: {raw_path}")
             continue
-        if path.suffix.casefold() != ".mp3":
-            skip("non-mp3 (Grouping writer only supports mp3)", raw_path)
+        if path.suffix.casefold() not in SUPPORTED_SUFFIXES:
+            skip("unsupported format (Grouping writer supports mp3, flac, m4a)", raw_path)
             continue
 
         current, id3_version = read_grouping(path)
