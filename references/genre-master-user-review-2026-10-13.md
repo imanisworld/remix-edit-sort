@@ -1,42 +1,47 @@
 # Genre master reconciliation — user review, 2026-10-13
 
-**Status: SOURCE-ONLY REVIEW RECORD; NO CLASSIFICATION RULES OR MUSIC FILES CHANGED.**
+**Status: DECISIONS CONFIRMED BY THE USER. This record is source-only; it never authorizes rewriting audio metadata or renaming folders.**
 
-This record captures comments typed into a downloaded Claude "Genre Master Review" artifact. Its UI reported `Not saved: storage isn't available in this view.` The visible paste includes text comments, but **no reliable checked-radio selections**, so comments such as "sure", "right" and "need to add" are evidence of intent; an empty comment must not be construed as approval.
+The sheet paste below had no saved radio selections. After the paste, the user answered the open items **directly**, as multiple-choice questions in the Claude session that built the sheet (2026-10-13). Those direct answers are authoritative and are recorded in the table. Where an item had only a typed note, Claude's reading of the note was shown back to the user with "correct any of these"; none were corrected. Those rows say so.
 
-Scope: `references/genre-learner-rules.json` (68 canonical genres at review time), `references/genre-rules.json`, `references/version-genre-rules.json`. The learner list is the proposed canonical source of truth. This is a reconciliation record, not an authorization to rewrite existing audio metadata or folder names.
+Scope: `references/genre-learner-rules.json` (68 canonical genres at review time, 76 after), `references/genre-rules.json`, `references/version-genre-rules.json`. The learner list is the single master Genre list.
 
-## Decisions and outstanding questions
+## Decisions
 
-| # | Topic | Reconciliation from user's words | Status |
+"Direct answer" = the user picked this option themselves. "Note, read back" = Claude's reading of the typed note, shown to the user and not corrected.
+
+| # | Topic | Decision | Source |
 |---|---|---|---|
-| 01 | Ghetto Tech → Ghettotech | Proposed alias/normalization to the existing learner spelling; no written response. | Proposed; not expressly approved |
-| 02 | Afrobeat vs Afrobeats | Separate historical Afrobeat from contemporary Afrobeats if the evidence supports both; no user selection recorded. Do not silently merge. | Open |
-| 03 | Afro House / Afro Tech | User distinguishes Afro House and Afro Tech; do **not** route `afrotech` blindly to Afro House or Afrobeats. Decide appropriate canonical label based on actual examples. | User distinction explicit; mapping open |
-| 04 | Baile Funk → Baile | Proposed alias to learner's Baile; no written response. | Proposed; not expressly approved |
-| 05 | UKG → UK Garage | Proposed alias to learner's UK Garage; no written response. | Proposed; not expressly approved |
-| 06 | Speed Garage / Bassline | These are **two separate existing learner genres**; route each keyword to its own genre. No written response. | Proposed; not expressly approved |
-| 07 | Garage | `Garage` alone may mean UK Garage or Garage House; compilation names require evidence. No user response. | Open / needs-check |
-| 08 | Funk, Soul, Boogie | Master currently groups `Funk & Soul`; user didn't select whether to merge or split. Preserve provenance and don't force a destructive merge. | Open |
-| 09 | Vogue / Ballroom | User says to change name to `Ballroom/Vogue`. Retain aliases `Vogue` and `Ballroom`; check implications for the master, families, pipelines and BPM keys. | User-endorsed label |
-| 10 | Bass | Generic `Bass` is ambiguous among Miami Bass, Atlanta Bass, Bass House and non-genre title text; explicit specific styles should remain distinct. | User confirms ambiguity |
-| 11 | Club | `Club` may refer to Jersey/Baltimore/other club styles or simply a track for club play. Preserve style vs usage/version separately. | User confirms ambiguity |
-| 12 | Drum | User doesn't know which genre `Drum` denotes; investigate examples, avoid guessing. | Open / needs-check |
-| 13 | Dub | User requests more detail; distinguish Jamaican Dub as a genre from `dub mix` / `dub version` version labels and other dub styles. Do not retire genuine Dub automatically. | Open |
-| 14 | Tech House | User explicitly says Tech House differs from House; do not collapse into House. | Distinct canonical genre intended |
-| 15 | Jazzy House | User describes jazzy instrumentation/sound; distinguish sonic descriptor from an evidenced genre. Avoid automatic mapping to Deep House. | Grouping/descriptor candidate; needs evidence |
-| 16 | Nu Disco | User replied "sure" to the proposal to map to Disco. Preserve source terms where helpful. | Tentative approval of alias |
-| 17 | Nu R&B | User replied "sure" to the proposal to map to Alternative R&B. | Tentative approval of alias |
-| 18 | R&B Throwbacks | User says "sure maybe move throwback to the grouping": Genre `R&B`, retain `Throwback` as grouping/era context. | Endorsed with grouping caveat |
-| 19 | Alternative Hip-Hop | User says "alt maybe move to the grouping": Genre `Hip-Hop` plus evidenced `Alternative` grouping is a candidate; preserve distinction until checked. | Tentative |
-| 20 | Classic Rock / Soft Rock / Pop Rock | User considers "classic soft pop" part of the Rock genre. Parent `Rock` may be appropriate but preserve descriptive subgenre/context and verify Pop Rock edge cases. | User favors Rock family; precise mapping open |
-| 21 | Latin Pop | User explicitly calls Latin Pop a genre; preserve as a distinct canonical genre. | Distinct canonical genre intended |
-| 22 | Garage Jungle | User says they used both words because they couldn't tell the styles apart; this is a **needs-review** marker, not a new hybrid genre. | Confirmed needs-check |
-| 23 | Blues | User says "need to add"; add as a distinct canonical genre, not Funk & Soul. | Explicit addition |
-| 24 | Dance | User calls it a vague catch-all when they didn't determine style; consider `Grouping` / review queue without inventing a genre. | User confirms broad context; exact behavior open |
-| 25 | Twerk | User means the **dancefloor intention of getting people to shake ass**, a culturally meaningful crate/purpose term; don't discard it or misclassify every track as Bounce/Club. Retain as separate evidenced grouping/usage, while Genre reflects musical style. | Explicit grouping semantics |
-| 26 | Afro Baile / Groovy Bounce / Sexy Drill | User says "they count"; keep all three canonical learner genres. | Explicit keep |
-| 27 | Hardgroove | User says "right"; keep Hardgroove separate. | Explicit keep |
+| 01 | Ghetto Tech | → **Ghettotech** | Direct answer ("Approve all four") |
+| 02 | Afrobeat vs Afrobeats | Master genre renamed **Afrobeats** (the modern sound). Fela-era Afrobeat is added only if the library holds such records. A bare legacy `Afrobeat` tag stays held for review: it may be Fela-era. | Direct answer ("Rename to Afrobeats") |
+| 03 | Afro Tech | **Afro Tech** is its own master genre, distinct from Afro House. | Direct answer |
+| 04 | Baile Funk | → **Baile** | Direct answer ("Approve all four") |
+| 05 | UKG | → **UK Garage** | Direct answer ("Approve all four") |
+| 06 | speed garage / bassline keywords | Route to **Speed Garage** and **Bassline** respectively. | Direct answer ("Approve all four") |
+| 07 | Garage (incl. "Garage Volume N") | Mixed; **needs check**, never guessed. | Direct answer ("Mixed / needs check") |
+| 08 | Funk / Soul / Boogie | **Keep merged as Funk & Soul.** | Direct answer ("Keep merged: Funk & Soul") |
+| 09 | Vogue / Ballroom | **Ballroom Vogue**: no slash, because the learner splits Genre text on `/`. | Direct answer ("Ballroom Vogue") |
+| 10 | Bass | Not a genre; Bassline → Bassline, anything else needs check. | Note, read back |
+| 11 | Club | Not a genre. Regional club styles keep their exact genres; "club mix/edit" is a version label; `Club` goes to Grouping for club-ready tracks; a bare "club" needs check. | Direct answer ("Retire + Grouping") |
+| 12 | Drum | Not a genre; any track tagged Drum needs check. | Note, read back |
+| 13 | Dub | Both: "dub mix / dub version / dubplate" are version labels, **and** Dub is a master genre for actual Jamaican dub records. A bare legacy `Dub` tag stays held for review (it may be a dub mix). | Direct answer ("Both") |
+| 14 | Tech House | Its own master genre. | Note, read back |
+| 15 | Jazzy House | Genre **Deep House** + Grouping **Jazzy**. | Direct answer |
+| 16 | Nu Disco | → Disco | Note, read back ("sure") |
+| 17 | Nu R&B | → Alternative R&B | Note, read back ("sure") |
+| 18 | R&B Throwbacks | Genre **R&B** + Grouping **Throwback**. | Note, read back |
+| 19 | Alternative Hip-Hop | Genre **Hip-Hop** + Grouping **Alternative**. | Note, read back |
+| 20 | Classic / Soft / Pop Rock | **Three separate master genres** ("apart", not "a part"). | Direct answer ("Apart: separate genres") |
+| 21 | Latin Pop | Its own master genre. | Note, read back |
+| 22 | Garage Jungle | Needs check; it marks uncertainty, not a hybrid genre. | Note, read back |
+| 23 | Blues | Added as a master genre. | Note, read back ("need to add") |
+| 24 | Dance | Not a genre; Grouping `Dance`. | Note, read back |
+| 25 | Twerk | Grouping, not Genre: the dancefloor purpose. Genre stays the track's actual style. | Direct answer ("Grouping") |
+| 26 | Afro Baile / Groovy Bounce / Sexy Drill | Keep in master. | Note, read back ("they count") |
+| 27 | Hardgroove | Keep as its own genre. | Note, read back ("right") |
+| — | Folders | Tag names and folder names are separate (`folder_names`); folder renames are a separate gated job. | Direct answer ("Separate tag from folder") |
+
+**Pipeline note:** the learner records Genre + Grouping for items 15, 18 and 19. The version/genre sorter has no Grouping output yet, so it holds those three tags for review instead of writing only the Genre and dropping the descriptor.
 
 ## User's actual typed comments (verbatim; blank means none supplied)
 
@@ -79,7 +84,7 @@ Scope: `references/genre-learner-rules.json` (68 canonical genres at review time
 - `genre-rules.json` includes `Dub` as Genre **and** `Dub` under `remix_types`; source evidence and rule context must decide which one applies.
 - `genre-rules.json` ordered keyword behavior is **first match wins**. Any replacement must check precedence and avoid broad tokens swallowing distinct styles.
 
-## Safe next implementation pass — a separate reviewed diff
+## Safe next implementation pass (historical, written before the direct answers)
 
 1. Add coherent canonical/alias/grouping support for **explicit** user choices (#09, #14, #18, #21, #23, #25, #26, #27); retain finer distinctions and evidence. Keep open calls (#02, #07, #08, #12, #13, #15) unresolved. Do not assume blank answers approve anything.
 2. Fix corroborated cross-rule routing errors such as `Atlanta Bass → Miami Bass` and `Afro House → Afrobeats`, with narrowly scoped test fixtures that demonstrate old failure / new behavior.
