@@ -97,13 +97,20 @@ def _latest(conn: sqlite3.Connection, table: str) -> sqlite3.Row | None:
 
 def _serato(root: Path | None, row: sqlite3.Row | None) -> dict:
     if row is None:
-        return {"state": "NO_BASELINE", "reimport_required": False}
+        return {
+            "state": "NO_BASELINE", "reimport_required": False,
+            "baseline_path": None,
+            "inspected_path": None if root is None else str(root),
+        }
     original_root = Path(row["serato_dir"])
     if not original_root.is_absolute() or not original_root.name:
         raise ValueError("invalid Serato baseline root")
     source_root = root or original_root
     if source_root.is_symlink() or not source_root.is_dir():
-        return {"state": "SOURCE_UNAVAILABLE", "reimport_required": False}
+        return {
+            "state": "SOURCE_UNAVAILABLE", "reimport_required": False,
+            "baseline_path": str(original_root), "inspected_path": str(source_root),
+        }
     crates_dir = source_root / "Subcrates"
     if crates_dir.is_symlink():
         raise ValueError("Serato Subcrates directory may not be a symlink")
@@ -162,6 +169,8 @@ def _serato(root: Path | None, row: sqlite3.Row | None) -> dict:
     return {
         "state": "CHANGED" if changed else "UNCHANGED",
         "baseline_import_id": row["import_id"],
+        "baseline_path": str(original_root),
+        "inspected_path": str(source_root),
         "modified": modified, "added": added, "removed": removed,
         "reimport_required": changed,
     }
@@ -169,7 +178,11 @@ def _serato(root: Path | None, row: sqlite3.Row | None) -> dict:
 
 def _rekordbox(xml: Path | None, row: sqlite3.Row | None) -> dict:
     if row is None:
-        return {"state": "NO_BASELINE", "reimport_required": False}
+        return {
+            "state": "NO_BASELINE", "reimport_required": False,
+            "baseline_path": None,
+            "inspected_path": None if xml is None else str(xml),
+        }
     fingerprint = json.loads(row["source_fingerprint_json"])
     if (
         not isinstance(fingerprint, dict)
@@ -184,12 +197,16 @@ def _rekordbox(xml: Path | None, row: sqlite3.Row | None) -> dict:
     if not source.exists() and not source.is_symlink():
         return {
             "state": "EXPORT_UNAVAILABLE", "baseline_import_id": row["import_id"],
+            "baseline_path": row["xml_path"], "inspected_path": str(source),
             "reimport_required": False,
         }
     changed = _hash_stable(source) != fingerprint["sha256"]
     return {
         "state": "CHANGED" if changed else "UNCHANGED",
-        "baseline_import_id": row["import_id"], "reimport_required": changed,
+        "baseline_import_id": row["import_id"],
+        "baseline_path": row["xml_path"],
+        "inspected_path": str(source),
+        "reimport_required": changed,
     }
 
 
@@ -215,6 +232,12 @@ def report(db: Path, *, serato_dir: Path | None = None, rekordbox_xml: Path | No
         "requires_attention": any(
             item["state"] != "UNCHANGED" for item in (serato, rekordbox)
         ),
+        "scope": {
+            "source_fingerprints": "sha256 of database V2, Subcrates/*.crate, and one exported XML",
+            "per_track_metadata_deltas": "UNSUPPORTED",
+            "live_rekordbox_collection": "NOT_OBSERVED",
+            "playback_history": "NOT_OBSERVED",
+        },
         "note": (
             "A changed export/source requires a new trusted import for per-track comparisons. "
             "Rekordbox XML is a point-in-time export, not the live collection. "
