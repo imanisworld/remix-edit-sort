@@ -1,12 +1,11 @@
 """FLAC and M4A support in apply_grouping_plan.py and apply_year_bpm_plan.py.
 
-Real (tiny) FLAC/M4A fixture files from tests/media, a real folder lock, a
+Real (tiny) FLAC/M4A files from tests/media_fixtures.py, a real folder lock, a
 genuinely verified backup manifest, and Serato data planted in the file that
 must survive every write byte-for-byte.
 """
 
 import json
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -17,13 +16,13 @@ from pathlib import Path
 TESTS_DIR = Path(__file__).resolve().parent
 REPO_ROOT = TESTS_DIR.parent
 SCRIPTS_DIR = REPO_ROOT / "scripts"
-MEDIA = TESTS_DIR / "media"
 for entry in (str(TESTS_DIR), str(SCRIPTS_DIR)):
     if entry not in sys.path:
         sys.path.insert(0, entry)
 
 import backup_manifest  # noqa: E402
 import fixtures  # noqa: E402
+import media_fixtures  # noqa: E402
 import mutation_engine  # noqa: E402
 import tag_formats  # noqa: E402
 from mutagen.flac import FLAC  # noqa: E402
@@ -41,8 +40,7 @@ def run(*args):
 
 
 def make_flac(path: Path, grouping=None, date=None) -> Path:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(MEDIA / "tiny.flac", path)
+    media_fixtures.write_tiny(path, "flac")
     audio = FLAC(path)
     if audio.tags is None:
         audio.add_tags()
@@ -57,8 +55,7 @@ def make_flac(path: Path, grouping=None, date=None) -> Path:
 
 
 def make_m4a(path: Path, grouping=None, day=None) -> Path:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(MEDIA / "tiny.m4a", path)
+    media_fixtures.write_tiny(path, "m4a")
     audio = MP4(path)
     if audio.tags is None:
         audio.add_tags()
