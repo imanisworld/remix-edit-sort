@@ -102,6 +102,8 @@ INFRASTRUCTURE_ALLOWLIST = {
         "no primitives of its own; renews coordination locks via folder_lock",
     "scripts/metadata_batch.py":
         "atomically writes only repo handoff/T5 evidence and copies full scopes only to confined T5 backups",
+    "scripts/dj_history_export_stage.py":
+        "copies only official History export files (csv/txt/m3u/m3u8) into a staging dir it confines outside Music and Git, and unlinks only its own just-staged copy on a failed check; never touches DJ app data or library media",
     "scripts/t5_backup_dedupe.py":
         "copies only source bytes into a caller-confined T5 lane backup root and atomically replaces only its external SHA-256 index; never mutates library source media",
 }
