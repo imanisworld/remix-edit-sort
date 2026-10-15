@@ -771,6 +771,16 @@ def main() -> int:
     p_verify.add_argument("--backup-id")
     p_verify.add_argument("--out", required=True, type=Path)
 
+    p_scoped = sub.add_parser(
+        "verify-scoped",
+        help="hash an explicit list of files under a source root against their backup copies",
+    )
+    p_scoped.add_argument("--source-root", required=True, type=Path)
+    p_scoped.add_argument("--backup", required=True, type=Path, help="backup root; copies live at <backup>/<relative path>")
+    p_scoped.add_argument("--file", required=True, action="append", dest="files", help="path relative to the source root (repeatable)")
+    p_scoped.add_argument("--backup-id")
+    p_scoped.add_argument("--out", required=True, type=Path)
+
     p_check = sub.add_parser("check", help="re-validate an existing manifest against a target root")
     p_check.add_argument("--manifest", required=True, type=Path)
     p_check.add_argument("--source-root", required=True, type=Path)
@@ -790,6 +800,19 @@ def main() -> int:
             "total_bytes": manifest["total_bytes"],
             "problems": manifest["problems"][:10],
             "problem_count": len(manifest["problems"]),
+            "manifest": str(args.out),
+        }, indent=2))
+        return 0 if manifest["status"] == STATUS_PASS else 1
+
+    if args.command == "verify-scoped":
+        manifest = build_scoped_manifest(
+            args.source_root, args.backup, args.files, backup_id=args.backup_id,
+        )
+        write_manifest(manifest, args.out)
+        print(json.dumps({
+            "status": manifest["status"],
+            "file_count": manifest["file_count"],
+            "problems": manifest["problems"][:10],
             "manifest": str(args.out),
         }, indent=2))
         return 0 if manifest["status"] == STATUS_PASS else 1

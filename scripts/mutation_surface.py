@@ -152,9 +152,14 @@ class Finding:
 # is the exact set of functions a reviewer must check by hand.
 MAX_ENGINE_MUTATION_HELPERS = 4
 
+# The engine context managers that open a journaled transaction: ``item`` for
+# one file, ``folder_item`` for one whole-folder rename.
+TRANSACTION_METHODS = frozenset({"item", "folder_item"})
+
 
 def _governed_call_ids(tree: ast.AST) -> set[int]:
-    """id() of every node lexically inside a `with <expr>.item(...):` body.
+    """id() of every node lexically inside a `with <expr>.item(...):` body
+    (or `.folder_item(...)`, the whole-folder-rename transaction).
 
     This is the transaction the engine opens per item, so anything written
     inside it is covered by the engine's heartbeat, precondition checks,
@@ -167,7 +172,7 @@ def _governed_call_ids(tree: ast.AST) -> set[int]:
         opens_transaction = any(
             isinstance(item.context_expr, ast.Call)
             and isinstance(item.context_expr.func, ast.Attribute)
-            and item.context_expr.func.attr == "item"
+            and item.context_expr.func.attr in TRANSACTION_METHODS
             for item in node.items
         )
         if not opens_transaction:

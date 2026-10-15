@@ -62,3 +62,11 @@ final post-check fails.
   are out of scope and remain byte-identical because their TLVs are not edited.
 - The read-only `serato_index.py` importer remains read-only; this workflow is
   deliberately separate and opt-in.
+
+## Related
+
+ADR-003 (`folder-rename-runbook.md`) extends this lane: whole-folder renames
+(`apply_folder_rename_plan.py`), the SQLite libraries (`master.sqlite` and
+`root.sqlite`, via `rewrite_serato_sqlite_paths.py`), and a fail-closed
+Serato-running check. The statement above that smart-crate and history data are
+out of scope still holds; SmartCrates cache `ptrk` paths, which no tool rewrites yet.

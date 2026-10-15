@@ -8,6 +8,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 2026-10-15 ~15:45 EDT — Claude (cloud, repo only): genre folder approval, PR #55 (see Waiting on Imani). No library files touched.
 2026-10-15 ~16:45 EDT — Claude (cloud, repo only): junk-Grouping removal tool + docs (PR #57); recorded the Mac session's Pop progress report. No library files touched.
 2026-10-15 ~15:55 EDT — Claude (cloud, repo only): PR #55 merged (also reads a plain "Afrobeat" tag as Afrobeats; "Dub" stays held). No library files touched.
+2026-10-15 15:50 EDT — Claude (folder-rename tooling PR #56; library untouched)
 
 ## Rules every AI must follow
 
@@ -91,6 +92,8 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
 - **Duplicates (~440):** keep best copy (bitrate / clean-dirty), merge good tags + Source onto keeper; Imani approves delete list before any remove. Check Serato crates pointing at losers.
 - **Inbox genre/year lookup** still running (`inbox-genre-lookup/`, ~325+/514). When done: `merge.py` → preview → write only after approval.
 
+- **Folder-rename tooling (PR `claude/folder-rename-tooling`, not yet run on the live library):** `apply_folder_rename_plan.py` (R&b→R&B case-only via temp name, Afrobeat→Afrobeats; preview/apply/undo/recover) and `rewrite_serato_sqlite_paths.py` (`asset.portable_id` in **both** `master.sqlite` and `root.sqlite`). Real-scale rehearsal on copies passed (4,311 Serato refs, 3,824 rows per SQLite file, undo works). Review fixes landed (atomic no-replace rename; SQLite hardening); #56 reviewed OK. Live run order: own full copies of `_Serato_` + music, spare-copy trial incl. undo, check Serato re-imports, then the real rename with Serato quit. Needs Imani's separate go; read `references/folder-rename-runbook.md` first (open questions: Serato re-import of `database V2`, SmartCrates cached paths).
+
 ## Waiting on Imani
 
 - **Pop new adds:** rescan ID3 tags in Serato (Pop, Cat Calls Inspo, Y2K) and confirm, then delete T5 `2026-10-15-pop-tags/`. Decide: ~440 dupes (keep best, merge tags), Clean/Dirty for ~1,190 unmarked, watermark/November Grouping strips (needs writer change + append-only exception).
@@ -114,7 +117,7 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
 3. **14** R&B m4a/FLAC Year/Grouping (writers on main via #51).
 4. **34** ID3v2.2 Grouping (needs conversion approval).
 5. PR: extend `rewrite_serato_paths.py` to History + SmartCrates.
-6. One-pass folder moves: `R&b` → `R&B` + CLEAN/DIRTY sort; Afrobeat folder → Afrobeats; misfiled tracks from Claude sheets.
+6. One-pass folder moves: `R&b` → `R&B` + CLEAN/DIRTY sort; Afrobeat folder → Afrobeats; misfiled tracks from Claude sheets. (Rename tooling exists in the PR above; needs review + Imani's go first.)
 7. Inbox tag write after lookup + approval. Energy for Baile/Afrobeats = Claude unless asked.
 
 Library root: `~/Music/DJ-Music/Music` · Serato: `~/Music/_Serato_` · Mac: `djb.a.e` · Repo: `imanisworld/remix-edit-sort`

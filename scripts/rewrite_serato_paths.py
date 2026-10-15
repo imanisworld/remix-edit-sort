@@ -27,8 +27,10 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import stat
 import struct
+import subprocess
 import sys
 import uuid
 from collections import Counter
@@ -74,6 +76,44 @@ def _literal_stored_path_is_file(serato_path: str) -> bool:
     return mutation_engine.literal_path_is_file(
         check_serato_crate_paths.resolve(serato_path)
     )
+
+
+# A running Serato application is a process whose EXECUTABLE lives inside a
+# ``Serato*.app`` bundle. ``ps -o comm`` prints only the executable path (no
+# arguments), so this repository's own ``rewrite_serato_paths.py`` process, and
+# any shell whose command text merely mentions such a path, cannot be mistaken
+# for the application.
+_SERATO_APP_PROCESS = re.compile(r"^\s*/(?:[^/]+/)*Serato[^/]*\.app/Contents/", re.IGNORECASE)
+
+
+def list_process_commands() -> list[str]:
+    """Executable path of every process, via ``ps``. Raises if unavailable."""
+    try:
+        completed = subprocess.run(
+            ["ps", "-axww", "-o", "comm="],
+            capture_output=True, text=True, timeout=30, check=True,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise SeratoRewriteError(
+            f"cannot verify that Serato is closed (process listing failed: {exc})"
+        ) from exc
+    return completed.stdout.splitlines()
+
+
+def find_serato_processes(process_lister=None) -> list[str]:
+    """Command lines of running Serato applications (empty list == closed)."""
+    commands = (process_lister or list_process_commands)()
+    return [command for command in commands if _SERATO_APP_PROCESS.match(command)]
+
+
+def require_serato_closed(process_lister=None) -> None:
+    """Fail closed unless no Serato application process is running."""
+    running = find_serato_processes(process_lister)
+    if running:
+        raise SeratoRewriteError(
+            "Serato is running; quit it completely before changing its files: "
+            + "; ".join(command[:120] for command in running[:3])
+        )
 
 
 def _normalize_map_path(value: object, label: str) -> str:
@@ -389,6 +429,23 @@ def write_json(path: Path, payload: object) -> None:
         os.fsync(handle.fileno())
 
 
+def nonliteral_rule_target_directories(rules: list[dict], used_indexes: set[int]) -> list[str]:
+    """Used rules whose destination is a directory not spelled exactly on disk.
+
+    ``Path.is_dir()`` is true for any case-spelling on APFS, so a case-only
+    folder rename (``R&b`` -> ``R&B``) that has not actually happened would pass
+    a plain existence check. Every component is compared with the real entry.
+    """
+    problems = []
+    for rule in rules:
+        if rule["source_index"] not in used_indexes:
+            continue
+        target = check_serato_crate_paths.resolve(rule["to"])
+        if target.is_dir() and not mutation_engine.literal_path_components_exist(target):
+            problems.append(rule["to"])
+    return sorted(problems)
+
+
 def _relative_file_set(plan: dict) -> set[str]:
     return {str(item.get("path")) for item in plan.get("source_inventory", [])}
 
@@ -453,6 +510,17 @@ def load_and_validate_plan(
             raise SeratoRewriteError(
                 "rewritten target path(s) do not exist; move/rename the library files first: "
                 + ", ".join(repr(path) for path in missing_targets[:10])
+            )
+        used = {
+            change["rule_source_index"]
+            for item in rebuilt["files"] for change in item["rewrites"]
+        }
+        nonliteral = nonliteral_rule_target_directories(rebuilt["renames"], used)
+        if nonliteral:
+            raise SeratoRewriteError(
+                "rewritten target folder(s) are not spelled exactly as on disk "
+                "(case-insensitive match only); rename the folder first: "
+                + ", ".join(repr(path) for path in nonliteral[:10])
             )
     return plan
 
@@ -552,16 +620,23 @@ def run_post_check(
             "PASS" if not added_sources and not removed_sources and not changed_sources else "FAIL"
         ),
     }
+    used_rules = {
+        change["rule_source_index"]
+        for item in plan["files"] for change in item["rewrites"]
+    }
+    nonliteral_directories = nonliteral_rule_target_directories(plan["renames"], used_rules)
     rewrite_verification = {
         "expected_target_count": len(expected_targets),
         "unresolved_rewritten_targets": unresolved_targets,
         "absent_rewritten_targets": absent_targets,
+        "nonliteral_target_directories": nonliteral_directories,
         "remaining_mapped_source_references": remaining_mapped_sources,
         "status": (
             "PASS"
             if (
                 not unresolved_targets
                 and not absent_targets
+                and not nonliteral_directories
                 and not remaining_mapped_sources
                 and source_integrity["status"] == "PASS"
             )
@@ -723,6 +798,7 @@ def main() -> int:
             raise SeratoRewriteError(
                 "apply requires --confirm-serato-closed; close Serato before changing its binary files"
             )
+        require_serato_closed()
         plan = load_and_validate_plan(args.plan, args.serato_dir, require_targets=True)
         heartbeat, manifest = mutation_engine.run_preflight(
             lock_folder=args.lock_folder,
