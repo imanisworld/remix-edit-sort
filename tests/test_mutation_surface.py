@@ -132,6 +132,7 @@ class MutationSurfaceTests(unittest.TestCase):
             "scripts/detect_bpm.py",                  # removes its own temp wav
             "scripts/metadata_batch.py",              # removes only a failed owned atomic-write temp file
             "scripts/rewrite_serato_paths.py",        # removes only its unique atomic-write temp file
+            "scripts/dj_history_export_stage.py",     # removes only its own just-staged export copy on a failed check
         }
         offenders = sorted({entry["module"] for entry in self.report["deletion_primitives"]}
                            - allowed)
