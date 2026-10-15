@@ -107,18 +107,14 @@
     "ballroom": "Ballroom Vogue",
     "vogue": "Ballroom Vogue",
     "nu disco": "Disco",
-    "nu r&b": "Alternative R&B"
+    "nu r&b": "Alternative R&B",
+    "funk": "Funk & Soul",
+    "soul": "Funk & Soul",
+    "boogie": "Funk & Soul"
   },
   "legacy_compounds_requiring_audio_review": [
     "Afrobeat",
-    "Funk",
-    "Soul",
-    "Boogie",
-    "Dub",
-    "Jazzy House",
-    "R&B Throwbacks",
-    "Alternative Hip Hop",
-    "Alternative Hip-Hop"
+    "Dub"
   ],
   "target_excluded_folders": [
     "bae re work",
