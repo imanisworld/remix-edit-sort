@@ -4,7 +4,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 
 ## Last updated
 
-2026-10-15 15:20 EDT — Grok (DJ B.A.E. Library)
+2026-10-15 15:50 EDT — Claude (folder-rename tooling PR; library untouched)
 
 ## Rules every AI must follow
 
@@ -81,6 +81,8 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
 - **Duplicates (~440):** keep best copy (bitrate / clean-dirty), merge good tags + Source onto keeper; Imani approves delete list before any remove. Check Serato crates pointing at losers.
 - **Inbox genre/year lookup** still running (`inbox-genre-lookup/`, ~325+/514). When done: `merge.py` → preview → write only after approval.
 
+- **Folder-rename tooling (PR `claude/folder-rename-tooling`, not yet run on the live library):** `apply_folder_rename_plan.py` (R&b→R&B case-only via temp name, Afrobeat→Afrobeats; preview/apply/undo/recover) and `rewrite_serato_sqlite_paths.py` (`asset.portable_id` in **both** `master.sqlite` and `root.sqlite`). Real-scale rehearsal on copies passed (4,311 Serato refs, 3,824 rows per SQLite file, undo works). Running it live needs Imani's separate go and Serato fully quit; read `references/folder-rename-runbook.md` first (open questions: Serato re-import of `database V2`, SmartCrates cached paths).
+
 ## Waiting on Imani
 
 - **575** R&B "NEEDS YOU" rows (`rnb-tag-apply-20261015/deferred.csv` / preview v3).
@@ -97,7 +99,7 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
 3. **14** R&B m4a/FLAC Year/Grouping (writers on main via #51).
 4. **34** ID3v2.2 Grouping (needs conversion approval).
 5. PR: extend `rewrite_serato_paths.py` to History + SmartCrates.
-6. One-pass folder moves: `R&b` → `R&B` + CLEAN/DIRTY sort; Afrobeat folder → Afrobeats; misfiled tracks from Claude sheets.
+6. One-pass folder moves: `R&b` → `R&B` + CLEAN/DIRTY sort; Afrobeat folder → Afrobeats; misfiled tracks from Claude sheets. (Rename tooling exists in the PR above; needs review + Imani's go first.)
 7. Inbox tag write after lookup + approval. Energy for Baile/Afrobeats = Claude unless asked.
 
 Library root: `~/Music/DJ-Music/Music` · Serato: `~/Music/_Serato_` · Mac: `djb.a.e` · Repo: `imanisworld/remix-edit-sort`

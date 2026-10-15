@@ -89,6 +89,23 @@ class MutationSurfaceTests(unittest.TestCase):
                 if name != "apply_approved_batch.py":
                     self.assertGreater(by_name[name]["primitive_count"], 0)
 
+    def test_folder_and_sqlite_rewriters_are_governed_engine_users(self):
+        by_name = {Path(entry["module"]).name: entry for entry in self.report["modules"]}
+        for name in ("apply_folder_rename_plan.py", "rewrite_serato_sqlite_paths.py"):
+            with self.subTest(script=name):
+                self.assertEqual(by_name[name]["classification"], mutation_surface.ENGINE_USER)
+                # Their physical folder renames live in the engine (folder_item /
+                # rename_dir_no_overwrite); neither module may delete anything.
+                self.assertEqual(
+                    [p for p in by_name[name]["primitives"] if p["kind"] == "deletion"], [],
+                )
+
+    def test_the_folder_rename_primitive_lives_in_the_engine(self):
+        by_name = {Path(entry["module"]).name: entry for entry in self.report["modules"]}
+        engine = by_name["mutation_engine.py"]
+        self.assertEqual(engine["classification"], mutation_surface.MUTATION_ENGINE)
+        self.assertTrue(any("os.rename" in primitive["snippet"] for primitive in engine["primitives"]))
+
     def test_batch_storage_is_allowlisted_infrastructure(self):
         by_name = {Path(entry["module"]).name: entry for entry in self.report["modules"]}
         self.assertEqual(
@@ -260,6 +277,36 @@ class ScannerBehaviorTests(unittest.TestCase):
                         txn.mark_mutated()
         ''')
         self.assertTrue(report["ok"], report["violations"])
+
+    def test_a_primitive_inside_a_folder_transaction_is_accepted(self):
+        report = self._scan("apply_folders.py", '''
+            SAFETY_CLASSIFICATION = "engine-user"
+            import shutil
+            import lock_guard
+            import mutation_engine
+
+            def apply(engine, items):
+                for index, item in enumerate(items):
+                    with engine.folder_item(index, item, item + "2", expected_inventory={}) as txn:
+                        shutil.move(item, item + "2")
+        ''')
+        self.assertTrue(report["ok"], report["violations"])
+
+    def test_the_same_primitive_outside_a_folder_transaction_is_rejected(self):
+        report = self._scan("apply_folders_sloppy.py", '''
+            SAFETY_CLASSIFICATION = "engine-user"
+            import shutil
+            import lock_guard
+            import mutation_engine
+
+            def apply(engine, items):
+                for index, item in enumerate(items):
+                    with engine.folder_item(index, item, item + "2", expected_inventory={}) as txn:
+                        pass
+                    shutil.move(item, item + "3")
+        ''')
+        self.assertFalse(report["ok"])
+        self.assertTrue(any("apply()" in v and "not inside a" in v for v in report["violations"]))
 
     def test_a_declared_helper_called_from_a_transaction_is_accepted(self):
         report = self._scan("apply_helper.py", '''

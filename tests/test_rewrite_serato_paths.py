@@ -249,5 +249,82 @@ class SeratoRewriteWorkflowTests(unittest.TestCase):
         self.assertEqual(post["rewrite_verification"]["status"], "FAIL")
 
 
+class SeratoClosedGuardTests(unittest.TestCase):
+    def test_only_a_serato_app_bundle_executable_counts_as_running(self):
+        listing = [
+            "/bin/zsh",
+            "/usr/bin/python3",
+            "/Applications/Serato DJ Pro.app/Contents/MacOS/Serato DJ Pro",
+            "/Applications/Serato Studio 2.app/Contents/MacOS/Serato Studio",
+            "/Users/dj/Music/_Serato_/not-an-app",
+        ]
+        running = rewrite.find_serato_processes(lambda: listing)
+        self.assertEqual(len(running), 2)
+        rewrite.require_serato_closed(lambda: listing[:2] + listing[4:])
+        with self.assertRaisesRegex(rewrite.SeratoRewriteError, "Serato is running"):
+            rewrite.require_serato_closed(lambda: listing)
+
+    def test_an_unreadable_process_table_fails_closed(self):
+        with mock.patch.object(rewrite.subprocess, "run", side_effect=OSError("no ps")):
+            with self.assertRaisesRegex(rewrite.SeratoRewriteError, "cannot verify"):
+                rewrite.require_serato_closed()
+
+    def test_this_process_does_not_look_like_serato(self):
+        # The live process table of whatever machine runs the tests: a repo
+        # path or script name containing "serato" must never be mistaken for the app.
+        self.assertEqual(
+            [c for c in rewrite.find_serato_processes() if "rewrite_serato" in c or "python" in c.lower()],
+            [],
+        )
+
+
+class LiteralTargetDirectoryTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name).resolve()
+        (self.root / "Beats").mkdir()
+        (self.root / "Beats" / "x.mp3").write_bytes(b"x")
+
+    def rules(self, target):
+        return rewrite.normalize_rename_map([{"from": "Users/dj/Old", "to": str(target).lstrip("/")}])
+
+    def test_exactly_spelled_directory_passes(self):
+        self.assertEqual(rewrite.nonliteral_rule_target_directories(self.rules(self.root / "Beats"), {1}), [])
+
+    def test_case_alias_of_a_directory_is_flagged_on_case_insensitive_volumes(self):
+        if not (self.root / "beats").exists():
+            self.skipTest("case-sensitive volume: an alias cannot exist")
+        flagged = rewrite.nonliteral_rule_target_directories(self.rules(self.root / "beats"), {1})
+        self.assertEqual(len(flagged), 1)
+
+    def test_unused_rules_and_file_targets_are_ignored(self):
+        self.assertEqual(rewrite.nonliteral_rule_target_directories(self.rules(self.root / "beats"), set()), [])
+        self.assertEqual(
+            rewrite.nonliteral_rule_target_directories(self.rules(self.root / "Beats" / "x.mp3"), {1}), []
+        )
+
+    def test_post_check_and_apply_gate_flag_a_pending_case_only_folder_rename(self):
+        if not (self.root / "beats").exists():
+            self.skipTest("case-sensitive volume: an alias cannot exist")
+        serato = self.root / "_Serato_"
+        (serato / "Subcrates").mkdir(parents=True)
+        old = "Users/dj/Old/x.mp3"
+        alias = str(self.root / "beats" / "x.mp3").lstrip("/")
+        (serato / "database V2").write_bytes(
+            tlv("vrsn", text("2.0")) + otrk(tlv("pfil", text(old)))
+        )
+        rules = rewrite.normalize_rename_map([{"from": "Users/dj/Old", "to": str(self.root / "beats").lstrip("/")}])
+        plan = rewrite.build_preview(serato, rules)
+        plan_path = self.root / "plan.json"
+        rewrite.write_json(plan_path, plan)
+        self.assertEqual(plan["files"][0]["rewrites"][0]["to"], alias)
+        # The file is reachable through the alias, so the per-file check alone passes ...
+        self.assertTrue((self.root / "beats" / "x.mp3").is_file())
+        # ... but the rule's destination folder is not the literal spelling on disk.
+        with self.assertRaisesRegex(rewrite.SeratoRewriteError, "not spelled exactly"):
+            rewrite.load_and_validate_plan(plan_path, serato, require_targets=True)
+
+
 if __name__ == "__main__":
     unittest.main()

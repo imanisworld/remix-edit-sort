@@ -57,7 +57,7 @@ they do not fabricate or trust an unverified restore path.
 
 | Module | Classification | Role |
 | --- | --- | --- |
-| `mutation_engine.py` | mutation-engine | The transaction core. WAL journal, preconditions, verification, rollback, recovery. |
+| `mutation_engine.py` | mutation-engine | The transaction core. WAL journal, preconditions, verification, rollback, recovery. `item()` for one file, `folder_item()` for one whole-folder rename. |
 | `folder_lock.py` | infrastructure | Per-folder cross-process lock. `verify_and_renew()` is the atomic ownership primitive. |
 | `lock_guard.py` | infrastructure | The gate every mutation script calls. `LockHeartbeat` per item. |
 | `backup_manifest.py` | read-only | Builds and verifies backup evidence. PASS is computed, never asserted. |
@@ -72,7 +72,9 @@ they do not fabricate or trust an unverified restore path.
 | `apply_genre_needs_check_folder_plan.py` | engine-user | Folder-scoped Genre recheck from a hashed survey. |
 | `apply_clean_dirty_move_plan.py` | engine-user | Clean/Dirty relocation plus additive Grouping. |
 | `apply_new_music_intake_plan.py` | engine-user | One-save Genre/Grouping intake metadata transaction. |
-| `rewrite_serato_paths.py` | engine-user | Reviewed, hash-bound `pfil`/`ptrk` path rewrites in Serato database/crates. |
+| `rewrite_serato_paths.py` | engine-user | Reviewed, hash-bound `pfil`/`ptrk` path rewrites in Serato database/crates. Fails closed if Serato is running. |
+| `rewrite_serato_sqlite_paths.py` | engine-user | Reviewed, hash-bound `asset.portable_id` rewrites in Serato's `master.sqlite`/`root.sqlite`; one SQLite transaction per database inside an engine item. |
+| `apply_folder_rename_plan.py` | engine-user | Whole-folder renames (including case-only, via a temp name) through `MutationEngine.folder_item()`; preview, apply, undo, crash recovery. See `references/folder-rename-runbook.md`. |
 | `delete_verified_duplicates.py` | engine-user | Manual EXACT_DUPLICATE deletion. |
 | `apply_plan.py` | disabled-legacy | Hard-disabled. Read-only `--report` only. |
 | `merge_events_duplicates.py` | disabled-legacy | Hard-disabled completed one-off. |
