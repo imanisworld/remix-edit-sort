@@ -52,7 +52,7 @@ Non-negotiable safety rules:
 - Do not infer uncertain genres, artists, titles, event names, or versions. Use needs-check classifications.
 - Preserve audio payloads and embedded Serato frames; verify both after metadata writes.
 - Preserve ID3v2.2 blocks unless tag conversion is separately previewed and approved.
-- `Genre` means musical style. `Grouping` stores evidenced event/crate/source context and must append to—not overwrite—existing values. The one exception is `scripts/build_grouping_removal_plan.py`: it removes only exact values the owner listed by hand (approved 2026-10-15), and `apply_grouping_plan.py` refuses any other removal.
+- `Genre` means musical style. `Grouping` stores evidenced event/crate/source context and must append to—not overwrite—existing values. The one exception is `scripts/build_grouping_removal_plan.py`: it removes only exact values the owner listed by hand (approved 2026-10-15), and `apply_grouping_plan.py` refuses a removal item that drops anything not on that list. (The append builders still enforce append-only themselves; `build_grouping_normalization_plan.py` rewrites spelling variants, not removals.)
 - `Imani Drops` is explicitly out of scope and must remain untouched.
 
 Current important state:
