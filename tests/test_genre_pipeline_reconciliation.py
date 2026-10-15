@@ -138,10 +138,18 @@ class GenreReconciliationTests(unittest.TestCase):
         self.assertEqual(ambiguous["resolution_status"], "REVIEW")
         self.assertIsNone(ambiguous["proposed_genre"])
 
+    def test_funk_soul_boogie_tags_resolve_to_funk_and_soul(self):
+        # Decision 08 (2026-10-13): keep Funk, Soul and Boogie merged.
+        for raw in ("funk", "soul", "Boogie 80's"):
+            with self.subTest(raw=raw):
+                result = self.version_result(raw)
+                self.assertEqual(result["resolution_status"], "RESOLVED")
+                self.assertEqual(result["proposed_genre"], "Funk & Soul")
+
     def test_ambiguous_tags_and_context_are_held(self):
         for raw in (
             "Garage", "Garage Jungle", "Bass", "Drum", "Jazzy House",
-            "R&B Throwbacks", "Alternative Hip Hop", "funk", "soul",
+            "R&B Throwbacks", "Alternative Hip Hop",
         ):
             with self.subTest(raw=raw):
                 result = self.version_result(raw)
@@ -208,7 +216,11 @@ class GenreReconciliationTests(unittest.TestCase):
         ):
             with self.subTest(old=old):
                 self.assertEqual(remix_sort.canonical_artist_genre(old), new)
-        for ambiguous in ("Club", "Soul", "jersey/atl club", "random"):
+        for old, new in (("Soul", "Funk & Soul"), ("Funk", "Funk & Soul"),
+                         ("Boogie", "Funk & Soul"), ("Blues", "Blues")):
+            with self.subTest(old=old):
+                self.assertEqual(remix_sort.canonical_artist_genre(old), new)
+        for ambiguous in ("Club", "jersey/atl club", "random"):
             with self.subTest(ambiguous=ambiguous):
                 self.assertIsNone(remix_sort.canonical_artist_genre(ambiguous))
 

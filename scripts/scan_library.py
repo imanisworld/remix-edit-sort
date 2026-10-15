@@ -57,10 +57,12 @@ LABEL_REMAP = {
     "baile funk": "Baile", "vogue": "Ballroom Vogue",
     "jersey/atl club": None,  # compound: do not select either club style
     "house": "House", "techno": "Techno",
-    "blues": None, "electronic": None,
+    "blues": "Blues", "electronic": None,
     "r&b/soul": "R&B", "funk/soul": "Funk & Soul",
+    # Decision 08 (2026-10-13): Funk, Soul and Boogie stay merged.
+    "funk": "Funk & Soul", "soul": "Funk & Soul", "boogie": "Funk & Soul",
     # Named genres without an approved correspondence stay unclassified.
-    "club": None, "soul": None,
+    "club": None,
 }
 ARTIST_GENRE = {}
 
@@ -70,7 +72,7 @@ _VERSION_RULES_PATH = os.path.join(HERE, "..", "references", "version-genre-rule
 with open(_VERSION_RULES_PATH, encoding="utf-8") as _version_file:
     _VERSION_RULES = json.load(_version_file)
 
-_UNDECIDED_EXISTING_TAGS = {"afrobeat", "funk", "soul", "boogie", "dub"}
+_UNDECIDED_EXISTING_TAGS = {"afrobeat", "dub"}
 
 
 def canonical_existing_genre(value):
@@ -257,13 +259,16 @@ def classify_genre(track):
             return hit, "artist_map"
 
     folder = track.get("source_folder") or ""
-    folder_genre = FOLDER_GENRES.get(folder, folder)
+    # A same-spelling physical folder is not sufficient Genre evidence.
+    # Only an explicitly approved folder_names entry may supply a folder
+    # hint; otherwise leave classification to actual tag/filename evidence.
+    folder_genre = FOLDER_GENRES.get(folder)
     if folder_genre and folder_genre in RULES["canonical_genres"]:
         return folder_genre, "existing_folder"
 
     haystack = norm(" ".join(filter(None, [
         track["title_clean"], track["remixer_raw"] or "", track["artist_raw"],
-        track["album_raw"], track["uploader"] or "", folder])))
+        track["album_raw"], track["uploader"] or ""])))
     for rule in RULES["keyword_rules"]:
         for kw in rule["match"]:
             k = norm(kw)

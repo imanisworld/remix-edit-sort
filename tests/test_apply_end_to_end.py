@@ -87,6 +87,8 @@ class ApplyEndToEndTests(unittest.TestCase):
             "tag_change": tag_change,
             "current_genre": "Unsorted",
             "proposed_genre": genre,
+            "destination_relative": move_to or relative,
+            "version_category": ("DIRTY" if move_to and move_to.startswith("DIRTY/") else "CLEAN"),
             "sha256": backup_manifest.sha256_file(source),
         }
 
@@ -102,14 +104,14 @@ class ApplyEndToEndTests(unittest.TestCase):
         before_audio = engine_script.audio_payload(source)
         before_serato = engine_script.serato_digest(source)
 
-        result = self.apply_plan(self.build_plan([self.item("Song (Clean).mp3", "Hip Hop")]))
+        result = self.apply_plan(self.build_plan([self.item("Song (Clean).mp3", "R&B")]))
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         payload = json.loads(result.stdout)
         self.assertEqual(payload["genre_tags_changed"], 1)
         self.assertEqual(payload["audio_payloads_changed"], 0)
         self.assertEqual(payload["serato_frames_changed"], 0)
 
-        self.assertEqual(engine_script.read_genre(source), "Hip Hop")
+        self.assertEqual(engine_script.read_genre(source), "R&B")
         self.assertEqual(engine_script.audio_payload(source), before_audio,
                          "the audio payload changed during a tag write")
         self.assertEqual(engine_script.serato_digest(source), before_serato,
@@ -118,7 +120,7 @@ class ApplyEndToEndTests(unittest.TestCase):
     def test_id3v22_files_are_preserved_not_upgraded(self):
         old = self.paths["old.mp3"]
         self.assertEqual(ID3(old).version, (2, 2, 0))
-        result = self.apply_plan(self.build_plan([self.item("old.mp3", "Hip Hop")]))
+        result = self.apply_plan(self.build_plan([self.item("old.mp3", "R&B")]))
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         payload = json.loads(result.stdout)
         self.assertEqual(payload["genre_tags_skipped"], 1)
@@ -128,22 +130,22 @@ class ApplyEndToEndTests(unittest.TestCase):
 
     def test_clean_and_dirty_versions_both_survive_a_run(self):
         plan = self.build_plan([
-            self.item("Song (Clean).mp3", "Hip Hop", move_to="Clean/Song (Clean).mp3"),
-            self.item("Song (Dirty).mp3", "Hip Hop", move_to="Dirty/Song (Dirty).mp3"),
+            self.item("Song (Clean).mp3", "R&B", move_to="CLEAN/R&b/Song (Clean).mp3"),
+            self.item("Song (Dirty).mp3", "R&B", move_to="DIRTY/R&b/Song (Dirty).mp3"),
         ])
         result = self.apply_plan(plan)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertTrue((self.root / "Clean/Song (Clean).mp3").is_file())
-        self.assertTrue((self.root / "Dirty/Song (Dirty).mp3").is_file())
+        self.assertTrue((self.root / "CLEAN/R&b/Song (Clean).mp3").is_file())
+        self.assertTrue((self.root / "DIRTY/R&b/Song (Dirty).mp3").is_file())
 
     def test_number_heavy_names_survive_a_move(self):
         """21 Savage / 112 / a year in the title must come through intact."""
         relative = "21 Savage - 112 (2016).mp3"
         before = backup_manifest.sha256_file(self.paths[relative])
-        plan = self.build_plan([self.item(relative, "Hip Hop", move_to=f"Sorted/{relative}")])
+        plan = self.build_plan([self.item(relative, "R&B", move_to=f"CLEAN/R&b/{relative}")])
         result = self.apply_plan(plan)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        moved = self.root / "Sorted" / relative
+        moved = self.root / "CLEAN" / "R&b" / relative
         self.assertTrue(moved.is_file())
         self.assertNotEqual(backup_manifest.sha256_file(moved), before)  # genre was written
         self.assertIn("21 Savage", moved.name)
@@ -155,7 +157,7 @@ class ApplyEndToEndTests(unittest.TestCase):
         destination_name = "BT005.mp3"
         original_hash = backup_manifest.sha256_file(self.paths[source_name])
         plan = self.build_plan([
-            self.item(source_name, "Unsorted", move_to=destination_name, tag_change=False),
+            self.item(source_name, None, move_to=destination_name, tag_change=False),
         ])
 
         result = self.apply_plan(plan)
@@ -184,7 +186,7 @@ class ApplyEndToEndTests(unittest.TestCase):
         destination_name = "MIX — 日本語.mp3"
         original_hash = backup_manifest.sha256_file(self.paths[source_name])
         result = self.apply_plan(self.build_plan([
-            self.item(source_name, "Unsorted", move_to=destination_name, tag_change=False),
+            self.item(source_name, None, move_to=destination_name, tag_change=False),
         ]))
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         literal_names = {entry.name for entry in self.root.iterdir()}
@@ -196,7 +198,7 @@ class ApplyEndToEndTests(unittest.TestCase):
 
     # ------------------------------------------------------------------
     def test_a_write_ahead_recovery_journal_is_produced(self):
-        result = self.apply_plan(self.build_plan([self.item("Song (Clean).mp3", "Hip Hop")]))
+        result = self.apply_plan(self.build_plan([self.item("Song (Clean).mp3", "R&B")]))
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         journal = Path(json.loads(result.stdout)["recovery_journal"])
         self.assertTrue(journal.is_file())
@@ -214,8 +216,8 @@ class ApplyEndToEndTests(unittest.TestCase):
         originals = {relative: backup_manifest.sha256_file(path)
                      for relative, path in self.paths.items()}
         plan = self.build_plan([
-            self.item("Song (Clean).mp3", "Hip Hop", move_to="Clean/Song (Clean).mp3"),
-            self.item("Song (Dirty).mp3", "Hip Hop"),
+            self.item("Song (Clean).mp3", "R&B", move_to="CLEAN/R&b/Song (Clean).mp3"),
+            self.item("Song (Dirty).mp3", "R&B"),
         ])
         result = self.apply_plan(plan)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
@@ -234,7 +236,7 @@ class ApplyEndToEndTests(unittest.TestCase):
 
     # ------------------------------------------------------------------
     def test_apply_is_refused_without_a_backup_manifest(self):
-        plan = self.build_plan([self.item("Song (Clean).mp3", "Hip Hop")])
+        plan = self.build_plan([self.item("Song (Clean).mp3", "R&B")])
         result = run(APPLY, "--root", self.root, "--plan", plan, "--apply",
                      "--lock-folder", LOCK_FOLDER, "--session", SESSION)
         self.assertNotEqual(result.returncode, 0)
@@ -243,7 +245,7 @@ class ApplyEndToEndTests(unittest.TestCase):
     def test_apply_is_refused_with_a_failing_backup_manifest(self):
         (self.tmp / "empty").mkdir()
         bad = fixtures.passing_manifest(self.root, self.tmp / "empty", self.tmp / "bad.json")
-        plan = self.build_plan([self.item("Song (Clean).mp3", "Hip Hop")])
+        plan = self.build_plan([self.item("Song (Clean).mp3", "R&B")])
         result = run(APPLY, "--root", self.root, "--plan", plan,
                      "--backup-manifest", bad, "--apply",
                      "--lock-folder", LOCK_FOLDER, "--session", SESSION)
@@ -251,7 +253,7 @@ class ApplyEndToEndTests(unittest.TestCase):
         self.assertIn("REFUSING TO MUTATE", result.stdout + result.stderr)
 
     def test_apply_is_refused_when_a_source_changed_since_the_preview(self):
-        item = self.item("Song (Clean).mp3", "Hip Hop")
+        item = self.item("Song (Clean).mp3", "R&B")
         item["sha256"] = "0" * 64
         result = self.apply_plan(self.build_plan([item]))
         self.assertNotEqual(result.returncode, 0)
@@ -259,25 +261,25 @@ class ApplyEndToEndTests(unittest.TestCase):
 
     def test_apply_is_refused_on_a_destination_collision_within_the_plan(self):
         plan = self.build_plan([
-            self.item("Song (Clean).mp3", "Hip Hop", move_to="Sorted/Same.mp3"),
-            self.item("Song (Dirty).mp3", "Hip Hop", move_to="Sorted/Same.mp3"),
+            self.item("Song (Clean).mp3", "R&B", move_to="CLEAN/R&b/Same.mp3"),
+            self.item("Song (Dirty).mp3", "R&B", move_to="CLEAN/R&b/Same.mp3"),
         ])
         result = self.apply_plan(plan)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("destination collision", result.stdout + result.stderr)
 
     def test_apply_is_refused_when_the_destination_already_exists(self):
-        existing = self.root / "Sorted" / "Taken.mp3"
+        existing = self.root / "CLEAN" / "R&b" / "Taken.mp3"
         fixtures.write_mp3(existing, seed=200)
         plan = self.build_plan([
-            self.item("Song (Clean).mp3", "Hip Hop", move_to="Sorted/Taken.mp3"),
+            self.item("Song (Clean).mp3", "R&B", move_to="CLEAN/R&b/Taken.mp3"),
         ])
         result = self.apply_plan(plan)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("destination already exists", result.stdout + result.stderr)
 
     def test_apply_is_refused_when_the_source_is_missing(self):
-        item = self.item("Song (Clean).mp3", "Hip Hop")
+        item = self.item("Song (Clean).mp3", "R&B")
         self.paths["Song (Clean).mp3"].unlink()
         result = self.apply_plan(self.build_plan([item]))
         self.assertNotEqual(result.returncode, 0)
@@ -291,7 +293,7 @@ class ApplyEndToEndTests(unittest.TestCase):
         plan = self.build_plan([{
             "source": str(weird), "source_relative": "track.wav",
             "destination": str(weird), "move": False, "tag_change": True,
-            "current_genre": "", "proposed_genre": "Hip Hop",
+            "current_genre": "", "proposed_genre": "R&B",
             "sha256": backup_manifest.sha256_file(weird),
         }])
         result = run(APPLY, "--root", self.root, "--plan", plan,
@@ -301,7 +303,7 @@ class ApplyEndToEndTests(unittest.TestCase):
         self.assertIn("unsupported tag target", result.stdout + result.stderr)
 
     def test_apply_is_refused_without_an_owned_lock(self):
-        plan = self.build_plan([self.item("Song (Clean).mp3", "Hip Hop")])
+        plan = self.build_plan([self.item("Song (Clean).mp3", "R&B")])
         result = run(APPLY, "--root", self.root, "--plan", plan,
                      "--backup-manifest", self.manifest_path, "--apply",
                      "--lock-folder", LOCK_FOLDER, "--session", "someone-else")
@@ -309,7 +311,7 @@ class ApplyEndToEndTests(unittest.TestCase):
         self.assertIn("REFUSING TO MUTATE", result.stdout + result.stderr)
 
     def test_undo_is_refused_without_an_owned_lock(self):
-        result = self.apply_plan(self.build_plan([self.item("Song (Clean).mp3", "Hip Hop")]))
+        result = self.apply_plan(self.build_plan([self.item("Song (Clean).mp3", "R&B")]))
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         undo_log = json.loads(result.stdout)["undo_log"]
         undone = run(APPLY, "--root", self.root, "--plan", self.tmp / "plan.json",
@@ -320,7 +322,7 @@ class ApplyEndToEndTests(unittest.TestCase):
 
     def test_dry_run_mutates_nothing_and_reports_the_backup_gate(self):
         before = {r: backup_manifest.sha256_file(p) for r, p in self.paths.items()}
-        plan = self.build_plan([self.item("Song (Clean).mp3", "Hip Hop")])
+        plan = self.build_plan([self.item("Song (Clean).mp3", "R&B")])
         result = run(APPLY, "--root", self.root, "--plan", plan,
                      "--backup-manifest", self.manifest_path)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
