@@ -80,9 +80,9 @@ A rename changes file paths, so Serato's database and crates must be updated too
    python3 scripts/rewrite_serato_paths.py apply --serato-dir /Users/djb.a.e/Music/_Serato_ \
      --library-root "$LIB" --plan "$W/serato-preview.json" \
      --backup-manifest <PASS report covering the _Serato_ files> --session "$SESSION" \
-     --journal "$W/serato-journal.jsonl" --post-check-out "$W/serato-post-check.json" --out "$W/serato-result.json"
+     --journal "$W/serato-journal.jsonl" --post-check-out "$W/serato-post-check.json" --out "$W/serato-result.json" \
+     --confirm-serato-closed
    ```
-   Check `--help` for its last required option before running.
 
 ## Never
 - Touch `Imani Drops`.
