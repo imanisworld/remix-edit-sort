@@ -64,7 +64,7 @@ they do not fabricate or trust an unverified restore path.
 | `duplicate_semantics.py` | read-only | The duplicate truth model. |
 | `mutation_surface.py` | read-only | AST scan of every mutation path in the repo. Enforced by CI. |
 | `apply_version_genre_plan.py` | engine-user | File relocation/rename + Genre. |
-| `apply_grouping_plan.py` | engine-user | Grouping. |
+| `apply_grouping_plan.py` | engine-user | Grouping. Appends; removes only values on a plan's owner-approved removal list (`build_grouping_removal_plan.py`), and refuses any other removal item. |
 | `apply_artist_title_plan.py` | engine-user | Artist/Title. |
 | `apply_year_bpm_plan.py` | engine-user | Year/BPM. |
 | `apply_genre_refinement_plan.py` | engine-user | Genre refinement. |

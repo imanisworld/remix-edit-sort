@@ -22,7 +22,6 @@ import genre_learner
 
 
 AMBIGUOUS = {
-    "dance": "Decide whether Dance becomes a canonical Genre or remains context.",
     "garage": "Decide between a canonical Garage label and UK Garage.",
     "nuwave": "Decide whether Nu Wave becomes canonical or maps to another style.",
     "bollywood": "Decide whether Bollywood becomes a canonical Genre or context.",

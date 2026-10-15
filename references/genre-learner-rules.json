@@ -9,12 +9,17 @@
     "Pop",
     "Dance Pop",
     "Rock",
+    "Classic Rock",
+    "Soft Rock",
+    "Pop Rock",
     "Alternative",
     "New Wave",
     "House",
     "Deep House",
+    "Tech House",
     "Bass House",
     "Afro House",
+    "Afro Tech",
     "Garage House",
     "Jersey Club",
     "Baltimore Club",
@@ -34,21 +39,23 @@
     "Electro",
     "Dubstep",
     "Latin",
+    "Latin Pop",
     "Cumbia",
     "Dembow",
     "Reggaeton",
     "Guaracha",
     "3Ball",
-    "Afrobeat",
+    "Afrobeats",
     "Amapiano",
     "Gqom",
     "Kuduro",
     "Baile",
     "Afro Baile",
-    "Ballroom",
+    "Ballroom Vogue",
     "Dancehall",
     "Riddim",
     "Reggae",
+    "Dub",
     "Soca",
     "Bouyon",
     "Kompa",
@@ -58,6 +65,7 @@
     "Rave",
     "Trance",
     "Funk & Soul",
+    "Blues",
     "Disco",
     "Gospel",
     "Jazz",
@@ -72,6 +80,7 @@
     "Jersey Drill"
   ],
   "aliases": {
+    "afrobeat": "Afrobeats",
     "rap": "Hip-Hop",
     "trap": "Hip-Hop",
     "hip hop": "Hip-Hop",
@@ -85,7 +94,6 @@
     "drum and bass": "Drum & Bass",
     "hard groove": "Hardgroove",
     "hard groove techno": "Hardgroove",
-    "afrobeats": "Afrobeat",
     "baile funk": "Baile",
     "nyc drill": "NY Drill",
     "new york drill": "NY Drill",
@@ -95,11 +103,19 @@
     "r&b drill": "Sexy Drill",
     "rnb drill": "Sexy Drill",
     "juke & footwork": "Juke",
-    "afro": "Afrobeat",
     "breakbeat": "Breaks",
-    "nu wave": "New Wave"
+    "nu wave": "New Wave",
+    "ballroom": "Ballroom Vogue",
+    "vogue": "Ballroom Vogue",
+    "nu disco": "Disco",
+    "nu r&b": "Alternative R&B",
+    "funk": "Funk & Soul",
+    "soul": "Funk & Soul",
+    "boogie": "Funk & Soul"
   },
-  "legacy_compounds_requiring_audio_review": [],
+  "legacy_compounds_requiring_audio_review": [
+    "Dub"
+  ],
   "target_excluded_folders": [
     "bae re work",
     "Imani Drops",
@@ -139,7 +155,9 @@
     "remixes": "Remix",
     "flip": "Remix",
     "bootleg": "Remix",
-    "World": "World"
+    "World": "World",
+    "Dance": "Dance",
+    "Club": "Club"
   },
   "compound_aliases": {
     "phunk": {
@@ -148,6 +166,30 @@
       ],
       "grouping": [
         "Phunk"
+      ]
+    },
+    "r&b throwbacks": {
+      "genres": [
+        "R&B"
+      ],
+      "grouping": [
+        "Throwback"
+      ]
+    },
+    "alternative hip hop": {
+      "genres": [
+        "Hip-Hop"
+      ],
+      "grouping": [
+        "Alternative"
+      ]
+    },
+    "jazzy house": {
+      "genres": [
+        "Deep House"
+      ],
+      "grouping": [
+        "Jazzy"
       ]
     }
   },
@@ -164,15 +206,17 @@
     "house": [
       "House",
       "Deep House",
+      "Tech House",
       "Bass House",
       "Afro House",
+      "Afro Tech",
       "Garage House"
     ],
     "regional_club": [
       "Jersey Club",
       "Baltimore Club",
       "Philly Club",
-      "Ballroom",
+      "Ballroom Vogue",
       "Bounce",
       "Groovy Bounce"
     ],
@@ -198,6 +242,7 @@
     ],
     "caribbean_latin": [
       "Latin",
+      "Latin Pop",
       "Cumbia",
       "Dembow",
       "Reggaeton",
@@ -206,12 +251,13 @@
       "Dancehall",
       "Riddim",
       "Reggae",
+      "Dub",
       "Soca",
       "Bouyon",
       "Kompa"
     ],
     "global_club": [
-      "Afrobeat",
+      "Afrobeats",
       "Amapiano",
       "Gqom",
       "Kuduro",
@@ -223,6 +269,7 @@
       "Alternative R&B",
       "Neo Soul",
       "Funk & Soul",
+      "Blues",
       "Disco",
       "Gospel",
       "Jazz"
@@ -238,6 +285,9 @@
       "Pop",
       "Dance Pop",
       "Rock",
+      "Classic Rock",
+      "Soft Rock",
+      "Pop Rock",
       "Alternative",
       "Country",
       "New Wave"

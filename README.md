@@ -37,7 +37,7 @@ repository. If any other document contradicts it, it wins. In short:
 
 ## Run a DJ Library Review when you choose
 
-The draft [manual DJ Library Review](references/manual-dj-library-review.md)
+The [manual DJ Library Review](references/manual-dj-library-review.md)
 adds a Mac double-click launcher (`DJ Library Review.command`) and one
 read-only report for a chosen `Downloads` or `music to move` folder,
 exact-byte duplicate review, optional Serato/Rekordbox snapshot drift,
@@ -46,7 +46,7 @@ and strictly evidence-limited normalized playback/event matching.
 There is no background watcher, automatic move, new database, retagging or
 app rewrite. Original History exports are fingerprinted only; their
 installed-version playback row formats remain to be verified on the Mac.
-See draft PR #44 stacked on #43 → #42. Nothing is active on `main` yet.
+Added by PR #44, which also carries #43 (time matching) and #46 (exact-identity play matching); #42 (drift) is on `main`.
 
 ## Active DJ integration work (source-only)
 
@@ -323,7 +323,7 @@ The reusable standalone prompt is available at `music-sort-prompt.md`. Session-s
   - `serato_index.py` / `rekordbox_index.py` — separately versioned, read-only relationship snapshot adapters for Serato's local data and Rekordbox's supported collection XML export.
   - `scan_library.py` / `build_plan.py` / `detect_bpm.py` — the read-only/preview half of the Genre/Remixer pipeline for flat SoundCloud/DJ-pool downloads, documented in `SKILL.md`. `apply_plan.py` is **hard-disabled** (read-only `--report` only); `reclassify.py` and `standardize_names.py` are **preview/plan builders only** — they no longer move or retag anything. Route those mutations through the engine family below.
   - `inventory_library.py` / `build_version_genre_plan.py` / `apply_version_genre_plan.py` — the Version+Genre pipeline actually used for the library cleanup in `handoff/`, generalized from nine near-duplicate per-folder scripts. Use this for the next source folder instead of writing a new one-off apply script.
-  - `build_grouping_plan.py` / `apply_grouping_plan.py`, `build_artist_title_plan.py` / `apply_artist_title_plan.py`, `build_year_bpm_plan.py` / `apply_year_bpm_plan.py` — the metadata-completeness pass, run against folders already sorted by the pipeline above.
+  - `build_grouping_plan.py` / `apply_grouping_plan.py` (plus `build_grouping_removal_plan.py` for owner-listed junk Grouping values), `build_artist_title_plan.py` / `apply_artist_title_plan.py`, `build_year_bpm_plan.py` / `apply_year_bpm_plan.py` — the metadata-completeness pass, run against folders already sorted by the pipeline above.
   - `delete_verified_duplicates.py` — the only deletion tool. Manual, human-approved pair list, and it refuses any pair that is not a proven EXACT_DUPLICATE (identical SHA-256).
   - `audit_library.py` / `run_verified_audit.py` — the read-only whole-library audit; `run_verified_audit.py` is the required entry point (see above).
   - `validate_year_evidence.py` — validates `references/year-evidence.json` / `references/release-year-evidence.json` entries have a source and evidence grade.

@@ -1,0 +1,43 @@
+{
+  "title": "World Music Atlas",
+  "source_url": "https://claude.ai/artifact/Q9M3vDxtAEwECRwAmEoGgf",
+  "retrieved_at": "2026-10-13",
+  "author": "unknown (public claude.ai artifact published outside this account's organization)",
+  "license": "unknown",
+  "source_html_sha256": "c984b1ee1959ca7e4e12aa8360463a9306dc88c8e0b8f34431e22a1dd9335d19",
+  "snapshot_sha256": "73d7516375adec7ea4d38be14f03ab05cf66cc5649ffed2dbccef1b9bb03a064",
+  "extraction": "scripts/genre_atlas.py extract: JSON array following 'const DATA = ' in the page, re-serialized with indent=1",
+  "evidence_grade": "unknown",
+  "use_policy": {
+    "genre_reference_only": true,
+    "never_evidence_for_a_track_tag": true,
+    "never_learner_training_data": true,
+    "crosswalk_links_require_human_curation": true,
+    "known_defects": [
+      "Same genre appears in several regions with conflicting eras (131 of 215 repeated names).",
+      "Many cards have no era or origin.",
+      "Keyword fields are noisy; substring matching produces false hits (e.g. 'twerk' inside 'Kraftwerk')."
+    ]
+  },
+  "field_legend": {
+    "n": "name",
+    "o": "origin (place)",
+    "y": "era (when the style took recognizable shape)",
+    "d": "description",
+    "rt": "roots (what it grew out of)",
+    "l": "artists to listen to",
+    "e": "example recordings ('Artist – Title')",
+    "k": "keywords",
+    "co": "countries",
+    "x": "cross-references to related genres",
+    "c": "child cards (sub-genres / scenes)"
+  },
+  "stats": {
+    "regions": 16,
+    "top_level_cards": 467,
+    "cards_total": 5047,
+    "max_depth": 3,
+    "cards_without_era": 1511,
+    "cards_without_origin": 2350
+  }
+}
