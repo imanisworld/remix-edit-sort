@@ -10,10 +10,12 @@ One working music library: download new tracks into an inbox, identify exact cop
 
 ## Active PRs — two ordered stacks, no merge authorization
 
+> **Update 2026-10-15:** the Genre and folders lane is done: #37, #41, #47, #49 and #55 (59 approved genre folders) are merged into `main`. This file's genre-lane notes below are historical. `LIBRARY-STATUS.md` is the live status.
+
 | Lane | Merge/review order | Verified scope |
 | --- | --- | --- |
 | **Genre and folders** | [#37](https://github.com/imanisworld/remix-edit-sort/pull/37) → [#41](https://github.com/imanisworld/remix-edit-sort/pull/41) | Reference Genre Atlas, proposed 76-Genre vocabulary, user review notes, two reconciled sorter pipelines, approved-later folder maps, and hashed **read-only** landing-promotion/Serato path previews |
-| **DJ source intelligence + one-run tool** | [#42](https://github.com/imanisworld/remix-edit-sort/pull/42) → [#43](https://github.com/imanisworld/remix-edit-sort/pull/43) → [#44](https://github.com/imanisworld/remix-edit-sort/pull/44) | Trusted Serato/Rekordbox **snapshot drift**, IANA/DST/overnight **candidate-only** time handling, and a manual `DJ Library Review.command` for download/inbox duplicates, missing tag review and private HTML/JSON evidence |
+| **DJ source intelligence + one-run tool** | [#42](https://github.com/imanisworld/remix-edit-sort/pull/42) → [#43](https://github.com/imanisworld/remix-edit-sort/pull/43) (now carries [#46](https://github.com/imanisworld/remix-edit-sort/pull/46): exact-identity play matching, `dj_event_playback_match.py`, and `preview_folder_rename.py`) → [#44](https://github.com/imanisworld/remix-edit-sort/pull/44) | Trusted Serato/Rekordbox **snapshot drift**, IANA/DST/overnight **candidate-only** time handling, and a manual `DJ Library Review.command` for download/inbox duplicates, missing tag review and private HTML/JSON evidence |
 
 - **#38, #39, #40 are CLOSED AS SUPERSEDED, unmerged.** #38's complete 27-comment operator-review record is preserved in #41. #39's corrected Atlanta Bass/Miami Bass and context routing is covered by stronger #41 tests; its old automatic compound-label assertions are intentionally not retained. #40's preview/policy/tests are incorporated and additionally hardened in #41. Their original source branches/history remain for reference.
 - #37 is open and **not approved to auto-retag a real track**. #41 remains draft, stacked on #37. Both Atlanta Bass and Miami Bass remain canonical and distinct. Historical Afrobeat versus Afrobeats, and several Funk/Soul/Boogie and compound decisions are held for human review.
