@@ -34,6 +34,27 @@ repository. If any other document contradicts it, it wins. In short:
 - SQLite library-index databases and journals
 - Backups, undo payloads, and per-run reports
 - Local credentials or configuration
+- Serato/rekordbox History exports staged for set building
+
+## Grok set-history staging (read-only)
+
+For building sets, Grok needs **official Serato/rekordbox History exports**
+(CSV/TXT/m3u/m3u8) — not crates, not collection XML, not binary `.session`
+files. See [references/grok-set-history.md](references/grok-set-history.md).
+
+```bash
+STAGE="$HOME/Documents/DJ-library-project-20260825/history-exports-for-grok"
+python3 scripts/dj_history_export_stage.py inventory \
+  --search "$HOME/Documents/DJ-library-project-20260825/history-exports/inbox" \
+  --json-out "$STAGE/last-inventory.json"
+
+python3 scripts/dj_history_export_stage.py stage \
+  --staging-dir "$STAGE" \
+  --search "$HOME/Documents/DJ-library-project-20260825/history-exports/inbox"
+```
+
+Staging copies only official export files into a private folder outside Music
+and outside Git, and writes `GROK-SET-HISTORY.md` + `manifest.json` for Grok.
 
 ## Run a DJ Library Review when you choose
 
