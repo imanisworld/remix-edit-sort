@@ -138,7 +138,7 @@ The repo-wide truth model lives in `scripts/duplicate_semantics.py`:
 | Verdict | Evidence required | May authorize deletion? |
 | --- | --- | --- |
 | `EXACT_DUPLICATE` | identical SHA-256 over the whole file | yes, and still only with human approval |
-| `AUDIO_EQUIVALENT` | strong audio-fingerprint match, bytes differ | no (nothing produces this yet) |
+| `AUDIO_EQUIVALENT` | Chromaprint match, bytes differ (`classify_audio_match`) | only under the owner audio-match rule (2026-10-15): same version markers + identical audio payload, or similarity ≥ 0.85 + durations within 3 s + lower-quality copy removed; human-approved list, `delete_verified_duplicates.py --mode audio-match` |
 | `RELATED_VERSION` | different version markers — Clean/Dirty/Intro/Extended/Remix/Edit/… | no, they are different tracks |
 | `REVIEW` | filename / title / duration similarity, in any combination | no |
 

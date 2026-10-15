@@ -9,6 +9,15 @@ deletion (not just at plan-build time), requires a pre-existing verified
 backup directory, and writes an append-only fsync'd undo log recording
 enough to restore (backup path + original path + hash) before removing
 anything.
+
+``--mode audio-match`` (owner rule approved 2026-10-15, see
+duplicate_semantics.py) accepts pairs whose bytes differ but whose audio is the
+same recording: identical audio payload, or Chromaprint >= 0.85 + durations
+within 3 s + same version markers + the removed copy lower quality. The rule is
+re-derived from fresh probes of BOTH files inside the engine transaction,
+immediately before each delete; the caller's claims are never trusted. The
+kept copy must exist. Backup, journal, rollback and undo are identical to the
+exact mode.
 """
 
 from __future__ import annotations
@@ -25,9 +34,12 @@ from datetime import datetime
 from pathlib import Path
 
 import backup_manifest
+import audio_fingerprint
 import duplicate_semantics
 import lock_guard
 import mutation_engine
+
+MODES = ("exact", "audio-match")
 
 
 def sha256_file(path: Path) -> str:
@@ -84,9 +96,60 @@ def load_and_validate(pairs_path: Path) -> list[dict]:
     return pairs
 
 
+def audio_match_verdict(delete_path: Path, keep_path: Path, probe) -> dict:
+    """Probe both files now and apply the owner audio-match rule."""
+    if not keep_path.is_file():
+        raise RuntimeError(f"keep-target missing, refusing: {keep_path}")
+    if delete_path.resolve() == keep_path.resolve():
+        raise RuntimeError(f"delete and keep are the same file: {delete_path}")
+    d, k = probe(delete_path), probe(keep_path)
+    sim = 1.0 if d["payload_sha256"] == k["payload_sha256"] else audio_fingerprint.similarity(
+        d["fingerprint"], k["fingerprint"])
+    verdict = duplicate_semantics.classify_audio_match(delete=d, keep=k, similarity=sim)
+    verdict["similarity"] = sim
+    return verdict
+
+
+def load_and_validate_audio_match(pairs_path: Path, probe) -> list[dict]:
+    pairs = json.loads(pairs_path.read_text(encoding="utf-8"))
+    errors = []
+    deletes = set()
+    for pair in pairs:
+        delete_path = Path(pair["delete"])
+        keep_path = Path(pair["keep"])
+        if str(delete_path.resolve()) in deletes:
+            errors.append(f"duplicate delete-target in pairs: {delete_path}")
+            continue
+        deletes.add(str(delete_path.resolve()))
+        if not delete_path.is_file():
+            errors.append(f"missing delete-target: {delete_path}")
+            continue
+        if sha256_file(delete_path) != pair["sha256"]:
+            errors.append(f"hash drifted from recorded value: {delete_path}")
+            continue
+        try:
+            verdict = audio_match_verdict(delete_path, keep_path, probe)
+        except Exception as exc:  # noqa: BLE001 - every refusal is reported
+            errors.append(str(exc))
+            continue
+        if not duplicate_semantics.may_authorize_audio_match_deletion(verdict):
+            errors.append(f"refusing: {delete_path} vs {keep_path}: {verdict['verdict']} ({verdict['reason']})")
+    # A file being kept may not also be deleted in the same run.
+    for pair in pairs:
+        if str(Path(pair["keep"]).resolve()) in deletes:
+            errors.append(f"keep-target is also a delete-target: {pair['keep']}")
+    if errors:
+        raise RuntimeError("Validation failed:\n" + "\n".join(errors))
+    return pairs
+
+
 def apply(pairs_path: Path, manifest: dict, source_root: Path, backup_root: Path,
-          out_dir: Path, label: str, heartbeat: lock_guard.LockHeartbeat) -> None:
-    pairs = load_and_validate(pairs_path)
+          out_dir: Path, label: str, heartbeat: lock_guard.LockHeartbeat,
+          mode: str = "exact", probe=None) -> None:
+    if mode not in MODES:
+        raise RuntimeError(f"unknown mode {mode!r}")
+    probe = probe or audio_fingerprint.probe
+    pairs = load_and_validate(pairs_path) if mode == "exact" else load_and_validate_audio_match(pairs_path, probe)
     stamp = datetime.now().astimezone().strftime("%Y%m%d-%H%M%S")
     undo_path = out_dir / f"{label}-undo-{stamp}.jsonl"
     result_path = out_dir / f"{label}-result-{stamp}.json"
@@ -119,14 +182,27 @@ def apply(pairs_path: Path, manifest: dict, source_root: Path, backup_root: Path
             source=delete_path,
             expected_sha256=pair["sha256"],
             backup_path=backup_path,
-            extra_intent={"kept": str(keep_path), "verdict": duplicate_semantics.EXACT_DUPLICATE},
+            extra_intent={"kept": str(keep_path), "mode": mode,
+                          "verdict": duplicate_semantics.EXACT_DUPLICATE if mode == "exact"
+                          else duplicate_semantics.AUDIO_EQUIVALENT},
         ) as txn:
             delete_hash = sha256_file(delete_path)
-            keep_hash = sha256_file(keep_path)
-            if delete_hash != keep_hash or delete_hash != pair["sha256"]:
-                raise RuntimeError(
-                    f"hash changed since validation, aborting before delete: {delete_path}"
-                )
+            if mode == "exact":
+                keep_hash = sha256_file(keep_path)
+                if delete_hash != keep_hash or delete_hash != pair["sha256"]:
+                    raise RuntimeError(
+                        f"hash changed since validation, aborting before delete: {delete_path}"
+                    )
+                evidence = {}
+            else:
+                if delete_hash != pair["sha256"]:
+                    raise RuntimeError(f"hash changed since validation, aborting before delete: {delete_path}")
+                verdict = audio_match_verdict(delete_path, keep_path, probe)
+                if not duplicate_semantics.may_authorize_audio_match_deletion(verdict):
+                    raise RuntimeError(
+                        f"audio-match rule no longer holds, aborting before delete: {delete_path}: {verdict['reason']}")
+                evidence = {"rule": duplicate_semantics.OWNER_AUDIO_MATCH_RULE,
+                            "similarity": verdict["similarity"], "reason": verdict["reason"]}
             txn.on_rollback(
                 lambda p=delete_path, b=backup_path, h=delete_hash:
                 mutation_engine.restore_from_backup(b, p, h)
@@ -146,6 +222,7 @@ def apply(pairs_path: Path, manifest: dict, source_root: Path, backup_root: Path
                 "kept": str(keep_path),
                 "sha256": delete_hash,
                 "backup": str(backup_path),
+                **evidence,
             }
             txn.record(kept=str(keep_path), sha256=delete_hash, backup=str(backup_path))
             with undo_path.open("a", encoding="utf-8") as handle:
@@ -158,6 +235,7 @@ def apply(pairs_path: Path, manifest: dict, source_root: Path, backup_root: Path
     kept_missing = [r["kept"] for r in completed if not Path(r["kept"]).is_file()]
     result = {
         "mode": f"{label}-apply",
+        "dedupe_mode": mode,
         "pairs_file": str(pairs_path),
         "backup_root": str(backup_root),
         "deleted_count": len(completed),
@@ -240,6 +318,8 @@ def main() -> None:
                         help="also require the manifest to carry PASS Serato backup evidence")
     parser.add_argument("--out-dir", type=Path, help="Where undo/result files land (defaults to pairs file's dir)")
     parser.add_argument("--label", default="dedup-delete", help="Prefix for undo/result files")
+    parser.add_argument("--mode", choices=MODES, default="exact",
+                        help="exact (identical SHA-256, default) or audio-match (owner rule 2026-10-15)")
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--undo", type=Path, help="Path to an undo .jsonl log to reverse")
     parser.add_argument("--lock-folder", help="Folder locked via folder_lock.py (required with --apply/--undo)")
@@ -276,10 +356,14 @@ def main() -> None:
         except backup_manifest.BackupGateError as exc:
             raise SystemExit(f"REFUSING TO MUTATE: {exc}") from exc
         apply(args.pairs, manifest, args.source_root.resolve(), args.backup_root.resolve(),
-              out_dir, args.label, heartbeat)
+              out_dir, args.label, heartbeat, mode=args.mode)
     else:
-        pairs = json.loads(args.pairs.read_text(encoding="utf-8"))
-        print(json.dumps({"mode": "dry-run", "pairs": len(pairs), "changes_made": 0}, indent=2))
+        if args.mode == "audio-match":
+            pairs = load_and_validate_audio_match(args.pairs, audio_fingerprint.probe)
+        else:
+            pairs = json.loads(args.pairs.read_text(encoding="utf-8"))
+        print(json.dumps({"mode": "dry-run", "dedupe_mode": args.mode, "pairs": len(pairs),
+                          "validated": args.mode == "audio-match", "changes_made": 0}, indent=2))
 
 
 if __name__ == "__main__":
