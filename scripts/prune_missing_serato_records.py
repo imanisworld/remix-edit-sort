@@ -717,74 +717,116 @@ def post_check(serato_dir, library_root, databases, prefix, drop_stale_membershi
             "held_remaining": held, "summary": again["summary"]}
 
 
+def _restore_prune_completed(target: Path, backup: Path, before: str, after: str, is_sqlite: bool) -> None:
+    """Recover a committed store without overwriting concurrent changes."""
+    target = Path(target)
+    if sr.sha256_file(target) != after:
+        raise PruneError(f"{target.name}: changed since apply; manual verified restore required")
+    if is_sqlite:
+        # A non-empty SQLite WAL can replay mutations over a restored backup.
+        sq.require_quiescent(target)
+        for side in sq.sidecar_paths(target).values():
+            if side.exists():
+                side.rename(side.with_name(f"{side.name}.discarded-{os.getpid()}"))
+    mutation_engine.restore_from_backup(Path(backup), target, before)
+    if sr.sha256_file(target) != before:
+        raise mutation_engine.MutationVerificationError(f"{target.name}: rollback hash mismatch")
+
+
 def apply_plan(*, plan, serato_dir, library_root, databases, serato_manifest, sqlite_manifest,
                heartbeat, journal_path, result_path, process_lister=None) -> dict:
     sr.require_serato_closed(process_lister)
     serato_dir = Path(serato_dir).resolve(); databases = {Path(d).name: Path(d).resolve() for d in databases}
     completed = []
-    entry = plan["database_v2"]
-    remove_idx = {r["outer_index"] for r in entry["records"] if r["action"] == "remove"}
-    if remove_idx:
-        engine = mutation_engine.MutationEngine(Path(journal_path), heartbeat, serato_manifest, serato_dir, PLAN_TYPE)
-        engine.start({"plan_type": PLAN_TYPE, "store": "database V2", "records": len(remove_idx)})
-        source = serato_dir / sr.DATABASE_NAME
-        new = prune_dbv2_bytes(source.read_bytes(), remove_idx)
-        if sr.sha256_bytes(new) != entry["proposed_sha256"]:
-            raise PruneError("database V2 drifted immediately before apply")
-        with engine.item(1, kind=mutation_engine.SERATO_PATHS, source=source,
-                         expected_sha256=entry["source_sha256"],
-                         extra_intent={"relative_path": sr.DATABASE_NAME, "records_removed": len(remove_idx)}) as txn:
-            backup = Path(txn.intent["backup_path"])
-            txn.on_rollback(lambda: mutation_engine.restore_from_backup(backup, source, entry["source_sha256"]))
-            _replace_database_v2(txn, source, new, entry["source_sha256"])
-            if sr.sha256_file(source) != entry["proposed_sha256"]:
-                raise mutation_engine.MutationVerificationError("database V2 post-write hash mismatch")
-            gone = {r["path"] for r in entry["records"] if r["action"] == "remove"}
-            if gone & {p for _, p in _dbv2_records(source.read_bytes()) if p}:
-                raise mutation_engine.MutationVerificationError("pruned database V2 path still present")
-            txn.record(relative_path=sr.DATABASE_NAME, after_sha256=entry["proposed_sha256"])
-        engine.finish({"records_removed": len(remove_idx)})
-        completed.append({"store": sr.DATABASE_NAME, "removed": len(remove_idx),
-                          "before_sha256": entry["source_sha256"], "after_sha256": entry["proposed_sha256"]})
-    sql_entries = [e for e in plan["sqlite"] if any(r["action"] == "remove" for r in e["rows"])]
-    if sql_entries:
-        library_dir = Path(sql_entries[0]["path"]).parent
-        engine = mutation_engine.MutationEngine(Path(f"{journal_path}.sqlite.jsonl"), heartbeat,
-                                                sqlite_manifest, library_dir, PLAN_TYPE)
-        engine.start({"plan_type": PLAN_TYPE, "store": "sqlite", "databases": [e["name"] for e in sql_entries]})
-        for i, e in enumerate(sql_entries, start=1):
-            database = databases[e["name"]]
-            rows = [r for r in e["rows"] if r["action"] == "remove"]
-            with engine.item(i, kind=mutation_engine.SERATO_PATHS, source=database, expected_sha256=e["sha256"],
-                             extra_intent={"relative_path": e["name"], "rows_removed": len(rows)}) as txn:
+    rollback_stack = []
+    try:
+        entry = plan["database_v2"]
+        remove_idx = {r["outer_index"] for r in entry["records"] if r["action"] == "remove"}
+        if remove_idx:
+            engine = mutation_engine.MutationEngine(Path(journal_path), heartbeat, serato_manifest, serato_dir, PLAN_TYPE)
+            engine.start({"plan_type": PLAN_TYPE, "store": "database V2", "records": len(remove_idx)})
+            source = serato_dir / sr.DATABASE_NAME
+            new = prune_dbv2_bytes(source.read_bytes(), remove_idx)
+            if sr.sha256_bytes(new) != entry["proposed_sha256"]:
+                raise PruneError("database V2 drifted immediately before apply")
+            with engine.item(1, kind=mutation_engine.SERATO_PATHS, source=source,
+                             expected_sha256=entry["source_sha256"],
+                             extra_intent={"relative_path": sr.DATABASE_NAME, "records_removed": len(remove_idx)}) as txn:
                 backup = Path(txn.intent["backup_path"])
+                txn.on_rollback(lambda: mutation_engine.restore_from_backup(backup, source, entry["source_sha256"]))
+                _replace_database_v2(txn, source, new, entry["source_sha256"])
+                if sr.sha256_file(source) != entry["proposed_sha256"]:
+                    raise mutation_engine.MutationVerificationError("database V2 post-write hash mismatch")
+                gone = {r["path"] for r in entry["records"] if r["action"] == "remove"}
+                if gone & {p for _, p in _dbv2_records(source.read_bytes()) if p}:
+                    raise mutation_engine.MutationVerificationError("pruned database V2 path still present")
+                txn.record(relative_path=sr.DATABASE_NAME, after_sha256=entry["proposed_sha256"])
+            # Roll back even if finish(), the next store or the final check fails.
+            rollback_stack.append((source, backup, entry["source_sha256"], entry["proposed_sha256"], False))
+            engine.finish({"records_removed": len(remove_idx)})
+            completed.append({"store": sr.DATABASE_NAME, "removed": len(remove_idx),
+                              "before_sha256": entry["source_sha256"], "after_sha256": entry["proposed_sha256"]})
+        sql_entries = [e for e in plan["sqlite"] if any(r["action"] == "remove" for r in e["rows"])]
+        if sql_entries:
+            library_dir = Path(sql_entries[0]["path"]).parent
+            engine = mutation_engine.MutationEngine(Path(f"{journal_path}.sqlite.jsonl"), heartbeat,
+                                                    sqlite_manifest, library_dir, PLAN_TYPE)
+            engine.start({"plan_type": PLAN_TYPE, "store": "sqlite", "databases": [e["name"] for e in sql_entries]})
+            for i, e in enumerate(sql_entries, start=1):
+                database = databases[e["name"]]
+                rows = [r for r in e["rows"] if r["action"] == "remove"]
+                with engine.item(i, kind=mutation_engine.SERATO_PATHS, source=database, expected_sha256=e["sha256"],
+                                 extra_intent={"relative_path": e["name"], "rows_removed": len(rows)}) as txn:
+                    backup = Path(txn.intent["backup_path"])
 
-                def restore(database=database, backup=backup, expected=e["sha256"]):
-                    for side in sq.sidecar_paths(database).values():
-                        if side.exists():
-                            side.rename(side.with_name(f"{side.name}.discarded-{os.getpid()}"))
-                    mutation_engine.restore_from_backup(backup, database, expected)
-                txn.on_rollback(restore)
-                sq.require_quiescent(database)
-                _delete_sqlite_rows(txn, database, rows)
-                ver = _verify_sqlite(database, e)
-                after = sr.sha256_file(database)
-                txn.record(relative_path=e["name"], after_sha256=after, rows_removed=len(rows))
-            completed.append({"store": e["name"], "removed": len(rows), "before_sha256": e["sha256"],
-                              "after_sha256": after, **ver})
-        engine.finish({"databases": len(sql_entries)})
-    if not completed:
-        raise PruneError("plan has nothing to remove")
-    check = post_check(serato_dir, library_root, list(databases.values()), plan.get("prefix"),
-                       bool(plan.get("drop_stale_memberships")), bool(plan.get("add_live_memberships")),
-                       bool(plan.get("drop_stale_smart_memberships")), plan.get("twin_map") or None,
-                       plan.get("keeper_map"))
-    result = {"status": check["status"], "plan_type": PLAN_TYPE, "completed": completed,
-              "post_check": check, "journal": str(journal_path)}
-    sr.write_json(result_path, result)
-    if check["status"] != "PASS":
-        raise PruneError(f"post-check failed; see {result_path}")
-    return result
+                    def restore(database=database, backup=backup, expected=e["sha256"]):
+                        for side in sq.sidecar_paths(database).values():
+                            if side.exists():
+                                side.rename(side.with_name(f"{side.name}.discarded-{os.getpid()}"))
+                        mutation_engine.restore_from_backup(backup, database, expected)
+                    txn.on_rollback(restore)
+                    sq.require_quiescent(database)
+                    _delete_sqlite_rows(txn, database, rows)
+                    ver = _verify_sqlite(database, e)
+                    after = sr.sha256_file(database)
+                    txn.record(relative_path=e["name"], after_sha256=after, rows_removed=len(rows))
+                rollback_stack.append((database, backup, e["sha256"], after, True))
+                completed.append({"store": e["name"], "removed": len(rows), "before_sha256": e["sha256"],
+                                  "after_sha256": after, **ver})
+            engine.finish({"databases": len(sql_entries)})
+        if not completed:
+            raise PruneError("plan has nothing to remove")
+        check = post_check(serato_dir, library_root, list(databases.values()), plan.get("prefix"),
+                           bool(plan.get("drop_stale_memberships")), bool(plan.get("add_live_memberships")),
+                           bool(plan.get("drop_stale_smart_memberships")), plan.get("twin_map") or None,
+                           plan.get("keeper_map"))
+        result = {"status": check["status"], "plan_type": PLAN_TYPE, "completed": completed,
+                  "post_check": check, "journal": str(journal_path)}
+        sr.write_json(result_path, result)
+        if check["status"] != "PASS":
+            raise PruneError(f"post-check failed; see {result_path}")
+        return result
+
+    except BaseException as exc:
+        # Earlier engine items have already committed. Recover every completed
+        # store in reverse order; the active item owns its own rollback handler.
+        failures = []
+        for target, backup, before, after, is_sqlite in reversed(rollback_stack):
+            try:
+                heartbeat.beat(force=True)
+                _restore_prune_completed(target, backup, before, after, is_sqlite)
+            except BaseException as rollback_exc:  # noqa: BLE001
+                failures.append({"store": str(target), "error": f"{type(rollback_exc).__name__}: {rollback_exc}"})
+        state = "PARTIAL" if failures else "ROLLED_BACK"
+        sr.write_json(Path(f"{journal_path}.rollback.json"),
+                      {"status": state, "completed_stores": len(rollback_stack),
+                       "errors": failures, "original_error": f"{type(exc).__name__}: {exc}"})
+        if failures:
+            sr.write_json(result_path, {"status": "PARTIAL", "rollback_errors": failures,
+                                        "action_required": "DO NOT OPEN SERATO; restore from verified backups.",
+                                        "journal": str(journal_path)})
+            raise PruneError(f"PARTIAL Serato cleanup; DO NOT OPEN SERATO. See {journal_path}.rollback.json") from exc
+        raise
 
 
 def undo(*, journal_path: Path, serato_dir, databases, serato_manifest, sqlite_manifest, heartbeat,
