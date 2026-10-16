@@ -46,6 +46,15 @@ they do not fabricate or trust an unverified restore path.
   removed copy is lower quality (lower bitrate, or keeper lossless). The kept
   copy must exist and the exact keep/remove list must be human-approved. Same
   backup, journal, rollback and undo as exact mode. Everything else stays REVIEW.
+  Tightened 2026-10-16 after a code review (a Clean copy could be removed for
+  its Dirty twin, because Chromaprint barely hears muted words): "same version"
+  also requires the same whole version labels (`(DJ A Edit)` ≠ `(DJ B Edit)`),
+  the same CLEAN/DIRTY-style folders and the same Clean/Dirty Grouping values;
+  the whole song is fingerprinted and every ~10 s stretch must match (≥ 0.75),
+  over ≥ 90% of the shorter file; the kept file is hash-pinned (`keep_sha256`);
+  a copy holding Serato cues the keeper lacks is kept; an unreadable bitrate is
+  REVIEW; `Imani Drops` and two names for one file are refused in both modes.
+  The dry run prints every pair's evidence for the approver.
 - **EXACT_DUPLICATE means identical SHA-256 over the whole file. Nothing else.**
   Filename, title, artist and duration similarity — in any combination, at any
   threshold — produce REVIEW at most. See `scripts/duplicate_semantics.py`.

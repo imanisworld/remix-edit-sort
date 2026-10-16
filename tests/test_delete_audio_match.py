@@ -1,5 +1,6 @@
 """Owner audio-match duplicate rule (2026-10-15) and its delete mode."""
 import json
+import os
 import shutil
 import sys
 import tempfile
@@ -113,6 +114,8 @@ class ApplyTests(unittest.TestCase):
         path = self.tmp / "pairs.json"
         path.write_text(json.dumps([{"delete": str(self.dele), "keep": str(keep or self.keep),
                                       "sha256": tool.sha256_file(self.dele),
+                                      "keep_sha256": tool.sha256_file(keep or self.keep)
+                                      if Path(keep or self.keep).is_file() else "0" * 64,
                                       "backup_relative": "Y2K/Song.flac"}]))
         return path
 
@@ -147,8 +150,10 @@ class ApplyTests(unittest.TestCase):
         path = self.tmp / "pairs.json"
         sha = tool.sha256_file(self.dele)
         path.write_text(json.dumps([
-            {"delete": str(self.dele), "keep": str(self.keep), "sha256": sha, "backup_relative": "Y2K/Song.flac"},
-            {"delete": str(self.keep), "keep": str(self.dele), "sha256": tool.sha256_file(self.keep), "backup_relative": "Pop/Song.flac"},
+            {"delete": str(self.dele), "keep": str(self.keep), "sha256": sha,
+             "keep_sha256": tool.sha256_file(self.keep), "backup_relative": "Y2K/Song.flac"},
+            {"delete": str(self.keep), "keep": str(self.dele), "sha256": tool.sha256_file(self.keep),
+             "keep_sha256": sha, "backup_relative": "Pop/Song.flac"},
         ]))
         with self.assertRaises(RuntimeError):
             tool.load_and_validate_audio_match(path, self.probe)
@@ -157,6 +162,112 @@ class ApplyTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             tool.apply(self.pairs(), self.manifest, self.lib, self.backup, self.out, "t", FakeHeartbeat())
         self.assertTrue(self.dele.exists())
+
+
+class ReviewFixTests(unittest.TestCase):
+    """2026-10-16 code review: versions that are not in the file name, edits that
+    share a marker word, late differences, unpinned keepers, Imani Drops."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory(); self.addCleanup(self._tmp.cleanup)
+        self.lib = Path(self._tmp.name) / "Music"
+
+    def flac(self, rel, grouping=None):
+        path = write_tiny(self.lib / rel, "flac")
+        if grouping:
+            audio = FLAC(path); audio["grouping"] = [grouping]; audio.save()
+        return path
+
+    def version_probe(self, path):
+        return {"markers": [], "payload_sha256": audio_payload.payload_digest(path).sha256 + "-" + str(path),
+                "duration": 200.0, "bitrate": 128000 if "CLEAN" in str(path) or "Low" in str(path) else 320000,
+                "lossless": False, "fingerprint": [7] * 400,
+                "version": {"labels": [], "folders": audio_fingerprint.version_folders(path),
+                            "grouping": audio_fingerprint.version_grouping(path)}}
+
+    def test_clean_folder_copy_is_never_removed_for_its_dirty_twin(self):
+        clean = self.flac("Hip Hop/CLEAN/Artist - Song.flac")
+        dirty = self.flac("Hip Hop/DIRTY/Artist - Song.flac")
+        verdict = tool.audio_match_verdict(clean, dirty, self.version_probe)
+        self.assertEqual(verdict["verdict"], ds.RELATED_VERSION)
+        self.assertFalse(ds.may_authorize_audio_match_deletion(verdict))
+
+    def test_clean_dirty_grouping_blocks_removal_but_energy_does_not(self):
+        a = self.flac("Pop/A/Song.flac", "Source: Pop Girl; Clean")
+        b = self.flac("Pop/B/Song.flac", "Source: Y2K; Dirty")
+        self.assertEqual(audio_fingerprint.version_grouping(a), ["clean"])
+        self.assertEqual(ds.classify_audio_match(delete=self.version_probe(a), keep=self.version_probe(b),
+                                                 similarity=0.99)["verdict"], ds.RELATED_VERSION)
+        c = self.flac("Pop/C/Song.flac", "Energy: Peak")
+        self.assertEqual(audio_fingerprint.version_grouping(c), [])
+
+    def test_different_edits_and_label_words_are_different_versions(self):
+        self.assertNotEqual(ds.version_labels("Song (DJ Scoob Edit)"), ds.version_labels("Song (Mike D Edit)"))
+        self.assertNotEqual(ds.version_labels("Song (Kaytranada Remix)"), ds.version_labels("Song (Disclosure Remix)"))
+        self.assertEqual(ds.version_labels("Song (DJ Scoob Edit)"), ds.version_labels("song [dj scoob edit]"))
+        for word in ("Main", "Amended", "Censored", "Club Mix", "Original Mix", "A Cappella", "Redrum", "NC"):
+            self.assertTrue(ds.version_markers(f"Song ({word})"), word)
+        d = probe_dict(payload_sha256="b", bitrate=128000, version={"labels": ["dj scoob edit"]})
+        k = probe_dict(version={"labels": ["mike d edit"]})
+        self.assertFalse(ds.may_authorize_audio_match_deletion(ds.classify_audio_match(delete=d, keep=k, similarity=0.99)))
+
+    def test_late_difference_and_short_overlap_are_review(self):
+        a = [(i * 2654435761) & 0xFFFFFFFF for i in range(2000)]
+        b = a[:1850] + [(x ^ 0xFFFFFFFF) for x in a[1850:]]           # last ~18 s differ
+        detail = audio_fingerprint.match_detail(a, b, max_offset=5)
+        self.assertGreater(detail["similarity"], ds.MIN_FINGERPRINT_SIMILARITY)
+        r = ds.classify_audio_match(delete=probe_dict(payload_sha256="b", bitrate=128000), keep=probe_dict(),
+                                    similarity=detail["similarity"], coverage=detail["coverage"],
+                                    min_window=detail["min_window"])
+        self.assertEqual(r["verdict"], ds.REVIEW)
+        self.assertEqual(audio_fingerprint.match_detail(a, a, max_offset=5)["min_window"], 1.0)
+
+    def test_serato_cues_only_on_removed_copy_and_unreadable_bitrate(self):
+        r = ds.classify_audio_match(delete=probe_dict(serato_cues=True, bitrate=128000), keep=probe_dict(),
+                                    similarity=1.0)
+        self.assertFalse(ds.may_authorize_audio_match_deletion(r))
+        r = ds.classify_audio_match(delete=probe_dict(payload_sha256="b", bitrate=0), keep=probe_dict(), similarity=0.99)
+        self.assertEqual(r["verdict"], ds.REVIEW)
+
+    def _pairs(self, delete, keep, **extra):
+        path = self.lib.parent / "pairs.json"
+        pair = {"delete": str(delete), "keep": str(keep), "sha256": tool.sha256_file(delete),
+                "keep_sha256": tool.sha256_file(keep), "backup_relative": "x"}
+        pair.update(extra)
+        path.write_text(json.dumps([pair]))
+        return path
+
+    def test_imani_drops_refused_in_both_modes(self):
+        keep = self.flac("Pop/Song.flac"); drop = self.flac("Imani Drops/Song.flac")
+        with self.assertRaisesRegex(RuntimeError, "Imani Drops"):
+            tool.load_and_validate(self._pairs(drop, keep))
+        with self.assertRaisesRegex(RuntimeError, "Imani Drops"):
+            tool.load_and_validate_audio_match(self._pairs(drop, keep), self.version_probe)
+
+    def test_same_file_under_two_names_refused(self):
+        keep = self.flac("Pop/Song.flac"); alias = self.lib / "Pop" / "song-alias.flac"
+        os.link(keep, alias)
+        with self.assertRaisesRegex(RuntimeError, "same file"):
+            tool.load_and_validate(self._pairs(alias, keep))
+        with self.assertRaisesRegex(RuntimeError, "same file"):
+            tool.load_and_validate_audio_match(self._pairs(alias, keep), self.version_probe)
+
+    def test_keeper_must_be_pinned_and_unchanged(self):
+        dele = self.flac("Pop/Low/Song.flac"); keep = self.flac("Pop/Hi/Song.flac")
+        pairs = self._pairs(dele, keep, keep_sha256="")
+        with self.assertRaisesRegex(RuntimeError, "keep_sha256"):
+            tool.load_and_validate_audio_match(pairs, self.version_probe)
+        pairs = self._pairs(dele, keep)
+        audio = FLAC(keep); audio["title"] = ["retagged"]; audio.save()
+        with self.assertRaisesRegex(RuntimeError, "changed since approval"):
+            tool.load_and_validate_audio_match(pairs, self.version_probe)
+
+    def test_dry_run_report_shows_evidence_and_never_raises(self):
+        clean = self.flac("Hip Hop/CLEAN/Song.flac"); dirty = self.flac("Hip Hop/DIRTY/Song.flac")
+        rows = tool.audio_match_report(self._pairs(clean, dirty), self.version_probe)
+        self.assertEqual(len(rows), 1); self.assertFalse(rows[0]["removable"])
+        self.assertEqual(rows[0]["verdict"], ds.RELATED_VERSION)
+        self.assertIn("folders", rows[0]["version"])
 
 
 if __name__ == "__main__":

@@ -28,10 +28,19 @@ What it never touches
 
 A missing record is removed only when it is EITHER
 * ``live_twin``: another record in the same store has the same filename and that
-  file exists (a stale duplicate of a live track), OR
+  file exists (a stale duplicate of a live track), AND it is the ONLY such live
+  record (or ``--twin-map`` names it as where this old path went), AND every file
+  with that name under the library already has a record, OR
 * ``truly_missing``: no file with that filename exists anywhere under the library.
-A missing record whose filename exists elsewhere but has no live record is
-``moved_unindexed`` and HELD (relocate it in Serato instead).
+A ``live_twin`` that fails those checks is HELD: same-name files can be different
+songs (Goapele "Closer" vs Ayotemi "Closer"), and a moved file with no record yet
+must not lose its old record to another song's.  A missing record whose filename
+exists elsewhere but has no live record is ``moved_unindexed`` and HELD (relocate
+it in Serato instead).
+
+"Exists" and "same filename" ignore letter case and Unicode composition (NFC vs
+NFD), as APFS does: a record Serato can still open is never pruned because its
+stored spelling differs from the name on disk.
 
 Default run writes a hash-bound plan and changes nothing.  ``--apply`` needs that
 plan, the lock, PASS backup manifests for the Serato dir and the SQLite dir,
@@ -53,7 +62,8 @@ import os
 import re
 import sqlite3
 import sys
-from collections import Counter
+import unicodedata
+from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path
 
@@ -65,7 +75,7 @@ import rewrite_serato_paths as sr
 import rewrite_serato_sqlite_paths as sq
 
 PLAN_TYPE = "serato-prune-missing-records"
-PLAN_VERSION = 5
+PLAN_VERSION = 6
 REMOVABLE = ("live_twin", "truly_missing")
 
 
@@ -76,8 +86,9 @@ class PruneError(sr.SeratoRewriteError):
 def _norm_prefix(library_root: Path, prefix: str | None) -> str | None:
     if not prefix:
         return None
-    p = prefix.strip().strip("/")
-    if not p or ".." in Path(p).parts:
+    # Only slashes are trimmed: real folder names can end in a space ("Amapiano ").
+    p = prefix.strip("/")
+    if not p.strip() or ".." in Path(p).parts:
         raise PruneError(f"invalid --prefix: {prefix!r}")
     return f"{str(Path(library_root).resolve()).lstrip('/')}/{p}/"
 
@@ -88,23 +99,93 @@ def _in_scope(path: str, scope: str | None, library_stored: str) -> bool:
     return path.startswith(library_stored + "/")
 
 
+def _fold(text: str) -> str:
+    """APFS-style name identity: Unicode composition and letter case ignored."""
+    return unicodedata.normalize("NFC", text).casefold()
+
+
+def _name(path: str) -> str:
+    return _fold(path.rsplit("/", 1)[-1])
+
+
 class Classifier:
     def __init__(self, library_root: Path):
         self.literal = sq.LiteralFiles()
         self.index = check_serato_crate_paths.build_filename_index(Path(library_root))
+        self.by_name: dict[str, set[str]] = defaultdict(set)
+        for name, paths in self.index.items():
+            self.by_name[_fold(name)].update(_fold(str(p)) for p in paths)
+        self._dirs: dict[str, dict[str, list[tuple[str, bool, bool]]]] = {}
+
+    def _listing(self, directory: str) -> dict[str, list[tuple[str, bool, bool]]]:
+        if directory not in self._dirs:
+            names: dict[str, list[tuple[str, bool, bool]]] = defaultdict(list)
+            try:
+                with os.scandir(directory) as entries:
+                    for entry in entries:
+                        try:
+                            names[_fold(entry.name)].append(
+                                (entry.name, entry.is_dir(), entry.is_file(follow_symlinks=False)))
+                        except OSError:
+                            continue
+            except OSError:
+                pass
+            self._dirs[directory] = names
+        return self._dirs[directory]
+
+    def _folded_is_file(self, path: str) -> bool:
+        parts = check_serato_crate_paths.resolve(path).parts
+        current = [parts[0]]
+        for depth, part in enumerate(parts[1:], start=1):
+            last = depth == len(parts) - 1
+            following = []
+            for directory in current:
+                for name, is_dir, is_file in self._listing(directory).get(_fold(part), []):
+                    if last and is_file:
+                        return True
+                    if not last and is_dir:
+                        following.append(os.path.join(directory, name))
+            if not following:
+                return False
+            current = following
+        return False
 
     def exists(self, path: str) -> bool:
-        return self.literal.is_file(path)
+        return self.literal.is_file(path) or self._folded_is_file(path)
 
     def classify(self, path: str, store_paths: set[str]) -> str:
         if self.exists(path):
             return "present"
-        name = path.rsplit("/", 1)[-1]
-        if any(o != path and o.rsplit("/", 1)[-1] == name and self.exists(o) for o in store_paths):
+        name = _name(path)
+        if any(o != path and _name(o) == name and self.exists(o) for o in store_paths):
             return "live_twin"
-        if self.index.get(name):
+        if self.by_name.get(name):
             return "moved_unindexed"
         return "truly_missing"
+
+    def twin_hold_reason(self, path: str, store_paths: set[str], twin_map: dict | None = None) -> str | None:
+        """None when a ``live_twin`` record may go; otherwise why it is held.
+
+        It may go only when it has exactly one live same-name record (the move
+        map's target when the map covers it) and no file of that name lacks a
+        record: otherwise the "twin" can be a different song, or this record's
+        own moved file can be the one without a record."""
+        name = _name(path)
+        twins = sorted(o for o in store_paths if o != path and _name(o) == name and self.exists(o))
+        if twin_map and path in twin_map:
+            target = _fold(twin_map[path])
+            chosen = [o for o in twins if _fold(o) == target]
+            if len(chosen) != 1:
+                return f"move map target {twin_map[path]!r} matches {len(chosen)} live records (need exactly 1)"
+            return None
+        if len(twins) != 1:
+            return f"{len(twins)} live records share this file name (need exactly 1): {twins[:5]}"
+        recorded = {_fold(str(check_serato_crate_paths.resolve(o))) for o in twins}
+        unrecorded = self.by_name.get(name, set()) - recorded
+        if unrecorded:
+            return (f"{len(unrecorded)} file(s) with this name have no record; "
+                    "this record may belong to one of them")
+        return None
 
 
 # ------------------------------------------------------------ database V2
@@ -283,14 +364,16 @@ def _plan_add(conn, stale_ca_id, cid, twin_id, next_order) -> dict | str:
 def _membership_decision(conn, rowid, path, astore_rows, cls, add_live=False, next_order=None,
                          drop_smart=False, twin_map=None) -> dict:
     name = path.rsplit("/", 1)[-1]
-    twins = [(r, p) for r, p in astore_rows if r != rowid and p.rsplit("/", 1)[-1] == name and cls.exists(p)]
+    twins = [(r, p) for r, p in astore_rows if r != rowid and _name(p) == _name(path) and cls.exists(p)]
     out = {"live_twin_rowids": [r for r, _ in twins], "live_twin_paths": [p for _, p in twins]}
-    if len(twins) > 1 and twin_map and path in twin_map:
-        # Several live files share the name: pick the one the approved move map
-        # says this old path became.  It must be exactly one live record.
-        chosen = [(r, p) for r, p in twins if p == twin_map[path]]
+    if twin_map and path in twin_map:
+        # The approved move map says where this old path went: only that live
+        # record may inherit its crates, even when it is the only same-name one.
+        chosen = [(r, p) for r, p in twins if _fold(p) == _fold(twin_map[path])]
         if len(chosen) == 1:
-            twins = chosen; out["twin_chosen_by"] = "move map"
+            twins = chosen
+            if len(out["live_twin_rowids"]) > 1:
+                out["twin_chosen_by"] = "move map"
         else:
             out["ok"] = False
             out["why"] = f"move map target {twin_map[path]!r} matches {len(chosen)} live records (need exactly 1)"
@@ -388,6 +471,9 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
             continue
         action = "remove" if c in REMOVABLE else "hold"
         reason = c
+        why = cls.twin_hold_reason(path, store, twin_map) if c == "live_twin" else None
+        if why:
+            action, reason = "hold", f"{c}; held: {why}"
         if action == "remove" and crates.get(path):
             action, reason = "hold", f"{c}; {crates[path]} crate ref(s) (crates are never edited)"
         dbv2_rows.append({"outer_index": idx, "path": path, "class": c, "action": action,
@@ -419,6 +505,9 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
                 crate_mem = {k: v for k, v in mem.items() if "container" in k}
                 action = "remove" if c in REMOVABLE else "hold"; reason = c
                 drop = None; decision = None
+                why = cls.twin_hold_reason(path, astore, twin_map) if c == "live_twin" else None
+                if why:
+                    action, reason = "hold", f"{c}; held: {why}"
                 if action == "remove" and crate_mem:
                     action, reason = "hold", f"{c}; still in a Serato container {crate_mem}"
                     if drop_stale_memberships and c == "live_twin":
@@ -678,6 +767,8 @@ def undo(*, journal_path: Path, serato_dir, databases, serato_manifest, sqlite_m
          undo_journal: Path, process_lister=None) -> dict:
     """Restore every completed file of a prune run from its verified backup copy."""
     sr.require_serato_closed(process_lister)
+    if Path(f"{journal_path}.sqlite.jsonl").exists() and not databases:
+        raise PruneError("this run changed SQLite databases: --undo needs the same --sqlite-db arguments")
     restored = []
     for jp, root, manifest, label in (
         (Path(journal_path), Path(serato_dir).resolve(), serato_manifest, "serato"),
@@ -697,6 +788,12 @@ def undo(*, journal_path: Path, serato_dir, databases, serato_manifest, sqlite_m
             with engine.item(rec["index"], kind=mutation_engine.SERATO_PATHS, source=target,
                              expected_sha256=rec["after_sha256"], require_backup=False,
                              extra_intent={"undo_of": str(jp), "restore_from": str(backup)}) as txn:
+                if label == "sqlite":
+                    # A non-empty WAL would replay on top of the restored file.
+                    sq.require_quiescent(target)
+                    for side in sq.sidecar_paths(target).values():
+                        if side.exists():
+                            side.rename(side.with_name(f"{side.name}.discarded-{os.getpid()}"))
                 txn.mark_mutated()
                 mutation_engine.restore_from_backup(backup, target, rec["before_sha256"])
                 txn.record(restored_sha256=sr.sha256_file(target))
