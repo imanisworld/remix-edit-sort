@@ -101,6 +101,8 @@ Nothing here has been run on the live library. Needs the owner's explicit go.
 #     no duplicates) to each NORMAL crate it is missing from. Smart crates (smart_crate_rules) are never
 #     inserted into: a row whose live copy is missing from a smart crate is HELD and the crate is reported.
 #     Apply verifies every original membership is unchanged and the live copy is in all former containers.
+#     --drop-stale-smart-memberships (owner-approved 2026-10-16): smart-crate memberships of such a row may be
+#     dropped without the live copy (smart crates rebuild from rules). Regular crates keep the rule above.
 #     Undo: --undo --journal <journal>. History/session files are never touched.
 # 1. Read-only previews. Build ALL of them first; the SQLite preview must be built
 #    BEFORE the folders are renamed (it records which rows were already stale).

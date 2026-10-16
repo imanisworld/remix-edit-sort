@@ -231,8 +231,8 @@ class MembershipCase(unittest.TestCase):
             c.close()
         self.dbs = [self.master, self.root]
 
-    def plan(self, flag=True, add=False):
-        return prune.build_plan(self.serato, self.music, self.dbs, "Afrobeat/", flag, add)
+    def plan(self, flag=True, add=False, smart=False):
+        return prune.build_plan(self.serato, self.music, self.dbs, "Afrobeat/", flag, add, smart)
 
     def apply(self, plan):
         sm, qm = self.manifests()
@@ -388,6 +388,49 @@ class MembershipCase(unittest.TestCase):
         c.execute("INSERT INTO container_asset (revision, container_id, space_asset_id, list_order) VALUES (5,3,2,999)"); c.close()
         with self.assertRaises(prune.PruneError):
             prune.load_and_validate_plan(path, self.serato, self.music, self.dbs)
+
+
+    def test_smart_flag_requires_drop_flag(self):
+        with self.assertRaises(prune.PruneError):
+            self.plan(False, False, True)
+
+    def test_smart_flag_drops_smart_without_live_and_undo_exact(self):
+        self.make_smart(3)
+        before = {d: (sha(d), self.memberships(d)) for d in self.dbs}
+        plan = self.plan(smart=True)
+        for name in ("root.sqlite", "master.sqlite"):
+            r = self.rows(plan, name)[self.stale_b]
+            self.assertEqual(r["action"], "remove")
+            self.assertEqual(r["membership_check"]["smart_dropped_without_live"], ["Unsorted"])
+            self.assertEqual(plan["summary"][f"{name}_memberships_added"], 0)
+            self.assertEqual(plan["summary"][f"{name}_smart_memberships_dropped_without_live"], 1)
+            self.assertEqual(self.rows(plan, name)[self.gone]["action"], "hold")
+        res, sm, qm = self.apply(plan)
+        self.assertEqual(res["status"], "PASS")
+        for d in self.dbs:
+            after = self.memberships(d)
+            stale_ids = {m[0] for m in before[d][1] if m[3] in (3, 4)}
+            self.assertEqual(after, [m for m in before[d][1] if m[0] not in stale_ids])   # nothing inserted
+        prune.undo(journal_path=self.tmp / "j.jsonl", serato_dir=self.serato, databases=self.dbs,
+                   serato_manifest=sm, sqlite_manifest=qm, heartbeat=FakeHeartbeat(),
+                   undo_journal=self.tmp / "undo", process_lister=NO_SERATO)
+        self.assertEqual(before, {d: (sha(d), self.memberships(d)) for d in self.dbs})
+
+    def test_smart_flag_does_not_relax_regular_crates(self):
+        plan = self.plan(smart=True)      # container 3 is a regular crate here
+        for name in ("root.sqlite", "master.sqlite"):
+            r = self.rows(plan, name)[self.stale_b]
+            self.assertEqual(r["action"], "hold")
+            self.assertEqual(r["membership_check"]["smart_dropped_without_live"], [])
+
+    def test_two_live_copies_reported_with_paths(self):
+        extra = self.music / "Dancehall" / "a.mp3"; extra.parent.mkdir(parents=True); extra.write_bytes(b"x")
+        for d in self.dbs:
+            c = sqlite3.connect(str(d), isolation_level=None)
+            c.execute("INSERT INTO asset (portable_id) VALUES (?)", (stored(extra),)); c.close()
+        r = self.rows(self.plan(add=True, smart=True), "root.sqlite")[self.stale_a]
+        self.assertEqual(r["action"], "hold")
+        self.assertEqual(sorted(r["membership_check"]["live_twin_paths"]), sorted([self.live_a, stored(extra)]))
 
 
 if __name__ == "__main__":

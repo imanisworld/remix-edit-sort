@@ -65,7 +65,7 @@ import rewrite_serato_paths as sr
 import rewrite_serato_sqlite_paths as sq
 
 PLAN_TYPE = "serato-prune-missing-records"
-PLAN_VERSION = 3
+PLAN_VERSION = 4
 REMOVABLE = ("live_twin", "truly_missing")
 
 
@@ -280,10 +280,11 @@ def _plan_add(conn, stale_ca_id, cid, twin_id, next_order) -> dict | str:
     return {"values": values}
 
 
-def _membership_decision(conn, rowid, path, astore_rows, cls, add_live=False, next_order=None) -> dict:
+def _membership_decision(conn, rowid, path, astore_rows, cls, add_live=False, next_order=None,
+                         drop_smart=False) -> dict:
     name = path.rsplit("/", 1)[-1]
     twins = [(r, p) for r, p in astore_rows if r != rowid and p.rsplit("/", 1)[-1] == name and cls.exists(p)]
-    out = {"live_twin_rowids": [r for r, _ in twins]}
+    out = {"live_twin_rowids": [r for r, _ in twins], "live_twin_paths": [p for _, p in twins]}
     if len(twins) != 1:
         out["ok"] = False; out["why"] = f"{len(twins)} live twin records (need exactly 1)"; return out
     stale = _membership_rows(conn, rowid); live = _membership_rows(conn, twins[0][0])
@@ -295,13 +296,13 @@ def _membership_decision(conn, rowid, path, astore_rows, cls, add_live=False, ne
         conts.append({"container_asset_id": ca_id, "container_id": cid,
                       "container": _container_label(conn, cid), "live_copy_present": cid in live_c})
     lacking = sorted({c["container"] for c in conts if not c["live_copy_present"]})
-    adds, smart, blocked, seen = [], [], [], set()
+    adds, smart, smart_dropped, blocked, seen = [], [], [], [], set()
     for c in conts:
         if c["live_copy_present"] or c["container_id"] in seen:
             continue
         seen.add(c["container_id"])
         if _is_smart(conn, c["container_id"]):
-            smart.append(c["container"]); continue
+            (smart_dropped if drop_smart else smart).append(c["container"]); continue
         if not add_live:
             blocked.append(f"{c['container']}: live copy missing"); continue
         spec = _plan_add(conn, c["container_asset_id"], c["container_id"], twins[0][0],
@@ -320,7 +321,10 @@ def _membership_decision(conn, rowid, path, astore_rows, cls, add_live=False, ne
             bits.append(f"live copy missing from {len(blocked)} container(s): {blocked}")
         why = "; ".join(bits)
     out.update(containers=conts, live_twin_path=twins[0][1], live_twin_rowid=twins[0][0], lacking=lacking,
-               smart_lacking=sorted(smart), blocked=blocked, adds=adds if ok else [], ok=ok, why=why)
+               smart_lacking=sorted(smart), smart_dropped_without_live=sorted(smart_dropped),
+               smart_dropped_ids=sorted({c["container_id"] for c in conts
+                                         if not c["live_copy_present"] and c["container"] in smart_dropped}),
+               blocked=blocked, adds=adds if ok else [], ok=ok, why=why)
     return out
 
 
@@ -341,7 +345,10 @@ def _has_table(conn, name) -> bool:
 # ------------------------------------------------------------ preview
 
 def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], prefix: str | None,
-               drop_stale_memberships: bool = False, add_live_memberships: bool = False) -> dict:
+               drop_stale_memberships: bool = False, add_live_memberships: bool = False,
+               drop_stale_smart_memberships: bool = False) -> dict:
+    if drop_stale_smart_memberships and not drop_stale_memberships:
+        raise PruneError("--drop-stale-smart-memberships needs --drop-stale-memberships")
     if add_live_memberships and not drop_stale_memberships:
         raise PruneError("--add-live-memberships needs --drop-stale-memberships")
     serato_dir = Path(serato_dir).resolve(); library_root = Path(library_root).resolve()
@@ -399,7 +406,8 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
                     if drop_stale_memberships and c == "live_twin":
                         order_snapshot = dict(next_order)
                         decision = _membership_decision(conn, rowid, path, astore_rows, cls,
-                                                        add_live_memberships, next_order)
+                                                        add_live_memberships, next_order,
+                                                        drop_stale_smart_memberships)
                         if not decision["ok"]:
                             next_order.clear(); next_order.update(order_snapshot)  # held rows reserve no positions
                         resolved = len(decision.get("containers", []))
@@ -443,6 +451,8 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
     for e in db_entries:
         summary[f"{e['name']}_remove"] = sum(r["action"] == "remove" for r in e["rows"])
         summary[f"{e['name']}_memberships_added"] = e["planned_adds"]
+        summary[f"{e['name']}_smart_memberships_dropped_without_live"] = sum(
+            len(r.get("membership_check", {}).get("smart_dropped_ids", [])) for r in e["rows"] if r["action"] == "remove")
         summary[f"{e['name']}_memberships_dropped"] = sum(len(r.get("drop_container_asset_ids", []))
                                                           for r in e["rows"] if r["action"] == "remove")
     return {
@@ -451,6 +461,7 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
         "serato_dir": str(serato_dir), "library_root": str(library_root), "prefix": prefix,
         "drop_stale_memberships": bool(drop_stale_memberships),
         "add_live_memberships": bool(add_live_memberships),
+        "drop_stale_smart_memberships": bool(drop_stale_smart_memberships),
         "database_v2": dbv2_entry, "sqlite": db_entries, "summary": dict(sorted(summary.items())),
     }
 
@@ -465,7 +476,8 @@ def load_and_validate_plan(plan_path: Path, serato_dir, library_root, databases)
     if plan.get("plan_type") != PLAN_TYPE or plan.get("plan_version") != PLAN_VERSION:
         raise PruneError("not a prune plan")
     rebuilt = build_plan(serato_dir, library_root, databases, plan.get("prefix"),
-                         bool(plan.get("drop_stale_memberships")), bool(plan.get("add_live_memberships")))
+                         bool(plan.get("drop_stale_memberships")), bool(plan.get("add_live_memberships")),
+                       bool(plan.get("drop_stale_smart_memberships")))
     if _comparable(rebuilt) != _comparable(plan):
         raise PruneError("plan no longer matches current Serato files; rebuild the dry run")
     return plan
@@ -550,7 +562,7 @@ def _verify_sqlite(database: Path, entry: dict) -> dict:
                 if r["action"] != "remove" or not mc:
                     continue
                 now_in = {c for _, c in (_membership_rows(conn, mc["live_twin_rowid"]) or [])}
-                missing = {c["container_id"] for c in mc["containers"]} - now_in
+                missing = {c["container_id"] for c in mc["containers"]} - now_in - set(mc.get("smart_dropped_ids", []))
                 if missing:
                     raise mutation_engine.MutationVerificationError(
                         f"{database.name}: live copy of {r['path']} not in former container(s) {sorted(missing)}")
@@ -562,8 +574,9 @@ def _verify_sqlite(database: Path, entry: dict) -> dict:
     return {"rows_removed": len(removed), "foreign_key_check_rows": len(fk)}
 
 
-def post_check(serato_dir, library_root, databases, prefix, drop_stale_memberships=False, add_live=False) -> dict:
-    again = build_plan(serato_dir, library_root, databases, prefix, drop_stale_memberships, add_live)
+def post_check(serato_dir, library_root, databases, prefix, drop_stale_memberships=False, add_live=False,
+               drop_smart=False) -> dict:
+    again = build_plan(serato_dir, library_root, databases, prefix, drop_stale_memberships, add_live, drop_smart)
     remaining = again["summary"].get("database_v2_remove", 0) + sum(
         again["summary"].get(f"{Path(d).name}_remove", 0) for d in databases)
     held = sum(1 for r in again["database_v2"]["records"] if r["action"] == "hold") + sum(
@@ -631,7 +644,8 @@ def apply_plan(*, plan, serato_dir, library_root, databases, serato_manifest, sq
     if not completed:
         raise PruneError("plan has nothing to remove")
     check = post_check(serato_dir, library_root, list(databases.values()), plan.get("prefix"),
-                       bool(plan.get("drop_stale_memberships")), bool(plan.get("add_live_memberships")))
+                       bool(plan.get("drop_stale_memberships")), bool(plan.get("add_live_memberships")),
+                       bool(plan.get("drop_stale_smart_memberships")))
     result = {"status": check["status"], "plan_type": PLAN_TYPE, "completed": completed,
               "post_check": check, "journal": str(journal_path)}
     sr.write_json(result_path, result)
@@ -691,6 +705,10 @@ def main() -> int:
     ap.add_argument("--drop-stale-memberships", action="store_true",
                     help="allow removing a live_twin SQLite row together with its container memberships, "
                          "only when its single live twin is already in every one of those containers")
+    ap.add_argument("--drop-stale-smart-memberships", action="store_true",
+                    help="with --drop-stale-memberships: a stale live_twin row's memberships in SMART crates may be "
+                         "dropped even if the live copy is not there yet (smart crates rebuild from their rules); "
+                         "regular crates still need the live copy (or --add-live-memberships)")
     ap.add_argument("--add-live-memberships", action="store_true",
                     help="with --drop-stale-memberships: first add the live twin to each normal (non-smart) crate "
                          "it is missing from, appended at the end; smart crates are reported, never inserted into")
@@ -700,7 +718,7 @@ def main() -> int:
             if not a.out:
                 raise PruneError("dry run needs --out")
             plan = build_plan(a.serato_dir, a.library_root, a.sqlite_db, a.prefix, a.drop_stale_memberships,
-                              a.add_live_memberships)
+                              a.add_live_memberships, a.drop_stale_smart_memberships)
             sr.write_json(a.out, plan)
             print(json.dumps({"status": "DRY-RUN", **plan["summary"], "plan": str(a.out)}, indent=2))
             return 0
