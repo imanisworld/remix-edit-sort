@@ -68,6 +68,7 @@ removable.
 from __future__ import annotations
 
 import re
+import unicodedata
 
 SAFETY_CLASSIFICATION = "read-only"
 
@@ -89,6 +90,10 @@ VERSION_MARKERS = (
     "instrumental", "instrumentals", "acapella", "acappella", "a capella",
     "live", "dub", "mixshow", "quick hit", "quickhit", "transition",
     "hype", "slowed", "sped up", "spedup", "chopped", "screwed",
+    # Added 2026-10-16 (code review): common DJ-pool / label version names.
+    "main", "amended", "censored", "uncensored", "a cappella", "inst", "redrum",
+    "mashup", "mash up", "blend", "club mix", "original mix", "radio mix", "nc",
+    "remixes", "edits", "intros", "acapellas", "remaster", "remastered", "snippet",
 )
 
 _MARKER_RX = re.compile(
@@ -100,6 +105,25 @@ _MARKER_RX = re.compile(
 def version_markers(name: str) -> frozenset[str]:
     """Version markers present in a filename or title, casefolded."""
     return frozenset(match.group(1).casefold() for match in _MARKER_RX.finditer(name or ""))
+
+
+_SEGMENT_RX = re.compile(r"\(([^()]*)\)|\[([^\[\]]*)\]|\s-\s([^-()\[\]]+)$")
+
+
+def _normalize_label(text: str) -> str:
+    return " ".join(re.sub(r"[^0-9a-z]+", " ", unicodedata.normalize("NFC", text).casefold()).split())
+
+
+def version_labels(name: str) -> list[str]:
+    """Every bracketed or trailing " - X" part of a name that names a version,
+    normalized but otherwise whole: "(DJ Scoob Edit)" and "(Mike D Edit)" stay
+    different even though both carry the marker "edit"."""
+    labels = []
+    for match in _SEGMENT_RX.finditer(name or ""):
+        text = next(group for group in match.groups() if group is not None)
+        if version_markers(text):
+            labels.append(_normalize_label(text))
+    return sorted(labels)
 
 
 def are_related_versions(name_a: str, name_b: str) -> bool:
@@ -195,10 +219,13 @@ def assert_not_called_duplicate(verdict: str, label: str) -> None:
 
 MIN_FINGERPRINT_SIMILARITY = 0.85
 MAX_DURATION_DIFF_SECONDS = 3.0
+MIN_FINGERPRINT_COVERAGE = 0.9
+MIN_WINDOW_SIMILARITY = 0.75
 OWNER_AUDIO_MATCH_RULE = "owner-audio-match-2026-10-15"
 
 
-def classify_audio_match(*, delete: dict, keep: dict, similarity: float) -> dict:
+def classify_audio_match(*, delete: dict, keep: dict, similarity: float,
+                         coverage: float | None = None, min_window: float | None = None) -> dict:
     """Apply the owner audio-match rule to two probes (see module docstring).
 
     `delete`/`keep` carry: markers, payload_sha256, duration, bitrate, lossless.
@@ -207,6 +234,19 @@ def classify_audio_match(*, delete: dict, keep: dict, similarity: float) -> dict
     if sorted(delete["markers"]) != sorted(keep["markers"]):
         return {"verdict": RELATED_VERSION, "owner_rule_removable": False,
                 "reason": f"different version markers ({sorted(delete['markers'])} vs {sorted(keep['markers'])})"}
+    # Version evidence beyond the name (2026-10-16 review): whole version labels,
+    # CLEAN/DIRTY-style folders and Clean/Dirty Grouping values must all match.
+    # Chromaprint barely hears muted words, so a Clean and a Dirty copy can
+    # fingerprint as "the same"; only these labels tell them apart.
+    for field, what in (("labels", "version labels"), ("folders", "version folders"),
+                        ("grouping", "version Grouping values")):
+        a, b = sorted(delete.get("version", {}).get(field, [])), sorted(keep.get("version", {}).get(field, []))
+        if a != b:
+            return {"verdict": RELATED_VERSION, "owner_rule_removable": False,
+                    "reason": f"different {what} ({a} vs {b})"}
+    if delete.get("serato_cues") and not keep.get("serato_cues"):
+        return {"verdict": AUDIO_EQUIVALENT, "owner_rule_removable": False,
+                "reason": "the removed copy holds Serato cue/marker data the kept copy lacks"}
     if delete["payload_sha256"] and delete["payload_sha256"] == keep["payload_sha256"]:
         return {"verdict": AUDIO_EQUIVALENT, "owner_rule_removable": True,
                 "reason": "identical audio payload (tags differ)"}
@@ -216,6 +256,15 @@ def classify_audio_match(*, delete: dict, keep: dict, similarity: float) -> dict
     if abs(float(delete["duration"]) - float(keep["duration"])) > MAX_DURATION_DIFF_SECONDS:
         return {"verdict": REVIEW, "owner_rule_removable": False,
                 "reason": "durations differ by more than 3 s"}
+    if coverage is not None and coverage < MIN_FINGERPRINT_COVERAGE:
+        return {"verdict": REVIEW, "owner_rule_removable": False,
+                "reason": f"fingerprints overlap only {coverage} of the shorter file (< {MIN_FINGERPRINT_COVERAGE})"}
+    if min_window is not None and min_window < MIN_WINDOW_SIMILARITY:
+        return {"verdict": REVIEW, "owner_rule_removable": False,
+                "reason": f"one ~10 s stretch matches only {min_window} (< {MIN_WINDOW_SIMILARITY}): "
+                          "the songs differ somewhere"}
+    if not (delete["lossless"] or keep["lossless"]) and (int(delete["bitrate"]) <= 0 or int(keep["bitrate"]) <= 0):
+        return {"verdict": REVIEW, "owner_rule_removable": False, "reason": "bitrate unreadable"}
     lower = (keep["lossless"] and not delete["lossless"]) or (
         delete["lossless"] == keep["lossless"] and int(delete["bitrate"]) < int(keep["bitrate"]))
     if not lower:

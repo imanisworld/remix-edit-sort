@@ -40,6 +40,21 @@ import lock_guard
 import mutation_engine
 
 MODES = ("exact", "audio-match")
+OUT_OF_SCOPE_FOLDERS = {"imani drops"}
+
+
+def scope_errors(*paths: Path) -> list[str]:
+    """Imani Drops is never touched, kept or deleted."""
+    return [f"out of scope (Imani Drops is never touched): {p}" for p in paths
+            if any(part.strip().casefold() in OUT_OF_SCOPE_FOLDERS for part in Path(p).parts)]
+
+
+def same_file(a: Path, b: Path) -> bool:
+    """Same file on disk, even when spelled differently (APFS ignores case/accents)."""
+    try:
+        return os.path.samefile(a, b)
+    except OSError:
+        return Path(a).resolve() == Path(b).resolve()
 
 
 def sha256_file(path: Path) -> str:
@@ -67,11 +82,17 @@ def load_and_validate(pairs_path: Path) -> list[dict]:
     for pair in pairs:
         delete_path = Path(pair["delete"])
         keep_path = Path(pair["keep"])
+        if scope_errors(delete_path, keep_path):
+            errors.extend(scope_errors(delete_path, keep_path))
+            continue
         if not delete_path.is_file():
             errors.append(f"missing delete-target: {delete_path}")
             continue
         if not keep_path.is_file():
             errors.append(f"missing keep-target: {keep_path}")
+            continue
+        if same_file(delete_path, keep_path):
+            errors.append(f"delete and keep are the same file: {delete_path} / {keep_path}")
             continue
         delete_hash = sha256_file(delete_path)
         keep_hash = sha256_file(keep_path)
@@ -98,15 +119,24 @@ def load_and_validate(pairs_path: Path) -> list[dict]:
 
 def audio_match_verdict(delete_path: Path, keep_path: Path, probe) -> dict:
     """Probe both files now and apply the owner audio-match rule."""
+    if scope_errors(delete_path, keep_path):
+        raise RuntimeError("; ".join(scope_errors(delete_path, keep_path)))
     if not keep_path.is_file():
         raise RuntimeError(f"keep-target missing, refusing: {keep_path}")
-    if delete_path.resolve() == keep_path.resolve():
+    if same_file(delete_path, keep_path):
         raise RuntimeError(f"delete and keep are the same file: {delete_path}")
     d, k = probe(delete_path), probe(keep_path)
-    sim = 1.0 if d["payload_sha256"] == k["payload_sha256"] else audio_fingerprint.similarity(
-        d["fingerprint"], k["fingerprint"])
-    verdict = duplicate_semantics.classify_audio_match(delete=d, keep=k, similarity=sim)
-    verdict["similarity"] = sim
+    if d["payload_sha256"] == k["payload_sha256"]:
+        detail = {"similarity": 1.0, "coverage": None, "min_window": None}
+    else:
+        detail = audio_fingerprint.match_detail(d["fingerprint"], k["fingerprint"])
+    verdict = duplicate_semantics.classify_audio_match(
+        delete=d, keep=k, similarity=detail["similarity"],
+        coverage=detail["coverage"], min_window=detail["min_window"])
+    verdict.update(detail)
+    verdict["delete_bitrate"], verdict["keep_bitrate"] = d["bitrate"], k["bitrate"]
+    verdict["markers"] = d["markers"]
+    verdict["version"] = d.get("version", {})
     return verdict
 
 
@@ -127,6 +157,13 @@ def load_and_validate_audio_match(pairs_path: Path, probe) -> list[dict]:
         if sha256_file(delete_path) != pair["sha256"]:
             errors.append(f"hash drifted from recorded value: {delete_path}")
             continue
+        # The kept file is pinned too: the human approved THAT file being kept.
+        if not pair.get("keep_sha256"):
+            errors.append(f"pair has no keep_sha256 (the kept file must be pinned): {keep_path}")
+            continue
+        if keep_path.is_file() and sha256_file(keep_path) != pair["keep_sha256"]:
+            errors.append(f"keep-target changed since approval: {keep_path}")
+            continue
         try:
             verdict = audio_match_verdict(delete_path, keep_path, probe)
         except Exception as exc:  # noqa: BLE001 - every refusal is reported
@@ -136,11 +173,30 @@ def load_and_validate_audio_match(pairs_path: Path, probe) -> list[dict]:
             errors.append(f"refusing: {delete_path} vs {keep_path}: {verdict['verdict']} ({verdict['reason']})")
     # A file being kept may not also be deleted in the same run.
     for pair in pairs:
-        if str(Path(pair["keep"]).resolve()) in deletes:
+        keep_path = Path(pair["keep"])
+        if str(keep_path.resolve()) in deletes or any(
+                same_file(keep_path, Path(other["delete"])) for other in pairs if Path(other["delete"]).exists()):
             errors.append(f"keep-target is also a delete-target: {pair['keep']}")
     if errors:
         raise RuntimeError("Validation failed:\n" + "\n".join(errors))
     return pairs
+
+
+def audio_match_report(pairs_path: Path, probe) -> list[dict]:
+    """Read-only per-pair evidence for the approver: verdict, similarity,
+    weakest stretch, bitrates and version labels. Never raises on a refusal."""
+    rows = []
+    for pair in json.loads(pairs_path.read_text(encoding="utf-8")):
+        row = {"delete": pair["delete"], "keep": pair["keep"]}
+        try:
+            verdict = audio_match_verdict(Path(pair["delete"]), Path(pair["keep"]), probe)
+            row.update({k: verdict.get(k) for k in ("verdict", "reason", "similarity", "coverage", "min_window",
+                                                     "delete_bitrate", "keep_bitrate", "markers", "version")})
+            row["removable"] = duplicate_semantics.may_authorize_audio_match_deletion(verdict)
+        except Exception as exc:  # noqa: BLE001 - reported, not raised
+            row.update({"verdict": "REFUSED", "reason": str(exc), "removable": False})
+        rows.append(row)
+    return rows
 
 
 def apply(pairs_path: Path, manifest: dict, source_root: Path, backup_root: Path,
@@ -197,6 +253,8 @@ def apply(pairs_path: Path, manifest: dict, source_root: Path, backup_root: Path
             else:
                 if delete_hash != pair["sha256"]:
                     raise RuntimeError(f"hash changed since validation, aborting before delete: {delete_path}")
+                if sha256_file(keep_path) != pair["keep_sha256"]:
+                    raise RuntimeError(f"kept file changed since approval, aborting before delete: {keep_path}")
                 verdict = audio_match_verdict(delete_path, keep_path, probe)
                 if not duplicate_semantics.may_authorize_audio_match_deletion(verdict):
                     raise RuntimeError(
@@ -213,7 +271,7 @@ def apply(pairs_path: Path, manifest: dict, source_root: Path, backup_root: Path
 
             if delete_path.exists():
                 raise RuntimeError(f"delete did not take effect: {delete_path}")
-            if not keep_path.is_file():
+            if not keep_path.is_file() or same_file(delete_path, keep_path):
                 raise RuntimeError(f"the copy being kept vanished during the run: {keep_path}")
 
             record = {
@@ -359,11 +417,15 @@ def main() -> None:
               out_dir, args.label, heartbeat, mode=args.mode)
     else:
         if args.mode == "audio-match":
-            pairs = load_and_validate_audio_match(args.pairs, audio_fingerprint.probe)
+            # Show the human every pair's evidence before they approve anything.
+            report = audio_match_report(args.pairs, audio_fingerprint.probe)
+            print(json.dumps({"mode": "dry-run", "dedupe_mode": args.mode, "pairs": len(report),
+                              "removable": sum(r["removable"] for r in report), "changes_made": 0,
+                              "evidence": report}, indent=2, ensure_ascii=False))
         else:
             pairs = json.loads(args.pairs.read_text(encoding="utf-8"))
-        print(json.dumps({"mode": "dry-run", "dedupe_mode": args.mode, "pairs": len(pairs),
-                          "validated": args.mode == "audio-match", "changes_made": 0}, indent=2))
+            print(json.dumps({"mode": "dry-run", "dedupe_mode": args.mode, "pairs": len(pairs),
+                              "validated": False, "changes_made": 0}, indent=2))
 
 
 if __name__ == "__main__":
