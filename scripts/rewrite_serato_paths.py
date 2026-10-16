@@ -127,7 +127,7 @@ def _normalize_map_path(value: object, label: str) -> str:
         raise SeratoRewriteError(f"{label} must be a non-empty string")
     if "\x00" in value:
         raise SeratoRewriteError(f"{label} contains a NUL byte")
-    if "\\" in value:
+    if "\\" in value.rstrip("/").rsplit("/", 1)[0]:
         raise SeratoRewriteError(
             f"{label} uses backslashes; Serato paths on this library must use '/'"
         )
@@ -185,6 +185,15 @@ def normalize_rename_map(payload: object) -> list[dict]:
         new = _normalize_map_path(raw.get("to"), f"rename {source_index} 'to'")
         if old == new:
             raise SeratoRewriteError(f"rename {source_index} does not change the path: {old}")
+        if "\\" in old or "\\" in new:
+            # A literal backslash is legal in a macOS file NAME (e.g. "\\A-Star - Kupe
+            # Dance.mp3").  Allow it only for an exact-file entry that keeps the
+            # same file name, so it can never act as a Windows-style separator.
+            if old.rsplit("/", 1)[-1] != new.rsplit("/", 1)[-1]:
+                raise SeratoRewriteError(
+                    f"rename {source_index}: a backslash file name must stay identical "
+                    "(only its folder may change)"
+                )
         if old in seen_old:
             raise SeratoRewriteError(
                 f"duplicate rename source {old!r} in entries {seen_old[old]} and {source_index}"

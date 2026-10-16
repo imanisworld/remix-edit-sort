@@ -325,6 +325,39 @@ class MembershipCase(unittest.TestCase):
         rows = self.rows(self.plan(), "root.sqlite")
         self.assertEqual(rows[self.stale_a]["action"], "hold")
 
+    def _add_second_twin(self):
+        extra = self.music / "Afrobeats" / "a.mp3"; extra.parent.mkdir(parents=True); extra.write_bytes(b"x")
+        for d in self.dbs:
+            c = sqlite3.connect(str(d), isolation_level=None)
+            c.execute("INSERT INTO asset (portable_id) VALUES (?)", (stored(extra),)); c.close()
+        return extra
+
+    def test_twin_map_picks_exact_live_copy_and_plan_round_trips(self):
+        self._add_second_twin()
+        twin_map = {self.stale_a: self.live_a}
+        plan = prune.build_plan(self.serato, self.music, self.dbs, "Afrobeat/", True, False, False, twin_map)
+        for name in ("root.sqlite", "master.sqlite"):
+            row = self.rows(plan, name)[self.stale_a]
+            self.assertEqual(row["action"], "remove")
+            self.assertEqual(row["membership_check"]["twin_chosen_by"], "move map")
+            self.assertEqual(row["membership_check"]["live_twin_path"], self.live_a)
+        path = self.tmp / "p.json"; sr.write_json(path, plan)
+        prune.load_and_validate_plan(path, self.serato, self.music, self.dbs)
+        res, _, _ = self.apply(plan)
+        self.assertEqual(res["status"], "PASS")
+
+    def test_twin_map_target_not_live_holds(self):
+        self._add_second_twin()
+        twin_map = {self.stale_a: stored(self.music / "Nowhere" / "a.mp3")}
+        plan = prune.build_plan(self.serato, self.music, self.dbs, "Afrobeat/", True, False, False, twin_map)
+        row = self.rows(plan, "root.sqlite")[self.stale_a]
+        self.assertEqual(row["action"], "hold")
+        self.assertIn("move map target", row["reason"])
+
+    def test_load_twin_map_reads_composed_output(self):
+        f = self.tmp / "m.json"; f.write_text(json.dumps([{"from": "/" + self.stale_a, "to": "/" + self.live_a}]))
+        self.assertEqual(prune.load_twin_map(f), {self.stale_a: self.live_a})
+
 
     def test_add_requires_drop_flag(self):
         with self.assertRaises(prune.PruneError):

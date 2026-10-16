@@ -137,15 +137,23 @@ class SmartCrateRepointTests(unittest.TestCase):
         plan = rewrite.build_preview(self.serato, rules, crates_only=True)
         self.assertEqual(plan["summary"]["smart_crate_references_changed"], 2)
 
-    def test_compose_holds_backslash_paths(self):
-        odd = str(self.old_dir / "AC\\DC.mp3").lstrip("/")
-        (self.new_dir / "AC\\DC.mp3").write_bytes(b"a")
+    def test_backslash_file_name_is_repointed_when_name_is_unchanged(self):
+        odd = str(self.old_dir / "\\Kupe.mp3").lstrip("/")
+        (self.new_dir / "\\Kupe.mp3").write_bytes(b"a")
         (self.serato / "SmartCrates" / "Odd.scrate").write_bytes(tlv("vrsn", text("1.0")) + otrk(tlv("ptrk", text(odd))))
         maps = [rewrite.normalize_rename_map([{"from": str(self.old_dir), "to": str(self.new_dir)}])]
         result = compose.compose(self.serato, maps)
-        self.assertNotIn("/" + odd, [m["from"] for m in result["map"]])
-        self.assertEqual(result["report"]["unmappable"][0]["why"], "path contains a backslash")
-        rewrite.normalize_rename_map(result["map"])
+        self.assertIn("/" + odd, [m["from"] for m in result["map"]])
+        self.assertEqual(result["report"]["unmappable"], [])
+        rules = rewrite.normalize_rename_map(result["map"])
+        plan = rewrite.build_preview(self.serato, rules, crates_only=True)
+        self.assertEqual(plan["summary"]["smart_crate_references_changed"], 2)
+
+    def test_backslash_as_folder_separator_or_renamed_file_is_refused(self):
+        with self.assertRaisesRegex(rewrite.SeratoRewriteError, "backslash"):
+            rewrite.normalize_rename_map([{"from": "/Users/a\\b/x.mp3", "to": "/Users/c/x.mp3"}])
+        with self.assertRaisesRegex(rewrite.SeratoRewriteError, "backslash"):
+            rewrite.normalize_rename_map([{"from": "/Users/a/\\x.mp3", "to": "/Users/c/y.mp3"}])
 
     def test_checker_audits_smart_crates(self):
         report = checker.audit(self.serato, self.library)

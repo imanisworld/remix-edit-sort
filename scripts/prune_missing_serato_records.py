@@ -65,7 +65,7 @@ import rewrite_serato_paths as sr
 import rewrite_serato_sqlite_paths as sq
 
 PLAN_TYPE = "serato-prune-missing-records"
-PLAN_VERSION = 4
+PLAN_VERSION = 5
 REMOVABLE = ("live_twin", "truly_missing")
 
 
@@ -281,10 +281,20 @@ def _plan_add(conn, stale_ca_id, cid, twin_id, next_order) -> dict | str:
 
 
 def _membership_decision(conn, rowid, path, astore_rows, cls, add_live=False, next_order=None,
-                         drop_smart=False) -> dict:
+                         drop_smart=False, twin_map=None) -> dict:
     name = path.rsplit("/", 1)[-1]
     twins = [(r, p) for r, p in astore_rows if r != rowid and p.rsplit("/", 1)[-1] == name and cls.exists(p)]
     out = {"live_twin_rowids": [r for r, _ in twins], "live_twin_paths": [p for _, p in twins]}
+    if len(twins) > 1 and twin_map and path in twin_map:
+        # Several live files share the name: pick the one the approved move map
+        # says this old path became.  It must be exactly one live record.
+        chosen = [(r, p) for r, p in twins if p == twin_map[path]]
+        if len(chosen) == 1:
+            twins = chosen; out["twin_chosen_by"] = "move map"
+        else:
+            out["ok"] = False
+            out["why"] = f"move map target {twin_map[path]!r} matches {len(chosen)} live records (need exactly 1)"
+            return out
     if len(twins) != 1:
         out["ok"] = False; out["why"] = f"{len(twins)} live twin records (need exactly 1)"; return out
     stale = _membership_rows(conn, rowid); live = _membership_rows(conn, twins[0][0])
@@ -344,9 +354,17 @@ def _has_table(conn, name) -> bool:
 
 # ------------------------------------------------------------ preview
 
+def load_twin_map(path) -> dict | None:
+    """Composed map ([{from,to}] absolute or Serato-relative) -> {old stored: new stored}."""
+    if not path:
+        return None
+    entries = sr.normalize_rename_map(json.loads(Path(path).read_text(encoding="utf-8")))
+    return {e["from"]: e["to"] for e in entries}
+
+
 def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], prefix: str | None,
                drop_stale_memberships: bool = False, add_live_memberships: bool = False,
-               drop_stale_smart_memberships: bool = False) -> dict:
+               drop_stale_smart_memberships: bool = False, twin_map: dict | None = None) -> dict:
     if drop_stale_smart_memberships and not drop_stale_memberships:
         raise PruneError("--drop-stale-smart-memberships needs --drop-stale-memberships")
     if add_live_memberships and not drop_stale_memberships:
@@ -407,7 +425,7 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
                         order_snapshot = dict(next_order)
                         decision = _membership_decision(conn, rowid, path, astore_rows, cls,
                                                         add_live_memberships, next_order,
-                                                        drop_stale_smart_memberships)
+                                                        drop_stale_smart_memberships, twin_map)
                         if not decision["ok"]:
                             next_order.clear(); next_order.update(order_snapshot)  # held rows reserve no positions
                         resolved = len(decision.get("containers", []))
@@ -462,6 +480,7 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
         "drop_stale_memberships": bool(drop_stale_memberships),
         "add_live_memberships": bool(add_live_memberships),
         "drop_stale_smart_memberships": bool(drop_stale_smart_memberships),
+        "twin_map": dict(sorted((twin_map or {}).items())),
         "database_v2": dbv2_entry, "sqlite": db_entries, "summary": dict(sorted(summary.items())),
     }
 
@@ -477,7 +496,7 @@ def load_and_validate_plan(plan_path: Path, serato_dir, library_root, databases)
         raise PruneError("not a prune plan")
     rebuilt = build_plan(serato_dir, library_root, databases, plan.get("prefix"),
                          bool(plan.get("drop_stale_memberships")), bool(plan.get("add_live_memberships")),
-                       bool(plan.get("drop_stale_smart_memberships")))
+                       bool(plan.get("drop_stale_smart_memberships")), plan.get("twin_map") or None)
     if _comparable(rebuilt) != _comparable(plan):
         raise PruneError("plan no longer matches current Serato files; rebuild the dry run")
     return plan
@@ -575,8 +594,9 @@ def _verify_sqlite(database: Path, entry: dict) -> dict:
 
 
 def post_check(serato_dir, library_root, databases, prefix, drop_stale_memberships=False, add_live=False,
-               drop_smart=False) -> dict:
-    again = build_plan(serato_dir, library_root, databases, prefix, drop_stale_memberships, add_live, drop_smart)
+               drop_smart=False, twin_map=None) -> dict:
+    again = build_plan(serato_dir, library_root, databases, prefix, drop_stale_memberships, add_live, drop_smart,
+                       twin_map)
     remaining = again["summary"].get("database_v2_remove", 0) + sum(
         again["summary"].get(f"{Path(d).name}_remove", 0) for d in databases)
     held = sum(1 for r in again["database_v2"]["records"] if r["action"] == "hold") + sum(
@@ -645,7 +665,7 @@ def apply_plan(*, plan, serato_dir, library_root, databases, serato_manifest, sq
         raise PruneError("plan has nothing to remove")
     check = post_check(serato_dir, library_root, list(databases.values()), plan.get("prefix"),
                        bool(plan.get("drop_stale_memberships")), bool(plan.get("add_live_memberships")),
-                       bool(plan.get("drop_stale_smart_memberships")))
+                       bool(plan.get("drop_stale_smart_memberships")), plan.get("twin_map") or None)
     result = {"status": check["status"], "plan_type": PLAN_TYPE, "completed": completed,
               "post_check": check, "journal": str(journal_path)}
     sr.write_json(result_path, result)
@@ -709,6 +729,9 @@ def main() -> int:
                     help="with --drop-stale-memberships: a stale live_twin row's memberships in SMART crates may be "
                          "dropped even if the live copy is not there yet (smart crates rebuild from their rules); "
                          "regular crates still need the live copy (or --add-live-memberships)")
+    ap.add_argument("--twin-map", type=Path,
+                    help="composed move map (compose_serato_rename_map.py --out): when a stale row's file name has "
+                         "several live copies, use the copy this map says the old path became")
     ap.add_argument("--add-live-memberships", action="store_true",
                     help="with --drop-stale-memberships: first add the live twin to each normal (non-smart) crate "
                          "it is missing from, appended at the end; smart crates are reported, never inserted into")
@@ -718,7 +741,7 @@ def main() -> int:
             if not a.out:
                 raise PruneError("dry run needs --out")
             plan = build_plan(a.serato_dir, a.library_root, a.sqlite_db, a.prefix, a.drop_stale_memberships,
-                              a.add_live_memberships, a.drop_stale_smart_memberships)
+                              a.add_live_memberships, a.drop_stale_smart_memberships, load_twin_map(a.twin_map))
             sr.write_json(a.out, plan)
             print(json.dumps({"status": "DRY-RUN", **plan["summary"], "plan": str(a.out)}, indent=2))
             return 0
