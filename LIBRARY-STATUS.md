@@ -4,6 +4,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 
 ## Last updated
 
+2026-10-16 12:35 EDT — Claude (Mac): NOLA Bounce + Ghettotech energy written; NEW MUSIC DOWNLOADS jobs 1-2 written (97 exact dupes deleted, 32 Genre + 14 Year), job 3 Clean/Dirty preview running (audio 5/12 batches), job 4 not started. See "NEW MUSIC DOWNLOADS — Claude" below.
 2026-10-16 ~12:00 EDT — Claude (cloud, repo only): code review of #63/#65/#73/#75. Prune tool fix PR opened; see "Code review holds" below. No library files touched.
 2026-10-16 10:58 EDT — Grok (DJ B.A.E. Library): high-confidence Energy v2 (10-value scale) written: R&B 506, Pop 895, Hip Hop 950 Grouping appends (29 ID3v2.2 skipped, 0 Energy conflicts). Med/low/NEEDS YOU/Reset not written. Backup T5 2026-10-16-energy-v2-high; Imani to rescan ID3 tags in Serato. See GROK-DJ-LIBRARY-LOG.md.
 2026-10-16 09:35 EDT — Grok (DJ B.A.E. Library): Afrobeats energy written (347); see GROK-DJ-LIBRARY-LOG.md.
@@ -188,7 +189,7 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
 4. **34** ID3v2.2 Grouping (needs conversion approval).
 5. PR: extend `rewrite_serato_paths.py` to History + SmartCrates.
 6. One-pass folder moves: `R&b` → `R&B` + CLEAN/DIRTY sort; Afrobeat folder → Afrobeats; misfiled tracks from Claude sheets. (Rename tooling exists in the PR above; needs review + Imani's go first.)
-7. Inbox tag write after lookup + approval. Energy for Baile/Afrobeats = Claude unless asked.
+7. NEW MUSIC DOWNLOADS (Claude, Imani 2026-10-16): jobs 1-2 done; job 3 Clean/Dirty preview, then job 4 energy. See "NEW MUSIC DOWNLOADS — Claude".
 
 Library root: `~/Music/DJ-Music/Music` · Serato: `~/Music/_Serato_` · Mac: `djb.a.e` · Repo: `imanisworld/remix-edit-sort`
 
@@ -200,3 +201,29 @@ Library root: `~/Music/DJ-Music/Music` · Serato: `~/Music/_Serato_` · Mac: `dj
 
 ## Serato ghosts — done (2026-10-16 10:14 ET)
 - Last 22 old Music/Afrobeat/ paths cleared with the #75 tools (Kupe Dance repointed in 2 smart crates and its V2 record pruned; 21 multi-copy rows per SQLite DB pruned via the move map). Final check: 0 old paths in database V2, crates, smart crates, master.sqlite, root.sqlite.
+
+## NEW MUSIC DOWNLOADS — Claude (current as of 2026-10-16 12:35 ET)
+
+Folder `NEW MUSIC DOWNLOADS - MUSIC TO MOVE` is Claude's (Imani 2026-10-16). Work files: `new-music-move-20261016/` (job1-dupes, job2-tags, job3-cleandirty). No lock held right now.
+
+| Job | State |
+|---|---|
+| 1 Duplicates | DONE 10:28. 97 exact-SHA-256 extra copies deleted (38 keepers verified). 1,124 -> 1,027 files. 0 exact copies elsewhere in the library. |
+| 2 Missing tags | DONE 11:18. Genre 32 + Year 14 written (blank only, 2+ sources or repo filename keyword). 288 Genre / 146 Year left blank. Source: nothing written; 105 subfolders listed for Imani (`job2-tags/job2-source-subfolders-20261016.csv`). |
+| 3 Clean/Dirty | PREVIEW running, nothing moved. Audio check 5/12 batches (ETA ~13:20), lyrics check done. Interim: DIRTY 160, CLEAN 49, _NEEDS CHECK 603. Imani OK'd emptying uploader/album subfolders into `<bucket>/<Genre>/` (empty folders left in place). Moves only after Imani's go on the final preview, Serato closed. |
+| 4 Energy | Not started. |
+
+Not touched: DJ TOOLS, ALBUMS & PROJECTS (ask Imani first).
+
+Waiting on Imani (Claude items):
+- Job 3 go after the final preview; Source subfolder sheet (or skip).
+- Blanks: NOLA Bounce 46, Ghettotech 22 (preview CSVs in `nola-bounce-energy-20261016/`, `ghettotech-energy-20261016/`).
+- Baile/Afrobeats 11 untagged (`energy-blanks-20261016/`): Situationship Edit = Warmup (not written); Waste My Time / CRU LOVE / Se Dansa need a value; 3 Tems ID3v2.2 need conversion OK; Davido "Five" delete requested, NOT done (needs explicit go).
+- Grok's `energy-written-change-suggestions-20261016.csv` suggests 8 NOLA Bounce Twerk Dutty -> Shake (not applied).
+- Maybe misfiled: Bounce (Wassup Wassup x2, River Dance Bounce, no luv (+)); Ghettotech ~12 (see its preview).
+- PR #83 (fix: apply_genre_refinement_plan.py crashed after writes on 2026-10-16; writes were fine) — review + merge.
+- Serato: Rescan ID3 Tags on New Orleans Bounce, Ghettotech, NEW MUSIC DOWNLOADS.
+
+T5 backups from Claude today (delete after Serato check): `2026-10-16-nola-bounce-energy`, `2026-10-16-ghettotech-energy`, `2026-10-16-newmusic-dupes`, `2026-10-16-newmusic-tags`.
+
+Energy values: Imani's 10 (Warmup, Starter, Sing Along, Dance Flex, Shake, Twerk Dutty, Slow Wine, Peak, Cooldown, Reset) plus Bashment, which stays for Jamaican dancehall (already written in Dancehall/Reggae/RIDDIM). No Banger.
