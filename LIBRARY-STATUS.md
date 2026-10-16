@@ -4,6 +4,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 
 ## Last updated
 
+2026-10-16 12:30 EDT — Grok (DJ B.A.E. Library): 92 R&B medium years written (incl. Slept On You 2020, Find Your Way 2005); Genre tag set on 9 held Afrobeats (7 changed, 2 already right; no moves, 20 still held). Backup T5 2026-10-16-rnb-medium-years-afro-genre. Tool PR #80 (--keeper-map) for the 5 stale Pop-dupe SQLite rows, not run. See GROK-DJ-LIBRARY-LOG.md.
 2026-10-16 11:40 EDT — Grok (DJ B.A.E. Library): Pop version-label dupes: 8 lower-bitrate copies removed (Imani 11:07); crates/smart crates repointed to keepers, database V2 clean; 5 stale SQLite rows held for a tool follow-up. Backup T5 2026-10-16-pop-dupes-p5. Metadata cleanup v2 preview ready. See GROK-DJ-LIBRARY-LOG.md.
 2026-10-16 10:58 EDT — Grok (DJ B.A.E. Library): high-confidence Energy v2 (10-value scale) written: R&B 506, Pop 895, Hip Hop 950 Grouping appends (29 ID3v2.2 skipped, 0 Energy conflicts). Med/low/NEEDS YOU/Reset not written. Backup T5 2026-10-16-energy-v2-high; Imani to rescan ID3 tags in Serato. See GROK-DJ-LIBRARY-LOG.md.
 2026-10-16 09:35 EDT — Grok (DJ B.A.E. Library): Afrobeats energy written (347); see GROK-DJ-LIBRARY-LOG.md.
