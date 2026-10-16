@@ -43,7 +43,7 @@ class ApprovedGenreFolderTests(unittest.TestCase):
         # Spot-check the owner's exact live spellings and parent-folder choices.
         self.assertEqual(len(EXPECTED), 59)
         for genre, folder in (("Hip-Hop", "Hip Hop"), ("R&B", "R&B"),
-                              ("Afrobeats", "Afrobeat"),
+                              ("Afrobeats", "Afrobeats"),  # folder renamed 2026-10-16
                               ("Ballroom Vogue", "Ballroom"), ("Funk & Soul", "Funk"),
                               ("Bounce", "New Orleans Bounce"), ("Hardgroove", "Hard GROOVE"),
                               ("Riddim", "RIDDIM"), ("Deep House", "House"),
