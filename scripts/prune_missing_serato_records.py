@@ -53,7 +53,8 @@ from __future__ import annotations
 
 SAFETY_CLASSIFICATION = "engine-user"
 # Both helpers run only inside a mutation_engine item transaction.
-ENGINE_MUTATION_HELPERS = ("_delete_sqlite_rows", "_replace_database_v2")
+# The third helper is strictly for emergency restoration of already committed items.
+ENGINE_MUTATION_HELPERS = ("_delete_sqlite_rows", "_replace_database_v2", "_restore_prune_completed")
 
 import argparse
 import hashlib
