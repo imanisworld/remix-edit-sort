@@ -4,13 +4,15 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 
 ## Last updated
 
-2026-10-16 ~12:45 EDT — Claude (cloud, repo only): status file cleaned up: one "Current state" section; stale "waiting/running" items that later entries show as done were removed; facts from Grok's open status PRs #74 and #79 folded in (marked). No library files touched.
+2026-10-16 ~12:50 EDT — Claude (cloud, repo only): status file cleaned up: one "Current state" section; stale "waiting/running" items that later entries show as done were removed; Grok's status PRs #74, #79 and #84 (holds answers) folded in. No library files touched.
 2026-10-16 12:35 EDT — Claude (Mac): NOLA Bounce + Ghettotech energy written; NEW MUSIC DOWNLOADS jobs 1-2 written (97 exact dupes deleted, 32 Genre + 14 Year), job 3 Clean/Dirty preview running (audio 5/12 batches), job 4 not started. See "NEW MUSIC DOWNLOADS — Claude" below.
+2026-10-16 12:10 EDT — Grok (from PR #84): code-review-holds answers (read-only): Oct 15 Pop dupes were audio-match and their T5 backup was already deleted; check Cassie "Me & U" and Britney "Slave 4 U (1st version)"; 10:01 ghost cleanup and the 4 Afrobeats same-name songs: nothing lost. See "Checks — answered".
 2026-10-16 12:04 EDT — #83 merged: genre refinement apply no longer crashes at the end (missing result JSON / run_complete).
 2026-10-16 ~12:00 EDT — Claude (cloud, repo only): code review of #63/#65/#73/#75; fixes merged as #78 and #81 (see "Checks before more cleanup" below). No library files touched.
-2026-10-16 11:40 EDT — Grok (reported in open PR #79, not on main before this): Pop version-label dupes p5: 8 lower-bitrate copies removed (Imani OK 11:07); crates/smart crates repointed to keepers; database V2 clean; 5 stale SQLite rows held. Backup T5 `2026-10-16-pop-dupes-p5`. Metadata cleanup v2 preview ready.
+2026-10-16 11:30 EDT — Grok (from PR #84): 92 R&B medium Years written; Genre set on 9 held Afrobeats (7 changed, 2 already right; no moves; 20 still held). Backup T5 `2026-10-16-rnb-medium-years-afro-genre`. Tool PR #80 (`--keeper-map`) for the 5 stale Pop-dupe SQLite rows: not run.
+2026-10-16 11:15 EDT — Grok (from PRs #79/#84): Pop version-label dupes p5: 8 lower-bitrate copies removed (Imani OK 11:07); crates/smart crates repointed to keepers; database V2 clean; 5 stale SQLite rows held. Backup T5 `2026-10-16-pop-dupes-p5` (keep). Metadata cleanup v2 preview ready.
 2026-10-16 10:58 EDT — Grok (DJ B.A.E. Library): high-confidence Energy v2 (10-value scale) written: R&B 506, Pop 895, Hip Hop 950 Grouping appends (29 ID3v2.2 skipped, 0 Energy conflicts). Med/low/NEEDS YOU/Reset not written. Backup T5 2026-10-16-energy-v2-high; Imani to rescan ID3 tags in Serato. See GROK-DJ-LIBRARY-LOG.md.
-2026-10-16 10:01 EDT — Grok (reported in open PR #74): Serato ghost cleanup: 882 crate/smart-crate refs repointed (crates-only); 397 database V2 ghosts + 377 rows per SQLite file pruned (with the prune tool as it was BEFORE #78).
+2026-10-16 10:01 EDT — Grok (from PRs #74/#84): Serato ghost cleanup: 882 crate/smart-crate refs repointed (crates-only); 397 database V2 ghosts + 377 rows per SQLite file pruned (with the prune tool as it was BEFORE #78).
 2026-10-16 09:35 EDT — Grok (DJ B.A.E. Library): Afrobeats energy written (347); see GROK-DJ-LIBRARY-LOG.md.
 2026-10-16 09:20 EDT — Grok (DJ B.A.E. Library): Afrobeats Clean/Dirty written (79 Dirty moved+tagged, 161 to _NEEDS CHECK, 32 held); genre-folder config PR #69; see GROK-DJ-LIBRARY-LOG.md.
 2026-10-16 01:40 EDT — Grok (DJ B.A.E. Library): tonight's summary added (prune applied, Afrobeats rename done, 4 "dupes" = different songs, lyrics check running, 16 Drake titles, Pop version-label preview, energy previews running). (The "Tonight" notes are now folded into Current state / Done.)
@@ -26,20 +28,22 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 2026-10-15 15:50 EDT — Claude (folder-rename tooling PR #56; library untouched)
 2026-10-15 ~16:50 EDT — Claude (cloud, repo only): fixed main CI after #48 (History staging script classified as allowlisted infrastructure). No library files touched.
 
-## Current state (2026-10-16 ~12:45 EDT)
+## Current state (2026-10-16 ~12:50 EDT)
 
 This section is the single list of what is open. Older sections below are history.
 
 ### Working now
-- **Grok (Mac):** R&B / Pop / Hip Hop energy — high-confidence written 10:58; medium / low / NEEDS YOU not written (preview for Imani). Metadata cleanup v2 preview ready (reported in PR #79).
+- **Grok (Mac):** R&B / Pop / Hip Hop energy — high-confidence written 10:58; medium / low / NEEDS YOU not written (preview for Imani). Metadata cleanup v2 preview ready.
 - **Claude (Mac), folder `NEW MUSIC DOWNLOADS - MUSIC TO MOVE`** (Imani 2026-10-16; Grok stays out): job 1 duplicates DONE (97 exact copies deleted), job 2 missing tags DONE (Genre 32, Year 14), job 3 Clean/Dirty PREVIEW running (nothing moved), job 4 energy not started. Also wrote NOLA Bounce + Ghettotech energy. Details and its open items: "NEW MUSIC DOWNLOADS — Claude" at the end of this file.
 - **Serato:** stays CLOSED while anyone writes. Ask Grok before opening it.
+- **GitHub checks:** every run since 12:04 EDT (main included) fails within seconds, before any test starts, with no log. GitHub-side, not the code. Imani: check GitHub → Settings → Billing → Actions usage / spending limit. Until it is fixed, run the tests locally before merging.
 
-### Checks before more cleanup (code review, Claude 2026-10-16)
-The review fixes are merged (#78 prune tool + audio-match deleter; #81 crate repoint tool). Plans built before them are refused; rebuild them. Audio-match pairs files now need `keep_sha256`. Three things the OLD tools may have done wrong still need a read-only check by Grok:
-1. **Pop duplicates (202 deleted 2026-10-15):** which mode, exact or `--mode audio-match`? If audio-match, list any pair whose deleted and kept files were in different CLEAN/DIRTY folders, had different Clean/Dirty Grouping, or different bracketed edit names. **Note: the T5 pop-dupes backups were already deleted** after Imani's Serato check (see Done), so a wrongly deleted Clean copy can only come back from its original source, not T5. The deletion undo logs/journals still list every deleted path and hash.
-2. **Serato ghost cleanup (10:01, 397 database V2 / 377 per SQLite):** ran with the old prune tool. Dry-run the fixed tool against that run's backup copy (never the live files) and list records it would now HOLD. Keep that backup.
-3. **Afrobeat prune (01:20, database V2 −48 vs SQLite −44):** do the Afrobeats copies of Ayotemi "Closer", Machel Montano "Slow Wine", Pheelz "Finesse", Joeboy "Focus" still have their database V2 record and crates? Keep T5 `2026-10-16-prune-afrobeat-stale/`.
+### Checks — answered (Grok 12:10, read-only; from PR #84)
+The review fixes are merged (#78 prune tool + audio-match deleter; #81 crate repoint tool). Plans built before them are refused; rebuild them. Audio-match pairs files now need `keep_sha256`.
+1. **Oct 15 Pop duplicates (202): all deleted with audio-match.** Their T5 backup `2026-10-15-pop-dupes` was deleted Oct 15 19:33 after Imani's Serato check, so those copies can only come back from Time Machine. 30 of the 202 pairs differed in folder, Clean/Dirty Grouping or bracket text; Grok judged all correct except **Cassie "Me & U"**: three copies (Pop Girl At Heart, R&b, Y2K) were deleted for one keeper in `Events/LIKE SUGAR ON MY TONGUE/CLEAN/CLEAN R&B/R&B/Me & U_1.mp3`, so no genre-folder copy is left.
+2. **Today's p5 (8, audio-match):** all fine except **Britney "I'm a Slave 4 U (1st version) [aka Light Your Ass On Fire]"** (Neptunes set), deleted for the album "I'm a Slave 4 U (2)" — a different early mix. Restorable from T5 `2026-10-16-pop-dupes-p5` with the p5 undo log; proposed only, needs Imani's OK.
+3. **10:01 ghost cleanup:** the fixed tool would have held 27 records (all same-name songs). Every Afrobeats copy still has its database V2 and SQLite records; no song lost a record, crate or membership. Nothing to restore.
+4. **Afrobeats Closer / Slow Wine / Finesse / Focus:** all have their database V2 record, both SQLite rows and their crates. Nothing lost.
 
 ### T5 backups waiting on Imani's Serato check (then delete)
 - `2026-10-15-pop-tags/` and `2026-10-15-junk-grouping/` — rescan Pop, Cat Calls Inspo, Y2K.
@@ -48,17 +52,19 @@ The review fixes are merged (#78 prune tool + audio-match deleter; #81 crate rep
 - `2026-10-15-afrobeat-genre-baile-energy/` — check Baile + the 19 genre-fix folders.
 - `2026-10-16-drake-titles/` — check a few Drake titles (Marvins Room, July).
 - `2026-10-16-energy-v2-high/` — rescan R&B, Pop, Hip Hop.
-- `2026-10-16-pop-dupes-p5/` (reported in PR #79).
+- `2026-10-16-rnb-medium-years-afro-genre/` — rescan R&b and Afrobeats.
 - `2026-10-16-nola-bounce-energy/`, `2026-10-16-ghettotech-energy/`, `2026-10-16-newmusic-dupes/`, `2026-10-16-newmusic-tags/` (Claude Mac) — rescan New Orleans Bounce, Ghettotech, NEW MUSIC DOWNLOADS.
-- **Keep for now (checks above):** `2026-10-16-prune-afrobeat-stale/` and the 10:01 ghost-cleanup backup.
+- `2026-10-16-prune-afrobeat-stale/` and `2026-10-16-serato-ghost-fix/` — checks found nothing lost; delete once Imani OKs.
+- **Keep:** `2026-10-16-pop-dupes-p5/` until Imani decides on the Britney "Slave 4 U (1st version)" restore.
 
 ### Waiting on Imani
 1. Serato check (when Grok says it is safe), then the backup deletes above.
+1a. **Decide:** restore Britney "I'm a Slave 4 U (1st version)" from the p5 backup? Cassie "Me & U": OK that the only copy is in Events, or restore a genre-folder copy from Time Machine?
 2. Energy v2: medium / low / NEEDS YOU rows for R&B, Pop, Hip Hop.
-3. Metadata cleanup v2 preview (reported in PR #79).
+3. Metadata cleanup v2 preview (Grok).
 4. Pop: 10 "(NC)" pairs (same bitrate, kept until NC is known), 125 refused + 589 uncertain duplicate pairs, Clean/Dirty for ~1,190 unmarked new Pop tracks, 23 tracks with no Year, 4 wav skipped, Tyla 128 vs 320 kbps pairs; junk Grouping left in GRP1 frames (16 "November") and record-pool watermarks (9) — the 2026-10-15 removal covered TIT1/FLAC/M4A only.
-5. R&B: 95 medium + 55 unsure hand-entry Years (`rnb-year-hand08-proposals-20261016.csv`), 4 m4a/FLAC, 4 ID3v2.2 (07 Got Her Own, 08 Drown In It, Return Of The Mac (Topper-Intro) Extended, Shut It Down — tag upgrade first), 2 missing files; deferred rows: 575 reported vs 142 in deferred.csv (reconcile).
-6. Afrobeats: 32 held (29 need a Genre call, 2 Dirty ID3v2.2: Free Fall, Unfortunate; 1 backslash name: Kupe Dance), 161 in `_NEEDS CHECK`, 5 afro-ish tags that are not exactly "Afrobeat", Davido "Five" (no BPM).
+5. R&B: 3 medium (92 of 95 written 11:30) + 55 unsure hand-entry Years (`rnb-year-hand08-proposals-20261016.csv`), 4 m4a/FLAC, 4 ID3v2.2 (07 Got Her Own, 08 Drown In It, Return Of The Mac (Topper-Intro) Extended, Shut It Down — tag upgrade first), 2 missing files; deferred rows: 575 reported vs 142 in deferred.csv (reconcile).
+6. Afrobeats: 20 still held after Grok set Genre on 9 (11:30) — incl. 2 Dirty ID3v2.2 (Free Fall, Unfortunate) and the backslash name Kupe Dance; 161 in `_NEEDS CHECK`, 5 afro-ish tags that are not exactly "Afrobeat", Davido "Five" (no BPM).
 7. Baile: ear-check 7 tracks. `Baile/baile_plex` is a keep-whole pack.
 8. The 4 same-name pairs (different songs, both kept) and their held Serato rows.
 9. Smart crates: tidy `afro world ≫ Afrobeat` (3 Genre-contains rules); `Clean R&B` / `r&b edits` need `"r&b "` with a trailing space; `Clean R&B` should match ALL not ANY; `90s`/`2000s` use Grouping, not Year.
@@ -70,7 +76,8 @@ The review fixes are merged (#78 prune tool + audio-match deleter; #81 crate rep
 
 ### Agents to do
 - `rewrite_serato_paths.py` still does not repoint History/session files (SmartCrates and nested crates are done, #73).
-- Grok's status PRs #74 and #79 are folded into this file; close them as superseded once Imani agrees.
+- Open tool PRs, review before any live use: #80 (`prune_missing_serato_records --keeper-map`, for the 5 stale Pop-dupe SQLite rows; rebuild its plan on the fixed tool) and #85 (smart crate apply tool).
+- Grok's status PR #84 is folded into this file (#74 and #79 are closed as superseded).
 
 ### Unknown — ask the agent that ran it
 - Inbox genre/year lookup (`inbox-genre-lookup/`, last reported ~325+/514 on 2026-10-15): finished or not?
@@ -147,7 +154,7 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
 ## Done
 
 - (reported, Claude Mac) **NOLA Bounce + Ghettotech energy written (2026-10-16);** NEW MUSIC DOWNLOADS: 97 exact-SHA-256 extra copies deleted (10:28), Genre 32 + Year 14 written (11:18).
-- (verified) **Pop version-label dupes p5 (2026-10-16 11:40, reported in PR #79):** 8 lower-bitrate copies removed (Imani OK 11:07); crates/smart crates repointed; 5 stale SQLite rows held.
+- (verified) **Pop version-label dupes p5 (2026-10-16 11:15):** 8 lower-bitrate copies removed (Imani OK 11:07); crates/smart crates repointed; 5 stale SQLite rows held.
 - (verified) **Energy v2 high-confidence (2026-10-16 10:58):** R&B 506, Pop 895, Hip Hop 950 Grouping appends; 29 ID3v2.2 skipped; 0 Energy conflicts.
 - (verified) **R&B hand-entry Years (2026-10-16 09:22):** 41 high-confidence written (online lookup), read back 41/41.
 - (verified) **Baile energy:** 131 Grouping appends (2026-10-15).
