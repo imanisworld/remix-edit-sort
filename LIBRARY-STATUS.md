@@ -4,6 +4,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 
 ## Last updated
 
+2026-10-16 02:30 EDT — Grok (DJ B.A.E. Library): Afrobeat -> Afrobeats rename done; Afrobeats Clean/Dirty preview; see GROK-DJ-LIBRARY-LOG.md.
 2026-10-16 01:30 EDT — Grok (DJ B.A.E. Library): stale Afrobeat Serato records pruned (PR #65 tool); see GROK-DJ-LIBRARY-LOG.md.
 2026-10-15 20:45 EDT — Grok (DJ B.A.E. Library): Pop duplicates finished (202 deleted); R&B Years done (230 written, 9 skipped); see GROK-DJ-LIBRARY-LOG.md.
 2026-10-15 16:58 EDT — Grok (DJ B.A.E. Library): R&B Genre batch written (110 of 114 approved; 4 ID3v2.2 skipped); see GROK-DJ-LIBRARY-LOG.md.
@@ -95,6 +96,9 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
 
 ## In progress
 
+- **(verified) Top-level `Afrobeat` -> `Afrobeats` rename DONE (2026-10-16 ~01:25 EDT).** Folder renamed, database V2/crates and master/root.sqlite repointed; all post-checks PASS; 0 unresolved Afrobeats paths in Serato. **Follow-up:** `folder_names` in genre-rules.json / version-genre-rules.json, check_genre_naming.py pins and CLAUDE.md still say `Afrobeat` — needs the config PR.
+- **Not duplicates:** `Pop/CLEAN` Closer + Slow Wine and the R&B Finesse + Focus "(Intro Clean)" files are different songs from the Afrobeats files of the same name. Nothing deleted; 4 stale SQLite rows stay held (harmless).
+- **Afrobeats Clean/Dirty PREVIEW (272 `_NEEDS CHECK` tracks):** 82 DIRTY (audio transcript and/or published lyrics, approved terms list), 190 stay `_NEEDS CHECK`. Preview only; waiting on Imani.
 - **(verified) Stale Afrobeat Serato records pruned (2026-10-16 ~01:25 EDT, Imani's go 01:19):** `prune_missing_serato_records.py` (PR #65, merged) with `--drop-stale-memberships --add-live-memberships --drop-stale-smart-memberships`. Removed the 48 old `Afrobeat/CLEAN|DIRTY/Afrobeat/…` records Serato had re-added: database V2 48, master.sqlite 44, root.sqlite 44 (0 crate adds; their entries in smart crates dropped, since smart crates rebuild from rules). Post-check PASS. **4 held** (2 live copies each — Closer + Slow Wine (Intro Clean) also in `Pop/CLEAN/`, Finesse in `R&b/CLEAN/R&B/`, Focus in `R&b/R&B '20-'22/CLEAN/R&B/`); Imani decides later. Backup T5 `2026-10-16-prune-afrobeat-stale/`. Serato must stay closed until the top-level Afrobeat → Afrobeats rename is done.
 - Old T5 repo copy (215G): audited 2026-10-15 15:29 EDT, read-only, NOT deleted. It has unpushed rule commits (Nu Wave, Juke & Footwork, T5 dedupe --serato-backup), 13 attached worktrees, and about 3,655 backup audio tracks not found in the live library, including the Gambino We Are God.flac. (verified) Imani: leave for later.
 - **New Pop music** (Imani adding): `Pop/Pop from ` · `Cat Calls Inspo/` · `Pop/00_s Music/Pop Girl At Heart/` (**982 files**, was still copying at 471) · top-level `Y2K/`.
