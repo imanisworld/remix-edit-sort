@@ -4,6 +4,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 
 ## Last updated
 
+2026-10-16 15:00 EDT — Claude (Mac): NEW MUSIC job 3 Clean/Dirty DONE: 762 moved, 44 held (Genre spelling), Serato + SQLite repointed (PASS). See "NEW MUSIC DOWNLOADS — Claude".
 2026-10-16 ~12:50 EDT — Claude (cloud, repo only): status file cleaned up: one "Current state" section; stale "waiting/running" items that later entries show as done were removed; Grok's status PRs #74, #79 and #84 (holds answers) folded in. No library files touched.
 2026-10-16 12:35 EDT — Claude (Mac): NOLA Bounce + Ghettotech energy written; NEW MUSIC DOWNLOADS jobs 1-2 written (97 exact dupes deleted, 32 Genre + 14 Year), job 3 Clean/Dirty preview running (audio 5/12 batches), job 4 not started. See "NEW MUSIC DOWNLOADS — Claude" below.
 2026-10-16 12:25 EDT — Claude (Mac, read-only): low-bitrate triage list DONE, no library files touched. 12,303 tracks under 320 kbps: 10,078 re-download (1,773 are Neptunes "Other Side of the Planet" rips; ~8,300 without them), 245 already have a better copy in the library (delete candidates, Imani reviews first), 1,980 at 256 kbps fine to keep. Files: `~/Music/DJ-Music/artifacts/low-bitrate-triage-20261016/`. See log.
@@ -187,7 +188,7 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
 ## Serato ghosts — done (2026-10-16 10:14 ET)
 - Last 22 old Music/Afrobeat/ paths cleared with the #75 tools (Kupe Dance repointed in 2 smart crates and its V2 record pruned; 21 multi-copy rows per SQLite DB pruned via the move map). Final check: 0 old paths in database V2, crates, smart crates, master.sqlite, root.sqlite.
 
-## NEW MUSIC DOWNLOADS — Claude (current as of 2026-10-16 12:35 ET)
+## NEW MUSIC DOWNLOADS — Claude (current as of 2026-10-16 15:00 ET)
 
 Folder `NEW MUSIC DOWNLOADS - MUSIC TO MOVE` is Claude's (Imani 2026-10-16). Work files: `new-music-move-20261016/` (job1-dupes, job2-tags, job3-cleandirty). No lock held right now.
 
@@ -195,19 +196,23 @@ Folder `NEW MUSIC DOWNLOADS - MUSIC TO MOVE` is Claude's (Imani 2026-10-16). Wor
 |---|---|
 | 1 Duplicates | DONE 10:28. 97 exact-SHA-256 extra copies deleted (38 keepers verified). 1,124 -> 1,027 files. 0 exact copies elsewhere in the library. |
 | 2 Missing tags | DONE 11:18. Genre 32 + Year 14 written (blank only, 2+ sources or repo filename keyword). 288 Genre / 146 Year left blank. Genre tool end-of-run crash fixed in PR #83 (merged). Source: nothing written; 105 subfolders listed for Imani (`job2-tags/job2-source-subfolders-20261016.csv`). |
-| 3 Clean/Dirty | PREVIEW running, nothing moved. Audio check 5/12 batches (ETA ~13:20), lyrics check done. Interim: DIRTY 160, CLEAN 49, _NEEDS CHECK 603. Imani OK'd emptying uploader/album subfolders into `<bucket>/<Genre>/` (empty folders left in place). Moves only after Imani's go on the final preview, Serato closed. |
+| 3 Clean/Dirty | DONE 14:55 (Imani go). 762 moved into `<bucket>/<Genre>/` with approved folder names (Hip Hop, Funk, Jersey Club, New Orleans Bounce, neo soul; Miami Bass/New Wave -> _GENRE NEEDS CHECK): CLEAN 49 + DIRTY 315 (Clean/Dirty Grouping appended on 240; 18 mp4/wav/ogg moved without tag) + _NEEDS CHECK 398. HELD 44 in place: Genre tag not the approved spelling (e.g. "Hip Hop/Rap", "R&B & Soul") - needs a Genre-rewrite decision (`new-music-move-20261016/job3-apply/held-genre-spelling.json`). Serato repointed: database V2 + 51 crate files (762 refs, post-check PASS), master/root.sqlite 762 rows each verified. Backup T5 `2026-10-16-newmusic-cleandirty` (806 files + _Serato_ + SQLite, PASS). Old Grok `CLEAN/Hip-Hop`, `DIRTY/Hip-Hop` folders left as they are. |
 | 4 Energy | Not started. |
 
 Not touched: DJ TOOLS, ALBUMS & PROJECTS (ask Imani first).
 
 Waiting on Imani (Claude items):
-- Job 3 go after the final preview; Source subfolder sheet (or skip).
+- Job 3: decide the 44 held tracks (rewrite their Genre to the approved spelling, or send them to _GENRE NEEDS CHECK). Source subfolder sheet (or skip).
+- 24 new downloads arrived in the folder during the day (Young Miko/, Destin Conrad, PinkPantheress, Tinashe): not in any job yet.
+- Serato: Rescan ID3 Tags on NEW MUSIC DOWNLOADS (240 Clean/Dirty Grouping appends); check moved tracks show up.
 - Blanks: NOLA Bounce 46, Ghettotech 22 (preview CSVs in `nola-bounce-energy-20261016/`, `ghettotech-energy-20261016/`).
 - Baile/Afrobeats 11 untagged (`energy-blanks-20261016/`): Situationship Edit = Warmup (not written); Waste My Time / CRU LOVE / Se Dansa need a value; 3 Tems ID3v2.2 need conversion OK; Davido "Five" delete requested, NOT done (needs explicit go).
 - Grok's `energy-written-change-suggestions-20261016.csv` suggests 8 NOLA Bounce Twerk Dutty -> Shake (not applied).
 - Maybe misfiled: Bounce (Wassup Wassup x2, River Dance Bounce, no luv (+)); Ghettotech ~12 (see its preview).
 - Serato: Rescan ID3 Tags on New Orleans Bounce, Ghettotech, NEW MUSIC DOWNLOADS.
 
-T5 backups from Claude today (delete after Serato check): `2026-10-16-nola-bounce-energy`, `2026-10-16-ghettotech-energy`, `2026-10-16-newmusic-dupes`, `2026-10-16-newmusic-tags`.
+T5 backups from Claude today (delete after Serato check): `2026-10-16-nola-bounce-energy`, `2026-10-16-ghettotech-energy`, `2026-10-16-newmusic-dupes`, `2026-10-16-newmusic-tags`, `2026-10-16-newmusic-cleandirty`.
 
 Energy values: Imani's 10 (Warmup, Starter, Sing Along, Dance Flex, Shake, Twerk Dutty, Slow Wine, Peak, Cooldown, Reset) plus Bashment, which stays for Jamaican dancehall (already written in Dancehall/Reggae/RIDDIM). No Banger.
+- 2026-10-16 14:15 ET (Claude): NEW MUSIC job 3 Clean/Dirty FINAL PREVIEW (read-only, nothing moved): 815 in scope. DIRTY 315 (label 75, heard in audio 208, published lyrics only 32), CLEAN 49 (label only), _NEEDS CHECK 446 (no hit), 5 instrumentals left in place. 806 moves into <bucket>/<Genre>/, 0 name clashes, 112 subfolders would be emptied (Imani OK). 2 files found in the Mac Trash (AZ Chike "Are You Tired Yet" FLAC, J. Cole H.Y.B. .ogg) - deleted by hand, not by a tool; both in T5 2026-10-16-newmusic-tags. CSV: new-music-move-20261016/job3-cleandirty/job3-cleandirty-PREVIEW-20261016.csv. Waiting on Imani go.
+- 2026-10-16 15:00 ET (Claude): NEW MUSIC job 3 APPLIED: 762 moved (346 apply_clean_dirty_move_plan + 18/398 apply_version_genre_plan), 44 held (Genre spelling). Notes: move-only run 1 stopped at item 19 on a Genre-spelling check and rolled it back cleanly; run 2 finished all 398 then hit KeyError counts["genres"] writing its result (plan-file field missing; undo log complete). SQLite plan built with build_preview(require_live_rules=False) for the 762 journal-proven moves (CLI preview refuses after moves). Locks released.
