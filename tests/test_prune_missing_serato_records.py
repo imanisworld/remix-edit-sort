@@ -151,6 +151,17 @@ class ApplyTests(PruneCase):
         self.assertEqual(record["completed_stores"], 3)
         self.assertEqual(record["errors"], [])
 
+    def test_postcheck_exception_restores_committed_stores(self):
+        plan = self.plan(); sm, qm = self.manifests()
+        before = {p: sha(p) for p in [self.serato / "database V2", *self.dbs]}
+        with patch.object(prune, "post_check", side_effect=RuntimeError("injected verification exception")):
+            with self.assertRaisesRegex(RuntimeError, "injected verification exception"):
+                self.apply(plan, sm, qm)
+        self.assertEqual(before, {p: sha(p) for p in before})
+        record = json.loads((self.tmp / "j.jsonl.rollback.json").read_text())
+        self.assertEqual(record["status"], "ROLLED_BACK")
+        self.assertEqual(record["errors"], [])
+
     def test_failure_in_second_sqlite_recovers_prior_commits(self):
         plan = self.plan(); sm, qm = self.manifests()
         before = {p: sha(p) for p in [self.serato / "database V2", *self.dbs]}
