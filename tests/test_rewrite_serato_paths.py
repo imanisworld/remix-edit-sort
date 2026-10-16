@@ -215,7 +215,7 @@ class SeratoRewriteWorkflowTests(unittest.TestCase):
         nonexistent = self.root / "definitely-not-present"
 
         with mock.patch.object(checker, "resolve", return_value=nonexistent):
-            with self.assertRaises(mutation_engine.MutationVerificationError):
+            with self.assertRaises(rewrite.SeratoRewriteError):
                 rewrite.apply_rewrite_plan(
                     plan=plan,
                     serato_dir=self.serato,

@@ -63,9 +63,11 @@ def stored_references(serato_dir: Path) -> dict[str, list[str]]:
 def sqlite_references(databases) -> dict[str, list[str]]:
     """Read-only (immutable) asset.portable_id values from Serato's library DBs."""
     import sqlite3
+    import rewrite_serato_sqlite_paths as sq
     out = {}
     for database in databases or []:
         database = Path(database).resolve()
+        sq.require_quiescent(database)  # an unfolded WAL holds rows immutable=1 cannot see
         conn = sqlite3.connect(f"file:{database}?mode=ro&immutable=1", uri=True)
         try:
             out[f"sqlite:{database.name}"] = [
@@ -88,7 +90,7 @@ def compose(serato_dir: Path, maps: list[list[dict]], exists=None, databases=Non
     for relative, paths in refs.items():
         for stored in paths:
             final, fired = chain(stored, maps)
-            if not fired:
+            if not fired or final == stored:  # e.g. A -> B then B -> A: nothing to repoint
                 continue
             if ("\\" in stored or "\\" in final) and (
                 stored.rsplit("/", 1)[-1] != final.rsplit("/", 1)[-1]
@@ -110,8 +112,13 @@ def compose(serato_dir: Path, maps: list[list[dict]], exists=None, databases=Non
     ghosts = sorted(
         old for old, new in mapping.items() if old in database_paths and new in database_paths
     )
+    composed = [{"from": "/" + old, "to": "/" + new} for old, new in sorted(mapping.items())]
+    if composed:
+        # Fail here, not later in rewrite_serato_paths: a composed map that
+        # chains (X -> Y plus Z -> X) cannot be applied in one pass.
+        sr.normalize_rename_map(composed)
     return {
-        "map": [{"from": "/" + old, "to": "/" + new} for old, new in sorted(mapping.items())],
+        "map": composed,
         "report": {
             "unique_paths_to_repoint": len(mapping),
             "per_file": {
@@ -138,7 +145,7 @@ def main() -> int:
     args = parser.parse_args()
     try:
         result = compose(args.serato_dir, load_maps(args.map), databases=args.sqlite_db)
-    except sr.SeratoRewriteError as exc:
+    except sr.SeratoRewriteError as exc:  # includes the SQLite WAL refusal
         print(f"REFUSED: {exc}", file=sys.stderr)
         return 2
     sr.write_json(args.out, result["map"])

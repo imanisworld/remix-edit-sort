@@ -32,8 +32,10 @@ import stat
 import struct
 import subprocess
 import sys
+import unicodedata
 import uuid
 from collections import Counter
+from functools import lru_cache
 from datetime import datetime
 from pathlib import Path
 
@@ -217,6 +219,15 @@ def normalize_rename_map(payload: object) -> list[dict]:
                     f"rename destination {new!r} is inside mapped source {old!r}; "
                     "split chained/nested moves into separate reviewed plans"
                 )
+            # The reverse chain: another rule's source sits inside this rule's
+            # destination ({R&b -> R&B, R&B/Clean -> Clean}), so a second pass
+            # would move R&b/Clean/x on to Clean/x.  (A rule may still move a
+            # subfolder up into its own parent: Pop/Sub -> Pop is one step.)
+            if candidate is not rule and old.startswith(new + "/"):
+                raise SeratoRewriteError(
+                    f"mapped source {old!r} is inside rename destination {new!r}; "
+                    "split chained/nested moves into separate reviewed plans"
+                )
 
     rules.sort(key=lambda rule: (-len(rule["from"]), rule["source_index"]))
     return rules
@@ -232,12 +243,32 @@ def load_rename_map(path: Path) -> list[dict]:
     return normalize_rename_map(payload)
 
 
+@lru_cache(maxsize=4096)
+def _folded_parts(path: str) -> tuple[str, ...]:
+    return tuple(unicodedata.normalize("NFC", part).casefold() for part in path.split("/"))
+
+
 def rewrite_path(path: str, rules: list[dict]) -> tuple[str, dict | None]:
-    """Apply exactly one longest matching rule at a component boundary."""
+    """Apply exactly one longest matching rule at a component boundary.
+
+    A stored path that spells a renamed folder with different letter case or
+    Unicode composition (``afrobeat`` / NFD accents) is the same folder to
+    APFS and to Serato, so it is repointed too -- unless the rule only changes
+    case/composition (such variants still resolve after the rename) or the
+    variant path still exists as its own file (a case-sensitive volume)."""
     for rule in rules:
         old = rule["from"]
         if path == old or path.startswith(old + "/"):
             return rule["to"] + path[len(old):], rule
+    parts = path.split("/")
+    folded = _folded_parts(path)
+    for rule in rules:
+        old = _folded_parts(rule["from"])
+        if old == _folded_parts(rule["to"]) or folded[:len(old)] != old:
+            continue
+        if os.path.exists("/" + path):
+            continue
+        return "/".join([rule["to"], *parts[len(old):]]), rule
     return path, None
 
 
@@ -313,6 +344,21 @@ def rewrite_serato_bytes(
     rebuilt_outer: list[bytes] = []
     changes: list[dict] = []
     track_number = 0
+    # In a crate, a repointed stale entry whose new path the crate already
+    # holds (stale + live copies of one track) is dropped instead of becoming
+    # a second entry for the same file.  database V2 never drops: collisions
+    # there are refused (database_collisions) and need the prune tool.
+    is_crate = relative_path != DATABASE_NAME
+    held: set[tuple[str, ...]] = set()
+    if is_crate:
+        for tag, value in outer:
+            if tag != "otrk":
+                continue
+            for inner_tag, inner_value in parse_tlv_strict(value, f"{relative_path}:otrk"):
+                if inner_tag == target_field:
+                    stored_path = _decode_path_value(inner_value, relative_path)[0]
+                    if rewrite_path(stored_path, rules)[1] is None:
+                        held.add(_folded_parts(stored_path))
 
     for outer_index, (tag, value) in enumerate(outer):
         if tag != "otrk":
@@ -320,6 +366,7 @@ def rewrite_serato_bytes(
             continue
         track_number += 1
         inner = parse_tlv_strict(value, f"{relative_path}:otrk[{track_number}]")
+        drop_record = False
         rebuilt_inner: list[bytes] = []
         for field_index, (inner_tag, inner_value) in enumerate(inner):
             if inner_tag != target_field:
@@ -333,7 +380,7 @@ def rewrite_serato_bytes(
                 continue
             new_value = (new_path + terminator).encode("utf-16-be")
             rebuilt_inner.append(encode_tlv(inner_tag, new_value))
-            changes.append({
+            change = {
                 "field": target_field,
                 "track_number": track_number,
                 "outer_record_index": outer_index,
@@ -341,7 +388,15 @@ def rewrite_serato_bytes(
                 "from": old_path,
                 "to": new_path,
                 "rule_source_index": rule["source_index"],
-            })
+            }
+            if is_crate:
+                if _folded_parts(new_path) in held:
+                    drop_record = True
+                    change["dropped_duplicate"] = True
+                held.add(_folded_parts(new_path))
+            changes.append(change)
+        if drop_record:
+            continue
         rebuilt_outer.append(encode_tlv(tag, b"".join(rebuilt_inner)))
 
     rewritten = b"".join(rebuilt_outer)
@@ -720,41 +775,8 @@ def run_post_check(
     }
 
 
-def apply_rewrite_plan(
-    *,
-    plan: dict,
-    serato_dir: Path,
-    library_root: Path,
-    manifest: dict,
-    heartbeat,
-    journal_path: Path,
-    post_check_path: Path,
-    result_path: Path,
-) -> dict:
-    """Apply an already validated plan through one engine transaction per file."""
-    serato_dir = Path(serato_dir).resolve()
-    library_root = Path(library_root).resolve()
-    if not library_root.is_dir():
-        raise SeratoRewriteError(f"library root is not a directory: {library_root}")
-    if not plan["files"]:
-        raise SeratoRewriteError("plan contains no Serato references to rewrite")
-
-    engine = mutation_engine.MutationEngine(
-        Path(journal_path), heartbeat, manifest, serato_dir, PLAN_TYPE
-    )
-    engine.start({
-        "plan_type": PLAN_TYPE,
-        "files": len(plan["files"]),
-        "references": plan["summary"]["references_changed"],
-        "rename_map_sha256": plan["rename_map_sha256"],
-    })
-    completed = []
-    for index, item in enumerate(plan["files"], start=1):
-        source = serato_dir / item["path"]
-        original = source.read_bytes()
-        rewritten, changes = rewrite_serato_bytes(original, item["path"], plan["renames"])
-        if changes != item["rewrites"] or sha256_bytes(rewritten) != item["proposed_sha256"]:
-            raise SeratoRewriteError(f"rewrite drift immediately before apply: {source}")
+def _apply_prepared(engine, prepared, manifest, plan, completed) -> None:
+    for index, (item, source, rewritten, changes) in enumerate(prepared, start=1):
         backup_path = Path(manifest["backup_root"]) / item["path"]
         with engine.item(
             index,
@@ -807,13 +829,109 @@ def apply_rewrite_plan(
             "reference_rewrites": len(changes),
         })
 
-    post_check = run_post_check(serato_dir, library_root, plan)
-    write_json(post_check_path, post_check)
-    if post_check["rewrite_verification"]["status"] != "PASS":
+
+def _undo_completed(engine, completed, manifest, serato_dir, offset) -> tuple[list[str], str | None]:
+    """Put back, newest first, every file this run already rewrote.
+
+    Journaled like any mutation (the lock is re-verified first); a file that
+    changed again since our write is never overwritten."""
+    undone = []
+    try:
+        for position, done in enumerate(reversed(completed), start=1):
+            source = Path(serato_dir) / done["path"]
+            backup_path = Path(manifest["backup_root"]) / done["path"]
+            with engine.item(
+                offset + position,
+                kind=mutation_engine.SERATO_PATHS,
+                source=source,
+                expected_sha256=done["after_sha256"],
+                require_backup=False,
+                extra_intent={"relative_path": done["path"], "undo_of_partial_run": True,
+                              "restore_from": str(backup_path)},
+            ) as txn:
+                txn.mark_mutated()
+                mutation_engine.restore_from_backup(backup_path, source, done["before_sha256"])
+                txn.record(relative_path=done["path"], restored_sha256=done["before_sha256"])
+            undone.append(done["path"])
+    except BaseException as exc:  # noqa: BLE001 - reported to the human as PARTIAL
+        return undone, f"{type(exc).__name__}: {exc}"
+    return undone, None
+
+
+def apply_rewrite_plan(
+    *,
+    plan: dict,
+    serato_dir: Path,
+    library_root: Path,
+    manifest: dict,
+    heartbeat,
+    journal_path: Path,
+    post_check_path: Path,
+    result_path: Path,
+) -> dict:
+    """Apply an already validated plan through one engine transaction per file."""
+    serato_dir = Path(serato_dir).resolve()
+    library_root = Path(library_root).resolve()
+    if not library_root.is_dir():
+        raise SeratoRewriteError(f"library root is not a directory: {library_root}")
+    if not plan["files"]:
+        raise SeratoRewriteError("plan contains no Serato references to rewrite")
+
+    engine = mutation_engine.MutationEngine(
+        Path(journal_path), heartbeat, manifest, serato_dir, PLAN_TYPE
+    )
+    engine.start({
+        "plan_type": PLAN_TYPE,
+        "files": len(plan["files"]),
+        "references": plan["summary"]["references_changed"],
+        "rename_map_sha256": plan["rename_map_sha256"],
+    })
+    # Preflight EVERY file before the first write.  A stop between files used
+    # to leave database V2 repointed and the crates not (Serato then re-imports
+    # ghosts) while recover() still reported clean.
+    prepared = []
+    for item in plan["files"]:
+        source = serato_dir / item["path"]
+        rewritten, changes = rewrite_serato_bytes(source.read_bytes(), item["path"], plan["renames"])
+        if changes != item["rewrites"] or sha256_bytes(rewritten) != item["proposed_sha256"]:
+            raise SeratoRewriteError(f"rewrite drift immediately before apply: {source}")
+        second_pass, remaining = rewrite_serato_bytes(rewritten, item["path"], plan["renames"])
+        if remaining or second_pass != rewritten:
+            raise SeratoRewriteError(f"planned rewrite is not idempotent: {source}")
+        missing = sorted({c["to"] for c in changes if not _literal_stored_path_is_file(c["to"])})
+        if missing:
+            raise SeratoRewriteError(f"target path(s) missing before apply: {missing[:5]}")
+        prepared.append((item, source, rewritten, changes))
+
+    completed = []
+    try:
+        _apply_prepared(engine, prepared, manifest, plan, completed)
+        post_check = run_post_check(serato_dir, library_root, plan)
+        write_json(post_check_path, post_check)
+        if post_check["rewrite_verification"]["status"] != "PASS":
+            raise SeratoRewriteError(f"Serato post-check failed; inspect {post_check_path}")
+    except BaseException as exc:
+        undone, undo_error = _undo_completed(engine, completed, manifest, serato_dir, len(prepared))
+        state = "ROLLED_BACK" if not undo_error else "PARTIAL"
+        write_json(result_path, {
+            "status": state, "plan_type": PLAN_TYPE, "error": str(exc),
+            "files_written_then_restored": undone,
+            "files_left_rewritten": [c["path"] for c in completed if c["path"] not in undone],
+            "files_never_written": [i["path"] for i, *_ in prepared
+                                    if i["path"] not in {c["path"] for c in completed}],
+            "restore_error": undo_error, "journal": str(journal_path),
+        })
+        if undo_error:
+            raise SeratoRewriteError(
+                f"PARTIAL REWRITE: stopped after {len(completed)} of {len(prepared)} file(s) ({exc}) and could not "
+                f"restore them ({undo_error}). Do NOT open Serato: restore {[c['path'] for c in completed]} "
+                f"from the verified backup {manifest['backup_root']} first. Details: {result_path}"
+            ) from exc
         raise SeratoRewriteError(
-            f"Serato post-check failed; inspect {post_check_path}. "
-            "Completed items remain journaled and recoverable from the verified backup."
-        )
+            f"stopped after {len(completed)} of {len(prepared)} file(s) ({exc}); every written file was "
+            f"restored from the verified backup, so Serato is as before. Details: {result_path}"
+        ) from exc
+
     result = {
         "status": "PASS",
         "plan_type": PLAN_TYPE,
