@@ -336,6 +336,16 @@ class ApplyTests(Fixture):
         self.assertEqual(rollback["errors"], [])
         self.assertFalse((self.tmp / "r.json").exists())
 
+    def test_exception_during_final_postcheck_rolls_back(self):
+        before = self.dump()
+        with patch.object(sc, "verify_applied", side_effect=RuntimeError("injected verifier exception")):
+            with self.assertRaisesRegex(RuntimeError, "injected verifier exception"):
+                self.apply(self.plan())
+        self.assertEqual(self.dump(), before)
+        record = json.loads((self.tmp / "j.jsonl.rollback.json").read_text())
+        self.assertEqual(record["status"], "ROLLED_BACK")
+        self.assertEqual(record["errors"], [])
+
     def test_failed_postcheck_rollback_error_is_partial(self):
         plan = self.plan()
         real_restore = sc._restore_db
