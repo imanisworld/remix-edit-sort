@@ -4,6 +4,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 
 ## Last updated
 
+2026-10-16 ~12:00 EDT — Claude (cloud, repo only): code review of #63/#65/#73/#75. Prune tool fix PR opened; see "Code review holds" below. No library files touched.
 2026-10-16 10:58 EDT — Grok (DJ B.A.E. Library): high-confidence Energy v2 (10-value scale) written: R&B 506, Pop 895, Hip Hop 950 Grouping appends (29 ID3v2.2 skipped, 0 Energy conflicts). Med/low/NEEDS YOU/Reset not written. Backup T5 2026-10-16-energy-v2-high; Imani to rescan ID3 tags in Serato. See GROK-DJ-LIBRARY-LOG.md.
 2026-10-16 09:35 EDT — Grok (DJ B.A.E. Library): Afrobeats energy written (347); see GROK-DJ-LIBRARY-LOG.md.
 2026-10-16 09:20 EDT — Grok (DJ B.A.E. Library): Afrobeats Clean/Dirty written (79 Dirty moved+tagged, 161 to _NEEDS CHECK, 32 held); genre-folder config PR #69; see GROK-DJ-LIBRARY-LOG.md.
@@ -19,6 +20,14 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 2026-10-15 ~15:55 EDT — Claude (cloud, repo only): PR #55 merged (also reads a plain "Afrobeat" tag as Afrobeats; "Dub" stays held). No library files touched.
 2026-10-15 15:50 EDT — Claude (folder-rename tooling PR #56; library untouched)
 2026-10-15 ~16:50 EDT — Claude (cloud, repo only): fixed main CI after #48 (History staging script classified as allowlisted infrastructure). No library files touched.
+
+## Code review holds (Claude, 2026-10-16)
+
+- **Do not run `prune_missing_serato_records.py` until the fix PR is merged.** It could prune the record of a file that still exists (accent or letter-case spelling differences), and could prune a same-name *different* song's record or hand its crates to the wrong song (database V2 had no twin check; SQLite skipped the move map when there was one twin). Undo could replay a stale WAL or silently skip SQLite.
+- **Keep T5 `2026-10-16-prune-afrobeat-stale/`.** database V2 removed 48 records vs 44 per SQLite file; the 4-record gap matches the 4 same-name pairs (Closer, Slow Wine, Finesse, Focus). Check read-only that the Afrobeats copies of those 4 still have their record and crates before deleting this backup.
+- **Do not run `delete_verified_duplicates.py --mode audio-match`** until it is fixed. Version markers come only from filename + Title, so a CLEAN-folder copy and its DIRTY-folder twin with the same name can match (review test: similarity 0.956, Clean copy marked removable). Different edits/remixes share one marker (`DJ A Edit` = `DJ B Edit`); `Main`/`Amended`/`Censored`/`Club Mix` are not markers; only the first 120 s is fingerprinted; the keep file is not hash-pinned; nothing blocks `Imani Drops`. Exact mode (SHA-256) is unaffected.
+- **Check:** were the 202 Pop duplicates deleted on 2026-10-15 removed with `--mode audio-match`? If yes, list any pair where the deleted file and the kept file sit in different CLEAN/DIRTY folders (or one says Clean/Dirty in Grouping), and keep that backup until checked.
+- `rewrite_serato_paths.py` (crate repoint): no corruption found. Weak spots before the R&b → R&B rename: a stop mid-run leaves database V2 repointed but crates not (recover still says clean); case/accent spelling variants are skipped while the post-check passes; repointing can leave a crate with the same track twice.
 
 ## Tonight (Oct 16, 00:00-01:40 EDT)
 

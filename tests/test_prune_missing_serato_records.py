@@ -463,7 +463,92 @@ class MembershipCase(unittest.TestCase):
             c.execute("INSERT INTO asset (portable_id) VALUES (?)", (stored(extra),)); c.close()
         r = self.rows(self.plan(add=True, smart=True), "root.sqlite")[self.stale_a]
         self.assertEqual(r["action"], "hold")
-        self.assertEqual(sorted(r["membership_check"]["live_twin_paths"]), sorted([self.live_a, stored(extra)]))
+        for live in (self.live_a, stored(extra)):
+            self.assertIn(repr(live), r["reason"])
+
+
+class SameNameSafetyTests(unittest.TestCase):
+    """2026-10-16 review: spelling variants APFS treats as one file, and same-name
+    different songs (Goapele vs Ayotemi "Closer"), must never be pruned."""
+
+    def setUp(self):
+        self._t = tempfile.TemporaryDirectory(); self.addCleanup(self._t.cleanup)
+        self.tmp = Path(self._t.name).resolve(); self.music = self.tmp / "Music"
+        self.serato = self.tmp / "_Serato_"; self.lib = self.tmp / "Library"; self.lib.mkdir()
+
+    def build(self, on_disk, records, prefix=None, twin_map=None):
+        for rel in on_disk:
+            f = self.music / rel; f.parent.mkdir(parents=True, exist_ok=True); f.write_bytes(rel.encode())
+        paths = [stored(self.music / rel) for rel in records]
+        fx.make_serato_dir(self.serato, paths, {})
+        self.dbs = [fx.make_root_sqlite(self.lib / "root.sqlite", paths)]
+        plan = prune.build_plan(self.serato, self.music, self.dbs, prefix, twin_map=twin_map)
+        v2 = {r["path"]: r for r in plan["database_v2"]["records"]}
+        sql = {r["path"]: r for r in plan["sqlite"][0]["rows"]}
+        return v2, sql
+
+    def test_unicode_and_case_variants_count_as_present(self):
+        nfc, nfd = "Pop/Beyonc\u00e9.mp3", "Pop/Beyonce\u0301.mp3"
+        v2, sql = self.build([nfd, "Pop/Track.mp3"], [nfc, "POP/track.MP3"])
+        self.assertEqual(v2, {}); self.assertEqual(sql, {})
+
+    def test_single_twin_held_when_a_same_name_file_has_no_record(self):
+        # Goapele's Closer is live with a record; Ayotemi's moved to Afrobeats/ and has no record yet.
+        v2, sql = self.build(["R&B/Closer.mp3", "Afrobeats/Closer.mp3"], ["R&B/Closer.mp3", "Afrobeat/Closer.mp3"])
+        stale = stored(self.music / "Afrobeat/Closer.mp3")
+        for rows in (v2, sql):
+            self.assertEqual(rows[stale]["class"], "live_twin")
+            self.assertEqual(rows[stale]["action"], "hold")
+            self.assertIn("no record", rows[stale]["reason"])
+
+    def test_twin_map_enforced_even_with_one_twin(self):
+        stale = stored(self.music / "Afrobeat/Closer.mp3")
+        v2, sql = self.build(["R&B/Closer.mp3"], ["R&B/Closer.mp3", "Afrobeat/Closer.mp3"],
+                             twin_map={stale: stored(self.music / "Afrobeats/Closer.mp3")})
+        for rows in (v2, sql):
+            self.assertEqual(rows[stale]["action"], "hold")
+            self.assertIn("move map target", rows[stale]["reason"])
+
+    def test_two_live_twins_held_in_database_v2_too(self):
+        v2, sql = self.build(["R&B/Focus.mp3", "Afrobeats/Focus.mp3"],
+                             ["R&B/Focus.mp3", "Afrobeats/Focus.mp3", "Afrobeat/Focus.mp3"])
+        stale = stored(self.music / "Afrobeat/Focus.mp3")
+        for rows in (v2, sql):
+            self.assertEqual(rows[stale]["action"], "hold")
+
+    def test_clean_single_twin_still_removed(self):
+        v2, sql = self.build(["Afrobeats/a.mp3"], ["Afrobeats/a.mp3", "Afrobeat/a.mp3"])
+        stale = stored(self.music / "Afrobeat/a.mp3")
+        for rows in (v2, sql):
+            self.assertEqual(rows[stale]["action"], "remove")
+
+    def test_prefix_keeps_trailing_space(self):
+        v2, _ = self.build(["Amapiano /x.mp3", "Amapiano/y.mp3"], ["Amapiano /gone.mp3", "Amapiano/gone2.mp3"],
+                           prefix="Amapiano ")
+        self.assertEqual(set(v2), {stored(self.music / "Amapiano /gone.mp3")})
+
+
+class UndoSafetyTests(PruneCase):
+    def _applied(self):
+        plan = self.plan(); sm, qm = self.manifests(); self.apply(plan, sm, qm)
+        return sm, qm
+
+    def _undo(self, sm, qm, databases):
+        return prune.undo(journal_path=self.tmp / "j.jsonl", serato_dir=self.serato, databases=databases,
+                          serato_manifest=sm, sqlite_manifest=qm, heartbeat=FakeHeartbeat(),
+                          undo_journal=self.tmp / "undo", process_lister=NO_SERATO)
+
+    def test_undo_without_sqlite_db_refused(self):
+        sm, qm = self._applied(); dbv2 = sha(self.serato / "database V2")
+        with self.assertRaises(prune.PruneError):
+            self._undo(sm, qm, [])
+        self.assertEqual(sha(self.serato / "database V2"), dbv2)
+
+    def test_undo_refuses_unfolded_wal(self):
+        sm, qm = self._applied()
+        (self.master.parent / (self.master.name + "-wal")).write_bytes(b"x" * 64)
+        with self.assertRaises(Exception):
+            self._undo(sm, qm, self.dbs)
 
 
 if __name__ == "__main__":
