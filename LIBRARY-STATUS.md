@@ -6,6 +6,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 
 2026-10-16 ~12:50 EDT — Claude (cloud, repo only): status file cleaned up: one "Current state" section; stale "waiting/running" items that later entries show as done were removed; Grok's status PRs #74, #79 and #84 (holds answers) folded in. No library files touched.
 2026-10-16 12:35 EDT — Claude (Mac): NOLA Bounce + Ghettotech energy written; NEW MUSIC DOWNLOADS jobs 1-2 written (97 exact dupes deleted, 32 Genre + 14 Year), job 3 Clean/Dirty preview running (audio 5/12 batches), job 4 not started. See "NEW MUSIC DOWNLOADS — Claude" below.
+2026-10-16 12:25 EDT — Claude (Mac, read-only): low-bitrate triage list DONE, no library files touched. 12,303 tracks under 320 kbps: 10,078 re-download (1,773 are Neptunes "Other Side of the Planet" rips; ~8,300 without them), 245 already have a better copy in the library (delete candidates, Imani reviews first), 1,980 at 256 kbps fine to keep. Files: `~/Music/DJ-Music/artifacts/low-bitrate-triage-20261016/`. See log.
 2026-10-16 12:10 EDT — Grok (from PR #84): code-review-holds answers (read-only): Oct 15 Pop dupes were audio-match and their T5 backup was already deleted; check Cassie "Me & U" and Britney "Slave 4 U (1st version)"; 10:01 ghost cleanup and the 4 Afrobeats same-name songs: nothing lost. See "Checks — answered".
 2026-10-16 12:04 EDT — #83 merged: genre refinement apply no longer crashes at the end (missing result JSON / run_complete).
 2026-10-16 ~12:00 EDT — Claude (cloud, repo only): code review of #63/#65/#73/#75; fixes merged as #78 and #81 (see "Checks before more cleanup" below). No library files touched.
@@ -73,6 +74,7 @@ The review fixes are merged (#78 prune tool + audio-match deleter; #81 crate rep
 12. Later: unproven old backups (~120G, check per file before any delete); Childish Gambino *We Are God* (backup may be the only copy); old T5 repo copy (215G, unpushed rule commits, ~3,655 tracks not in the live library — leave for later).
 13. NEW MUSIC DOWNLOADS, NOLA Bounce, Ghettotech, Baile/Afrobeats energy blanks, Davido "Five" (delete asked, NOT done — needs an explicit go): see "NEW MUSIC DOWNLOADS — Claude" at the end.
 14. `_GENRE NEEDS CHECK`: 179 files (2026-10-15 count, see totals) plus ~105 in Claude's per-folder `_NEEDS CHECK`.
+15. Low-bitrate triage: list is DONE (Claude, 2026-10-16, read-only). Imani: review the 245 "better copy exists" rows before any delete; re-download list is `low-bitrate-redownload.csv` (start with the ≤160 kbps rows). Deleting low copies needs a scoped backup + Serato repoint like the Pop dupes. **The 245 better-copy deletes stay dry-run only until Imani reviews them (code-review holds: no live `delete_verified_duplicates.py --mode audio-match` / `prune_missing_serato_records.py` runs).** This list (12,303, `~/Music/DJ-Music/artifacts/low-bitrate-triage-20261016/`) replaces Grok's earlier 11,966-track preview.
 
 ### Agents to do
 - `rewrite_serato_paths.py` still does not repoint History/session files (SmartCrates and nested crates are done, #73).
