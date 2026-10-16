@@ -49,7 +49,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 ### To do (agents)
 - Genre-folder config PR: `folder_names` Afrobeats -> `Afrobeats` folder.
 - Afrobeats energy after Clean/Dirty sort.
-- Later: 198 R&B hand-entry Years, 4 m4a/FLAC, 4 ID3v2.2, 2 missing; Pop 125 refused + 589 uncertain pairs; folder moves (5 Pop keepers, 12 non-R&B tracks); T5 repo copy.
+- Later: R&B hand-entry Years (41 high written 2026-10-16; 95 medium + 55 unsure await Imani, see rnb-year-hand08-proposals-20261016.csv), 4 m4a/FLAC, 4 ID3v2.2, 2 missing; Pop 125 refused + 589 uncertain pairs; folder moves (5 Pop keepers, 12 non-R&B tracks); T5 repo copy.
 
 ## Rules every AI must follow
 
@@ -157,7 +157,7 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
   2. Imani picks the exact junk values → one per line in `$W/remove.txt`.
   3. `python3 scripts/build_grouping_removal_plan.py plan --root "$LIB/<folder>" --remove "$W/remove.txt" --out-dir "$W/grouping-removal"` → show `GROUPING-REMOVAL-PREVIEW.md`; Imani says go.
   4. Scoped backup + PASS manifest, then `apply_grouping_plan.py --apply` with the lock, as for any Grouping write. Serato rescan.
-- **R&B still open** (`rnb-year-review-v2-20261015.csv/.md`): **198** type-by-hand Years, **4** m4a/FLAC, **4** ID3v2.2 (07 Got Her Own, 08 Drown In It, Return Of The Mac (Topper-Intro) Extended, Shut It Down — tag upgrade first), **2** missing files.
+- **R&B still open** (`rnb-year-review-v2-20261015.csv/.md`): type-by-hand Years: **41** high-confidence written 2026-10-16 09:22 (online lookup, read back 41/41, 0 audio/Serato frame changes; undo `rnb-hand-years-20261016/rnb-hand-year-bpm-undo-20261016-092227.jsonl`; T5 backup `2026-10-16-rnb-hand-years`), **95** medium + **55** unsure still open (`rnb-year-hand08-proposals-20261016.csv`), **4** m4a/FLAC, **4** ID3v2.2 (07 Got Her Own, 08 Drown In It, Return Of The Mac (Topper-Intro) Extended, Shut It Down — tag upgrade first), **2** missing files.
 - **Not R&B — move out of the R&b folder in the folder pass** (Genre left unchanged, Year written 2026-10-15): Hip-Hop: Beyoncé Formation (Intro Clean) + (Intro Dirty), bLAck pARty Flame + KEMET, Col3trane Take Notes, Smino Curtains + Garden Lady + HOOPTI, Ludacris Saturday (Oooh! Ooooh!); Funk & Soul: James Brown I FEEL GOOD; House: Son Of Mongo; Latin; Pop: Alkaline Mamacita.
 - **Pop duplicates still waiting:** 18 version-label holds (preview 20261016: 8 removals waiting, 10 kept until NC known), 125 refused, 589 uncertain pairs. 5 keepers to move into their genre folders in the folder pass (Everything is romantic → Lounge, ROCKET → Groovy Bounce, Ick + Na Na Na → Jersey Club, SAD GIRLZ LUV MONEY Remix → Afrobeats; Grouping already tagged).
 - **Drake title cleanup: DONE 2026-10-16 01:31.** 16 titles cleaned in R&b (15) and Hip Hop (1), e.g. "Drake - Marvins Room" -> "Marvins Room". Artist tags unchanged. 10 left as-is on purpose: 7 remixes/edits where Drake only appears in the Title, plus KAYTRANADA and 2 Drake/21 Savage titles. Undo + T5 backup: drake-title-20261016/, T5 2026-10-16-drake-titles/ (delete after Serato check).
@@ -171,7 +171,7 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
 
 1. Rescan Pop Girl → refresh preview → write Pop tags (scoped backup) after Serato closed.
 2. Imani reviews the held/refused/uncertain duplicate pairs.
-3. R&B conflicting-genre (20) + hand-entry Years (198); m4a/FLAC Year/Grouping (writers on main via #51).
+3. R&B conflicting-genre (20) + hand-entry Years (150 left: 95 medium, 55 unsure); m4a/FLAC Year/Grouping (writers on main via #51).
 4. **34** ID3v2.2 Grouping (needs conversion approval).
 5. PR: extend `rewrite_serato_paths.py` to History + SmartCrates.
 6. One-pass folder moves: `R&b` → `R&B` + CLEAN/DIRTY sort; Afrobeat folder → Afrobeats; misfiled tracks from Claude sheets. (Rename tooling exists in the PR above; needs review + Imani's go first.)
