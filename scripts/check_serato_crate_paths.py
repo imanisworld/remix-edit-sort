@@ -20,11 +20,14 @@ here, and every assumption below was checked against this machine's real
   Verified against ~25,800 real entries: every one of the ~21,700 that
   resolved did so only with the leading `/` prepended, none resolved
   as-is.
-* `SmartCrates/*.scrate` are rule-based filters (e.g. a year condition),
-  not track lists -- they contain no `ptrk`/`pfil` paths at all and are
-  correctly out of scope for a path-integrity check.
+* `SmartCrates/*.scrate` are rule-based filters, BUT they also cache their
+  current track list as `otrk`/`ptrk` records (corrected 2026-10-16: 75,063
+  cached refs on this machine). Serato re-imports any cached path missing from
+  `database V2`, so they are checked too and reported as `smart:<name>`.
+  Nested crates (e.g. `Subcrates/Serato Stems/Stems.crate`) are included.
 
-This script only reads `_Serato_/database V2` and `_Serato_/Subcrates/*`,
+This script only reads `_Serato_/database V2`, `_Serato_/Subcrates/**` and
+`_Serato_/SmartCrates/**`,
 and only reads the live library to check whether paths exist and, for
 missing ones, to look for a same-named file elsewhere as a candidate
 "probably moved here" hint. It never writes to Serato's data and never
@@ -133,11 +136,14 @@ def audit(serato_dir: Path, library_root: Path) -> dict:
         raise SystemExit(f"no database V2 found at {db_path}")
 
     db_tracks = parse_database(db_path)
-    crates_dir = serato_dir / "Subcrates"
     crate_paths: dict[str, list[str]] = {}
-    if crates_dir.is_dir():
-        for crate_file in sorted(crates_dir.glob("*.crate")):
-            crate_paths[crate_file.stem] = parse_crate(crate_file)
+    for folder, pattern, prefix in (("Subcrates", "*.crate", ""), ("SmartCrates", "*.scrate", "smart:")):
+        crates_dir = serato_dir / folder
+        if not crates_dir.is_dir():
+            continue
+        for crate_file in sorted(crates_dir.rglob(pattern)):
+            name = str(crate_file.relative_to(crates_dir).with_suffix(""))
+            crate_paths[prefix + name] = parse_crate(crate_file)
 
     filename_index = build_filename_index(library_root)
 

@@ -25,7 +25,7 @@ points into it. Three things made the existing tooling insufficient:
    | `Library/master.sqlite` `asset.portable_id` | 3,473 `R&b` + 351 `Afrobeat` | **`rewrite_serato_sqlite_paths.py`** |
    | `Library/root.sqlite` `asset.portable_id` | 3,473 `R&b` + 351 `Afrobeat` | **`rewrite_serato_sqlite_paths.py`** |
    | `master.sqlite` `history_entry.portable_id` (play history) | 257 rows match the rename map | left alone, counted in the preview |
-   | `_Serato_/SmartCrates/*.scrate` cached `ptrk` | 8,178 `Music/R&b/` + 902 `Music/Afrobeat/` byte-string hits | **not covered** (see Open questions) |
+   | `_Serato_/SmartCrates/**/*.scrate` cached `ptrk` (+ nested `Subcrates/**/*.crate`) | 8,178 `Music/R&b/` + 902 `Music/Afrobeat/` byte-string hits | **`rewrite_serato_paths.py`** (since the smart-crate PR, 2026-10-16) |
    | `_Serato_/History/*.session`, `Logs/` | 453 + 29 / 237 + 12 byte-string hits | not covered; history, by design |
 
 ## Decision
@@ -154,9 +154,15 @@ After a crash: `apply_folder_rename_plan.py recover --journal <journal>` (dry ru
    this is inferred, not observed. The tool deliberately does not edit
    `last_seen_dbv2_library`. Try one small folder first, or take a spare copy of the
    Serato directories and open it.
-2. **SmartCrates cache `ptrk` paths** (8,178 + 902 byte-string hits here). Whether Serato
-   regenerates them from the rules on launch is unknown. The backlog item "extend
-   `rewrite_serato_paths.py` to History + SmartCrates" would cover it; not done here.
+2. **SmartCrates cache `ptrk` paths — answered 2026-10-16: Serato does NOT regenerate
+   them first.** On launch it re-imports every cached path missing from `database V2`
+   (log: `Dbv2 Import: Adding track not found in database ... but found in crate`), which
+   brought back ~398 old `Music/Afrobeat/` records at 22:04 Oct 15 and 09:27 Oct 16.
+   `rewrite_serato_paths.py` now repoints `SmartCrates/**/*.scrate` and nested
+   `Subcrates/**/*.crate` (e.g. `Serato Stems/Stems.crate`) in the same run as
+   `database V2`, so every folder move/rename through `apply_folder_rename_plan.py`
+   covers them automatically; `check_serato_crate_paths.py` and the rewrite post-check
+   audit them too (reported as `smart:<name>`).
 3. **Five stale `master.sqlite`/`root.sqlite` rows** under `R&b/_NEEDS CHECK/R&B/`
    point at files that do not exist today. They are rewritten like any other row and
    reported as `rows_already_missing`; the rename can neither create nor fix them.
@@ -169,4 +175,20 @@ After a crash: `apply_folder_rename_plan.py recover --journal <journal>` (dry ru
   still map Afrobeats to `Afrobeat` (and R&B to `R&b`); update them, the pins in
   `scripts/check_genre_naming.py`, and `CLAUDE.md` once the folders are renamed,
   not before, or the live pipeline would file tracks into folders that no longer exist.
-* Extend the Serato rewriter to SmartCrates and History if Serato needs them.
+* History (`History/*.session`) is still left alone by design.
+
+## Clearing ghosts left by older runs (smart-crate catch-up)
+
+Old references can be several moves behind. With Serato **closed**, T5 mounted:
+
+1. `compose_serato_rename_map.py --serato-dir ~/Music/_Serato_ --map <inner map> --map <top map> --map <clean/dirty map> --out composed.json --report report.json`
+   (maps in the order the moves happened; read-only). Paths whose chain ends at a
+   missing file, or that contain a backslash, are listed as unmappable and left out.
+2. `rewrite_serato_paths.py preview --crates-only --rename-map composed.json ...` then
+   `apply` (lock `Serato`, `_Serato_` backup manifest, journal, post-check). `--crates-only`
+   leaves `database V2` alone; a normal preview refuses if a repointed database path
+   would duplicate an existing record (that record is a ghost: prune it, don't repoint it).
+3. `prune_missing_serato_records.py` on the old prefix (with `--drop-stale-memberships`)
+   now that no crate references the ghosts; then `check_serato_crate_paths.py` must show
+   no old-prefix paths in any crate or smart crate before Serato is opened.
+4. Undo: `mutation_engine` journal / restore from the `_Serato_` backup.
