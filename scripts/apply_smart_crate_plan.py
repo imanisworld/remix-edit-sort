@@ -124,6 +124,25 @@ def crate_parts(relative: str) -> tuple[str, ...]:
     return tuple(re.sub(r"␛␛([0-9a-fA-F]{2})", lambda m: chr(int(m.group(1), 16)), p) for p in stem.split(SEP))
 
 
+def safe_scrate_path(serato_dir: Path, relative: str) -> Path:
+    """A crate is exactly one non-symlink file directly under SmartCrates."""
+    if not isinstance(relative, str):
+        raise SmartCrateError("smart-crate path must be a string")
+    rel = Path(relative)
+    if rel.is_absolute() or len(rel.parts) != 2 or rel.parts[0] != "SmartCrates":
+        raise SmartCrateError(f"unsafe smart-crate path (outside SmartCrates): {relative!r}")
+    if rel.parts[1] in ("", ".", "..") or not rel.parts[1].endswith(".scrate"):
+        raise SmartCrateError(f"unsafe smart-crate file name: {relative!r}")
+    root = Path(serato_dir)
+    smart = root / "SmartCrates"
+    target = root / rel
+    if smart.is_symlink() or target.is_symlink():
+        raise SmartCrateError(f"symlink smart-crate path refused: {relative!r}")
+    if target.resolve(strict=False).parent != smart.resolve(strict=False):
+        raise SmartCrateError(f"smart-crate path escapes SmartCrates: {relative!r}")
+    return target
+
+
 def sha(b: bytes) -> str:
     return hashlib.sha256(b).hexdigest()
 
@@ -258,7 +277,7 @@ def build_plan(preview_dir: Path, serato_dir: Path, databases: list[Path], retir
         item = {"key": f"{n}:{act}", "action": act}
         src = it.get("source") if act != "create" else None
         if src:
-            p = serato_dir / src
+            p = safe_scrate_path(serato_dir, src)
             if not p.is_file():
                 problems.append(f"missing source {src}"); continue
             cur = sr.sha256_file(p)
@@ -271,13 +290,18 @@ def build_plan(preview_dir: Path, serato_dir: Path, databases: list[Path], retir
                 problems.append(f"retire destination exists: {dest}")
             item["retire_to"] = str(dest)
         else:
+            target = safe_scrate_path(serato_dir, it["target"])
+            if it.get("staged") != f"staged/{it['target']}":
+                raise SmartCrateError(f"staged path does not match target: {it.get('staged')!r}")
             staged = preview_dir / it["staged"]
+            if (preview_dir / "staged").is_symlink() or (preview_dir / "staged" / "SmartCrates").is_symlink() or staged.is_symlink():
+                raise SmartCrateError(f"staged symlink refused: {staged}")
             data = staged.read_bytes()
             if sha(data) != it["staged_sha256"]:
                 problems.append(f"staged file changed: {staged}")
             item.update(target=it["target"], staged=str(staged), staged_sha256=sha(data),
                         rules=decode_rules(data, it["target"]))
-            if act in ("create", "rename") and (serato_dir / it["target"]).exists():
+            if act in ("create", "rename") and target.exists():
                 problems.append(f"{act} target already exists: {it['target']}")
             if act == "rename":
                 dest = retire_dir / Path(src).name
@@ -565,6 +589,13 @@ def apply_plan(*, plan: dict, serato_dir: Path, databases: list[Path], serato_ma
     park = retire_dir / f"rolled-back-{datetime.now().strftime('%Y%m%d-%H%M%S-%f')}"
     undo_stack = []   # callables that reverse completed steps, newest last
     ctx = {}
+    # Defense in depth: the CLI also validates and hash-rebuilds the plan.
+    # Prevent a caller supplying a plan that writes outside SmartCrates.
+    for it in plan["items"]:
+        if it.get("source"):
+            safe_scrate_path(serato_dir, it["source"])
+        if it.get("target"):
+            safe_scrate_path(serato_dir, it["target"])
 
     def hook(step):
         if fail_after == step:
@@ -644,24 +675,36 @@ def apply_plan(*, plan: dict, serato_dir: Path, databases: list[Path], serato_ma
                 txn.record(action="create", created=[str(p) for p in made])
                 undo_stack.append(lambda made=list(made): [_park(p, park) for p in made])
             hook("create")
+        # A completed engine journal is not proof of global success. Check both
+        # stores while rollback is still armed, before finishing the file journal.
+        check = verify_applied(plan, serato_dir, dbs)
+        if check["status"] != "PASS":
+            raise mutation_engine.MutationVerificationError(
+                f"smart-crate post-check failed: {check['problems'][:5]}")
+        hook("post-check")
         fengine.finish({"items": idx + bool(creates)})
-    except BaseException:
+        result = {"status": "PASS", "plan_type": PLAN_TYPE, "journal": str(journal_path),
+                  "retire_dir": str(retire_dir), "sqlite_records": sql_records, "check": check}
+        sr.write_json(result_path, result)
+        return result
+    except BaseException as exc:
         errors = []
         for fn in reversed(undo_stack):
             try:
                 fn()
-            except Exception as exc:  # noqa: BLE001
-                errors.append(f"{type(exc).__name__}: {exc}")
-        sr.write_json(Path(f"{journal_path}.rollback.json"), {"rolled_back_steps": len(undo_stack), "errors": errors})
+            except Exception as rollback_exc:  # noqa: BLE001
+                errors.append(f"{type(rollback_exc).__name__}: {rollback_exc}")
+        status = "PARTIAL" if errors else "ROLLED_BACK"
+        sr.write_json(Path(f"{journal_path}.rollback.json"),
+                      {"status": status, "rolled_back_steps": len(undo_stack),
+                       "errors": errors, "original_error": f"{type(exc).__name__}: {exc}"})
+        if errors:
+            sr.write_json(result_path,
+                          {"status": "PARTIAL", "rollback_errors": errors, "journal": str(journal_path),
+                           "action_required": "DO NOT OPEN SERATO; restore from verified backups."})
+            raise SmartCrateError("PARTIAL rollback; DO NOT OPEN SERATO. "
+                                  f"See {journal_path}.rollback.json") from exc
         raise
-    check = verify_applied(plan, serato_dir, dbs)
-    result = {"status": check["status"], "plan_type": PLAN_TYPE, "journal": str(journal_path),
-              "retire_dir": str(retire_dir),
-              "sqlite_records": sql_records, "check": check}
-    sr.write_json(result_path, result)
-    if check["status"] != "PASS":
-        raise SmartCrateError(f"post-check failed; see {result_path}")
-    return result
 
 
 def verify_applied(plan: dict, serato_dir: Path, dbs: dict) -> dict:
