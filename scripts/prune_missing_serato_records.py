@@ -718,7 +718,7 @@ def post_check(serato_dir, library_root, databases, prefix, drop_stale_membershi
             "held_remaining": held, "summary": again["summary"]}
 
 
-def _restore_prune_completed(target: Path, backup: Path, before: str, after: str, is_sqlite: bool) -> None:
+def _restore_prune_completed(txn, target: Path, backup: Path, before: str, after: str, is_sqlite: bool) -> None:
     """Recover a committed store without overwriting concurrent changes."""
     target = Path(target)
     if sr.sha256_file(target) != after:
@@ -726,6 +726,9 @@ def _restore_prune_completed(target: Path, backup: Path, before: str, after: str
     if is_sqlite:
         # A non-empty SQLite WAL can replay mutations over a restored backup.
         sq.require_quiescent(target)
+    # The rollback itself must be write-ahead journaled as a mutation item.
+    txn.mark_mutated()
+    if is_sqlite:
         for side in sq.sidecar_paths(target).values():
             if side.exists():
                 side.rename(side.with_name(f"{side.name}.discarded-{os.getpid()}"))
@@ -812,10 +815,20 @@ def apply_plan(*, plan, serato_dir, library_root, databases, serato_manifest, sq
         # Earlier engine items have already committed. Recover every completed
         # store in reverse order; the active item owns its own rollback handler.
         failures = []
-        for target, backup, before, after, is_sqlite in reversed(rollback_stack):
+        for i, (target, backup, before, after, is_sqlite) in enumerate(reversed(rollback_stack), start=1):
             try:
                 heartbeat.beat(force=True)
-                _restore_prune_completed(target, backup, before, after, is_sqlite)
+                manifest = sqlite_manifest if is_sqlite else serato_manifest
+                recovery = mutation_engine.MutationEngine(
+                    Path(f"{journal_path}.rollback-{i}.jsonl"), heartbeat, manifest,
+                    Path(target).parent, PLAN_TYPE + "-rollback")
+                recovery.start({"recover_store": str(target), "apply_journal": str(journal_path)})
+                with recovery.item(1, kind=mutation_engine.SERATO_PATHS, source=target,
+                                   expected_sha256=after, require_backup=False,
+                                   extra_intent={"restore_backup": str(backup)}) as txn:
+                    _restore_prune_completed(txn, target, backup, before, after, is_sqlite)
+                    txn.record(restored_sha256=before)
+                recovery.finish({"restored_store": str(target)})
             except BaseException as rollback_exc:  # noqa: BLE001
                 failures.append({"store": str(target), "error": f"{type(rollback_exc).__name__}: {rollback_exc}"})
         state = "PARTIAL" if failures else "ROLLED_BACK"
