@@ -88,6 +88,22 @@ Nothing here has been run on the live library. Needs the owner's explicit go.
 
 ```bash
 # 0. Quit Serato completely. Work in ONE checkout: locks live in <checkout>/.locks.
+# 0b. Prune stale Serato records RIGHT BEFORE the rename (Serato stays closed from
+#     here until step 5's post-check passes; opening it re-adds stale paths).
+#     python3 scripts/prune_missing_serato_records.py --serato-dir ~/Music/_Serato_ \
+#       --library-root ~/Music/DJ-Music/Music --sqlite-db <master.sqlite> --sqlite-db <root.sqlite> \
+#       --prefix <Folder>/ --out prune-plan.json            # dry run: review live_twin / truly_missing / held
+#     ...then --apply --plan prune-plan.json with scoped backup manifests; require post_check PASS.
+#     Held rows (crate refs, still in a container, or moved-but-unindexed) are never removed; resolve by hand.
+#     Optional (owner-approved only): --drop-stale-memberships lets a live_twin SQLite row go together with
+#     its container memberships when its single live copy is already in every one of those containers;
+#     add --add-live-memberships to first append the live copy (list_order = max+1, Serato's own revision,
+#     no duplicates) to each NORMAL crate it is missing from. Smart crates (smart_crate_rules) are never
+#     inserted into: a row whose live copy is missing from a smart crate is HELD and the crate is reported.
+#     Apply verifies every original membership is unchanged and the live copy is in all former containers.
+#     --drop-stale-smart-memberships (owner-approved 2026-10-16): smart-crate memberships of such a row may be
+#     dropped without the live copy (smart crates rebuild from rules). Regular crates keep the rule above.
+#     Undo: --undo --journal <journal>. History/session files are never touched.
 # 1. Read-only previews. Build ALL of them first; the SQLite preview must be built
 #    BEFORE the folders are renamed (it records which rows were already stale).
 python3 scripts/apply_folder_rename_plan.py preview --library-root ~/Music/DJ-Music/Music \
@@ -118,7 +134,8 @@ python3 scripts/rewrite_serato_sqlite_paths.py apply --sqlite-db ... --plan sqli
     --backup-manifest sqlite-manifest.json --session S --journal sqlite.jsonl --out sqlite-result.json \
     --confirm-serato-closed
 
-# 5. python3 scripts/check_serato_crate_paths.py, release locks, open Serato, spot-check crates.
+# 5. python3 scripts/check_serato_crate_paths.py, re-run the prune dry run (expect 0 removable),
+#    release locks, and only THEN open Serato, spot-check crates.
 ```
 
 Back out: restore database V2, crates and both SQLite files from the verified
