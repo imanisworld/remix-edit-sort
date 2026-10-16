@@ -60,9 +60,27 @@ def stored_references(serato_dir: Path) -> dict[str, list[str]]:
     return out
 
 
-def compose(serato_dir: Path, maps: list[list[dict]], exists=None) -> dict:
+def sqlite_references(databases) -> dict[str, list[str]]:
+    """Read-only (immutable) asset.portable_id values from Serato's library DBs."""
+    import sqlite3
+    out = {}
+    for database in databases or []:
+        database = Path(database).resolve()
+        conn = sqlite3.connect(f"file:{database}?mode=ro&immutable=1", uri=True)
+        try:
+            out[f"sqlite:{database.name}"] = [
+                row[0] for row in conn.execute("SELECT portable_id FROM asset")
+                if isinstance(row[0], str)
+            ]
+        finally:
+            conn.close()
+    return out
+
+
+def compose(serato_dir: Path, maps: list[list[dict]], exists=None, databases=None) -> dict:
     exists = exists or sr._literal_stored_path_is_file
     refs = stored_references(serato_dir)
+    refs.update(sqlite_references(databases))
     database_paths = set(refs.get(sr.DATABASE_NAME, []))
     mapping: dict[str, str] = {}
     unmappable: dict[str, dict] = {}
@@ -72,10 +90,13 @@ def compose(serato_dir: Path, maps: list[list[dict]], exists=None) -> dict:
             final, fired = chain(stored, maps)
             if not fired:
                 continue
-            if "\\" in stored or "\\" in final:
-                # rewrite_serato_paths refuses backslash paths; hold, never guess.
+            if ("\\" in stored or "\\" in final) and (
+                stored.rsplit("/", 1)[-1] != final.rsplit("/", 1)[-1]
+                or "\\" in stored.rsplit("/", 1)[0] or "\\" in final.rsplit("/", 1)[0]
+            ):
+                # Backslash only allowed in an unchanged file name; hold anything else.
                 entry = unmappable.setdefault(stored, {"from": stored, "chained_to": final, "in": [],
-                                                        "why": "path contains a backslash"})
+                                                        "why": "backslash outside an unchanged file name"})
                 entry["in"].append(relative)
                 per_file[relative]["held_backslash"] += 1
                 continue
@@ -112,9 +133,11 @@ def main() -> int:
                         help="approved rename map; repeat in the order the moves happened")
     parser.add_argument("--out", required=True, type=Path, help="composed per-path rename map (JSON)")
     parser.add_argument("--report", required=True, type=Path)
+    parser.add_argument("--sqlite-db", action="append", type=Path, default=[],
+                        help="also map asset paths in master.sqlite/root.sqlite (read-only)")
     args = parser.parse_args()
     try:
-        result = compose(args.serato_dir, load_maps(args.map))
+        result = compose(args.serato_dir, load_maps(args.map), databases=args.sqlite_db)
     except sr.SeratoRewriteError as exc:
         print(f"REFUSED: {exc}", file=sys.stderr)
         return 2

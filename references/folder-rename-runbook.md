@@ -192,3 +192,12 @@ Old references can be several moves behind. With Serato **closed**, T5 mounted:
    now that no crate references the ghosts; then `check_serato_crate_paths.py` must show
    no old-prefix paths in any crate or smart crate before Serato is opened.
 4. Undo: `mutation_engine` journal / restore from the `_Serato_` backup.
+
+### Multi-copy ghosts and backslash file names (2026-10-16)
+* `compose_serato_rename_map.py --sqlite-db master.sqlite --sqlite-db root.sqlite` also maps
+  library-database rows that no crate references any more.
+* `prune_missing_serato_records.py --twin-map composed.json`: when a stale row's file name has
+  several live copies, the copy the approved move map says the old path became is used; if that
+  target is not exactly one live record the row stays held.
+* A backslash is allowed only inside an unchanged file name (e.g. `\A-Star - Kupe Dance ...mp3`),
+  never in a folder part and never in a file rename, so it can't act as a separator.
