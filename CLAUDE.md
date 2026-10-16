@@ -46,7 +46,9 @@ Before changing anything:
 Non-negotiable safety rules:
 
 - Never delete or deduplicate from filenames alone. `EXACT_DUPLICATE` = identical SHA-256 over
-  the whole file, and nothing else. Filename/title/duration similarity is REVIEW only.
+  the whole file, and nothing else. Filename/title/duration similarity is REVIEW only. The one
+  other removable case is the owner audio-match rule (2026-10-15, tightened 2026-10-16 after a
+  code review so a Clean copy is never removed for its Dirty twin); `SAFETY-MODEL.md` has its terms.
 - Preserve Clean, Dirty, Intro, Remix, Edit, Instrumental, Acapella, and other meaningful versions.
 - Preserve meaningful numbers such as `21 Savage`, `112`, years, BPM, and part numbers.
 - Do not infer uncertain genres, artists, titles, event names, or versions. Use needs-check classifications.
