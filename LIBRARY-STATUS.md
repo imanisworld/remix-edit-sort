@@ -209,7 +209,7 @@ Folder `NEW MUSIC DOWNLOADS - MUSIC TO MOVE` is Claude's (Imani 2026-10-16). Wor
 | Job | State |
 |---|---|
 | 1 Duplicates | DONE 10:28. 97 exact-SHA-256 extra copies deleted (38 keepers verified). 1,124 -> 1,027 files. 0 exact copies elsewhere in the library. |
-| 2 Missing tags | DONE 11:18. Genre 32 + Year 14 written (blank only, 2+ sources or repo filename keyword). 288 Genre / 146 Year left blank. Source: nothing written; 105 subfolders listed for Imani (`job2-tags/job2-source-subfolders-20261016.csv`). |
+| 2 Missing tags | DONE 11:18. Genre 32 + Year 14 written (blank only, 2+ sources or repo filename keyword). 288 Genre / 146 Year left blank. Genre tool end-of-run crash fixed in PR #83 (merged). Source: nothing written; 105 subfolders listed for Imani (`job2-tags/job2-source-subfolders-20261016.csv`). |
 | 3 Clean/Dirty | PREVIEW running, nothing moved. Audio check 5/12 batches (ETA ~13:20), lyrics check done. Interim: DIRTY 160, CLEAN 49, _NEEDS CHECK 603. Imani OK'd emptying uploader/album subfolders into `<bucket>/<Genre>/` (empty folders left in place). Moves only after Imani's go on the final preview, Serato closed. |
 | 4 Energy | Not started. |
 
@@ -221,7 +221,6 @@ Waiting on Imani (Claude items):
 - Baile/Afrobeats 11 untagged (`energy-blanks-20261016/`): Situationship Edit = Warmup (not written); Waste My Time / CRU LOVE / Se Dansa need a value; 3 Tems ID3v2.2 need conversion OK; Davido "Five" delete requested, NOT done (needs explicit go).
 - Grok's `energy-written-change-suggestions-20261016.csv` suggests 8 NOLA Bounce Twerk Dutty -> Shake (not applied).
 - Maybe misfiled: Bounce (Wassup Wassup x2, River Dance Bounce, no luv (+)); Ghettotech ~12 (see its preview).
-- PR #83 (fix: apply_genre_refinement_plan.py crashed after writes on 2026-10-16; writes were fine) — review + merge.
 - Serato: Rescan ID3 Tags on New Orleans Bounce, Ghettotech, NEW MUSIC DOWNLOADS.
 
 T5 backups from Claude today (delete after Serato check): `2026-10-16-nola-bounce-energy`, `2026-10-16-ghettotech-energy`, `2026-10-16-newmusic-dupes`, `2026-10-16-newmusic-tags`.
