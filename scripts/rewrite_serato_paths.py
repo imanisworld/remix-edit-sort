@@ -45,8 +45,14 @@ import mutation_engine
 PLAN_TYPE = "serato-path-rewrite"
 PLAN_VERSION = 1
 DATABASE_NAME = "database V2"
-CRATE_GLOB = "Subcrates/*.crate"
-PATH_FIELDS = {DATABASE_NAME: "pfil", ".crate": "ptrk"}
+CRATE_GLOB = "Subcrates/**/*.crate"
+SMART_CRATE_GLOB = "SmartCrates/**/*.scrate"
+# Smart crates (.scrate) cache their current track list as otrk/ptrk records,
+# exactly like regular crates.  Serato re-imports any cached path it cannot
+# find in database V2 ("Dbv2 Import: Adding track not found in database ...
+# but found in crate ..."), so a rename that skips them brings every old path
+# back on the next launch (observed 2026-10-15 22:04 and 2026-10-16 09:27).
+PATH_FIELDS = {DATABASE_NAME: "pfil", ".crate": "ptrk", ".scrate": "ptrk"}
 
 
 class SeratoRewriteError(RuntimeError):
@@ -284,6 +290,8 @@ def _field_for(relative_path: str) -> str:
         return PATH_FIELDS[DATABASE_NAME]
     if relative_path.endswith(".crate"):
         return PATH_FIELDS[".crate"]
+    if relative_path.endswith(".scrate"):
+        return PATH_FIELDS[".scrate"]
     raise SeratoRewriteError(f"unsupported Serato source file: {relative_path}")
 
 
@@ -342,18 +350,53 @@ def serato_source_files(serato_dir: Path) -> list[Path]:
     database = serato_dir / DATABASE_NAME
     if database.is_symlink() or not database.is_file():
         raise SeratoRewriteError(f"missing or unsafe {DATABASE_NAME}: {database}")
-    crates_dir = serato_dir / "Subcrates"
     crates = []
-    if crates_dir.is_dir():
-        crates = sorted(crates_dir.glob("*.crate"))
-        unsafe = [path for path in crates if path.is_symlink() or not path.is_file()]
+    for folder, pattern in (("Subcrates", "*.crate"), ("SmartCrates", "*.scrate")):
+        crates_dir = serato_dir / folder
+        if crates_dir.is_symlink():
+            raise SeratoRewriteError(f"unsafe crate folder (symlink): {crates_dir}")
+        if not crates_dir.is_dir():
+            continue
+        found = sorted(crates_dir.rglob(pattern))  # nested crates (e.g. Serato Stems/Stems.crate)
+        unsafe = [path for path in found if path.is_symlink() or not path.is_file()]
         if unsafe:
             raise SeratoRewriteError(f"unsafe crate path(s): {unsafe[:3]}")
+        crates.extend(found)
     return [database, *crates]
 
 
-def build_preview(serato_dir: Path, rules: list[dict]) -> dict:
-    """Build a read-only plan bound to every database/crate source hash."""
+def database_collisions(data: bytes, changes: list[dict]) -> list[str]:
+    """Rewritten pfil values that would duplicate a record already in database V2.
+
+    A stale (ghost) record whose old path maps onto a track Serato already
+    holds under the new path must be pruned, not repointed -- otherwise the
+    database would hold two records for one file.
+    """
+    existing = set()
+    for tag, value in parse_tlv_strict(data, DATABASE_NAME):
+        if tag != "otrk":
+            continue
+        for inner_tag, inner_value in parse_tlv_strict(value, f"{DATABASE_NAME}:otrk"):
+            if inner_tag == "pfil":
+                existing.add(_decode_path_value(inner_value, DATABASE_NAME)[0])
+    rewritten_from = {change["from"] for change in changes}
+    seen: set[str] = set()
+    collisions = []
+    for change in changes:
+        target = change["to"]
+        if (target in existing and target not in rewritten_from) or target in seen:
+            collisions.append(target)
+        seen.add(target)
+    return sorted(set(collisions))
+
+
+def build_preview(serato_dir: Path, rules: list[dict], *, crates_only: bool = False) -> dict:
+    """Build a read-only plan bound to every database/crate source hash.
+
+    ``crates_only`` leaves database V2 untouched (still hash-bound) and repoints
+    only Subcrates/SmartCrates -- used to clear cached old paths before pruning
+    ghost database records that already have a live twin.
+    """
     serato_dir = Path(serato_dir).resolve()
     inventory = []
     changed_files = []
@@ -363,7 +406,18 @@ def build_preview(serato_dir: Path, rules: list[dict]) -> dict:
     for source in serato_source_files(serato_dir):
         relative = str(source.relative_to(serato_dir))
         original = source.read_bytes()
-        rewritten, changes = rewrite_serato_bytes(original, relative, rules)
+        if crates_only and relative == DATABASE_NAME:
+            rewritten, changes = original, []
+        else:
+            rewritten, changes = rewrite_serato_bytes(original, relative, rules)
+        if relative == DATABASE_NAME and changes:
+            collisions = database_collisions(original, changes)
+            if collisions:
+                raise SeratoRewriteError(
+                    f"{len(collisions)} rewritten database path(s) already have a record "
+                    "(prune the stale twins instead, or preview with --crates-only): "
+                    + ", ".join(repr(path) for path in collisions[:5])
+                )
         inventory.append({
             "path": relative,
             "bytes": len(original),
@@ -393,7 +447,11 @@ def build_preview(serato_dir: Path, rules: list[dict]) -> dict:
             len(item["rewrites"]) for item in changed_files if item["path"] == DATABASE_NAME
         ),
         "crate_references_changed": sum(
-            len(item["rewrites"]) for item in changed_files if item["path"] != DATABASE_NAME
+            len(item["rewrites"]) for item in changed_files
+            if item["path"] != DATABASE_NAME and not item["path"].endswith(".scrate")
+        ),
+        "smart_crate_references_changed": sum(
+            len(item["rewrites"]) for item in changed_files if item["path"].endswith(".scrate")
         ),
         "field_counts": dict(sorted(field_counts.items())),
         "rule_counts": {
@@ -410,6 +468,7 @@ def build_preview(serato_dir: Path, rules: list[dict]) -> dict:
         "plan_version": PLAN_VERSION,
         "mode": "preview-only",
         "approval_required": True,
+        "crates_only": bool(crates_only),
         "created_at": datetime.now().astimezone().isoformat(timespec="seconds"),
         "serato_dir": str(serato_dir),
         "rename_map_sha256": sha256_bytes(_canonical_json(normalized_rules)),
@@ -492,7 +551,7 @@ def load_and_validate_plan(
     # Rebuild the complete preview from current bytes.  This checks hashes for
     # changed AND unchanged crates, exact occurrence diffs, proposed hashes,
     # and summary counts rather than trusting editable plan fields.
-    rebuilt = build_preview(serato_dir, rules)
+    rebuilt = build_preview(serato_dir, rules, crates_only=bool(plan.get("crates_only")))
     for field in ("renames", "rename_map_sha256", "source_inventory", "files", "summary"):
         if rebuilt[field] != plan.get(field):
             raise SeratoRewriteError(
@@ -557,10 +616,12 @@ def _atomic_replace(txn, path: Path, content: bytes, expected_sha256: str) -> No
             temporary.unlink()
 
 
-def _all_stored_paths(serato_dir: Path) -> list[str]:
+def _all_stored_paths(serato_dir: Path, *, include_database: bool = True) -> list[str]:
     paths: list[str] = []
     for source in serato_source_files(serato_dir):
         relative = str(source.relative_to(serato_dir))
+        if not include_database and relative == DATABASE_NAME:
+            continue
         target_field = _field_for(relative)
         for tag, value in parse_tlv_strict(source.read_bytes(), relative):
             if tag != "otrk":
@@ -589,7 +650,7 @@ def run_post_check(
         for category in ("moved_likely", "moved_ambiguous", "missing")
         for entry in audit[category]
     }
-    stored_paths = _all_stored_paths(serato_dir)
+    stored_paths = _all_stored_paths(serato_dir, include_database=not plan.get("crates_only"))
     remaining_mapped_sources = sorted({
         path for path in stored_paths if rewrite_path(path, plan["renames"])[1] is not None
     })
@@ -768,6 +829,10 @@ def main() -> int:
     preview_parser.add_argument("--serato-dir", required=True, type=Path)
     preview_parser.add_argument("--rename-map", required=True, type=Path)
     preview_parser.add_argument("--out", required=True, type=Path)
+    preview_parser.add_argument(
+        "--crates-only", action="store_true",
+        help="repoint Subcrates/SmartCrates only; leave database V2 as is (ghost cleanup)",
+    )
 
     apply_parser = subparsers.add_parser("apply", help="apply a reviewed preview under lock+backup")
     apply_parser.add_argument("--serato-dir", required=True, type=Path)
@@ -789,7 +854,7 @@ def main() -> int:
     try:
         if args.command == "preview":
             rules = load_rename_map(args.rename_map)
-            plan = build_preview(args.serato_dir, rules)
+            plan = build_preview(args.serato_dir, rules, crates_only=args.crates_only)
             write_json(args.out, plan)
             print(json.dumps({"status": "PREVIEW", **plan["summary"], "plan": str(args.out)}, indent=2))
             return 0
