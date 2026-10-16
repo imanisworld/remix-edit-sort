@@ -176,7 +176,7 @@ def _asset_memberships(conn, deps, asset_id) -> dict:
     return counts
 
 
-_NAME_SUFFIX = re.compile(r"[\U000F0000-\U0010FFFF][0-9a-fA-F]{40}$")
+_NAME_SUFFIX = re.compile(r"[\U000F0000-\U0010FFFF][0-9a-fA-F]{32,40}$")
 
 
 def _clean_name(name) -> str:
