@@ -162,5 +162,150 @@ class ApplyTests(PruneCase):
         self.assertEqual(before, {p: sha(p) for p in before})
 
 
+SUFFIX = "\U00105e8a" + "a" * 40
+
+REAL_SCHEMA = """
+CREATE TABLE asset (id INTEGER PRIMARY KEY AUTOINCREMENT, portable_id TEXT);
+CREATE TABLE space (id INTEGER PRIMARY KEY);
+CREATE TABLE container (id INTEGER PRIMARY KEY AUTOINCREMENT, parent_id INTEGER, name TEXT NOT NULL,
+    FOREIGN KEY(parent_id) REFERENCES container(id) ON DELETE CASCADE);
+CREATE TABLE space_asset (id INTEGER PRIMARY KEY, asset_id INTEGER NOT NULL, space_id INTEGER NOT NULL,
+    FOREIGN KEY(asset_id) REFERENCES asset(id) ON DELETE CASCADE);
+"""
+ROOT_CA = """CREATE TABLE container_asset (id INTEGER PRIMARY KEY AUTOINCREMENT, container_id INTEGER NOT NULL,
+    space_asset_id INTEGER NOT NULL,
+    FOREIGN KEY(container_id) REFERENCES container(id) ON DELETE CASCADE,
+    FOREIGN KEY(space_asset_id) REFERENCES space_asset(id) ON DELETE CASCADE);"""
+MASTER_CA = """CREATE TABLE location_container (id INTEGER PRIMARY KEY AUTOINCREMENT, container_id INTEGER NOT NULL,
+    location_id INTEGER, FOREIGN KEY(container_id) REFERENCES container(id) ON DELETE CASCADE);
+CREATE TABLE container_asset (id INTEGER PRIMARY KEY AUTOINCREMENT, asset_id INTEGER NOT NULL,
+    location_container_id INTEGER NOT NULL, space_asset_id INTEGER NOT NULL,
+    FOREIGN KEY(location_container_id) REFERENCES location_container(id) ON DELETE CASCADE,
+    FOREIGN KEY(space_asset_id) REFERENCES space_asset(id) ON DELETE CASCADE);"""
+
+
+class MembershipCase(unittest.TestCase):
+    """Real-shaped root (container_id) and master (location_container) membership tables."""
+
+    def setUp(self):
+        self._t = tempfile.TemporaryDirectory(); self.addCleanup(self._t.cleanup)
+        self.tmp = Path(self._t.name).resolve(); self.music = self.tmp / "Music"
+        S = lambda rel: stored(self.music / rel)  # noqa: E731
+        for rel in ("Afrobeat/CLEAN/Afrobeats/a.mp3", "Afrobeat/CLEAN/Afrobeats/b.mp3"):
+            (self.music / rel).parent.mkdir(parents=True, exist_ok=True); (self.music / rel).write_bytes(rel.encode())
+        self.live_a, self.live_b = S("Afrobeat/CLEAN/Afrobeats/a.mp3"), S("Afrobeat/CLEAN/Afrobeats/b.mp3")
+        self.stale_a, self.stale_b = S("Afrobeat/CLEAN/Afrobeat/a.mp3"), S("Afrobeat/CLEAN/Afrobeat/b.mp3")
+        self.gone = S("Afrobeat/gone.mp3")
+        paths = [self.live_a, self.live_b, self.stale_a, self.stale_b, self.gone]
+        self.serato = self.tmp / "_Serato_"; fx.make_serato_dir(self.serato, [self.live_a, self.live_b], {})
+        self.lib = self.tmp / "Library"; self.lib.mkdir()
+        self.root = self.lib / "root.sqlite"; self.master = self.lib / "master.sqlite"
+        # containers: 1 'afro world', 2 'Afrobeat' (child of 1), 3 'Unsorted'
+        # memberships: stale_a in 2,3 ; live_a in 2,3 -> removable
+        #              stale_b in 2,3 ; live_b in 2 only -> held (lacks Unsorted)
+        #              gone in 2 -> truly missing, held
+        member = {self.stale_a: [2, 3], self.live_a: [2, 3], self.stale_b: [2, 3], self.live_b: [2], self.gone: [2]}
+        for db, master in ((self.root, False), (self.master, True)):
+            c = sqlite3.connect(str(db), isolation_level=None)
+            c.executescript(REAL_SCHEMA + (MASTER_CA if master else ROOT_CA))
+            c.execute("INSERT INTO space (id) VALUES (1)")
+            for cid, parent, name in ((1, None, "afro world"), (2, 1, "Afrobeat"), (3, None, "Unsorted")):
+                c.execute("INSERT INTO container (id, parent_id, name) VALUES (?,?,?)", (cid, parent, name + SUFFIX))
+                if master:
+                    c.execute("INSERT INTO location_container (id, container_id, location_id) VALUES (?,?,1)", (cid + 10, cid))
+            for i, path in enumerate(paths, start=1):
+                c.execute("INSERT INTO asset (id, portable_id) VALUES (?,?)", (i, path))
+                c.execute("INSERT INTO space_asset (id, asset_id, space_id) VALUES (?,?,1)", (i, i))
+                for cid in member[path]:
+                    if master:
+                        c.execute("INSERT INTO container_asset (asset_id, location_container_id, space_asset_id) VALUES (?,?,?)",
+                                  (i, cid + 10, i))
+                    else:
+                        c.execute("INSERT INTO container_asset (container_id, space_asset_id) VALUES (?,?)", (cid, i))
+            c.close()
+        self.dbs = [self.master, self.root]
+
+    def plan(self, flag=True):
+        return prune.build_plan(self.serato, self.music, self.dbs, "Afrobeat/", flag)
+
+    def rows(self, plan, name):
+        return {r["path"]: r for e in plan["sqlite"] if e["name"] == name for r in e["rows"]}
+
+    def memberships(self, db):
+        c = sqlite3.connect(f"file:{db}?immutable=1", uri=True)
+        try:
+            return sorted(c.execute("SELECT * FROM container_asset").fetchall())
+        finally:
+            c.close()
+
+    def manifests(self):
+        sb = self.tmp / "bk-serato"; shutil.copytree(self.serato, sb)
+        files = [str(p.relative_to(self.serato)) for p in self.serato.rglob("*") if p.is_file()]
+        sm = backup_manifest.build_scoped_manifest(self.serato, sb, files)
+        qb = self.tmp / "bk-sql"; qb.mkdir()
+        for d in self.dbs:
+            shutil.copy2(d, qb / d.name)
+        return sm, backup_manifest.build_scoped_manifest(self.lib, qb, [d.name for d in self.dbs])
+
+    def test_flag_off_holds_every_crated_row(self):
+        plan = self.plan(False)
+        for name in ("root.sqlite", "master.sqlite"):
+            self.assertTrue(all(r["action"] == "hold" for r in self.rows(plan, name).values()))
+            self.assertEqual(plan["summary"][f"{name}_memberships_dropped"], 0)
+
+    def test_flag_on_removes_only_fully_covered_live_twin(self):
+        plan = self.plan()
+        for name in ("root.sqlite", "master.sqlite"):
+            rows = self.rows(plan, name)
+            self.assertEqual(rows[self.stale_a]["action"], "remove")
+            self.assertEqual(len(rows[self.stale_a]["drop_container_asset_ids"]), 2)
+            self.assertEqual(rows[self.stale_b]["action"], "hold")
+            self.assertEqual(rows[self.stale_b]["membership_check"]["lacking"], ["Unsorted"])
+            self.assertEqual(rows[self.gone]["action"], "hold")          # truly missing: memberships never dropped
+            self.assertNotIn("drop_container_asset_ids", rows[self.gone])
+            labels = {c["container"] for c in rows[self.stale_a]["membership_check"]["containers"]}
+            self.assertEqual(labels, {"afro world \u226b Afrobeat", "Unsorted"})
+            self.assertEqual(plan["summary"][f"{name}_memberships_dropped"], 2)
+
+    def test_apply_drops_only_stale_memberships_and_undo_restores_exactly(self):
+        before = {d: (sha(d), self.memberships(d)) for d in self.dbs}
+        plan = self.plan(); sm, qm = self.manifests()
+        res = prune.apply_plan(plan=plan, serato_dir=self.serato, library_root=self.music, databases=self.dbs,
+                               serato_manifest=sm, sqlite_manifest=qm, heartbeat=FakeHeartbeat(),
+                               journal_path=self.tmp / "j.jsonl", result_path=self.tmp / "r.json",
+                               process_lister=NO_SERATO)
+        self.assertEqual(res["status"], "PASS")
+        for d in self.dbs:
+            after = self.memberships(d)
+            self.assertEqual(len(after), len(before[d][1]) - 2)
+            # only stale_a's (space_asset 1) rows went; every other membership is byte-identical
+            self.assertEqual(after, [m for m in before[d][1] if m[-1] != 1])
+            c = sqlite3.connect(f"file:{d}?immutable=1", uri=True)
+            self.assertEqual(c.execute("SELECT count(*) FROM container").fetchone()[0], 3)   # crates untouched
+            self.assertIsNone(c.execute("SELECT 1 FROM asset WHERE portable_id=?", (self.stale_a,)).fetchone())
+            for keep in (self.live_a, self.live_b, self.stale_b, self.gone):
+                self.assertIsNotNone(c.execute("SELECT 1 FROM asset WHERE portable_id=?", (keep,)).fetchone())
+            c.close()
+        prune.undo(journal_path=self.tmp / "j.jsonl", serato_dir=self.serato, databases=self.dbs,
+                   serato_manifest=sm, sqlite_manifest=qm, heartbeat=FakeHeartbeat(),
+                   undo_journal=self.tmp / "undo", process_lister=NO_SERATO)
+        self.assertEqual(before, {d: (sha(d), self.memberships(d)) for d in self.dbs})
+
+    def test_membership_drift_invalidates_plan(self):
+        plan = self.plan(); path = self.tmp / "p.json"; sr.write_json(path, plan)
+        c = sqlite3.connect(str(self.root), isolation_level=None)
+        c.execute("DELETE FROM container_asset WHERE container_id = 3 AND space_asset_id = 1"); c.close()
+        with self.assertRaises(prune.PruneError):
+            prune.load_and_validate_plan(path, self.serato, self.music, self.dbs)
+
+    def test_two_live_twins_hold(self):
+        extra = self.music / "Afrobeats" / "a.mp3"; extra.parent.mkdir(parents=True); extra.write_bytes(b"x")
+        for d in self.dbs:
+            c = sqlite3.connect(str(d), isolation_level=None)
+            c.execute("INSERT INTO asset (portable_id) VALUES (?)", (stored(extra),)); c.close()
+        rows = self.rows(self.plan(), "root.sqlite")
+        self.assertEqual(rows[self.stale_a]["action"], "hold")
+
+
 if __name__ == "__main__":
     unittest.main()
