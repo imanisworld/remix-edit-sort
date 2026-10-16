@@ -370,6 +370,19 @@ def load_and_validate(root: Path, plan_path: Path) -> tuple[dict, list[dict]]:
     return plan, items
 
 
+def optional_genre_counts(plan: dict) -> dict | None:
+    """Read optional summary counts; move-only plans may omit this field.
+
+    A report-only field must never cause an exception after all mutations
+    have completed. None means the plan did not supply genre counts.
+    """
+    counts = plan.get("counts")
+    if not isinstance(counts, dict):
+        return None
+    genres = counts.get("genres")
+    return genres if isinstance(genres, dict) else None
+
+
 def apply(
     root: Path,
     plan_path: Path,
@@ -539,7 +552,7 @@ def apply(
         "undo_log": str(undo_path),
         "recovery_journal": str(journal_path),
         "tag_backup_root": str(tag_backup_root),
-        "genre_counts": plan["counts"]["genres"],
+        "genre_counts": optional_genre_counts(plan),
     }
     engine.finish(result)
     result_path.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
