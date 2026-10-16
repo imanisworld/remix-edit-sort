@@ -95,6 +95,12 @@ Nothing here has been run on the live library. Needs the owner's explicit go.
 #       --prefix <Folder>/ --out prune-plan.json            # dry run: review live_twin / truly_missing / held
 #     ...then --apply --plan prune-plan.json with scoped backup manifests; require post_check PASS.
 #     Held rows (crate refs, still in a container, or moved-but-unindexed) are never removed; resolve by hand.
+#     Optional (owner-approved only): --drop-stale-memberships lets a live_twin SQLite row go together with
+#     its container memberships when its single live copy is already in every one of those containers;
+#     add --add-live-memberships to first append the live copy (list_order = max+1, Serato's own revision,
+#     no duplicates) to each NORMAL crate it is missing from. Smart crates (smart_crate_rules) are never
+#     inserted into: a row whose live copy is missing from a smart crate is HELD and the crate is reported.
+#     Apply verifies every original membership is unchanged and the live copy is in all former containers.
 #     Undo: --undo --journal <journal>. History/session files are never touched.
 # 1. Read-only previews. Build ALL of them first; the SQLite preview must be built
 #    BEFORE the folders are renamed (it records which rows were already stale).

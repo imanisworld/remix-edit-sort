@@ -65,7 +65,7 @@ import rewrite_serato_paths as sr
 import rewrite_serato_sqlite_paths as sq
 
 PLAN_TYPE = "serato-prune-missing-records"
-PLAN_VERSION = 2
+PLAN_VERSION = 3
 REMOVABLE = ("live_twin", "truly_missing")
 
 
@@ -220,7 +220,67 @@ def _membership_rows(conn, asset_id):
     return sorted(rows)
 
 
-def _membership_decision(conn, rowid, path, astore_rows, cls) -> dict:
+def _is_smart(conn, cid) -> bool:
+    return _has_table(conn, "smart_crate_rules") and conn.execute(
+        "SELECT 1 FROM smart_crate_rules WHERE container_id = ?", (cid,)).fetchone() is not None
+
+
+def _plan_add(conn, stale_ca_id, cid, twin_id, next_order) -> dict | str:
+    """Insert spec that mirrors Serato's own container_asset rows, or a reason string if unsafe."""
+    cols = {r[1]: r for r in conn.execute('PRAGMA table_info("container_asset")')}
+    st = conn.execute("SELECT ca.*, sa.space_id FROM container_asset ca JOIN space_asset sa ON sa.id = ca.space_asset_id "
+                      "WHERE ca.id = ?", (stale_ca_id,)).fetchone()
+    names = [d[0] for d in conn.execute("SELECT ca.*, sa.space_id FROM container_asset ca JOIN space_asset sa "
+                                        "ON sa.id = ca.space_asset_id LIMIT 0").description]
+    st = dict(zip(names, st))
+    tsa = conn.execute("SELECT id FROM space_asset WHERE asset_id = ? AND space_id = ?", (twin_id, st["space_id"])).fetchone()
+    if not tsa:
+        return "live copy has no space_asset in the same space"
+    values = {"space_asset_id": tsa[0]}
+    if "container_id" in cols:
+        values["container_id"] = cid; group = ("container_id", cid)
+    elif "location_container_id" in cols:
+        lc = st["location_container_id"]
+        if _has_table(conn, "location_container") and "location_id" in [r[1] for r in conn.execute('PRAGMA table_info("asset")')]:
+            loc = conn.execute("SELECT location_id FROM location_container WHERE id = ?", (lc,)).fetchone()
+            tloc = conn.execute("SELECT location_id FROM asset WHERE id = ?", (twin_id,)).fetchone()
+            sloc = conn.execute("SELECT location_id FROM asset WHERE id = (SELECT asset_id FROM space_asset WHERE id = ?)",
+                                (st["space_asset_id"],)).fetchone()
+            if not (loc and tloc and sloc) or tloc[0] != sloc[0]:
+                return "live copy is on a different location than the stale row"
+        values["location_container_id"] = lc; group = ("location_container_id", lc)
+    else:
+        return "unknown container_asset layout"
+    if "asset_id" in cols:
+        values["asset_id"] = twin_id
+    if "external_container_asset_id" in cols:
+        values["external_container_asset_id"] = None
+    if "revision" in cols:
+        if not _has_table(conn, "serato"):
+            return "no serato.revision to stamp"
+        values["revision"] = conn.execute("SELECT revision FROM serato").fetchone()[0]
+    if "list_order" in cols:
+        key = group
+        if key not in next_order:
+            mx, nn = conn.execute(f'SELECT max(list_order), count(list_order) FROM container_asset WHERE "{group[0]}" = ?',
+                                  (group[1],)).fetchone()
+            next_order[key] = None if nn == 0 else int(mx) + 1
+        values["list_order"] = next_order[key]
+        if next_order[key] is not None:
+            next_order[key] += 1
+        elif cols["list_order"][3]:
+            return "container has no list_order to append after"
+    for name, (_, _, _, notnull, default, pk) in cols.items():
+        if notnull and default is None and not pk and name not in values:
+            return f"cannot fill required column {name}"
+    dup = conn.execute(f'SELECT 1 FROM container_asset WHERE space_asset_id = ? AND "{group[0]}" = ?',
+                       (tsa[0], group[1])).fetchone()
+    if dup:
+        return "live copy already present (duplicate)"
+    return {"values": values}
+
+
+def _membership_decision(conn, rowid, path, astore_rows, cls, add_live=False, next_order=None) -> dict:
     name = path.rsplit("/", 1)[-1]
     twins = [(r, p) for r, p in astore_rows if r != rowid and p.rsplit("/", 1)[-1] == name and cls.exists(p)]
     out = {"live_twin_rowids": [r for r, _ in twins]}
@@ -235,8 +295,32 @@ def _membership_decision(conn, rowid, path, astore_rows, cls) -> dict:
         conts.append({"container_asset_id": ca_id, "container_id": cid,
                       "container": _container_label(conn, cid), "live_copy_present": cid in live_c})
     lacking = sorted({c["container"] for c in conts if not c["live_copy_present"]})
-    out.update(containers=conts, live_twin_path=twins[0][1], lacking=lacking, ok=not lacking,
-               why=None if not lacking else f"live copy missing from {len(lacking)} container(s)")
+    adds, smart, blocked, seen = [], [], [], set()
+    for c in conts:
+        if c["live_copy_present"] or c["container_id"] in seen:
+            continue
+        seen.add(c["container_id"])
+        if _is_smart(conn, c["container_id"]):
+            smart.append(c["container"]); continue
+        if not add_live:
+            blocked.append(f"{c['container']}: live copy missing"); continue
+        spec = _plan_add(conn, c["container_asset_id"], c["container_id"], twins[0][0],
+                         next_order if next_order is not None else {})
+        if isinstance(spec, str):
+            blocked.append(f"{c['container']}: {spec}")
+        else:
+            adds.append({"container_id": c["container_id"], "container": c["container"], **spec})
+    ok = not smart and not blocked
+    why = None
+    if not ok:
+        bits = []
+        if smart:
+            bits.append(f"live copy missing from {len(smart)} smart crate(s) (rule-based, not inserted): {sorted(smart)}")
+        if blocked:
+            bits.append(f"live copy missing from {len(blocked)} container(s): {blocked}")
+        why = "; ".join(bits)
+    out.update(containers=conts, live_twin_path=twins[0][1], live_twin_rowid=twins[0][0], lacking=lacking,
+               smart_lacking=sorted(smart), blocked=blocked, adds=adds if ok else [], ok=ok, why=why)
     return out
 
 
@@ -257,7 +341,9 @@ def _has_table(conn, name) -> bool:
 # ------------------------------------------------------------ preview
 
 def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], prefix: str | None,
-               drop_stale_memberships: bool = False) -> dict:
+               drop_stale_memberships: bool = False, add_live_memberships: bool = False) -> dict:
+    if add_live_memberships and not drop_stale_memberships:
+        raise PruneError("--add-live-memberships needs --drop-stale-memberships")
     serato_dir = Path(serato_dir).resolve(); library_root = Path(library_root).resolve()
     scope = _norm_prefix(library_root, prefix); lib_stored = str(library_root).lstrip("/")
     cls = Classifier(library_root)
@@ -297,7 +383,7 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
             assets = conn.execute(f'SELECT rowid, "{sq.COLUMN}" FROM "{sq.TABLE}"').fetchall()
             astore = {p for _, p in assets if isinstance(p, str)}
             astore_rows = [(r, p) for r, p in assets if isinstance(p, str)]
-            rows = []
+            rows = []; next_order: dict = {}
             for rowid, path in assets:
                 if not isinstance(path, str) or not _in_scope(path, scope, lib_stored):
                     continue
@@ -311,12 +397,19 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
                 if action == "remove" and crate_mem:
                     action, reason = "hold", f"{c}; still in a Serato container {crate_mem}"
                     if drop_stale_memberships and c == "live_twin":
-                        decision = _membership_decision(conn, rowid, path, astore_rows, cls)
+                        order_snapshot = dict(next_order)
+                        decision = _membership_decision(conn, rowid, path, astore_rows, cls,
+                                                        add_live_memberships, next_order)
+                        if not decision["ok"]:
+                            next_order.clear(); next_order.update(order_snapshot)  # held rows reserve no positions
                         resolved = len(decision.get("containers", []))
                         total = crate_mem.get("container_asset(via space_asset)", crate_mem.get("container_asset"))
                         if decision["ok"] and set(crate_mem) <= {"container_asset", "container_asset(via space_asset)"} \
                                 and total == resolved:
-                            action, reason = "remove", f"{c}; drop {resolved} stale membership(s), live copy in every container"
+                            n_add = len(decision["adds"])
+                            action, reason = "remove", (f"{c}; add live copy to {n_add} container(s), drop {resolved} "
+                                                        "stale membership(s)" if n_add else
+                                                        f"{c}; drop {resolved} stale membership(s), live copy in every container")
                             drop = [d["container_asset_id"] for d in decision["containers"]]
                         else:
                             reason = f"{c}; held: {decision.get('why') or 'membership count mismatch'}"
@@ -330,7 +423,10 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
                 summary[f"{database.name}_{action}_{c}"] += 1
             removed = [r["rowid"] for r in rows if r["action"] == "remove"]
             dropped = [i for r in rows if r["action"] == "remove" for i in r.get("drop_container_asset_ids", [])]
+            has_ca = _has_table(conn, "container_asset")
             db_entries.append({
+                "container_asset_max_id": (conn.execute("SELECT max(id) FROM container_asset").fetchone()[0] or 0) if has_ca else None,
+                "planned_adds": sum(len(r.get("membership_check", {}).get("adds", [])) for r in rows if r["action"] == "remove"),
                 "container_asset_digest_kept": (_table_digest(conn, "container_asset", dropped)
                                                 if _has_table(conn, "container_asset") else None),
                 "name": database.name, "path": str(database), "sha256": sr.sha256_file(database),
@@ -346,6 +442,7 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
     summary["database_v2_remove"] = len(remove_idx)
     for e in db_entries:
         summary[f"{e['name']}_remove"] = sum(r["action"] == "remove" for r in e["rows"])
+        summary[f"{e['name']}_memberships_added"] = e["planned_adds"]
         summary[f"{e['name']}_memberships_dropped"] = sum(len(r.get("drop_container_asset_ids", []))
                                                           for r in e["rows"] if r["action"] == "remove")
     return {
@@ -353,6 +450,7 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
         "approval_required": True, "created_at": datetime.now().astimezone().isoformat(),
         "serato_dir": str(serato_dir), "library_root": str(library_root), "prefix": prefix,
         "drop_stale_memberships": bool(drop_stale_memberships),
+        "add_live_memberships": bool(add_live_memberships),
         "database_v2": dbv2_entry, "sqlite": db_entries, "summary": dict(sorted(summary.items())),
     }
 
@@ -367,7 +465,7 @@ def load_and_validate_plan(plan_path: Path, serato_dir, library_root, databases)
     if plan.get("plan_type") != PLAN_TYPE or plan.get("plan_version") != PLAN_VERSION:
         raise PruneError("not a prune plan")
     rebuilt = build_plan(serato_dir, library_root, databases, plan.get("prefix"),
-                         bool(plan.get("drop_stale_memberships")))
+                         bool(plan.get("drop_stale_memberships")), bool(plan.get("add_live_memberships")))
     if _comparable(rebuilt) != _comparable(plan):
         raise PruneError("plan no longer matches current Serato files; rebuild the dry run")
     return plan
@@ -386,7 +484,17 @@ def _delete_sqlite_rows(txn, database: Path, rows: list[dict]) -> None:
         conn.execute("PRAGMA busy_timeout = 0")
         conn.execute("PRAGMA foreign_keys = ON")
         conn.execute("BEGIN IMMEDIATE"); in_tx = True
-        for r in rows:
+        for r in rows:  # 1) add the live copy where it is missing (append at end, like Serato)
+            for add in r.get("membership_check", {}).get("adds", []):
+                v = add["values"]
+                grp = "container_id" if "container_id" in v else "location_container_id"
+                if conn.execute(f'SELECT 1 FROM container_asset WHERE space_asset_id = ? AND "{grp}" = ?',
+                                (v["space_asset_id"], v[grp])).fetchone():
+                    raise mutation_engine.MutationVerificationError(f"{database.name}: live copy appeared in {add['container']}")
+                cols = list(v)
+                conn.execute(f'INSERT INTO container_asset ({", ".join(chr(34)+c+chr(34) for c in cols)}) '
+                             f'VALUES ({", ".join("?" for _ in cols)})', [v[c] for c in cols])
+        for r in rows:  # 2) drop the stale memberships and the stale row
             drop = r.get("drop_container_asset_ids") or []
             for ca_id in drop:
                 cur = conn.execute("DELETE FROM container_asset WHERE id = ? AND space_asset_id IN "
@@ -429,8 +537,23 @@ def _verify_sqlite(database: Path, entry: dict) -> dict:
         if _table_digest(conn, sq.TABLE) != entry["asset_digest_kept"]:
             raise mutation_engine.MutationVerificationError(f"{database.name}: a kept asset row changed")
         ca_digest = entry.get("container_asset_digest_kept")
-        if ca_digest is not None and _table_digest(conn, "container_asset") != ca_digest:
-            raise mutation_engine.MutationVerificationError(f"{database.name}: a kept container membership changed")
+        if ca_digest is not None:
+            mx = entry.get("container_asset_max_id") or 0
+            new_ids = [i for (i,) in conn.execute("SELECT id FROM container_asset WHERE id > ?", (mx,))]
+            if _table_digest(conn, "container_asset", new_ids) != ca_digest:
+                raise mutation_engine.MutationVerificationError(f"{database.name}: an original membership changed")
+            if len(new_ids) != entry.get("planned_adds", 0):
+                raise mutation_engine.MutationVerificationError(
+                    f"{database.name}: {len(new_ids)} memberships added, planned {entry.get('planned_adds', 0)}")
+            for r in entry["rows"]:
+                mc = r.get("membership_check")
+                if r["action"] != "remove" or not mc:
+                    continue
+                now_in = {c for _, c in (_membership_rows(conn, mc["live_twin_rowid"]) or [])}
+                missing = {c["container_id"] for c in mc["containers"]} - now_in
+                if missing:
+                    raise mutation_engine.MutationVerificationError(
+                        f"{database.name}: live copy of {r['path']} not in former container(s) {sorted(missing)}")
         if entry["history_digest"] is not None and _table_digest(conn, sq.HISTORY_TABLE) != entry["history_digest"]:
             raise mutation_engine.MutationVerificationError(f"{database.name}: history_entry changed")
         fk = conn.execute("PRAGMA foreign_key_check").fetchall()
@@ -439,8 +562,8 @@ def _verify_sqlite(database: Path, entry: dict) -> dict:
     return {"rows_removed": len(removed), "foreign_key_check_rows": len(fk)}
 
 
-def post_check(serato_dir, library_root, databases, prefix, drop_stale_memberships=False) -> dict:
-    again = build_plan(serato_dir, library_root, databases, prefix, drop_stale_memberships)
+def post_check(serato_dir, library_root, databases, prefix, drop_stale_memberships=False, add_live=False) -> dict:
+    again = build_plan(serato_dir, library_root, databases, prefix, drop_stale_memberships, add_live)
     remaining = again["summary"].get("database_v2_remove", 0) + sum(
         again["summary"].get(f"{Path(d).name}_remove", 0) for d in databases)
     held = sum(1 for r in again["database_v2"]["records"] if r["action"] == "hold") + sum(
@@ -508,7 +631,7 @@ def apply_plan(*, plan, serato_dir, library_root, databases, serato_manifest, sq
     if not completed:
         raise PruneError("plan has nothing to remove")
     check = post_check(serato_dir, library_root, list(databases.values()), plan.get("prefix"),
-                       bool(plan.get("drop_stale_memberships")))
+                       bool(plan.get("drop_stale_memberships")), bool(plan.get("add_live_memberships")))
     result = {"status": check["status"], "plan_type": PLAN_TYPE, "completed": completed,
               "post_check": check, "journal": str(journal_path)}
     sr.write_json(result_path, result)
@@ -568,12 +691,16 @@ def main() -> int:
     ap.add_argument("--drop-stale-memberships", action="store_true",
                     help="allow removing a live_twin SQLite row together with its container memberships, "
                          "only when its single live twin is already in every one of those containers")
+    ap.add_argument("--add-live-memberships", action="store_true",
+                    help="with --drop-stale-memberships: first add the live twin to each normal (non-smart) crate "
+                         "it is missing from, appended at the end; smart crates are reported, never inserted into")
     a = ap.parse_args()
     try:
         if not a.apply and not a.undo:
             if not a.out:
                 raise PruneError("dry run needs --out")
-            plan = build_plan(a.serato_dir, a.library_root, a.sqlite_db, a.prefix, a.drop_stale_memberships)
+            plan = build_plan(a.serato_dir, a.library_root, a.sqlite_db, a.prefix, a.drop_stale_memberships,
+                              a.add_live_memberships)
             sr.write_json(a.out, plan)
             print(json.dumps({"status": "DRY-RUN", **plan["summary"], "plan": str(a.out)}, indent=2))
             return 0

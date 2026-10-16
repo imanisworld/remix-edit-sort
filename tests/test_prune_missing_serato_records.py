@@ -166,20 +166,25 @@ SUFFIX = "\U00105e8a" + "a" * 40
 
 REAL_SCHEMA = """
 CREATE TABLE asset (id INTEGER PRIMARY KEY AUTOINCREMENT, portable_id TEXT);
+CREATE TABLE serato (revision INTEGER NOT NULL);
+INSERT INTO serato VALUES (77);
+CREATE TABLE smart_crate_rules (container_id INTEGER NOT NULL PRIMARY KEY, rules TEXT NOT NULL);
 CREATE TABLE space (id INTEGER PRIMARY KEY);
 CREATE TABLE container (id INTEGER PRIMARY KEY AUTOINCREMENT, parent_id INTEGER, name TEXT NOT NULL,
     FOREIGN KEY(parent_id) REFERENCES container(id) ON DELETE CASCADE);
 CREATE TABLE space_asset (id INTEGER PRIMARY KEY, asset_id INTEGER NOT NULL, space_id INTEGER NOT NULL,
     FOREIGN KEY(asset_id) REFERENCES asset(id) ON DELETE CASCADE);
 """
-ROOT_CA = """CREATE TABLE container_asset (id INTEGER PRIMARY KEY AUTOINCREMENT, container_id INTEGER NOT NULL,
-    space_asset_id INTEGER NOT NULL,
+ROOT_CA = """CREATE TABLE container_asset (id INTEGER PRIMARY KEY AUTOINCREMENT, revision INTEGER NOT NULL,
+    container_id INTEGER NOT NULL, space_asset_id INTEGER NOT NULL, list_order INTEGER DEFAULT NULL,
+    time_added INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
     FOREIGN KEY(container_id) REFERENCES container(id) ON DELETE CASCADE,
     FOREIGN KEY(space_asset_id) REFERENCES space_asset(id) ON DELETE CASCADE);"""
 MASTER_CA = """CREATE TABLE location_container (id INTEGER PRIMARY KEY AUTOINCREMENT, container_id INTEGER NOT NULL,
     location_id INTEGER, FOREIGN KEY(container_id) REFERENCES container(id) ON DELETE CASCADE);
 CREATE TABLE container_asset (id INTEGER PRIMARY KEY AUTOINCREMENT, asset_id INTEGER NOT NULL,
-    location_container_id INTEGER NOT NULL, space_asset_id INTEGER NOT NULL,
+    location_container_id INTEGER NOT NULL, space_asset_id INTEGER NOT NULL, external_container_asset_id INTEGER,
+    list_order INTEGER NOT NULL, time_added INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
     FOREIGN KEY(location_container_id) REFERENCES location_container(id) ON DELETE CASCADE,
     FOREIGN KEY(space_asset_id) REFERENCES space_asset(id) ON DELETE CASCADE);"""
 
@@ -218,15 +223,29 @@ class MembershipCase(unittest.TestCase):
                 c.execute("INSERT INTO space_asset (id, asset_id, space_id) VALUES (?,?,1)", (i, i))
                 for cid in member[path]:
                     if master:
-                        c.execute("INSERT INTO container_asset (asset_id, location_container_id, space_asset_id) VALUES (?,?,?)",
-                                  (i, cid + 10, i))
+                        c.execute("INSERT INTO container_asset (asset_id, location_container_id, space_asset_id, list_order, "
+                                  "time_added) VALUES (?,?,?,?,1)", (i, cid + 10, i, 100 + i))
                     else:
-                        c.execute("INSERT INTO container_asset (container_id, space_asset_id) VALUES (?,?)", (cid, i))
+                        c.execute("INSERT INTO container_asset (revision, container_id, space_asset_id, list_order, time_added) "
+                                  "VALUES (5,?,?,?,1)", (cid, i, 100 + i))
             c.close()
         self.dbs = [self.master, self.root]
 
-    def plan(self, flag=True):
-        return prune.build_plan(self.serato, self.music, self.dbs, "Afrobeat/", flag)
+    def plan(self, flag=True, add=False):
+        return prune.build_plan(self.serato, self.music, self.dbs, "Afrobeat/", flag, add)
+
+    def apply(self, plan):
+        sm, qm = self.manifests()
+        res = prune.apply_plan(plan=plan, serato_dir=self.serato, library_root=self.music, databases=self.dbs,
+                               serato_manifest=sm, sqlite_manifest=qm, heartbeat=FakeHeartbeat(),
+                               journal_path=self.tmp / "j.jsonl", result_path=self.tmp / "r.json",
+                               process_lister=NO_SERATO)
+        return res, sm, qm
+
+    def make_smart(self, cid):
+        for d in self.dbs:
+            c = sqlite3.connect(str(d), isolation_level=None)
+            c.execute("INSERT INTO smart_crate_rules VALUES (?, '{}')", (cid,)); c.close()
 
     def rows(self, plan, name):
         return {r["path"]: r for e in plan["sqlite"] if e["name"] == name for r in e["rows"]}
@@ -278,8 +297,8 @@ class MembershipCase(unittest.TestCase):
         for d in self.dbs:
             after = self.memberships(d)
             self.assertEqual(len(after), len(before[d][1]) - 2)
-            # only stale_a's (space_asset 1) rows went; every other membership is byte-identical
-            self.assertEqual(after, [m for m in before[d][1] if m[-1] != 1])
+            # only stale_a's (space_asset 3) rows went; every other membership is byte-identical
+            self.assertEqual(after, [m for m in before[d][1] if m[3] != 3])
             c = sqlite3.connect(f"file:{d}?immutable=1", uri=True)
             self.assertEqual(c.execute("SELECT count(*) FROM container").fetchone()[0], 3)   # crates untouched
             self.assertIsNone(c.execute("SELECT 1 FROM asset WHERE portable_id=?", (self.stale_a,)).fetchone())
@@ -305,6 +324,70 @@ class MembershipCase(unittest.TestCase):
             c.execute("INSERT INTO asset (portable_id) VALUES (?)", (stored(extra),)); c.close()
         rows = self.rows(self.plan(), "root.sqlite")
         self.assertEqual(rows[self.stale_a]["action"], "hold")
+
+
+    def test_add_requires_drop_flag(self):
+        with self.assertRaises(prune.PruneError):
+            self.plan(False, True)
+
+    def test_add_live_plans_append_at_end(self):
+        plan = self.plan(add=True)
+        for name in ("root.sqlite", "master.sqlite"):
+            r = self.rows(plan, name)[self.stale_b]
+            self.assertEqual(r["action"], "remove")
+            adds = r["membership_check"]["adds"]
+            self.assertEqual([a["container"] for a in adds], ["Unsorted"])
+            self.assertEqual(adds[0]["values"]["list_order"], 100 + 4 + 1)    # max in Unsorted was stale_b's 104
+            self.assertEqual(adds[0]["values"]["space_asset_id"], 2)          # live_b
+            if name == "root.sqlite":
+                self.assertEqual(adds[0]["values"]["revision"], 77)
+            else:
+                self.assertIsNone(adds[0]["values"]["external_container_asset_id"])
+            self.assertEqual(plan["summary"][f"{name}_memberships_added"], 1)
+            self.assertEqual(self.rows(plan, name)[self.gone]["action"], "hold")
+
+    def test_add_live_apply_post_check_and_undo(self):
+        before = {d: (sha(d), self.memberships(d)) for d in self.dbs}
+        res, sm, qm = self.apply(self.plan(add=True))
+        self.assertEqual(res["status"], "PASS")
+        for d in self.dbs:
+            after = self.memberships(d)
+            orig_ids = {m[0] for m in before[d][1]}
+            stale_ids = {m[0] for m in before[d][1] if m[3] in (3, 4)}
+            # every original membership that was not a stale row's is byte-identical
+            self.assertEqual([m for m in after if m[0] in orig_ids], [m for m in before[d][1] if m[0] not in stale_ids])
+            new = [m for m in after if m[0] not in orig_ids]
+            self.assertEqual(len(new), 1)
+            c = sqlite3.connect(f"file:{d}?immutable=1", uri=True)
+            in_unsorted = c.execute(
+                "SELECT count(*) FROM container_asset WHERE space_asset_id = 2 AND " +
+                ("location_container_id = 13" if d == self.master else "container_id = 3")).fetchone()[0]
+            self.assertEqual(in_unsorted, 1)
+            for gone in (self.stale_a, self.stale_b):
+                self.assertIsNone(c.execute("SELECT 1 FROM asset WHERE portable_id=?", (gone,)).fetchone())
+            self.assertEqual(c.execute("SELECT count(*) FROM container").fetchone()[0], 3)
+            c.close()
+        prune.undo(journal_path=self.tmp / "j.jsonl", serato_dir=self.serato, databases=self.dbs,
+                   serato_manifest=sm, sqlite_manifest=qm, heartbeat=FakeHeartbeat(),
+                   undo_journal=self.tmp / "undo", process_lister=NO_SERATO)
+        self.assertEqual(before, {d: (sha(d), self.memberships(d)) for d in self.dbs})
+
+    def test_smart_crate_is_reported_never_inserted(self):
+        self.make_smart(3)
+        plan = self.plan(add=True)
+        for name in ("root.sqlite", "master.sqlite"):
+            r = self.rows(plan, name)[self.stale_b]
+            self.assertEqual(r["action"], "hold")
+            self.assertEqual(r["membership_check"]["smart_lacking"], ["Unsorted"])
+            self.assertEqual(r["membership_check"]["adds"], [])
+            self.assertEqual(plan["summary"][f"{name}_memberships_added"], 0)
+
+    def test_live_copy_added_after_plan_invalidates_it(self):
+        plan = self.plan(add=True); path = self.tmp / "p.json"; sr.write_json(path, plan)
+        c = sqlite3.connect(str(self.root), isolation_level=None)
+        c.execute("INSERT INTO container_asset (revision, container_id, space_asset_id, list_order) VALUES (5,3,2,999)"); c.close()
+        with self.assertRaises(prune.PruneError):
+            prune.load_and_validate_plan(path, self.serato, self.music, self.dbs)
 
 
 if __name__ == "__main__":
