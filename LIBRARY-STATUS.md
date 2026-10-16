@@ -5,6 +5,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 ## Last updated
 
 2026-10-16 15:25 EDT — Claude (Mac): NEW MUSIC held 44: 39 Genre tags respelled (21 Hip-Hop, 16 R&B, 1 Bounce, 1 House), 5 unchanged, NOTHING moved, verified. Job 3 read-only re-check: 762/762 match journal, disk, database V2, 50 crate files and both SQLite (0 old paths). rekordbox NOT checked: old/new path list saved for Grok (`new-music-move-20261016/job3-verify/job3-moved-762-old-new-paths-20261016.csv`). See "NEW MUSIC DOWNLOADS — Claude".
+2026-10-16 15:10 EDT — Grok (DJ B.A.E. Library): Genre rounds 1–9 written (single-genre picks folder by folder, ChatGPT rounds 1–9; round 9: 4 written, 99 already correct, 322 held), Genre standardize, Remixer (TPE4) writes, undo of r4 Genre writes in Lounge/oLD Head Party (custom-folder rule now in GENRE-WRITE-RULES.md). Serato DB verified read-only after Claude job 3: 762 moved, 0 old paths in database V2, crates, root.sqlite or master.sqlite assets (282 old paths only in play history); all 351 Afrobeats entries resolve; 22 unresolved in-library entries, none new. Active DB: Serato DJ Pro 4.0.1 uses ~/Library/Application Support/Serato/Library (master/root.sqlite); database V2 kept in sync. House count base: V2 1,629 vs master 1,999, so the House 301 projection only covers V2 tracks. Isolated rescan test prepped (4 copies in ~/Music/RESCAN-TEST, backup T5 2026-10-16-rescan-test-pre, both Serato folders, PASS); waiting on Imani. rekordbox: needs a fresh Collection XML export + Missing Files list.
 2026-10-16 15:00 EDT — Claude (Mac): NEW MUSIC job 3 Clean/Dirty DONE: 762 moved, 44 held (Genre spelling), Serato + SQLite repointed (PASS). See "NEW MUSIC DOWNLOADS — Claude".
 2026-10-16 ~12:50 EDT — Claude (cloud, repo only): status file cleaned up: one "Current state" section; stale "waiting/running" items that later entries show as done were removed; Grok's status PRs #74, #79 and #84 (holds answers) folded in. No library files touched.
 2026-10-16 12:35 EDT — Claude (Mac): NOLA Bounce + Ghettotech energy written; NEW MUSIC DOWNLOADS jobs 1-2 written (97 exact dupes deleted, 32 Genre + 14 Year), job 3 Clean/Dirty preview running (audio 5/12 batches), job 4 not started. See "NEW MUSIC DOWNLOADS — Claude" below.
@@ -14,7 +15,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 2026-10-16 ~12:00 EDT — Claude (cloud, repo only): code review of #63/#65/#73/#75; fixes merged as #78 and #81 (see "Checks before more cleanup" below). No library files touched.
 2026-10-16 11:30 EDT — Grok (from PR #84): 92 R&B medium Years written; Genre set on 9 held Afrobeats (7 changed, 2 already right; no moves; 20 still held). Backup T5 `2026-10-16-rnb-medium-years-afro-genre`. Tool PR #80 (`--keeper-map`) for the 5 stale Pop-dupe SQLite rows: not run.
 2026-10-16 11:15 EDT — Grok (from PRs #79/#84): Pop version-label dupes p5: 8 lower-bitrate copies removed (Imani OK 11:07); crates/smart crates repointed to keepers; database V2 clean; 5 stale SQLite rows held. Backup T5 `2026-10-16-pop-dupes-p5` (keep). Metadata cleanup v2 preview ready.
-2026-10-16 10:58 EDT — Grok (DJ B.A.E. Library): high-confidence Energy v2 (10-value scale) written: R&B 506, Pop 895, Hip Hop 950 Grouping appends (29 ID3v2.2 skipped, 0 Energy conflicts). Med/low/NEEDS YOU/Reset not written. Backup T5 2026-10-16-energy-v2-high; Imani to rescan ID3 tags in Serato. See GROK-DJ-LIBRARY-LOG.md.
+2026-10-16 10:58 EDT — Grok (DJ B.A.E. Library): high-confidence Energy v2 (10-value scale) written: R&B 506, Pop 895, Hip Hop 950 Grouping appends (29 ID3v2.2 skipped, 0 Energy conflicts). Med/low/NEEDS YOU/Reset not written. Backup T5 2026-10-16-energy-v2-high; Imani to rescan ID3 tags in Serato. See GROK-DJ-LIBRARY-LOG.md. (only after the isolated rescan test passes)
 2026-10-16 10:01 EDT — Grok (from PRs #74/#84): Serato ghost cleanup: 882 crate/smart-crate refs repointed (crates-only); 397 database V2 ghosts + 377 rows per SQLite file pruned (with the prune tool as it was BEFORE #78).
 2026-10-16 09:35 EDT — Grok (DJ B.A.E. Library): Afrobeats energy written (347); see GROK-DJ-LIBRARY-LOG.md.
 2026-10-16 09:20 EDT — Grok (DJ B.A.E. Library): Afrobeats Clean/Dirty written (79 Dirty moved+tagged, 161 to _NEEDS CHECK, 32 held); genre-folder config PR #69; see GROK-DJ-LIBRARY-LOG.md.
@@ -30,6 +31,16 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 2026-10-15 ~15:55 EDT — Claude (cloud, repo only): PR #55 merged (also reads a plain "Afrobeat" tag as Afrobeats; "Dub" stays held). No library files touched.
 2026-10-15 15:50 EDT — Claude (folder-rename tooling PR #56; library untouched)
 2026-10-15 ~16:50 EDT — Claude (cloud, repo only): fixed main CI after #48 (History staging script classified as allowlisted infrastructure). No library files touched.
+
+
+## Corrections and rules (Grok, 2026-10-16 15:10)
+
+- **Rescan:** no library-wide Rescan ID3 Tags. Every rescan step in this file and the log applies only after the isolated rescan test passes.
+- **Layout is genre-first** (genre folder, then CLEAN / DIRTY / REMIXES & EDITS etc. inside it), not version-first.
+- **Smart crate field IDs (validated against crate snapshots):** `urkt` 9 = Genre, 19 = Grouping, 4 = Filename; `trft cond_con_str` = contains. Smart crates are not Grouping-only.
+- **Afrobeats crates are NOT broken:** `Clean>>Afrobeat Clean` = Genre contains "Afrobeat" AND Grouping contains "Clean"; `afro world>>Afrobeat Dirty` = Genre contains "afrobeat" AND Grouping contains "dirty"; both Match All, Live Update on. "Afrobeats" contains "Afrobeat", and against the DB both rules reproduce their members exactly (59, 104; 0 enter, 0 leave). The earlier "0 of 351" finding checked Grouping and is withdrawn.
+- **`Clean>>Clean` is Match ANY** (Genre / Filename / Grouping contains "Clean"), Live Update on: 4,302 of 4,852 members match on Filename, most of the rest on Grouping.
+- **Backup rule:** every backup before a Serato-affecting write must include BOTH `~/Music/_Serato_` and `~/Library/Application Support/Serato/Library` (master/root.sqlite + any -wal/-shm), hash-verified. Today's tag-only backups had only `_Serato_` (their undos are still complete: tags live in the files). Proposed mutation_engine change (not implemented): add the App Support Library to the backup step and refuse if missing.
 
 ## Current state (2026-10-16 ~12:50 EDT)
 
@@ -49,14 +60,14 @@ The review fixes are merged (#78 prune tool + audio-match deleter; #81 crate rep
 4. **Afrobeats Closer / Slow Wine / Finesse / Focus:** all have their database V2 record, both SQLite rows and their crates. Nothing lost.
 
 ### T5 backups waiting on Imani's Serato check (then delete)
-- `2026-10-15-pop-tags/` and `2026-10-15-junk-grouping/` — rescan Pop, Cat Calls Inspo, Y2K.
-- `2026-10-15-rnb-genre-conflicts/`, `2026-10-16-rnb-hand-years/` — rescan R&b.
+- `2026-10-15-pop-tags/` and `2026-10-15-junk-grouping/` — rescan Pop, Cat Calls Inspo, Y2K. (only after the isolated rescan test passes)
+- `2026-10-15-rnb-genre-conflicts/`, `2026-10-16-rnb-hand-years/` — rescan R&b. (only after the isolated rescan test passes)
 - `2026-10-15-afrobeats-rename/` (inner, top, top2, top3), `2026-10-16-afrobeats-cleandirty/`, `2026-10-16-afrobeats-energy/` — check Afrobeats.
 - `2026-10-15-afrobeat-genre-baile-energy/` — check Baile + the 19 genre-fix folders.
 - `2026-10-16-drake-titles/` — check a few Drake titles (Marvins Room, July).
-- `2026-10-16-energy-v2-high/` — rescan R&B, Pop, Hip Hop.
-- `2026-10-16-rnb-medium-years-afro-genre/` — rescan R&b and Afrobeats.
-- `2026-10-16-nola-bounce-energy/`, `2026-10-16-ghettotech-energy/`, `2026-10-16-newmusic-dupes/`, `2026-10-16-newmusic-tags/` (Claude Mac) — rescan New Orleans Bounce, Ghettotech, NEW MUSIC DOWNLOADS.
+- `2026-10-16-energy-v2-high/` — rescan R&B, Pop, Hip Hop. (only after the isolated rescan test passes)
+- `2026-10-16-rnb-medium-years-afro-genre/` — rescan R&b and Afrobeats. (only after the isolated rescan test passes)
+- `2026-10-16-nola-bounce-energy/`, `2026-10-16-ghettotech-energy/`, `2026-10-16-newmusic-dupes/`, `2026-10-16-newmusic-tags/` (Claude Mac) — rescan New Orleans Bounce, Ghettotech, NEW MUSIC DOWNLOADS. (only after the isolated rescan test passes)
 - `2026-10-16-prune-afrobeat-stale/` and `2026-10-16-serato-ghost-fix/` — checks found nothing lost; delete once Imani OKs.
 - **Keep:** `2026-10-16-pop-dupes-p5/` until Imani decides on the Britney "Slave 4 U (1st version)" restore.
 
@@ -125,8 +136,8 @@ Marks: **verified** = Grok checked the result file or the disk directly. **repor
 ### Files backed up (changed files + `_Serato_` only)
 | Backup | Files | Status | Mark |
 |---|---|---|---|
-| `2026-10-15-junk-grouping/` (211 files, 18 manifests · `_Serato_` 664) | 211 + `_Serato_` | all PASS; delete after Imani's Serato rescan | verified |
-| `2026-10-15-pop-tags/` (pre-genre 1,221 · pre-year 282 · pre-grouping 1,193 · `_Serato_` 664) | 3,360 | all PASS; delete after Imani's Serato rescan of Pop, Cat Calls Inspo, Y2K | verified |
+| `2026-10-15-junk-grouping/` (211 files, 18 manifests · `_Serato_` 664) | 211 + `_Serato_` | all PASS; delete after Imani's Serato rescan | verified | (only after the isolated rescan test passes)
+| `2026-10-15-pop-tags/` (pre-genre 1,221 · pre-year 282 · pre-grouping 1,193 · `_Serato_` 664) | 3,360 | all PASS; delete after Imani's Serato rescan of Pop, Cat Calls Inspo, Y2K | verified | (only after the isolated rescan test passes)
 | T5 `2026-10-15-genre-fixes` | 377 + `_Serato_` | deleted after Imani's Serato check | reported (deletion), verified (377 count) |
 | T5 `2026-10-15-rnb-tags` | 545 + `_Serato_` | deleted after Imani's Serato check | verified (545 in target-files.txt) |
 | `genre-cleanup-20260906` proven backups | 6,711 (~52G) deleted; 1 kept (Gambino *We Are God*); ~120G unproven kept | reported |
@@ -174,8 +185,8 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
 - (verified) Genre fixes (Oct 15): **377** tags, 0 failures — includes **317 Afrobeat → Afrobeats**, plus Dancehall/Reggae/World/Amapiano/Soca. Imani rescanned; T5 backup deleted.
 - (verified) R&B confident tags: **492 Year** + **55 Grouping** (MP3), 0 Genre (none were high-confidence). Imani rescanned; T5 backup deleted.
 - (verified) **Pop duplicates finished:** 202 duplicate copies deleted (Imani approved), every keeper is the 320 kbps copy, Serato DB V2 repointed. All T5 pop-dupes backups deleted after Imani checked Serato.
-- (verified) **R&B Years done:** **230** Years written today from `rnb-year-review-v2-20261015.csv` (YEAR-01 25, -02 25, -03 24, -04..10 156), Imani-approved incl. overrides; read back OK, no audio/Serato frame changes. **9** skipped by Imani (no Year): Dru Hill "I Should Be...", The-Dream "You", 7 no-artist rows (moved to hand-entry). R&B Genre batch: 110 written (4 ID3v2.2 skipped). All T5 R&B backups deleted after Imani's rescans.
-- (verified) **R&B conflicting-genre rows (20) done 21:31 ET:** Genre → R&B on 7 (Get Away was already R&B), `Alt R&B` appended to Grouping on Computer Luv / Closer (ODE 2 U) / Lovely, Year on all 20 (I FEEL GOOD = 1965). Rescan R&b in Serato and confirm, then delete T5 `2026-10-15-rnb-genre-conflicts/`.
+- (verified) **R&B Years done:** **230** Years written today from `rnb-year-review-v2-20261015.csv` (YEAR-01 25, -02 25, -03 24, -04..10 156), Imani-approved incl. overrides; read back OK, no audio/Serato frame changes. **9** skipped by Imani (no Year): Dru Hill "I Should Be...", The-Dream "You", 7 no-artist rows (moved to hand-entry). R&B Genre batch: 110 written (4 ID3v2.2 skipped). All T5 R&B backups deleted after Imani's rescans. (only after the isolated rescan test passes)
+- (verified) **R&B conflicting-genre rows (20) done 21:31 ET:** Genre → R&B on 7 (Get Away was already R&B), `Alt R&B` appended to Grouping on Computer Luv / Closer (ODE 2 U) / Lovely, Year on all 20 (I FEEL GOOD = 1965). Rescan R&b in Serato and confirm, then delete T5 `2026-10-15-rnb-genre-conflicts/`. (only after the isolated rescan test passes)
 - (reported) Old `genre-cleanup-20260906` proven backups (~52G / 6,711 files) deleted after hash check. Keep manifests/logs.
 
 ## Log (old notes, superseded by Current state)
