@@ -4,6 +4,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 
 ## Last updated
 
+2026-10-15 20:45 EDT — Grok (DJ B.A.E. Library): Pop duplicates finished (202 deleted); R&B Years done (230 written, 9 skipped); see GROK-DJ-LIBRARY-LOG.md.
 2026-10-15 16:58 EDT — Grok (DJ B.A.E. Library): R&B Genre batch written (110 of 114 approved; 4 ID3v2.2 skipped); see GROK-DJ-LIBRARY-LOG.md.
 2026-10-15 16:41 EDT — Grok (DJ B.A.E. Library): junk Grouping removal written (211 files); see GROK-DJ-LIBRARY-LOG.md.
 2026-10-15 16:22 EDT — Grok (DJ B.A.E. Library): Pop new-adds tag write (Genre/Year/Source Grouping) done; see GROK-DJ-LIBRARY-LOG.md.
@@ -87,15 +88,17 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
 - (reported) Claude Oct 15: 10 folders sorted/energy-tagged (~849 Energy Grouping appends). See `CLAUDE-HANDOFF-2026-10-15.md`.
 - (verified) Genre fixes (Oct 15): **377** tags, 0 failures — includes **317 Afrobeat → Afrobeats**, plus Dancehall/Reggae/World/Amapiano/Soca. Imani rescanned; T5 backup deleted.
 - (verified) R&B confident tags: **492 Year** + **55 Grouping** (MP3), 0 Genre (none were high-confidence). Imani rescanned; T5 backup deleted.
+- (verified) **Pop duplicates finished:** 202 duplicate copies deleted (Imani approved), every keeper is the 320 kbps copy, Serato DB V2 repointed. All T5 pop-dupes backups deleted after Imani checked Serato.
+- (verified) **R&B Years done:** **230** Years written today from `rnb-year-review-v2-20261015.csv` (YEAR-01 25, -02 25, -03 24, -04..10 156), Imani-approved incl. overrides; read back OK, no audio/Serato frame changes. **9** skipped by Imani (no Year): Dru Hill "I Should Be...", The-Dream "You", 7 no-artist rows (moved to hand-entry). R&B Genre batch: 110 written (4 ID3v2.2 skipped). All T5 R&B backups deleted after Imani's rescans.
 - (reported) Old `genre-cleanup-20260906` proven backups (~52G / 6,711 files) deleted after hash check. Keep manifests/logs.
 
 ## In progress
 
+- Old T5 repo copy (215G): audited 2026-10-15 15:29 EDT, read-only, NOT deleted. It has unpushed rule commits (Nu Wave, Juke & Footwork, T5 dedupe --serato-backup), 13 attached worktrees, and about 3,655 backup audio tracks not found in the live library, including the Gambino We Are God.flac. (verified) Imani: leave for later.
 - **New Pop music** (Imani adding): `Pop/Pop from ` · `Cat Calls Inspo/` · `Pop/00_s Music/Pop Girl At Heart/` (**982 files**, was still copying at 471) · top-level `Y2K/`.
 - **Approved plan** (Imani): Genre → Pop; append `Source: <playlist>` to Grouping; 4-digit Years; strip "November" / record-pool watermark Groupings (now its own step, see Waiting on Imani).
 - (reported by the Mac session, ~16:00 EDT) **Written, then paused:** Genre → Pop on **1,193** files (all of Pop Girl At Heart, Cat Calls Inspo, Y2K) and **238** Pop Girl Years cut to 4 digits. All read back correctly, backed up, undoable. Imani to rescan those three in Serato.
 - **Refreshed Pop preview, waiting on Imani's go:** 44 Pop Girl Years; 1,202 `Source:` Grouping appends (Pop Girl 982, Cat Calls 81, Y2K 130, Pop from 9). 23 tracks have no year (left blank); 4 wav skipped.
-- **Duplicates (~440):** keep best copy (bitrate / clean-dirty), merge good tags + Source onto keeper; Imani approves delete list before any remove. Check Serato crates pointing at losers.
 - **Inbox genre/year lookup** still running (`inbox-genre-lookup/`, ~325+/514). When done: `merge.py` → preview → write only after approval.
 
 - **Folder-rename tooling (PR `claude/folder-rename-tooling`, not yet run on the live library):** `apply_folder_rename_plan.py` (R&b→R&B case-only via temp name, Afrobeat→Afrobeats; preview/apply/undo/recover) and `rewrite_serato_sqlite_paths.py` (`asset.portable_id` in **both** `master.sqlite` and `root.sqlite`). Real-scale rehearsal on copies passed (4,311 Serato refs, 3,824 rows per SQLite file, undo works). Review fixes landed (atomic no-replace rename; SQLite hardening); #56 reviewed OK. Live run order: own full copies of `_Serato_` + music, spare-copy trial incl. undo, check Serato re-imports, then the real rename with Serato quit. Needs Imani's separate go; read `references/folder-rename-runbook.md` first (open questions: Serato re-import of `database V2`, SmartCrates cached paths).
@@ -110,8 +113,9 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
   2. Imani picks the exact junk values → one per line in `$W/remove.txt`.
   3. `python3 scripts/build_grouping_removal_plan.py plan --root "$LIB/<folder>" --remove "$W/remove.txt" --out-dir "$W/grouping-removal"` → show `GROUPING-REMOVAL-PREVIEW.md`; Imani says go.
   4. Scoped backup + PASS manifest, then `apply_grouping_plan.py --apply` with the lock, as for any Grouping write. Serato rescan.
-- **461** R&B "NEEDS YOU" rows left (575 minus 114 approved Genre rows), batched in `rnb-review-batches-20261015.csv/.md` (year batches + G-ALT 3 + G-OTHER 4 Afrobeat→Afrobeats). 4 ID3v2.2 files from G-R&B need an upgrade first: 07 Got Her Own, 08 Drown In It, Return Of The Mac (Topper-Intro) Extended, Shut It Down.
-- R&B Genre batch backup: T5 `2026-10-15-rnb-genre-batch/` — delete after Imani rescans R&b in Serato and confirms.
+- **R&B still open** (`rnb-year-review-v2-20261015.csv/.md`): **20** conflicting-genre rows, **198** type-by-hand Years, **4** m4a/FLAC, **4** ID3v2.2 (07 Got Her Own, 08 Drown In It, Return Of The Mac (Topper-Intro) Extended, Shut It Down — tag upgrade first), **2** missing files.
+- **Pop duplicates still waiting:** 18 version-label holds, 125 refused, 589 uncertain pairs. 5 keepers to move into their genre folders in the folder pass (Everything is romantic → Lounge, ROCKET → Groovy Bounce, Ick + Na Na Na → Jersey Club, SAD GIRLZ LUV MONEY Remix → Afrobeats; Grouping already tagged).
+- **Drake title cleanup (later):** 8 Drake tracks have "Drake -" / "Drake ft.." embedded in the Title tag; preview + approval needed.
 - Tyla 128 kbps vs 320 kbps pairs (not hash dupes) — keep/delete call.
 - Fix Serato smart crates: `Clean R&B` / `r&b edits` need `"r&b "` with trailing space; `Clean R&B` should match ALL not ANY; `90s`/`2000s` use Grouping not Year.
 - **5** afro-ish tags left in Afrobeat (e.g. `r&b afro beat lounge`) — not exact "Afrobeat".
@@ -121,8 +125,8 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
 ## Next up
 
 1. Rescan Pop Girl → refresh preview → write Pop tags (scoped backup) after Serato closed.
-2. Duplicate keep/delete list for Imani, then remove approved losers.
-3. **14** R&B m4a/FLAC Year/Grouping (writers on main via #51).
+2. Imani reviews the held/refused/uncertain duplicate pairs.
+3. R&B conflicting-genre (20) + hand-entry Years (198); m4a/FLAC Year/Grouping (writers on main via #51).
 4. **34** ID3v2.2 Grouping (needs conversion approval).
 5. PR: extend `rewrite_serato_paths.py` to History + SmartCrates.
 6. One-pass folder moves: `R&b` → `R&B` + CLEAN/DIRTY sort; Afrobeat folder → Afrobeats; misfiled tracks from Claude sheets. (Rename tooling exists in the PR above; needs review + Imani's go first.)
