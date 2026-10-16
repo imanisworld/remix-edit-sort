@@ -5,6 +5,7 @@ import sqlite3
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -137,6 +138,48 @@ class ApplyTests(PruneCase):
         self.assertEqual(c.execute("SELECT portable_id FROM history_entry").fetchall(), [(self.gone,)])
         self.assertEqual(c.execute("PRAGMA integrity_check").fetchall(), [("ok",)]); c.close()
         self.assertTrue(mutation_engine.recover(self.tmp / "j.jsonl")["clean"])
+
+    def test_failed_final_postcheck_restores_all_three_stores(self):
+        plan = self.plan(); sm, qm = self.manifests()
+        before = {p: sha(p) for p in [self.serato / "database V2", *self.dbs]}
+        with patch.object(prune, "post_check", return_value={"status": "FAIL", "removable_remaining": 1}):
+            with self.assertRaises(prune.PruneError):
+                self.apply(plan, sm, qm)
+        self.assertEqual(before, {p: sha(p) for p in before})
+        record = json.loads((self.tmp / "j.jsonl.rollback.json").read_text())
+        self.assertEqual(record["status"], "ROLLED_BACK")
+        self.assertEqual(record["completed_stores"], 3)
+        self.assertEqual(record["errors"], [])
+
+    def test_failure_in_second_sqlite_recovers_prior_commits(self):
+        plan = self.plan(); sm, qm = self.manifests()
+        before = {p: sha(p) for p in [self.serato / "database V2", *self.dbs]}
+        real_delete = prune._delete_sqlite_rows
+        count = [0]
+
+        def fail_second(*args):
+            count[0] += 1
+            if count[0] == 2:
+                raise mutation_engine.MutationVerificationError("injected second-database failure")
+            return real_delete(*args)
+
+        with patch.object(prune, "_delete_sqlite_rows", side_effect=fail_second):
+            with self.assertRaises(mutation_engine.MutationVerificationError):
+                self.apply(plan, sm, qm)
+        self.assertEqual(count[0], 2)
+        self.assertEqual(before, {p: sha(p) for p in before})
+        record = json.loads((self.tmp / "j.jsonl.rollback.json").read_text())
+        self.assertEqual(record["status"], "ROLLED_BACK")
+
+    def test_rollback_failure_is_explicit_partial(self):
+        plan = self.plan(); sm, qm = self.manifests()
+        with patch.object(prune, "post_check", return_value={"status": "FAIL", "removable_remaining": 1}):
+            with patch.object(prune, "_restore_prune_completed", side_effect=OSError("injected recovery failure")):
+                with self.assertRaisesRegex(prune.PruneError, "PARTIAL Serato cleanup"):
+                    self.apply(plan, sm, qm)
+        record = json.loads((self.tmp / "r.json").read_text())
+        self.assertEqual(record["status"], "PARTIAL")
+        self.assertIn("DO NOT OPEN SERATO", record["action_required"])
 
     def test_running_serato_refused_and_nothing_changes(self):
         plan = self.plan(); sm, qm = self.manifests()
