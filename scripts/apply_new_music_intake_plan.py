@@ -45,6 +45,7 @@ from mutagen.mp4 import MP4
 import backup_manifest
 import lock_guard
 import mutation_engine
+import tag_formats
 
 SUPPORTED_EXTS = {".mp3", ".flac", ".m4a"}
 ID3_V22_TO_V23 = {"from": "2.2", "to": "2.3"}
@@ -406,7 +407,7 @@ def write_metadata(
     suffix = path.suffix.casefold()
     if suffix == ".mp3":
         try:
-            tags = ID3(path)
+            tags = tag_formats.load_id3_for_save(path, version)
             source_version = tags.version[1]
         except ID3NoHeaderError:
             tags = ID3()
@@ -428,8 +429,10 @@ def write_metadata(
             tags.delall("TIT1")
             tags.add(TIT1(encoding=encoding, text=[grouping_value]))
         if year_value is not None:
-            tags.delall("TYER")
-            tags.delall("TDRC")
+            # A v2.3 date is TYER + TDAT (+ TIME); the new year replaces the whole
+            # date, as it does in a v2.4 TDRC.
+            for frame_id in ("TYER", "TDAT", "TIME", "TDRC"):
+                tags.delall(frame_id)
             if version == 4:
                 tags.add(TDRC(encoding=encoding, text=[year_value]))
             else:

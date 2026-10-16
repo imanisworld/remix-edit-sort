@@ -65,6 +65,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import backup_manifest  # noqa: E402
 import lock_guard  # noqa: E402
 import mutation_engine  # noqa: E402
+import tag_formats  # noqa: E402
 
 SUPPORTED_EXTS = {".mp3", ".m4a", ".flac"}
 
@@ -251,7 +252,7 @@ def write_grouping(path: Path, value: str, version: int) -> None:
     suffix = path.suffix.casefold()
     if suffix == ".mp3":
         try:
-            tags = ID3(path)
+            tags = tag_formats.load_id3_for_save(path, version)
         except ID3NoHeaderError:
             tags = ID3()
         encoding = 3 if version == 4 else 1

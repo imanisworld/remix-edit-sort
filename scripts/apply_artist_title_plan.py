@@ -37,6 +37,7 @@ from mutagen.wave import WAVE
 import backup_manifest
 import lock_guard
 import mutation_engine
+import tag_formats
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -199,9 +200,11 @@ def write_artist_title(path: Path, artist: str, title: str, version: int) -> Non
         # clobbering the "RIFF....WAVE" header a WAV file requires. The WAVE
         # wrapper knows to embed the tag as a proper RIFF "id3 " sub-chunk
         # instead, leaving the container structure intact.
-        w = WAVE(path)
+        w = WAVE(path, translate=False)
         if w.tags is None:
             w.add_tags()
+        else:
+            tag_formats.fit_id3_to_save_version(w.tags, version)
         w.tags.delall("TPE1")
         w.tags.add(TPE1(encoding=encoding, text=[artist]))
         w.tags.delall("TIT2")
@@ -209,7 +212,7 @@ def write_artist_title(path: Path, artist: str, title: str, version: int) -> Non
         w.save(path, v2_version=version)
         return
     try:
-        tags = ID3(path)
+        tags = tag_formats.load_id3_for_save(path, version)
     except ID3NoHeaderError:
         tags = ID3()
     tags.delall("TPE1")

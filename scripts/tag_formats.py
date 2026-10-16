@@ -10,6 +10,10 @@ Covers the non-ID3 containers the writers now support:
   * M4A   -- Grouping is ``\xa9grp``, Year is ``\xa9day``, BPM is ``tmpo``.
              Serato keeps its data in ``----:com.serato.dj:*`` freeform atoms.
 
+It also holds ``load_id3_for_save()``, the one way the ID3 writers load a tag
+they are about to save (see its docstring for the ID3v2.3 year-frame bug it
+prevents).
+
 Nothing in this module writes to a file. The writes live inside each apply
 script's declared ENGINE_MUTATION_HELPERS so mutation_surface.py keeps
 governing them.
@@ -24,11 +28,13 @@ import json
 from pathlib import Path
 
 from mutagen.flac import FLAC
+from mutagen.id3 import ID3
 from mutagen.mp4 import MP4
 
 FLAC_SUFFIXES = {".flac"}
 MP4_SUFFIXES = {".m4a"}
 NON_ID3_SUFFIXES = FLAC_SUFFIXES | MP4_SUFFIXES
+V22_IMAGE_MIMES = {"PNG": "image/png", "JPG": "image/jpeg"}
 
 
 def kind(path: Path) -> str:
@@ -40,6 +46,40 @@ def kind(path: Path) -> str:
     if suffix in MP4_SUFFIXES:
         return "m4a"
     return "unsupported"
+
+
+def fit_id3_to_save_version(tags, v2_version: int) -> None:
+    """Bring a tag loaded with ``translate=False`` into ``v2_version``'s frame
+    model, in memory only.
+
+    mutagen's default load converts every tag to its v2.4 model (TYER/TDAT/
+    TIME -> TDRC, TORY -> TDOR, IPLS -> TIPL), and ``save(v2_version=3)`` does
+    NOT convert back, so a v2.3 file came out with off-spec v2.4 frames. For a
+    v2.4 save this does exactly what the default load did. For a v2.3 save of
+    a v2.3 (or v2.2) tag it leaves the frames as read, bar a v2.2 picture's
+    image format (below). Unlike ``update_to_v23()``, that keeps v2.4-only
+    frames iTunes puts in v2.3 tags (TSOP, TSOA, ...) and raw TCON values
+    such as "(17)".
+    """
+    if v2_version == 4:
+        tags.update_to_v24()
+    elif tags.version[1] == 4:
+        tags.update_to_v23()
+    elif tags.version[1] == 2:
+        # Untranslated v2.2 PIC frames load as APIC but keep v2.2's 3-letter
+        # image format ("PNG") where v2.3 needs a MIME type. Same mapping
+        # mutagen's own translation applies.
+        for pic in tags.getall("APIC"):
+            pic.mime = V22_IMAGE_MIMES.get(pic.mime, pic.mime)
+
+
+def load_id3_for_save(path: Path, v2_version: int | None = None) -> ID3:
+    """Load an MP3's ID3 tag for a write that will ``save(v2_version=...)``.
+    ``v2_version=None`` means the tag's own version. Raises
+    ``ID3NoHeaderError`` like ``ID3(path)``."""
+    tags = ID3(path, translate=False)
+    fit_id3_to_save_version(tags, tags.version[1] if v2_version is None else v2_version)
+    return tags
 
 
 def _sha(data: bytes) -> str:

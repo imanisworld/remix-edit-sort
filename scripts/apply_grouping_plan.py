@@ -175,7 +175,7 @@ def write_grouping(path: Path, value: str, version: int | None) -> None:
     if version is None:
         raise RuntimeError(f"ID3 write needs an id3_version: {path}")
     try:
-        tags = ID3(path)
+        tags = tag_formats.load_id3_for_save(path, version)
     except ID3NoHeaderError:
         tags = ID3()
     encoding = 3 if version == 4 else 1

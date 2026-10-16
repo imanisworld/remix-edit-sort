@@ -184,13 +184,15 @@ def write_year_bpm(path: Path, year: str | None, bpm: str | None, version: int |
     if version is None:
         raise RuntimeError(f"ID3 write needs an id3_version: {path}")
     try:
-        tags = ID3(path)
+        tags = tag_formats.load_id3_for_save(path, version)
     except ID3NoHeaderError:
         tags = ID3()
     encoding = 3 if version == 4 else 1
     if year:
-        tags.delall("TYER")
-        tags.delall("TDRC")
+        # A v2.3 date is TYER + TDAT (+ TIME); the new year replaces the whole
+        # date, as it does in a v2.4 TDRC.
+        for frame_id in ("TYER", "TDAT", "TIME", "TDRC"):
+            tags.delall(frame_id)
         if version == 4:
             tags.add(TDRC(encoding=encoding, text=[year]))
         else:

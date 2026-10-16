@@ -48,6 +48,7 @@ import backup_manifest
 import build_version_genre_plan as version_plan
 import lock_guard
 import mutation_engine
+import tag_formats
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -250,7 +251,7 @@ def write_genre(path: Path, value: str) -> None:
     suffix = path.suffix.casefold()
     if suffix == ".mp3":
         try:
-            tags = ID3(path)
+            tags = tag_formats.load_id3_for_save(path)
             original_v2_version = tags.version[1]
         except ID3NoHeaderError:
             tags = ID3()
