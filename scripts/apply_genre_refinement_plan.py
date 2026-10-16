@@ -51,6 +51,7 @@ from mutagen.mp4 import MP4
 import backup_manifest
 import lock_guard
 import mutation_engine
+import tag_formats
 
 SUPPORTED_EXTS = {".mp3", ".flac", ".m4a"}
 ELIGIBLE_STATUSES = {"A_ONLY", "B_ONLY", "A_AND_B_SAME"}
@@ -249,7 +250,7 @@ def write_genre(path: Path, value: str) -> None:
     suffix = path.suffix.casefold()
     if suffix == ".mp3":
         try:
-            tags = ID3(path)
+            tags = tag_formats.load_id3_for_save(path)
             original_v2_version = tags.version[1]
         except ID3NoHeaderError:
             tags = ID3()

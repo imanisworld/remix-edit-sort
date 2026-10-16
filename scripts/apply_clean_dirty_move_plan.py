@@ -35,6 +35,7 @@ from mutagen.mp4 import MP4
 import backup_manifest
 import lock_guard
 import mutation_engine
+import tag_formats
 
 SUPPORTED_EXTS = {".mp3", ".flac", ".m4a"}
 
@@ -234,7 +235,7 @@ def write_grouping(path: Path, value: str, version: int) -> None:
     suffix = path.suffix.casefold()
     if suffix == ".mp3":
         try:
-            tags = ID3(path)
+            tags = tag_formats.load_id3_for_save(path, version)
         except ID3NoHeaderError:
             tags = ID3()
         encoding = 3 if version == 4 else 1
