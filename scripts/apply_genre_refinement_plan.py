@@ -463,11 +463,18 @@ def apply(plan_path: Path, manifest: dict, out_dir: Path, label: str, heartbeat:
                 tag_backup_root, index, undo_path, completed,
             )
 
+    genre_counts: dict[str, int] = {}
+    for record in completed:
+        if record["tag_changed"]:
+            genre_counts[record["new_genre"]] = genre_counts.get(record["new_genre"], 0) + 1
 
     result = {
         "mode": f"{label}-apply",
         "plan": str(plan_path),
-        "verified_backup": str(backup),
+        # This script takes no --backup dir; the verified backup is the one the
+        # PASS manifest proves.
+        "verified_backup": manifest.get("backup_root"),
+        "backup_id": manifest.get("backup_id"),
         "tracks_processed": len(completed),
         "genre_tags_changed": sum(r["tag_changed"] for r in completed),
         "genre_tags_skipped": sum(r["tag_skipped"] for r in completed),
@@ -488,6 +495,7 @@ def apply(plan_path: Path, manifest: dict, out_dir: Path, label: str, heartbeat:
         "genre_counts": genre_counts,
     }
     result_path.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    engine.finish(result)
     print(json.dumps({**result, "result_path": str(result_path)}, indent=2))
 
 
