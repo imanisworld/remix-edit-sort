@@ -467,6 +467,53 @@ class MembershipCase(unittest.TestCase):
             self.assertIn(repr(live), r["reason"])
 
 
+class KeeperMapTests(MembershipCase):
+    """--keeper-map: explicit approved pairs, only those paths, keeper may have a different file name."""
+
+    def kplan(self, km, add=False, flag=True):
+        return prune.build_plan(self.serato, self.music, self.dbs, None, flag, add, False, None, km)
+
+    def test_only_mapped_paths_are_considered(self):
+        plan = self.kplan({self.gone: self.live_a})
+        for name in ("master.sqlite", "root.sqlite"):
+            rows = self.rows(plan, name)
+            self.assertEqual(set(rows), {self.gone})  # stale_a / stale_b untouched
+            r = rows[self.gone]
+            self.assertEqual(r["action"], "remove", r["reason"])
+            self.assertEqual(r["membership_check"]["live_twin_paths"], [self.live_a])
+            self.assertEqual(len(r["drop_container_asset_ids"]), 1)
+        self.assertEqual(plan["summary"]["database_v2_remove"], 0)
+
+    def test_keeper_missing_from_crate_needs_add_flag(self):
+        km = {self.stale_b: self.live_b}
+        self.assertEqual(self.rows(self.kplan(km), "root.sqlite")[self.stale_b]["action"], "hold")
+        r = self.rows(self.kplan(km, add=True), "root.sqlite")[self.stale_b]
+        self.assertEqual(r["action"], "remove", r["reason"])
+        self.assertEqual(len(r["membership_check"]["adds"]), 1)
+
+    def test_keeper_without_file_holds(self):
+        r = self.rows(self.kplan({self.gone: stored(self.music / "Afrobeat/nope.mp3")}), "master.sqlite")[self.gone]
+        self.assertEqual(r["action"], "hold")
+        self.assertNotIn("drop_container_asset_ids", r)
+
+    def test_requires_drop_flag_and_nonempty(self):
+        with self.assertRaises(prune.PruneError):
+            self.kplan({self.gone: self.live_a}, flag=False)
+        with self.assertRaises(prune.PruneError):
+            self.kplan({})
+
+    def test_apply_removes_row_and_membership_only(self):
+        plan = self.kplan({self.gone: self.live_a})
+        before = {d: self.memberships(d) for d in self.dbs}
+        res, _, _ = self.apply(plan)
+        for d in self.dbs:
+            c = sqlite3.connect(f"file:{d}?immutable=1", uri=True)
+            paths = {p for (p,) in c.execute("SELECT portable_id FROM asset")}; c.close()
+            self.assertNotIn(self.gone, paths)
+            self.assertTrue({self.live_a, self.stale_a, self.stale_b, self.live_b} <= paths)
+            self.assertEqual(len(self.memberships(d)), len(before[d]) - 1)
+
+
 class SameNameSafetyTests(unittest.TestCase):
     """2026-10-16 review: spelling variants APFS treats as one file, and same-name
     different songs (Goapele vs Ayotemi "Closer"), must never be pruned."""
