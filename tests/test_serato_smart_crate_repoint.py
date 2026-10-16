@@ -21,7 +21,7 @@ from test_rewrite_serato_paths import FakeHeartbeat, otrk, text, tlv  # noqa: E4
 RULE_BYTES = tlv("rurt", tlv("tvcn", text("genre")) + tlv("trft", text("Afro")))
 
 
-class SmartCrateRepointTests(unittest.TestCase):
+class CrateCase(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
@@ -61,6 +61,8 @@ class SmartCrateRepointTests(unittest.TestCase):
             post_check_path=self.root / "post.json", result_path=self.root / "result.json",
         )
 
+
+class SmartCrateRepointTests(CrateCase):
     def test_sources_include_smart_crates_and_nested_crates(self):
         relatives = [str(p.relative_to(self.serato)) for p in rewrite.serato_source_files(self.serato)]
         self.assertIn("SmartCrates/Afro.scrate", relatives)
@@ -89,7 +91,7 @@ class SmartCrateRepointTests(unittest.TestCase):
         plan = rewrite.build_preview(self.serato, self.rules)
         manifest, _ = self.manifest()
         with mock.patch.object(checker, "resolve", return_value=self.root / "nope"):
-            with self.assertRaises(mutation_engine.MutationVerificationError):
+            with self.assertRaises(rewrite.SeratoRewriteError):
                 self.apply(plan, manifest, self.root / "j2.jsonl")
         self.assertEqual((self.serato / "SmartCrates" / "Afro.scrate").read_bytes(), self.scrate)
         self.assertEqual((self.serato / "Subcrates" / "Serato Stems" / "Stems.crate").read_bytes(), self.stems)
@@ -160,6 +162,97 @@ class SmartCrateRepointTests(unittest.TestCase):
         crates = {c for cat in report.values() if isinstance(cat, list) for e in cat for c in e.get("crates", [])}
         self.assertIn("smart:Afro", crates)
         self.assertIn("Serato Stems/Stems", crates)
+
+
+class ReviewFixTests(CrateCase):
+    """2026-10-16 code review of #73/#75."""
+
+    def test_stop_mid_run_restores_every_written_file(self):
+        plan = rewrite.build_preview(self.serato, self.rules)
+        manifest, _ = self.manifest()
+        before = {p: p.read_bytes() for p in rewrite.serato_source_files(self.serato)}
+        real, calls = rewrite._atomic_replace, []
+
+        def flaky(*args, **kwargs):
+            calls.append(1)
+            if len(calls) == 2:
+                raise OSError("simulated stop on the second file")
+            return real(*args, **kwargs)
+
+        with mock.patch.object(rewrite, "_atomic_replace", flaky):
+            with self.assertRaisesRegex(rewrite.SeratoRewriteError, "restored"):
+                self.apply(plan, manifest, self.root / "j.jsonl")
+        self.assertEqual({p: p.read_bytes() for p in before}, before)
+        result = json.loads((self.root / "result.json").read_text())
+        self.assertEqual(result["status"], "ROLLED_BACK")
+        self.assertEqual(len(result["files_written_then_restored"]), 1)
+
+    def test_lost_lock_mid_run_is_reported_partial(self):
+        plan = rewrite.build_preview(self.serato, self.rules)
+        manifest, _ = self.manifest()
+        real, calls = rewrite._atomic_replace, []
+
+        class DyingHeartbeat(FakeHeartbeat):
+            dead = False
+
+            def beat(self, *args, **kwargs):
+                if self.dead:
+                    raise RuntimeError("lock lost")
+                return {}
+
+        heartbeat = DyingHeartbeat()
+
+        def dying(*args, **kwargs):
+            calls.append(1)
+            if len(calls) == 2:
+                heartbeat.dead = True
+                raise OSError("simulated stop")
+            return real(*args, **kwargs)
+
+        with mock.patch.object(rewrite, "_atomic_replace", dying):
+            with self.assertRaisesRegex(rewrite.SeratoRewriteError, "Do NOT open Serato"):
+                rewrite.apply_rewrite_plan(
+                    plan=plan, serato_dir=self.serato, library_root=self.library, manifest=manifest,
+                    heartbeat=heartbeat, journal_path=self.root / "j.jsonl",
+                    post_check_path=self.root / "post.json", result_path=self.root / "result.json")
+        result = json.loads((self.root / "result.json").read_text())
+        self.assertEqual(result["status"], "PARTIAL")
+        self.assertEqual(len(result["files_left_rewritten"]), 1)
+
+    def test_spelling_variant_of_renamed_folder_is_repointed(self):
+        variant = self.old.replace("/Afrobeat/", "/afrobeat/")
+        (self.serato / "Subcrates" / "Var.crate").write_bytes(
+            tlv("vrsn", text("1.0")) + otrk(tlv("ptrk", text(variant))))
+        plan = rewrite.build_preview(self.serato, self.rules)
+        manifest, _ = self.manifest()
+        self.assertEqual(self.apply(plan, manifest, self.root / "j.jsonl")["status"], "PASS")
+        self.assertEqual(checker.parse_crate(self.serato / "Subcrates" / "Var.crate"), [self.new])
+
+    def test_case_only_rename_leaves_variants_alone(self):
+        rules = rewrite.normalize_rename_map([{"from": "/Music/R&b", "to": "/Music/R&B"}])
+        self.assertEqual(rewrite.rewrite_path("Music/r&b/x.mp3", rules), ("Music/r&b/x.mp3", None))
+        self.assertEqual(rewrite.rewrite_path("Music/R&b/x.mp3", rules)[0], "Music/R&B/x.mp3")
+
+    def test_repoint_never_leaves_a_crate_holding_one_track_twice(self):
+        both = tlv("vrsn", text("1.0")) + otrk(tlv("ptrk", text(self.old))) + otrk(tlv("ptrk", text(self.new)))
+        (self.serato / "Subcrates" / "Both.crate").write_bytes(both)
+        plan = rewrite.build_preview(self.serato, self.rules)
+        manifest, _ = self.manifest()
+        self.assertEqual(self.apply(plan, manifest, self.root / "j.jsonl")["status"], "PASS")
+        self.assertEqual(checker.parse_crate(self.serato / "Subcrates" / "Both.crate"), [self.new])
+
+    def test_source_inside_another_destination_is_refused(self):
+        with self.assertRaisesRegex(rewrite.SeratoRewriteError, "inside rename destination"):
+            rewrite.normalize_rename_map([{"from": "/M/R&b", "to": "/M/R&B"}, {"from": "/M/R&B/Clean", "to": "/M/Clean"}])
+        rewrite.normalize_rename_map([{"from": "/M/Pop/Sub", "to": "/M/Pop"}])  # one step up is fine
+
+    def test_compose_drops_round_trips_and_refuses_chained_output(self):
+        a, b = str(self.old_dir), str(self.new_dir)
+        there_and_back = [rewrite.normalize_rename_map([{"from": a, "to": b}]),
+                          rewrite.normalize_rename_map([{"from": b, "to": a}])]
+        old_song = self.old_dir / "Song.mp3"; old_song.parent.mkdir(parents=True); old_song.write_bytes(b"a")
+        self.assertEqual(compose.compose(self.serato, there_and_back)["map"],
+                         [{"from": "/" + self.new, "to": "/" + self.old}])
 
 
 if __name__ == "__main__":
