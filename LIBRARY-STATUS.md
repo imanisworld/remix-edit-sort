@@ -4,6 +4,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 
 ## Last updated
 
+2026-10-16 09:20 EDT — Grok (DJ B.A.E. Library): Afrobeats Clean/Dirty written (79 Dirty moved+tagged, 161 to _NEEDS CHECK, 32 held); genre-folder config PR #69; see GROK-DJ-LIBRARY-LOG.md.
 2026-10-16 01:40 EDT — Grok (DJ B.A.E. Library): tonight's summary added (prune applied, Afrobeats rename done, 4 "dupes" = different songs, lyrics check running, 16 Drake titles, Pop version-label preview, energy previews running). See "Tonight (Oct 16)" below.
 2026-10-15 22:00 EDT — Grok (DJ B.A.E. Library): Genre Afrobeat->Afrobeats on 57 files; Baile energy 131; Afrobeat inner-folder rename done, top rename rolled back (stale Serato record).
 2026-10-15 21:32 EDT — Grok (DJ B.A.E. Library): R&B conflicting-genre rows done (Genre R&B 7, Alt R&B Grouping 3, Year 20); see GROK-DJ-LIBRARY-LOG.md.
@@ -24,7 +25,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 - (verified) **Afrobeat -> Afrobeats top-level rename DONE 01:24-01:27** (top3). `Music/Afrobeats` exists, no `Afrobeat`; database V2, crates and both SQLite files repointed, post-checks PASS. Genre-folder config PR (`folder_names` -> `Afrobeats`) still NOT opened.
 - (verified) **The "4 dupes" are NOT duplicates**: same filename, different songs (Goapele vs Ayotemi "Closer"; Tony! Toni! Toné! vs Machel Montano "Slow Wine"; Drake vs Pheelz "Finesse"; H.E.R. vs Joeboy "Focus"). Nothing deleted; all 8 files kept. The 4 held SQLite rows can stay or be fixed later with a tag-aware match.
 - (verified) **Explicit terms list approved as is** by Imani (`folder-pass-preview-20261015/explicit-terms.txt`, 19 terms).
-- **Afrobeats lyrics check RUNNING** (started 01:27, read-only): 272 `_NEEDS CHECK` tracks, 6 batches, ~30 min each (`afrobeats-lyrics-20261016/`). Result = Clean/Dirty preview for Imani; nothing moves until she approves. Afrobeats energy comes after.
+- ~~Afrobeats lyrics check running~~ done 02:27; see the Clean/Dirty entry below. Old note: (started 01:27, read-only): 272 `_NEEDS CHECK` tracks, 6 batches, ~30 min each (`afrobeats-lyrics-20261016/`). Result = Clean/Dirty preview for Imani; nothing moves until she approves. Afrobeats energy comes after.
 - (verified) **Drake title cleanup DONE 01:31**: 16 titles (R&b 15, Hip Hop 1), readback 16/16, Artist/audio/Serato frames unchanged. 10 left on purpose.
 - **Pop version-label dupes preview** (`pop-version-label-dupes-preview-20261016.csv/.md`, read-only): 18 pairs. 8 = keep the 320 kbps copy and remove the lower-bitrate one (waiting on Imani). 10 = same bitrate, KEEP BOTH until "(NC)" meaning is known (Imani doesn't remember what NC means; check by ear or lyrics).
 - **Energy previews RUNNING** for R&B, Pop, Hip Hop (`energy-preview-20261016/`, read-only; tag scan done for R&b 3,459 and Pop 2,784, Hip Hop ~7,640 in progress). Preview only, then Imani's approval.
@@ -119,6 +120,8 @@ R&b 3,468 · Hip Hop 7,649 · Pop 2,846 · neptunes 2,102 · House 1,249 · Even
 
 ## Done
 
+- (verified) **Afrobeats Clean/Dirty sort written (2026-10-16 ~09:15 EDT, Imani approved the preview as is).** Evidence: audio transcript (faster-whisper) + published lyrics (lrclib.net), approved explicit-terms list; a hit = Dirty, no hit = `_NEEDS CHECK`. **79** moved to `Afrobeats/DIRTY/Afrobeats/` with `Dirty` appended to Grouping (readback 79/79). **161** moved to `Afrobeats/_NEEDS CHECK/Afrobeats/` (no tag change). **32 held in place:** 28 + 1 no-hit tracks whose Genre isn't Afrobeats (need a Genre call), 2 Dirty ID3v2.2 files (Free Fall, Unfortunate), 1 Dirty file with a backslash in its name (`\A-Star - Kupe Dance`). Serato database V2/crates + master/root.sqlite repointed; post-checks PASS; 0 unresolved Afrobeats paths. Backup T5 `2026-10-16-afrobeats-cleandirty/`.
+- (verified) Top-level `Afrobeat` → `Afrobeats` rename (2026-10-16 01:25). Config follow-up: PR #69 (`folder_names` → `Afrobeats`), waiting on Imani's merge.
 - (verified) PR **#55** merged: 59 Genres now file into their existing folders, by exact on-disk spelling (Hip-Hop → `Hip Hop`, Afrobeats → `Afrobeat`, Ballroom Vogue → `Ballroom`, Funk & Soul → `Funk`, Riddim → `RIDDIM`; smaller styles into a parent folder with their exact tag kept, e.g. Deep House → `House`). 17 stay held → `_GENRE NEEDS CHECK`. A plain "Afrobeat" tag now reads as Afrobeats. Evidence: `handoff/live-top-level-folders-2026-10-15.md`. **Mac clone: `git pull` before building the next plan.** If the `Afrobeat` folder is later renamed to `Afrobeats`, update `folder_names` in the same change.
 - (verified) Repo PRs **#50–#53** merged (R&B spelling; FLAC/M4A Year+Grouping writers; grouping CSV builder fixes; FLAC/M4A in grouping planner).
 - (reported) Claude Oct 15: 10 folders sorted/energy-tagged (~849 Energy Grouping appends). See `CLAUDE-HANDOFF-2026-10-15.md`.
