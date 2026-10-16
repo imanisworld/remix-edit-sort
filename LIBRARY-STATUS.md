@@ -4,6 +4,8 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
 
 ## Last updated
 
+2026-10-16 EDT — Claude (repo only): new `scripts/upgrade_id3v22_tags.py` (ID3v2.2 → v2.3 on an explicit file list, preview + locked/backed-up apply + undo) for the 3 approved Tems tracks in Afrobeats/. Not run on the library. Note: Grouping writes on v2.3 files turn the year frame TYER into off-spec TDRC (pre-existing, not fixed here).
+
 2026-10-16 12:43 EDT — Codex (Mac): R&B year research applied: 28 years (24 supported + 4 resolved conditional), verified 28/28; 5 conditional + 25 unresolved remain held. Audio/Serato/other tags unchanged; locks released. T5 backup `2026-10-16-codex-rnb-years`; rescan ID3 Tags. Artifacts: `/Users/djb.a.e/Music/DJ-Music/artifacts/rnb-year-research-20261016/applied/`. (only after the isolated rescan test passes)
 2026-10-16 16:00 EDT — Claude (Mac): rekordbox read-only check of job 3: Aug 30 XML has 104 of the 762 old paths (no cues, no plays, playlists `Not Yet In Rekordbox`/`Music` only); fresh export needed for the real count. Job 4 Energy preview in progress (read-only).
 2026-10-16 12:10 EDT — Grok (DJ B.A.E. Library): code-review-holds answers (read-only), see "Code review holds — answers" below. Status PR #84 (replaces #74/#79/#82).

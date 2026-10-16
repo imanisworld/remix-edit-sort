@@ -278,6 +278,27 @@ frame other than the explicitly replaced Genre (`TCON`) and Grouping (`TIT1`) fr
 Year frames (`TDRC`/`TYER`) when the item also writes a Year. The
 undo record journals `"id3_upgraded": "2.2->2.3"` and restores the original v2.2 bytes.
 
+`scripts/upgrade_id3v22_tags.py` is the standalone version, for files that need nothing but
+the conversion so the Grouping/Genre/Year tools can write to them afterwards. It only takes
+an explicit file list:
+
+```bash
+# 1. Preview (read-only). Trial-upgrades a temp copy of each file; exits 1 if any is blocked.
+python3 scripts/upgrade_id3v22_tags.py --root "/path/to/Music/Afrobeats" \
+    --file "/path/to/Music/Afrobeats/track.mp3" --out /outside/library/id3-upgrade-plan.json
+# 2. Apply (lock + PASS manifest required).
+python3 scripts/upgrade_id3v22_tags.py --root "/path/to/Music/Afrobeats" \
+    --plan /outside/library/id3-upgrade-plan.json --apply \
+    --lock-folder Afrobeats --session <id> --backup-manifest manifest.json
+# Undo restores the v2.2 bytes, and refuses a file that changed after the upgrade.
+python3 scripts/upgrade_id3v22_tags.py --undo <undo.jsonl> --lock-folder Afrobeats --session <id>
+```
+
+It fails closed: a file is blocked (and apply refuses the whole plan) if any text frame value
+would change, compared from the raw v2.2 and v2.3 bytes; or if any other frame, the audio
+payload, a Serato payload or an ID3v1 trailer would change; or if the tag holds a frame
+mutagen cannot read or would drop. Multi-value text (v2.3 would join it with `/`) is blocked.
+
 ## Proving a backup before any apply
 
 ```bash
