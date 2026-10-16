@@ -5,6 +5,7 @@ import sqlite3
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -236,6 +237,35 @@ class DryRunTests(Fixture):
         (self.serato / "SmartCrates" / fname(("Energy", "Peak"))).write_bytes(b"x")
         self.assertEqual(self.plan()["status"], "REFUSED")
 
+    def test_refuses_absolute_and_traversal_paths(self):
+        p = self.preview / "apply-plan.json"
+        original = json.loads(p.read_text(encoding="utf-8"))
+        for dangerous in ("/tmp/outside.scrate", "../outside.scrate",
+                          "SmartCrates/../outside.scrate", "other/else.scrate"):
+            with self.subTest(path=dangerous):
+                spec = json.loads(json.dumps(original))
+                spec["items"][3]["target"] = dangerous  # create does not require a source
+                p.write_text(json.dumps(spec), encoding="utf-8")
+                with self.assertRaises(sc.SmartCrateError):
+                    self.plan()
+        p.write_text(json.dumps(original), encoding="utf-8")
+
+    def test_refuses_symlinked_crate_or_staging_path(self):
+        source = self.serato / "SmartCrates" / fname(("Twerk",))
+        source.unlink()
+        external = self.tmp / "external.scrate"
+        external.write_bytes(b"private")
+        source.symlink_to(external)
+        with self.assertRaises(sc.SmartCrateError):
+            self.plan()
+        source.unlink()
+        source.write_bytes(scrate("OR", [("genre", "twerk")]))
+        stage = self.preview / "staged" / "SmartCrates" / fname(("Energy", "Peak"))
+        stage.unlink()
+        stage.symlink_to(external)
+        with self.assertRaises(sc.SmartCrateError):
+            self.plan()
+
     def test_stale_plan_rejected(self):
         p = self.plan(); pp = self.tmp / "plan.json"; sr.write_json(pp, p)
         c = sqlite3.connect(str(self.root), isolation_level=None)
@@ -294,6 +324,34 @@ class ApplyTests(Fixture):
                 self.assertEqual(self.dump(), before)
                 for p in self.serato.rglob("*.rolled-back"):
                     p.unlink()  # test cleanup of parked files only
+
+    def test_failed_final_postcheck_restores_both_stores(self):
+        before = self.dump()
+        with patch.object(sc, "verify_applied", return_value={"status": "FAIL", "problems": ["injected post-check failure"]}):
+            with self.assertRaises(mutation_engine.MutationVerificationError):
+                self.apply(self.plan())
+        self.assertEqual(self.dump(), before)
+        rollback = json.loads((self.tmp / "j.jsonl.rollback.json").read_text())
+        self.assertEqual(rollback["status"], "ROLLED_BACK")
+        self.assertEqual(rollback["errors"], [])
+        self.assertFalse((self.tmp / "r.json").exists())
+
+    def test_failed_postcheck_rollback_error_is_partial(self):
+        plan = self.plan()
+        real_restore = sc._restore_db
+        calls = []
+        def failing_restore(*args, **kw):
+            calls.append(args[0])
+            if len(calls) == 1:
+                raise OSError("injected rollback restore failure")
+            return real_restore(*args, **kw)
+        with patch.object(sc, "verify_applied", return_value={"status": "FAIL", "problems": ["injected"]}):
+            with patch.object(sc, "_restore_db", side_effect=failing_restore):
+                with self.assertRaisesRegex(sc.SmartCrateError, "PARTIAL rollback"):
+                    self.apply(plan)
+        result = json.loads((self.tmp / "r.json").read_text())
+        self.assertEqual(result["status"], "PARTIAL")
+        self.assertIn("DO NOT OPEN SERATO", result["action_required"])
 
     def test_undo_after_serato_touched_rows(self):
         self.apply(self.plan())
