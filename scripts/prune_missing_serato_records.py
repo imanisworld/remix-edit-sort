@@ -445,9 +445,41 @@ def load_twin_map(path) -> dict | None:
     return {e["from"]: e["to"] for e in entries}
 
 
+def load_only_paths(path) -> list[str] | None:
+    """--only-paths file: one library-relative path per line (e.g. Pop/08 My All.mp3)."""
+    if not path:
+        return None
+    lines = [ln.rstrip("\r\n") for ln in Path(path).read_text(encoding="utf-8").splitlines()]
+    out = [ln.strip("/") for ln in lines if ln.strip()]
+    if not out:
+        raise PruneError("--only-paths file is empty")
+    if len(set(map(_fold, out))) != len(out):
+        raise PruneError("--only-paths lists a path twice")
+    return out
+
+
+def _only_set(library_root: Path, only_paths: list[str] | None) -> set | None:
+    """Exact allow-list. Every listed file must really be gone from disk: a listed
+    path that still exists is refused outright, never silently skipped."""
+    if only_paths is None:
+        return None
+    lib_stored = str(library_root).lstrip("/")
+    keys, still_there = set(), []
+    for rel in only_paths:
+        if ".." in Path(rel).parts or rel.startswith("/"):
+            raise PruneError(f"--only-paths entries must be library-relative: {rel!r}")
+        if (library_root / rel).exists():
+            still_there.append(rel)
+        keys.add(_fold(f"{lib_stored}/{rel}"))
+    if still_there:
+        raise PruneError(f"--only-paths lists {len(still_there)} file(s) that still exist: {still_there[:5]}")
+    return keys
+
+
 def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], prefix: str | None,
                drop_stale_memberships: bool = False, add_live_memberships: bool = False,
-               drop_stale_smart_memberships: bool = False, twin_map: dict | None = None) -> dict:
+               drop_stale_smart_memberships: bool = False, twin_map: dict | None = None,
+               only_paths: list[str] | None = None) -> dict:
     if drop_stale_smart_memberships and not drop_stale_memberships:
         raise PruneError("--drop-stale-smart-memberships needs --drop-stale-memberships")
     if add_live_memberships and not drop_stale_memberships:
@@ -456,6 +488,17 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
     scope = _norm_prefix(library_root, prefix); lib_stored = str(library_root).lstrip("/")
     cls = Classifier(library_root)
     summary: Counter = Counter()
+    only = _only_set(library_root, only_paths)
+    seen_only: set = set()
+
+    def wanted(path: str) -> bool:
+        if only is None:
+            return True
+        key = _fold(path)
+        if key in only:
+            seen_only.add(key)
+            return True
+        return False
     # database V2
     dbv2 = serato_dir / sr.DATABASE_NAME
     data = dbv2.read_bytes()
@@ -464,7 +507,7 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
     crates = _crate_refs(serato_dir)
     dbv2_rows = []
     for idx, path in recs:
-        if not path or not _in_scope(path, scope, lib_stored):
+        if not path or not _in_scope(path, scope, lib_stored) or not wanted(path):
             continue
         c = cls.classify(path, store)
         if c == "present":
@@ -496,7 +539,7 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
             astore_rows = [(r, p) for r, p in assets if isinstance(p, str)]
             rows = []; next_order: dict = {}
             for rowid, path in assets:
-                if not isinstance(path, str) or not _in_scope(path, scope, lib_stored):
+                if not isinstance(path, str) or not _in_scope(path, scope, lib_stored) or not wanted(path):
                     continue
                 c = cls.classify(path, astore)
                 if c == "present":
@@ -555,6 +598,9 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
     if len({str(Path(e["path"]).parent) for e in db_entries}) > 1:
         raise PruneError("SQLite databases must share one directory")
     summary["database_v2_remove"] = len(remove_idx)
+    if only is not None:
+        summary["only_paths_listed"] = len(only)
+        summary["only_paths_without_any_record"] = len(only - seen_only)
     for e in db_entries:
         summary[f"{e['name']}_remove"] = sum(r["action"] == "remove" for r in e["rows"])
         summary[f"{e['name']}_memberships_added"] = e["planned_adds"]
@@ -570,6 +616,8 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
         "add_live_memberships": bool(add_live_memberships),
         "drop_stale_smart_memberships": bool(drop_stale_smart_memberships),
         "twin_map": dict(sorted((twin_map or {}).items())),
+        "only_paths": sorted(only_paths) if only_paths is not None else None,
+        "only_paths_without_any_record": sorted(only - seen_only) if only is not None else None,
         "database_v2": dbv2_entry, "sqlite": db_entries, "summary": dict(sorted(summary.items())),
     }
 
@@ -585,7 +633,8 @@ def load_and_validate_plan(plan_path: Path, serato_dir, library_root, databases)
         raise PruneError("not a prune plan")
     rebuilt = build_plan(serato_dir, library_root, databases, plan.get("prefix"),
                          bool(plan.get("drop_stale_memberships")), bool(plan.get("add_live_memberships")),
-                       bool(plan.get("drop_stale_smart_memberships")), plan.get("twin_map") or None)
+                       bool(plan.get("drop_stale_smart_memberships")), plan.get("twin_map") or None,
+                         plan.get("only_paths"))
     if _comparable(rebuilt) != _comparable(plan):
         raise PruneError("plan no longer matches current Serato files; rebuild the dry run")
     return plan
@@ -683,9 +732,9 @@ def _verify_sqlite(database: Path, entry: dict) -> dict:
 
 
 def post_check(serato_dir, library_root, databases, prefix, drop_stale_memberships=False, add_live=False,
-               drop_smart=False, twin_map=None) -> dict:
+               drop_smart=False, twin_map=None, only_paths=None) -> dict:
     again = build_plan(serato_dir, library_root, databases, prefix, drop_stale_memberships, add_live, drop_smart,
-                       twin_map)
+                       twin_map, only_paths)
     remaining = again["summary"].get("database_v2_remove", 0) + sum(
         again["summary"].get(f"{Path(d).name}_remove", 0) for d in databases)
     held = sum(1 for r in again["database_v2"]["records"] if r["action"] == "hold") + sum(
@@ -754,7 +803,8 @@ def apply_plan(*, plan, serato_dir, library_root, databases, serato_manifest, sq
         raise PruneError("plan has nothing to remove")
     check = post_check(serato_dir, library_root, list(databases.values()), plan.get("prefix"),
                        bool(plan.get("drop_stale_memberships")), bool(plan.get("add_live_memberships")),
-                       bool(plan.get("drop_stale_smart_memberships")), plan.get("twin_map") or None)
+                       bool(plan.get("drop_stale_smart_memberships")), plan.get("twin_map") or None,
+                         plan.get("only_paths"))
     result = {"status": check["status"], "plan_type": PLAN_TYPE, "completed": completed,
               "post_check": check, "journal": str(journal_path)}
     sr.write_json(result_path, result)
@@ -809,6 +859,9 @@ def main() -> int:
     ap.add_argument("--sqlite-db", action="append", type=Path, default=[])
     ap.add_argument("--prefix", help="only paths under this library-relative folder, e.g. Afrobeat/")
     ap.add_argument("--out", type=Path, help="dry-run plan output")
+    ap.add_argument("--only-paths", type=Path,
+                    help="only these exact library-relative paths (one per line), e.g. a list of files "
+                         "an approved run deleted; every listed file must be missing from disk")
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--undo", type=Path, help="journal of an apply run to reverse")
     ap.add_argument("--plan", type=Path)
@@ -838,7 +891,8 @@ def main() -> int:
             if not a.out:
                 raise PruneError("dry run needs --out")
             plan = build_plan(a.serato_dir, a.library_root, a.sqlite_db, a.prefix, a.drop_stale_memberships,
-                              a.add_live_memberships, a.drop_stale_smart_memberships, load_twin_map(a.twin_map))
+                              a.add_live_memberships, a.drop_stale_smart_memberships, load_twin_map(a.twin_map),
+                              load_only_paths(a.only_paths))
             sr.write_json(a.out, plan)
             print(json.dumps({"status": "DRY-RUN", **plan["summary"], "plan": str(a.out)}, indent=2))
             return 0
