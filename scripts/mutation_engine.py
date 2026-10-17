@@ -80,10 +80,14 @@ DELETE = "delete"
 METADATA = "metadata"
 SERATO_PATHS = "serato_paths"
 FOLDER_RENAME = "folder_rename"
+# Hidden second Grouping frame (ID3 GRP1, iTunes "Grouping") + Label (TPUB):
+# moves an owner-approved record-pool watermark from GRP1 into Label, or drops
+# an owner-approved stray GRP1 value. See apply_hidden_grouping_label_plan.py.
+HIDDEN_GROUPING_LABEL = "hidden_grouping_label"
 
 MUTATION_CLASSES = frozenset({
     RELOCATE, GENRE, GROUPING, ARTIST_TITLE, YEAR_BPM, DELETE, METADATA,
-    SERATO_PATHS, FOLDER_RENAME,
+    SERATO_PATHS, FOLDER_RENAME, HIDDEN_GROUPING_LABEL,
 })
 
 # Names that carry no library content and that Finder may create at any time.
