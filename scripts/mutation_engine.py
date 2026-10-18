@@ -84,10 +84,13 @@ FOLDER_RENAME = "folder_rename"
 # moves an owner-approved record-pool watermark from GRP1 into Label, or drops
 # an owner-approved stray GRP1 value. See apply_hidden_grouping_label_plan.py.
 HIDDEN_GROUPING_LABEL = "hidden_grouping_label"
+# Rewrite the rules of one named Serato smart crate (_Serato_/SmartCrates/*.scrate).
+# See edit_smart_crate.py.
+SMART_CRATE = "smart_crate"
 
 MUTATION_CLASSES = frozenset({
     RELOCATE, GENRE, GROUPING, ARTIST_TITLE, YEAR_BPM, DELETE, METADATA,
-    SERATO_PATHS, FOLDER_RENAME, HIDDEN_GROUPING_LABEL,
+    SERATO_PATHS, FOLDER_RENAME, HIDDEN_GROUPING_LABEL, SMART_CRATE,
 })
 
 # Names that carry no library content and that Finder may create at any time.
