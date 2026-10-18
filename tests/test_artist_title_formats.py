@@ -25,6 +25,8 @@ for entry in (str(TESTS_DIR), str(SCRIPTS_DIR)):
 import apply_artist_title_plan  # noqa: E402
 import backup_manifest  # noqa: E402
 import fixtures  # noqa: E402
+import media_fixtures  # noqa: E402
+import tag_formats  # noqa: E402
 import standardize_names  # noqa: E402
 from mutagen.id3 import ID3  # noqa: E402
 
@@ -117,6 +119,40 @@ class ArtistTitleFormatTests(unittest.TestCase):
         self.assertEqual(
             apply_artist_title_plan.read_artist_title(path)[:2], ("Artist", "Title")
         )
+
+    def test_m4a_apply_exact_value_readback_audio_serato_and_undo(self):
+        from mutagen.mp4 import MP4
+        path = media_fixtures.write_tiny(self.root / "02 Pharmacy.m4a", "m4a")
+        audio = MP4(path)
+        if audio.tags is None:
+            audio.add_tags()
+        audio.tags["\xa9nam"] = ["Pharmacy"]
+        audio.tags["----:com.serato.dj:markersv2"] = [b"SERATO-TEST"]
+        audio.save()
+        original = path.read_bytes()
+        before_audio = apply_artist_title_plan.audio_payload(path)
+        before_serato = tag_formats.serato_digest(path)
+        self.assertEqual(apply_artist_title_plan.read_artist_title(path), ("", "Pharmacy", None))
+
+        result = self.apply_plan(path, "", "Pharmacy", "Shordie Shordie", "Pharmacy")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertEqual(payload["tags_changed"], 1)
+        self.assertEqual(apply_artist_title_plan.read_artist_title(path), ("Shordie Shordie", "Pharmacy", None))
+        self.assertEqual(apply_artist_title_plan.audio_payload(path), before_audio)
+        self.assertEqual(tag_formats.serato_digest(path), before_serato)
+
+        undone = run(APPLY, "--undo", payload["undo_log"],
+                     "--lock-folder", self.lock_folder, "--session", self.session)
+        self.assertEqual(undone.returncode, 0, undone.stdout + undone.stderr)
+        self.assertEqual(path.read_bytes(), original)
+
+    def test_m4a_stale_plan_is_refused_without_writing(self):
+        path = media_fixtures.write_tiny(self.root / "x.m4a", "m4a")
+        before = path.read_bytes()
+        result = self.apply_plan(path, "Someone Else", "", "Shordie Shordie", "")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(path.read_bytes(), before)
 
     def test_id3v22_apply_is_skipped_byte_for_byte(self):
         path = fixtures.write_id3v22_mp3(
