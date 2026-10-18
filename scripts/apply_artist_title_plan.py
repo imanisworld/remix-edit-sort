@@ -32,7 +32,10 @@ from datetime import datetime
 from pathlib import Path
 
 from mutagen.id3 import ID3, ID3NoHeaderError, TPE1, TIT2
+from mutagen.mp4 import MP4
 from mutagen.wave import WAVE
+
+import tag_formats
 
 import backup_manifest
 import lock_guard
@@ -71,7 +74,14 @@ def _wav_data_chunk(data: bytes) -> bytes:
     raise RuntimeError("no data chunk found")
 
 
+def _is_m4a(path: Path) -> bool:
+    return path.suffix.casefold() == ".m4a"
+
+
 def audio_payload(path: Path) -> bytes:
+    if _is_m4a(path):
+        # MP4: the mdat media data, via the shared helper used by the grouping/genre tools.
+        return tag_formats.audio_payload(path)
     data = path.read_bytes()
     if path.suffix.casefold() == ".wav":
         return _wav_data_chunk(data)
@@ -161,7 +171,13 @@ def _load_tags(path: Path) -> tuple[ID3, int]:
         return ID3(), 4
 
 
-def read_artist_title(path: Path) -> tuple[str, str, int]:
+def read_artist_title(path: Path) -> tuple[str, str, int | None]:
+    if _is_m4a(path):
+        # MP4 atoms: \xa9ART (Artist) and \xa9nam (Title). No ID3 version -> None.
+        tags = MP4(path).tags or {}
+        artist = str((tags.get("\xa9ART") or [""])[0]).strip()
+        title = str((tags.get("\xa9nam") or [""])[0]).strip()
+        return artist, title, None
     # .wav is RIFF-wrapped: its ID3 chunk lives inside the RIFF container, not
     # at byte 0. mutagen.id3.ID3(path) doesn't know that -- for an untagged
     # WAV it raises, but for a TAGGED one it can misread the RIFF header as
@@ -187,7 +203,15 @@ def read_artist_title(path: Path) -> tuple[str, str, int]:
     return artist, title, tags.version[1]
 
 
-def write_artist_title(path: Path, artist: str, title: str, version: int) -> None:
+def write_artist_title(path: Path, artist: str, title: str, version: int | None) -> None:
+    if _is_m4a(path):
+        audio = MP4(path)
+        if audio.tags is None:
+            audio.add_tags()
+        audio.tags["\xa9ART"] = [artist]
+        audio.tags["\xa9nam"] = [title]
+        audio.save()
+        return
     if version not in {3, 4}:
         raise RuntimeError(
             f"ID3v2.{version} is not writable without an upgrade; refusing to change {path}"
@@ -241,7 +265,7 @@ def load_and_validate(plan_path: Path) -> tuple[dict, list[dict]]:
             errors.append(f"duplicate path in plan: {path}")
             continue
         seen_paths.add(path)
-        if path.suffix.casefold() not in {".mp3", ".wav"}:
+        if path.suffix.casefold() not in {".mp3", ".wav", ".m4a"}:
             errors.append(f"unsupported Artist/Title format: {path}")
             continue
         if not path.is_file():
@@ -302,35 +326,48 @@ def apply(plan_path: Path, manifest: dict, backup: Path, backup_relative_to: Pat
                 mutation_engine.restore_from_backup(b, p, h)
             )
             before_audio = sha256_bytes(audio_payload(path))
-            before_tags, version = _load_tags(path)
-            before_serato = serato_digest(before_tags)
-            before_serato_payload = serato_payload_digest(before_tags)
+            if _is_m4a(path):
+                before_serato = tag_formats.serato_digest(path)
+                write_artist_title(path, item["proposed_artist"], item["proposed_title"], None)
+                txn.mark_mutated()
+                after_artist, after_title, _ = read_artist_title(path)
+                if after_artist != item["proposed_artist"] or after_title != item["proposed_title"]:
+                    raise RuntimeError("Artist/Title verification failed")
+                if sha256_bytes(audio_payload(path)) != before_audio:
+                    raise RuntimeError("audio payload changed")
+                if tag_formats.serato_digest(path) != before_serato:
+                    raise RuntimeError("Serato data changed")
+            else:
+                before_tags, version = _load_tags(path)
+                before_serato = serato_digest(before_tags)
+                before_serato_payload = serato_payload_digest(before_tags)
 
-            if version == 2:
+            if not _is_m4a(path) and version == 2:
                 reason = "ID3v2.2 preserved; Artist/Title metadata write skipped"
                 skipped_id3v22.append({"path": str(path), "reason": reason})
                 txn.record(tag_skipped=True, reason=reason)
                 continue
 
             try:
-                write_artist_title(path, item["proposed_artist"], item["proposed_title"], version)
-                txn.mark_mutated()
-                after_artist, after_title, after_version = read_artist_title(path)
-                if after_artist != item["proposed_artist"] or after_title != item["proposed_title"]:
-                    raise RuntimeError("Artist/Title verification failed")
-                if after_version != version:
-                    raise RuntimeError("ID3 version changed")
-                if sha256_bytes(audio_payload(path)) != before_audio:
-                    raise RuntimeError("audio payload changed")
-                after_tags, _ = _load_tags(path)
-                if serato_digest(after_tags) != before_serato:
-                    if serato_payload_digest(after_tags) == before_serato_payload:
-                        raise SeratoEncodingOnlyChange(
-                            "Artist/Title write forced an ID3-version-compliance re-encoding of a "
-                            "Serato frame's encoding byte (payload verified byte-identical); "
-                            "write rolled back"
-                        )
-                    raise RuntimeError("Serato frames changed")
+                if not _is_m4a(path):  # m4a was written and verified above
+                    write_artist_title(path, item["proposed_artist"], item["proposed_title"], version)
+                    txn.mark_mutated()
+                    after_artist, after_title, after_version = read_artist_title(path)
+                    if after_artist != item["proposed_artist"] or after_title != item["proposed_title"]:
+                        raise RuntimeError("Artist/Title verification failed")
+                    if after_version != version:
+                        raise RuntimeError("ID3 version changed")
+                    if sha256_bytes(audio_payload(path)) != before_audio:
+                        raise RuntimeError("audio payload changed")
+                    after_tags, _ = _load_tags(path)
+                    if serato_digest(after_tags) != before_serato:
+                        if serato_payload_digest(after_tags) == before_serato_payload:
+                            raise SeratoEncodingOnlyChange(
+                                "Artist/Title write forced an ID3-version-compliance re-encoding of a "
+                                "Serato frame's encoding byte (payload verified byte-identical); "
+                                "write rolled back"
+                            )
+                        raise RuntimeError("Serato frames changed")
             except SeratoEncodingOnlyChange as exc:
                 # Verified benign, not a safety failure: restore and skip this
                 # file rather than aborting the whole run.
