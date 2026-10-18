@@ -208,12 +208,24 @@ def load_and_validate(plan_path: Path) -> tuple[dict, list[dict]]:
     items = plan["items"]
 
     errors = []
+    seen = set()
     for item in items:
         path = Path(item["path"])
+        key = str(path.resolve())
+        if key in seen:
+            errors.append(f"duplicate path in plan: {path}")
+            continue
+        seen.add(key)
         if not path.is_file():
             errors.append(f"missing file: {path}")
             continue
+        if item.get("sha256") and sha256_file(path) != item["sha256"]:
+            errors.append(f"file hash changed since preview: {path}")
+            continue
         current_year, current_bpm, current_version = read_year_bpm(path)
+        if current_version not in (None, 3, 4):
+            errors.append(f"ID3v2.{current_version} is not writable without an upgrade; drop it from the plan: {path}")
+            continue
         if current_version != item["id3_version"]:
             errors.append(f"ID3 version changed since preview: {path}: {current_version} != {item['id3_version']}")
             continue
@@ -252,6 +264,7 @@ def apply(plan_path: Path, manifest: dict, backup: Path, backup_relative_to: Pat
             index,
             kind=mutation_engine.YEAR_BPM,
             source=path,
+            expected_sha256=item.get("sha256"),
             backup_path=backup_copy,
             extra_intent={
                 "current_year": item["current_year"], "current_bpm": item["current_bpm"],
@@ -338,6 +351,8 @@ def apply(plan_path: Path, manifest: dict, backup: Path, backup_relative_to: Pat
         "undo_log": str(undo_path),
     }
     result_path.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    # Record run_complete so the recovery journal can tell a finished run from an abandoned one.
+    engine.finish(result)
     print(json.dumps({**result, "result_path": str(result_path)}, indent=2))
 
 
