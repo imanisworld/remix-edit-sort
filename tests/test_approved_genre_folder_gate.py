@@ -35,6 +35,21 @@ def read_rules(name):
 
 
 class ApprovedGenreFolderTests(unittest.TestCase):
+    def test_move_only_apply_results_allow_missing_genre_counts(self):
+        # This field is only for reporting. The real move-only plan lacks
+        # counts.genres, so never raise after the batch has completed.
+        self.assertIsNone(apply_version.optional_genre_counts({}))
+        self.assertIsNone(apply_version.optional_genre_counts({"counts": {}}))
+        self.assertIsNone(apply_version.optional_genre_counts(
+            {"counts": {"version_categories": {"_NEEDS CHECK": 398}}}))
+        self.assertIsNone(apply_version.optional_genre_counts({"counts": []}))
+        self.assertIsNone(apply_version.optional_genre_counts(
+            {"counts": {"genres": []}}))
+        self.assertEqual(
+            apply_version.optional_genre_counts({"counts": {"genres": {"R&B": 2}}}),
+            {"R&B": 2},
+        )
+
     def test_both_committed_rule_files_contain_only_the_approved_entries(self):
         old, new = read_rules("genre-rules.json"), read_rules("version-genre-rules.json")
         self.assertEqual(old["folder_names"], EXPECTED)
