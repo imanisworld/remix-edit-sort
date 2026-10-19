@@ -49,6 +49,8 @@ from pathlib import Path
 
 from mutagen.flac import FLAC
 from mutagen.id3 import ID3, ID3NoHeaderError, TYER, TDRC, TBPM
+from mutagen.mp4 import MP4 as _MP4
+from mutagen.wave import WAVE
 from mutagen.mp4 import MP4
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -56,6 +58,75 @@ import backup_manifest
 import lock_guard
 import mutation_engine
 import tag_formats
+
+
+def _kind(path: Path) -> str:
+    """Format for this tool. Like tag_formats.kind(), plus:
+    - .mp4 is the same ISO-BMFF container as .m4a (year in the \xa9day atom);
+    - .wav is RIFF with an embedded "id3 " chunk, written through
+      mutagen.wave.WAVE so the RIFF header is never clobbered. A WAV is only
+      writable if it ALREADY has an ID3 chunk (validation refuses others), so
+      the tool never adds a new chunk to a WAV."""
+    suffix = Path(path).suffix.casefold()
+    if suffix == ".mp4":
+        return "m4a"
+    if suffix == ".wav":
+        return "wav"
+    return tag_formats.kind(path)
+
+
+def _wav_data_chunk(data: bytes) -> bytes:
+    """Raw PCM bytes of the RIFF 'data' chunk (same parser as apply_artist_title_plan)."""
+    if data[:4] != b"RIFF" or data[8:12] != b"WAVE":
+        raise RuntimeError("not a RIFF/WAVE file")
+    pos, end = 12, len(data)
+    while pos + 8 <= end:
+        chunk_id = data[pos:pos + 4]
+        size = int.from_bytes(data[pos + 4:pos + 8], "little")
+        body_start, body_end = pos + 8, pos + 8 + size
+        if body_end > end:
+            raise RuntimeError(f"truncated WAV chunk {chunk_id!r}")
+        if chunk_id == b"data":
+            return data[body_start:body_end]
+        pos = body_end + (size & 1)
+    raise RuntimeError("no data chunk found")
+
+
+def _mp4_payload(path: Path) -> bytes:
+    data = path.read_bytes()
+    payload = bytearray()
+    for btype, start, size, header in tag_formats._mp4_top_level_boxes(data):
+        if btype == b"mdat":
+            payload += data[start + header:start + size]
+    if not payload:
+        raise RuntimeError(f"no mdat box found: {path}")
+    return bytes(payload)
+
+
+def _mp4_serato_digest(path: Path) -> str:
+    values = []
+    for key, value in (_MP4(path).tags or {}).items():
+        if "serato" not in key.casefold():
+            continue
+        parts = value if isinstance(value, list) else [value]
+        values.append({"key": key, "parts_sha256": [sha256_bytes(bytes(p)) for p in parts]})
+    return sha256_bytes(json.dumps(sorted(values, key=lambda v: v["key"]), ensure_ascii=False).encode())
+
+
+def _mp4_read(path: Path) -> tuple[str, str]:
+    tags = _MP4(path).tags or {}
+    days = [str(v).strip() for v in tags.get("\xa9day", []) if str(v).strip()]
+    tmpo = tags.get("tmpo", [])
+    return (days[0][:4] if days else ""), (str(tmpo[0]) if tmpo else "")
+
+
+def _id3_tags(path: Path) -> ID3:
+    if _kind(path) == "wav":
+        tags = WAVE(path).tags
+        if tags is None:
+            raise RuntimeError(f"WAV has no ID3 chunk: {path}")
+        return tags
+    return ID3(path)
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -71,6 +142,10 @@ def sha256_file(path: Path) -> str:
 
 
 def audio_payload(path: Path) -> bytes:
+    if _kind(path) == "wav":
+        return _wav_data_chunk(path.read_bytes())
+    if _kind(path) == "m4a":
+        return _mp4_payload(path)
     if tag_formats.kind(path) in {"flac", "m4a"}:
         return tag_formats.audio_payload(path)
     data = path.read_bytes()
@@ -143,9 +218,20 @@ class SeratoEncodingOnlyChange(Exception):
 
 
 def read_year_bpm(path: Path) -> tuple[str, str, int | None]:
-    if tag_formats.kind(path) in {"flac", "m4a"}:
+    if _kind(path) == "m4a":
+        year, bpm = _mp4_read(path)
+        return year, bpm, None
+    if tag_formats.kind(path) == "flac":
         year, bpm = tag_formats.read_year_bpm(path)
         return year, bpm, None
+    if _kind(path) == "wav":
+        tags = WAVE(path).tags
+        if tags is None:
+            return "", "", "no-id3-chunk"
+        year_frames = tags.getall("TDRC") or tags.getall("TYER")
+        bpm_frames = tags.getall("TBPM")
+        return ((str(year_frames[0]).strip()[:4] if year_frames else ""),
+                (str(bpm_frames[0]).strip() if bpm_frames else ""), tags.version[1])
     try:
         tags = ID3(path)
     except ID3NoHeaderError:
@@ -158,7 +244,7 @@ def read_year_bpm(path: Path) -> tuple[str, str, int | None]:
 
 
 def write_year_bpm(path: Path, year: str | None, bpm: str | None, version: int | None) -> None:
-    file_kind = tag_formats.kind(path)
+    file_kind = _kind(path)
     if file_kind == "flac":
         audio = FLAC(path)
         if audio.tags is None:
@@ -183,10 +269,17 @@ def write_year_bpm(path: Path, year: str | None, bpm: str | None, version: int |
         return
     if version is None:
         raise RuntimeError(f"ID3 write needs an id3_version: {path}")
-    try:
-        tags = ID3(path)
-    except ID3NoHeaderError:
-        tags = ID3()
+    wave = None
+    if file_kind == "wav":
+        wave = WAVE(path)
+        if wave.tags is None:
+            raise RuntimeError(f"refusing to add a new ID3 chunk to a WAV: {path}")
+        tags = wave.tags
+    else:
+        try:
+            tags = ID3(path)
+        except ID3NoHeaderError:
+            tags = ID3()
     encoding = 3 if version == 4 else 1
     if year:
         tags.delall("TYER")
@@ -198,6 +291,10 @@ def write_year_bpm(path: Path, year: str | None, bpm: str | None, version: int |
     if bpm:
         tags.delall("TBPM")
         tags.add(TBPM(encoding=encoding, text=[bpm]))
+    if wave is not None:
+        # WAVE.save rewrites only the RIFF "id3 " chunk and the RIFF size.
+        wave.save(v2_version=version)
+        return
     tags.save(path, v2_version=version)
 
 
@@ -222,7 +319,13 @@ def load_and_validate(plan_path: Path) -> tuple[dict, list[dict]]:
         if item.get("sha256") and sha256_file(path) != item["sha256"]:
             errors.append(f"file hash changed since preview: {path}")
             continue
+        if _kind(path) == "unsupported":
+            errors.append(f"unsupported format {path.suffix}: {path}")
+            continue
         current_year, current_bpm, current_version = read_year_bpm(path)
+        if current_version == "no-id3-chunk":
+            errors.append(f"WAV has no ID3 chunk; the tool never adds one: {path}")
+            continue
         if current_version not in (None, 3, 4):
             errors.append(f"ID3v2.{current_version} is not writable without an upgrade; drop it from the plan: {path}")
             continue
@@ -277,13 +380,14 @@ def apply(plan_path: Path, manifest: dict, backup: Path, backup_relative_to: Pat
                 mutation_engine.restore_from_backup(b, p, h)
             )
             before_audio = sha256_bytes(audio_payload(path))
-            non_id3 = tag_formats.kind(path) in {"flac", "m4a"}
+            non_id3 = _kind(path) in {"flac", "m4a"}
+            serato_of = _mp4_serato_digest if _kind(path) == "m4a" else tag_formats.serato_digest
             if non_id3:
-                before_serato = tag_formats.serato_digest(path)
+                before_serato = serato_of(path)
                 before_serato_payload = before_serato
                 version = None
             else:
-                before_tags = ID3(path)
+                before_tags = _id3_tags(path)
                 before_serato = serato_digest(before_tags)
                 before_serato_payload = serato_payload_digest(before_tags)
                 version = before_tags.version[1]
@@ -301,9 +405,9 @@ def apply(plan_path: Path, manifest: dict, backup: Path, backup_relative_to: Pat
                 if sha256_bytes(audio_payload(path)) != before_audio:
                     raise RuntimeError("audio payload changed")
                 if non_id3:
-                    if tag_formats.serato_digest(path) != before_serato:
+                    if serato_of(path) != before_serato:
                         raise RuntimeError("Serato data changed")
-                elif serato_digest(after_tags := ID3(path)) != before_serato:
+                elif serato_digest(after_tags := _id3_tags(path)) != before_serato:
                     if serato_payload_digest(after_tags) == before_serato_payload:
                         raise SeratoEncodingOnlyChange(
                             "Year/BPM write forced an ID3-version-compliance re-encoding of a "
