@@ -204,6 +204,21 @@ def removal_errors(plan: dict, item: dict) -> list[str]:
     return errors
 
 
+def write_version(plan: dict, item: dict) -> int | None:
+    """ID3 version to save with. Normally the file's own version is kept.
+    mutagen cannot save ID3v2.2, so a v2.2 file can only be written by saving
+    it as v2.3/v2.4 -- allowed only when the plan carries the owner's explicit
+    approval (rules.id3_v22_upgrade_approved) and the item names the target."""
+    target = item.get("id3_write_version")
+    if target is None:
+        return item["id3_version"]
+    if item["id3_version"] != 2 or target not in (3, 4):
+        raise RuntimeError(f"id3_write_version only upgrades ID3v2.2 to 3/4: {item['path']}")
+    if not plan.get("rules", {}).get("id3_v22_upgrade_approved"):
+        raise RuntimeError(f"ID3v2.2 upgrade not approved in plan rules: {item['path']}")
+    return target
+
+
 def load_and_validate(plan_path: Path, root: Path) -> tuple[dict, list[dict]]:
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
     if plan.get("mode") != "preview-only" or not plan.get("rules", {}).get("approval_required"):
@@ -220,6 +235,10 @@ def load_and_validate(plan_path: Path, root: Path) -> tuple[dict, list[dict]]:
         if not path.is_file():
             errors.append(f"missing file: {path}")
             continue
+        try:
+            write_version(plan, item)
+        except RuntimeError as exc:
+            errors.append(str(exc))
         current_values, current_version = read_grouping(path)
         if current_values != item["current_grouping"] or current_version != item["id3_version"]:
             errors.append(
@@ -261,6 +280,7 @@ def apply(plan_path: Path, manifest: dict, backup: Path, root: Path, out_dir: Pa
                 "current_grouping": item["current_grouping"],
                 "combined_grouping": item["combined_grouping"],
                 "id3_version": item["id3_version"],
+                "id3_write_version": write_version(plan, item),
             },
         ) as txn:
             before_hash = sha256_file(path)
@@ -279,11 +299,11 @@ def apply(plan_path: Path, manifest: dict, backup: Path, root: Path, out_dir: Pa
                 before_serato_payload = serato_payload_digest(before_tags)
 
             try:
-                write_grouping(path, item["combined_grouping"], item["id3_version"])
+                write_grouping(path, item["combined_grouping"], write_version(plan, item))
                 txn.mark_mutated()
                 after_values, after_version = read_grouping(path)
                 expected = [item["combined_grouping"]] if item["combined_grouping"] else []
-                if after_values != expected or after_version != item["id3_version"]:
+                if after_values != expected or after_version != write_version(plan, item):
                     raise RuntimeError("Grouping verification failed")
                 if sha256_bytes(audio_payload(path)) != before_audio:
                     raise RuntimeError("audio payload changed")
@@ -311,6 +331,8 @@ def apply(plan_path: Path, manifest: dict, backup: Path, root: Path, out_dir: Pa
                 "backup": str(backup_copy),
                 "old_grouping": item["current_grouping"],
                 "new_grouping": item["combined_grouping"],
+                "id3_version_before": item["id3_version"],
+                "id3_version_after": write_version(plan, item),
                 "before_sha256": before_hash,
                 "after_sha256": sha256_file(path),
                 "audio_payload_sha256": before_audio,
