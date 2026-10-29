@@ -9,8 +9,21 @@ schema: a single "path" per item (never moved), matched against
 provenance.current_sha256 and current_genre, writing proposed_genre.
 
 Only items with combined_status in {A_ONLY, B_ONLY, A_AND_B_SAME} and a
-non-blank proposed_genre are eligible. .mp3/.flac/.m4a are supported for
+non-blank proposed_genre are eligible. .mp3/.flac/.m4a/.wav are supported for
 writing; any other extension is reported as unsupported and left untouched.
+
+.wav is written only when the file ALREADY has a RIFF "id3 " chunk, through
+mutagen.wave.WAVE (same approach as apply_year_bpm_plan.py): WAVE.save
+rewrites only that chunk and the RIFF size, so fmt/data/cue/bext/LIST chunks
+and the PCM bytes are untouched (verified: the 'data' chunk payload is hashed
+before and after). A WAV with no ID3 chunk is SKIPPED and logged -- this tool
+never adds a chunk to a WAV.
+
+Paths must be under LIBRARY_ROOT (DJ-Music/Music). Serato Studio pack files
+under SERATO_STUDIO_CONTENT_ROOT are allowed only with the explicit opt-in
+--allow-serato-studio-content, which switches the run's root to that folder
+for the whole run (backup gate, per-item path check, tag backups); a plan
+can't mix the two roots.
 
 .m4a support was added and verified separately (see _mp4_mdat_payload and
 the MP4 branches of audio_payload/serato_digest/read_genre/write_genre):
@@ -47,14 +60,40 @@ from pathlib import Path
 from mutagen.flac import FLAC
 from mutagen.id3 import ID3, ID3NoHeaderError, TCON
 from mutagen.mp4 import MP4
+from mutagen.wave import WAVE
 
 import backup_manifest
 import lock_guard
 import mutation_engine
 
-SUPPORTED_EXTS = {".mp3", ".flac", ".m4a"}
+SUPPORTED_EXTS = {".mp3", ".flac", ".m4a", ".wav"}
 ELIGIBLE_STATUSES = {"A_ONLY", "B_ONLY", "A_AND_B_SAME"}
 LIBRARY_ROOT = Path("/Users/djb.a.e/Music/DJ-Music/Music")
+# Opt-in only (--allow-serato-studio-content). The real folder name has a
+# trailing space: "Serato Studio ".
+SERATO_STUDIO_CONTENT_ROOT = Path("/Users/djb.a.e/Music/Serato Studio /Content")
+WAV_NO_ID3_SKIP = "WAV has no ID3 chunk; Genre write skipped (this tool never adds a chunk to a WAV)"
+
+
+def _wav_tags(path: Path):
+    """The existing ID3 tags inside a WAV's "id3 " chunk, or None."""
+    return WAVE(path).tags
+
+
+def _wav_data_chunk(data: bytes) -> bytes:
+    if data[:4] != b"RIFF" or data[8:12] != b"WAVE":
+        raise RuntimeError("not a RIFF/WAVE file")
+    pos, end = 12, len(data)
+    while pos + 8 <= end:
+        chunk_id = data[pos:pos + 4]
+        size = int.from_bytes(data[pos + 4:pos + 8], "little")
+        body_start, body_end = pos + 8, pos + 8 + size
+        if body_end > end:
+            raise RuntimeError(f"truncated WAV chunk {chunk_id!r}")
+        if chunk_id == b"data":
+            return data[body_start:body_end]
+        pos = body_end + (size & 1)
+    raise RuntimeError("no data chunk found")
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -92,6 +131,8 @@ def _mp4_top_level_boxes(data: bytes):
 def audio_payload(path: Path) -> bytes:
     data = path.read_bytes()
     suffix = path.suffix.casefold()
+    if suffix == ".wav":
+        return _wav_data_chunk(data)
     if suffix == ".m4a":
         payload = bytearray()
         for btype, start, size, header in _mp4_top_level_boxes(data):
@@ -181,6 +222,9 @@ def serato_digest(path: Path) -> str:
         return sha256_bytes(json.dumps(values, sort_keys=True, ensure_ascii=False).encode())
     if path.suffix.casefold() == ".m4a":
         return serato_digest_mp4(MP4(path))
+    if path.suffix.casefold() == ".wav":
+        tags = _wav_tags(path)
+        return serato_digest_mp3(tags) if tags is not None else sha256_bytes(b"[]")
     return sha256_bytes(b"[]")
 
 
@@ -214,6 +258,9 @@ def serato_payload_digest(path: Path) -> str:
             return serato_payload_digest_mp3(ID3(path))
         except ID3NoHeaderError:
             return sha256_bytes(b"[]")
+    if path.suffix.casefold() == ".wav":
+        tags = _wav_tags(path)
+        return serato_payload_digest_mp3(tags) if tags is not None else sha256_bytes(b"[]")
     # FLAC and MP4 Serato values are stored as plain tag bytes with no
     # separate encoding metadata the way ID3 GEOB frames have (verified for
     # MP4 by comparing MP4FreeForm.dataformat before/after a genre write on
@@ -242,6 +289,10 @@ def read_genre(path: Path) -> str:
     if suffix == ".m4a":
         values = MP4(path).get("\xa9gen", [])
         return str(values[0]).strip() if values else ""
+    if suffix == ".wav":
+        tags = _wav_tags(path)
+        frames = tags.getall("TCON") if tags is not None else []
+        return str(frames[0]).strip() if frames else ""
     raise RuntimeError(f"genre read not supported for {path.suffix}: {path}")
 
 
@@ -269,10 +320,29 @@ def write_genre(path: Path, value: str) -> None:
         audio["\xa9gen"] = [value]
         audio.save()
         return
+    if suffix == ".wav":
+        wave = WAVE(path)
+        if wave.tags is None:
+            raise RuntimeError(f"refusing to add an ID3 chunk to a WAV: {path}")
+        version = wave.tags.version[1]
+        if version not in (3, 4):
+            raise RuntimeError(f"unsupported ID3v2.{version} in WAV: {path}")
+        wave.tags.delall("TCON")
+        wave.tags.add(TCON(encoding=3 if version == 4 else 1, text=[value]))
+        # Rewrites only the RIFF "id3 " chunk and the RIFF size field.
+        wave.save(v2_version=version)
+        return
     raise RuntimeError(f"genre write not supported for {path.suffix}: {path}")
 
 
 def tag_skip_reason(path: Path) -> str | None:
+    if path.suffix.casefold() == ".wav":
+        tags = _wav_tags(path)
+        if tags is None:
+            return WAV_NO_ID3_SKIP
+        if tags.version[1] not in (3, 4):
+            return f"ID3v2.{tags.version[1]} in WAV preserved; Genre metadata write skipped"
+        return None
     if path.suffix.casefold() != ".mp3":
         return None
     try:
@@ -558,6 +628,7 @@ def _dry_run_backup_gate(manifest_path, root) -> str:
 
 
 def main() -> None:
+    global LIBRARY_ROOT
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--plan", required=True, type=Path, help="genre-refinement-plan.json")
     parser.add_argument("--backup-manifest", type=Path,
@@ -571,7 +642,13 @@ def main() -> None:
     parser.add_argument("--undo", type=Path, help="Path to an undo .jsonl log to reverse")
     parser.add_argument("--lock-folder", help="Top-level library folder locked via folder_lock.py (required with --apply/--undo)")
     parser.add_argument("--session", help="Session id that holds the lock (required with --apply/--undo)")
+    parser.add_argument("--allow-serato-studio-content", action="store_true",
+                        help=f"explicit opt-in: the run's root becomes {SERATO_STUDIO_CONTENT_ROOT} "
+                             "(Serato Studio pack files) instead of the DJ-Music library; every item "
+                             "and the backup manifest must use that root")
     args = parser.parse_args()
+    if args.allow_serato_studio_content:
+        LIBRARY_ROOT = SERATO_STUDIO_CONTENT_ROOT
 
     out_dir = args.out_dir or args.plan.resolve().parent
 
