@@ -39,7 +39,8 @@ STATE_PATH = HANDOFF / "current-batch.json"
 BATCH_DIR = HANDOFF / "batches" / BATCH_ID
 APPROVAL_PATH = BATCH_DIR / "recovery-approval.json"
 MARKER_PATH = BATCH_DIR / "recovery-reopen-done.json"
-LOCKS_DIR = metadata_batch.REPO_ROOT / ".locks"
+import folder_lock  # noqa: E402
+LOCKS_DIR = folder_lock.LOCKS_DIR
 T5_BACKUP_DIR = metadata_batch.T5_BACKUP_ROOT / BATCH_ID
 
 
