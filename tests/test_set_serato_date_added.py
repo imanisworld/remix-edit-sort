@@ -57,3 +57,22 @@ class Tests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class BatchTests(unittest.TestCase):
+    def test_batch_plan_simulate(self):
+        import json, shutil
+        tmp = Path(tempfile.mkdtemp())
+        data = db(otrk("Users/a/x.mp3", 1775177187), otrk("Users/a/y.mp3", 1775177187), otrk("Users/a/z.mp3", 1600000000))
+        (tmp / "database V2").write_bytes(data)
+        plan, skipped = t.make_batch_plan(tmp / "database V2", [
+            ("Users/a/x.mp3", 1499225906, ""), ("Users/a/z.mp3", 1700000000, ""), ("Users/a/nope.mp3", 1499225906, "")])
+        self.assertEqual(len(plan["items"]), 1)
+        self.assertEqual(skipped, {"database V2 date already earlier or equal": 1, "not in database V2": 1})
+        p = tmp / "plan.json"; p.write_text(json.dumps(plan))
+        copy = tmp / "copy"; shutil.copy(tmp / "database V2", copy)
+        r = t.simulate(p, tmp, copy)
+        self.assertEqual(r["tracks_read_back"], 1)
+        self.assertEqual((tmp / "database V2").read_bytes(), data)  # live untouched
+        with self.assertRaises(t.DateAddedError):
+            t.simulate(p, tmp, tmp / "database V2")

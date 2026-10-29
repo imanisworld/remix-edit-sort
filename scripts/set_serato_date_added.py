@@ -17,6 +17,8 @@ Modes:
                                         read-back, rollback, undo log)
   --undo UNDO_LOG                       restore database V2 from its backup
   --show P                              print the current fields (read-only)
+  --batch-csv CSV --out PLAN            batch plan, many tracks, one file write
+  --plan PLAN --simulate-on COPY        dry run on a copy of database V2
 """
 from __future__ import annotations
 
@@ -67,6 +69,30 @@ def track_fields(data: bytes, portable_id: str) -> list[dict]:
     return out
 
 
+def index_tracks(data: bytes) -> dict[str, list[dict]]:
+    """portable_id -> [field records], one pass over the whole database."""
+    out: dict[str, list[dict]] = {}
+    i = 0
+    while i + 8 <= len(data):
+        tag, length = data[i:i + 4], struct.unpack(">I", data[i + 4:i + 8])[0]
+        body_start = i + 8
+        if tag == b"otrk":
+            fields, j = {}, body_start
+            while j + 8 <= body_start + length:
+                t, ln = data[j:j + 4], struct.unpack(">I", data[j + 4:j + 8])[0]
+                fields[t] = (j + 8, ln)
+                j += 8 + ln
+            if b"pfil" in fields:
+                s0, ln = fields[b"pfil"]
+                rec = {"otrk_offset": i}
+                for name in (b"tadd", b"uadd"):
+                    if name in fields:
+                        rec[name.decode()] = {"offset": fields[name][0], "length": fields[name][1]}
+                out.setdefault(data[s0:s0 + ln].decode("utf-16-be"), []).append(rec)
+        i = body_start + length
+    return out
+
+
 def read_values(data: bytes, rec: dict) -> dict:
     vals = {}
     if "tadd" in rec:
@@ -104,6 +130,56 @@ def changed_ranges_ok(before: bytes, after: bytes, rec: dict) -> bool:
     return all(i in allowed for i in range(len(before)) if before[i] != after[i])
 
 
+def changed_ranges_ok_many(before: bytes, after: bytes, recs: list[dict]) -> tuple[bool, int]:
+    if len(before) != len(after):
+        return False, -1
+    allowed = set()
+    for rec in recs:
+        for name in ("tadd", "uadd"):
+            if name in rec:
+                allowed.update(range(rec[name]["offset"], rec[name]["offset"] + rec[name]["length"]))
+    diffs = [i for i in range(len(before)) if before[i] != after[i]]
+    return all(i in allowed for i in diffs), len(diffs)
+
+
+def rebuild_many(data: bytes, items: list[dict]) -> bytes:
+    out = data
+    for item in items:
+        out = rebuild(out, item["fields"], item["new_epoch"])
+    return out
+
+
+def make_batch_plan(db: Path, wanted: list[tuple[str, int, str]]) -> tuple[dict, dict]:
+    """wanted: (portable_id, new_epoch, reason). Returns (plan, skipped counts)."""
+    import collections
+    data = db.read_bytes()
+    idx = index_tracks(data)
+    items, skipped = [], collections.Counter()
+    for pid, epoch, reason in wanted:
+        recs = idx.get(pid, [])
+        if len(recs) != 1:
+            skipped["not in database V2" if not recs else "duplicate record in database V2"] += 1
+            continue
+        cur = read_values(data, recs[0])
+        if not cur:
+            skipped["no date field in database V2"] += 1
+            continue
+        if any(v <= epoch for v in cur.values()):
+            skipped["database V2 date already earlier or equal"] += 1
+            continue
+        if len(str(epoch)) * 2 != recs[0].get("tadd", {}).get("length", len(str(epoch)) * 2):
+            skipped["new date would change field length"] += 1
+            continue
+        items.append({"portable_id": pid, "fields": recs[0], "current": cur,
+                      "current_iso": {k: datetime.fromtimestamp(v).isoformat() for k, v in cur.items()},
+                      "new_epoch": epoch, "new_iso": datetime.fromtimestamp(epoch).isoformat(), "reason": reason})
+    proposed = rebuild_many(data, items)
+    plan = {"mode": "preview-only", "rules": {"approval_required": True, "earlier_only": True, "batch": True},
+            "database": str(db), "sha256": mutation_engine.sha256_bytes(data), "items": items,
+            "proposed_sha256": mutation_engine.sha256_bytes(proposed)}
+    return plan, dict(skipped)
+
+
 def make_plan(db: Path, portable_id: str, new_epoch: int, reason: str) -> dict:
     data = db.read_bytes()
     recs = track_fields(data, portable_id)
@@ -125,26 +201,63 @@ def make_plan(db: Path, portable_id: str, new_epoch: int, reason: str) -> dict:
             "proposed_sha256": mutation_engine.sha256_bytes(proposed)}
 
 
-def load_and_validate(plan_path: Path, serato_dir: Path) -> tuple[dict, bytes]:
+def load_and_validate(plan_path: Path, serato_dir: Path, db_override: Path | None = None) -> tuple[dict, bytes]:
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
     if plan.get("mode") != "preview-only" or not plan.get("rules", {}).get("approval_required"):
         raise DateAddedError("unexpected plan mode")
     db = Path(plan["database"]).resolve()
     if db != (serato_dir / "database V2").resolve():
         raise DateAddedError(f"not {serato_dir}/database V2: {db}")
-    if len(plan["items"]) != 1:
-        raise DateAddedError("this tool changes exactly one track per run")
-    data = db.read_bytes()
+    if len(plan["items"]) != 1 and not plan["rules"].get("batch"):
+        raise DateAddedError("single-track plan must have exactly one item")
+    if not plan["items"]:
+        raise DateAddedError("plan has no items")
+    data = (db_override or db).read_bytes()
     if mutation_engine.sha256_bytes(data) != plan["sha256"]:
         raise DateAddedError("database V2 changed since the plan was made")
-    item = plan["items"][0]
-    recs = track_fields(data, item["portable_id"])
-    if recs != [item["fields"]] or read_values(data, recs[0]) != item["current"]:
-        raise DateAddedError("track record no longer matches the plan")
-    proposed = rebuild(data, recs[0], item["new_epoch"])
+    idx = index_tracks(data)
+    for item in plan["items"]:
+        recs = idx.get(item["portable_id"], [])
+        if recs != [item["fields"]] or read_values(data, recs[0]) != item["current"]:
+            raise DateAddedError(f"track record no longer matches the plan: {item['portable_id']}")
+        if any(v <= item["new_epoch"] for v in item["current"].values()):
+            raise DateAddedError(f"not an earlier date: {item['portable_id']}")
+    proposed = rebuild_many(data, plan["items"])
     if mutation_engine.sha256_bytes(proposed) != plan["proposed_sha256"]:
         raise DateAddedError("plan does not reproduce")
     return plan, proposed
+
+
+def verify_result(before: bytes, after: bytes, plan: dict) -> dict:
+    """Byte-compare + read back every planned date. Raises on any problem."""
+    if mutation_engine.sha256_bytes(after) != plan["proposed_sha256"]:
+        raise RuntimeError("database V2 bytes do not match the plan")
+    ok, diff = changed_ranges_ok_many(before, after, [i["fields"] for i in plan["items"]])
+    if not ok:
+        raise RuntimeError("bytes outside tadd/uadd changed")
+    bad = [i["portable_id"] for i in plan["items"] if set(read_values(after, i["fields"]).values()) != {i["new_epoch"]}]
+    if bad:
+        raise RuntimeError(f"read-back mismatch on {len(bad)} tracks, e.g. {bad[0]}")
+    untouched = index_tracks(after)
+    planned = {i["portable_id"] for i in plan["items"]}
+    before_idx = index_tracks(before)
+    drift = [p for p, recs in before_idx.items() if p not in planned
+             and [read_values(before, r) for r in recs] != [read_values(after, r) for r in untouched.get(p, [])]]
+    if drift:
+        raise RuntimeError(f"{len(drift)} unplanned tracks changed date")
+    return {"bytes_changed": diff, "length": len(after), "tracks_read_back": len(plan["items"]),
+            "unplanned_tracks_unchanged": len(before_idx) - len(planned)}
+
+
+def simulate(plan_path: Path, serato_dir: Path, copy: Path) -> dict:
+    """Dry run on a COPY of database V2: write the plan into the copy and verify it."""
+    if copy.resolve() == (serato_dir / "database V2").resolve():
+        raise DateAddedError("--simulate-on must be a copy, not the live database V2")
+    plan, proposed = load_and_validate(plan_path, serato_dir, db_override=copy)
+    before = copy.read_bytes()
+    copy.write_bytes(proposed)
+    result = verify_result(before, copy.read_bytes(), plan)
+    return {"mode": "simulated-on-copy", "copy": str(copy), "items": len(plan["items"]), **result}
 
 
 def write_db_bytes(path: Path, content: bytes) -> None:
@@ -168,22 +281,16 @@ def apply(plan_path: Path, serato_dir: Path, manifest: dict, backup: Path, out_d
                                             serato_dir.resolve(), label)
     engine.start({"plan": str(plan_path), "items": 1})
     with engine.item(1, kind=mutation_engine.DATE_ADDED, source=db, expected_sha256=plan["sha256"],
-                     backup_path=backup_copy, extra_intent={"portable_id": item["portable_id"],
-                                                            "new_epoch": item["new_epoch"]}) as txn:
+                     backup_path=backup_copy, extra_intent={"tracks": len(plan["items"]),
+                                                            "first": item["portable_id"]}) as txn:
         before = db.read_bytes()
         txn.on_rollback(lambda: mutation_engine.restore_from_backup(backup_copy, db, plan["sha256"]))
         write_db_bytes(db, proposed)
         txn.mark_mutated()
-        after = db.read_bytes()
-        if mutation_engine.sha256_bytes(after) != plan["proposed_sha256"]:
-            raise RuntimeError("database V2 bytes do not match the plan")
-        if not changed_ranges_ok(before, after, item["fields"]):
-            raise RuntimeError("bytes outside tadd/uadd changed")
-        got = read_values(after, item["fields"])
-        if set(got.values()) != {item["new_epoch"]}:
-            raise RuntimeError("read-back does not match the new date")
-        diff = sum(1 for a, b in zip(before, after) if a != b)
-        record = {"database": str(db), "backup": str(backup_copy), "portable_id": item["portable_id"],
+        check = verify_result(before, db.read_bytes(), plan)
+        diff = check["bytes_changed"]
+        record = {"database": str(db), "backup": str(backup_copy), "portable_id": item["portable_id"] if len(plan["items"]) == 1 else f"{len(plan['items'])} tracks",
+                  "tracks": len(plan["items"]),
                   "before_sha256": plan["sha256"], "after_sha256": plan["proposed_sha256"],
                   "old": item["current"], "new_epoch": item["new_epoch"], "bytes_changed": diff,
                   "length": len(after)}
@@ -192,7 +299,7 @@ def apply(plan_path: Path, serato_dir: Path, manifest: dict, backup: Path, out_d
             handle.write(json.dumps(record, ensure_ascii=False) + "\n")
             handle.flush()
             os.fsync(handle.fileno())
-    result = {"mode": f"{label}-date-added-apply", "changed": 1, "bytes_changed": diff, "undo_log": str(undo_path)}
+    result = {"mode": f"{label}-date-added-apply", "changed": len(plan["items"]), "bytes_changed": diff, "undo_log": str(undo_path)}
     engine.finish(result)
     print(json.dumps(result, indent=2))
     return result
@@ -236,6 +343,8 @@ def main() -> None:
     ap.add_argument("--backup-manifest", type=Path)
     ap.add_argument("--out-dir", type=Path)
     ap.add_argument("--label", default="date-added")
+    ap.add_argument("--batch-csv", type=Path, help="CSV with portable_id,new_epoch,reason -> batch plan (--out)")
+    ap.add_argument("--simulate-on", type=Path, help="dry-run the plan on this COPY of database V2")
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--undo", type=Path)
     ap.add_argument("--lock-folder", default="Serato")
@@ -252,6 +361,17 @@ def main() -> None:
             hb = lock_guard.LockHeartbeat(a.lock_folder, a.session)
             hb.pin_run_id(lock)
             undo(a.undo.resolve(), hb)
+            return
+        if a.batch_csv and a.out:
+            import csv
+            with a.batch_csv.open(encoding="utf-8") as handle:
+                wanted = [(r["portable_id"], int(r["new_epoch"]), r.get("reason", "")) for r in csv.DictReader(handle)]
+            plan, skipped = make_batch_plan(db, wanted)
+            a.out.write_text(json.dumps(plan, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+            print(json.dumps({"planned": len(plan["items"]), "skipped": skipped}, indent=2))
+            return
+        if a.plan and a.simulate_on:
+            print(json.dumps(simulate(a.plan, a.serato_dir, a.simulate_on), indent=2))
             return
         if a.path and a.date and a.out:
             plan = make_plan(db, a.path, int(datetime.fromisoformat(a.date).timestamp()), a.reason)
