@@ -2,7 +2,13 @@
 
 Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRARY-LAYOUT.md`, Claude's Oct 15 wrap-up in `CLAUDE-HANDOFF-2026-10-15.md`.
 
-## Now (2026-10-29 16:53 EDT, Grok)
+## Now (2026-10-29 17:20 EDT, Grok)
+
+- **Blank-artist audit** (read-only, `artist-blank-20261029/`): 391 in scope, 42 excluded (custom folders, Imani Drops, DJ tools). CAVEAT: the audit read WAV tags in a mode that misses the artist, so the 18 "file tag only" rows (mostly WAV) are false blanks; the real count is lower.
+- **Artist written to 6 files** (Imani approved the "high" set; only 6 of 24 were really blank in the file): Pop instrumentals Lauryn Hill, Luther Vandross & Mariah Carey, Marques Houston feat. JD; neptunes Pharrell Williams – Happy (Moov Radio, Rains Custom, Sunshine). apply_artist_title_plan.py (mutation engine), Artist only (Title rewritten unchanged), 6/6 read back, audio + Serato frames unchanged. Backups T5 `2026-10-29-artist-blank-high` (5) + `2026-10-29-artist-blank-high-2` (Sunshine; first try blocked by a path-case mismatch before any write). Undo logs in `artist-blank-20261029/high-apply/`. Skipped 18: 16 already had an artist in the file, 1 .aif (1TakeJay, writer can't do aif), 1 bad proposal (Rock Your Hips: DB "artist" is a title). database V2 not touched. **Rescan** Pop (3 instrumentals) and neptunes/INST+SPEC/Specialty.
+- Medium review list for Imani: `artist-blank-20261029/artist-medium-review-20261029.csv` (125, 23 flagged as likely wrong). Nothing written.
+
+## Earlier (2026-10-29 16:53 EDT, Grok)
 
 - **Date added survived a Serato open/quit:** database V2 byte-identical to post-apply (c6f29f2e), 22,524/22,524 still at the restored date; Imani saw Pharrell 2017, Think About Me 2018, Say So 2023 in Serato. master.sqlite NOT updated by Serato (unchanged since 16:13; 22,523 still old date, 1 other) — Serato shows the database V2 dates.
 - **Spring pool: 10 tracks filed** (Imani approved via Set Prep). Copied to ~/Downloads/spring-pool-staging-20261029, sha256 verified, `mv -n` (no overwrite), verified at destination; staging empty. NO tag writes (genre proposals not applied; Sharon Jones year untouched).
