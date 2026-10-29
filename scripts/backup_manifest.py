@@ -196,6 +196,51 @@ def _canonical_file_index(
     return index, problems
 
 
+def serato_evidence(serato_backup, serato_required: bool, problems: list) -> dict:
+    """Serato block shared by full and scoped manifests (appends to problems)."""
+    serato = {
+        "required": bool(serato_required),
+        "present": serato_backup is not None and Path(serato_backup).is_dir(),
+        "path": str(Path(serato_backup).resolve()) if serato_backup else None,
+    }
+    if serato_required and not serato["present"]:
+        problems.append("Serato backup was required for this run but is missing or not a directory")
+    if serato["present"]:
+        serato_root = Path(serato_backup)
+        serato_files = _walk_audio(serato_root)
+        serato["file_count"] = len(serato_files)
+        serato["total_bytes"] = sum(p.stat().st_size for p in serato_files.values())
+        # A non-empty directory is not evidence of a Serato backup. Prove the
+        # actual Serato inventory: a non-empty 'database V2' hashed at record
+        # time, plus every crate/Smart Crate hashed so a restore has a bound
+        # byte-for-byte target set.
+        database = serato_root / "database V2"
+        crates = sorted(serato_root.glob("Subcrates/*.crate"))
+        smart_crates = sorted(serato_root.glob("SmartCrates/*.scrate"))
+        serato["database_v2_bytes"] = database.stat().st_size if database.is_file() else 0
+        serato["database_v2_sha256"] = (
+            sha256_file(database) if serato["database_v2_bytes"] else None
+        )
+        serato["crate_count"] = len(crates)
+        serato["smart_crate_count"] = len(smart_crates)
+        serato["crate_sha256"] = {p.name: sha256_file(p) for p in crates}
+        serato["smart_crate_sha256"] = {p.name: sha256_file(p) for p in smart_crates}
+        if not serato_files:
+            serato["result"] = STATUS_FAIL
+            problems.append("Serato backup directory exists but is empty")
+        elif not serato["database_v2_sha256"]:
+            serato["result"] = STATUS_FAIL
+            problems.append(
+                "Serato backup directory has no non-empty 'database V2'; a directory "
+                "without one is not a restorable Serato backup"
+            )
+        else:
+            serato["result"] = STATUS_PASS
+    else:
+        serato["result"] = STATUS_FAIL if serato_required else "NOT_REQUIRED"
+    return serato
+
+
 def build_manifest(
     source_root: Path,
     backup_root: Path,
@@ -256,46 +301,7 @@ def build_manifest(
             # Recorded, not fatal.
             pass
 
-    serato = {
-        "required": bool(serato_required),
-        "present": serato_backup is not None and Path(serato_backup).is_dir(),
-        "path": str(Path(serato_backup).resolve()) if serato_backup else None,
-    }
-    if serato_required and not serato["present"]:
-        problems.append("Serato backup was required for this run but is missing or not a directory")
-    if serato["present"]:
-        serato_root = Path(serato_backup)
-        serato_files = _walk_audio(serato_root)
-        serato["file_count"] = len(serato_files)
-        serato["total_bytes"] = sum(p.stat().st_size for p in serato_files.values())
-        # A non-empty directory is not evidence of a Serato backup. Prove the
-        # actual Serato inventory: a non-empty 'database V2' hashed at record
-        # time, plus every crate/Smart Crate hashed so a restore has a bound
-        # byte-for-byte target set.
-        database = serato_root / "database V2"
-        crates = sorted(serato_root.glob("Subcrates/*.crate"))
-        smart_crates = sorted(serato_root.glob("SmartCrates/*.scrate"))
-        serato["database_v2_bytes"] = database.stat().st_size if database.is_file() else 0
-        serato["database_v2_sha256"] = (
-            sha256_file(database) if serato["database_v2_bytes"] else None
-        )
-        serato["crate_count"] = len(crates)
-        serato["smart_crate_count"] = len(smart_crates)
-        serato["crate_sha256"] = {p.name: sha256_file(p) for p in crates}
-        serato["smart_crate_sha256"] = {p.name: sha256_file(p) for p in smart_crates}
-        if not serato_files:
-            serato["result"] = STATUS_FAIL
-            problems.append("Serato backup directory exists but is empty")
-        elif not serato["database_v2_sha256"]:
-            serato["result"] = STATUS_FAIL
-            problems.append(
-                "Serato backup directory has no non-empty 'database V2'; a directory "
-                "without one is not a restorable Serato backup"
-            )
-        else:
-            serato["result"] = STATUS_PASS
-    else:
-        serato["result"] = STATUS_FAIL if serato_required else "NOT_REQUIRED"
+    serato = serato_evidence(serato_backup, serato_required, problems)
 
     manifest = {
         "manifest_version": MANIFEST_VERSION,
@@ -324,6 +330,9 @@ def build_scoped_manifest(
     relative_paths: list[str],
     *,
     backup_id: str | None = None,
+    serato_backup: Path | None = None,
+    serato_required: bool = False,
+    serato_snapshot: dict | None = None,
 ) -> dict:
     """Hash an explicit subset of one source root and compute PASS/FAIL.
 
@@ -398,6 +407,12 @@ def build_scoped_manifest(
                 "matched": matched,
             })
 
+    serato = serato_evidence(serato_backup, serato_required, problems)
+    if serato_snapshot:
+        # Which verified snapshot this is and whether it was reused (no new
+        # copy because _Serato_ hadn't changed) -- see scripts/make_backup.py.
+        serato["snapshot"] = serato_snapshot
+
     manifest = {
         "manifest_version": MANIFEST_VERSION,
         "backup_id": backup_id or f"{source_root.name}-scoped-{datetime.now().astimezone().strftime('%Y%m%d-%H%M%S')}",
@@ -408,12 +423,7 @@ def build_scoped_manifest(
         "file_count": len(files),
         "total_bytes": total_bytes,
         "files": files,
-        "serato": {
-            "required": False,
-            "present": False,
-            "path": None,
-            "result": "NOT_REQUIRED",
-        },
+        "serato": serato,
         "verifier": VERIFIER_NAME,
         "verifier_version": MANIFEST_VERSION,
         "repo_sha": _repo_sha(),
