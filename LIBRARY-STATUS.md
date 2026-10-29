@@ -2,7 +2,15 @@
 
 Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRARY-LAYOUT.md`, Claude's Oct 15 wrap-up in `CLAUDE-HANDOFF-2026-10-15.md`.
 
-## Now (2026-10-29 18:00 EDT, Grok)
+## Now (2026-10-29 18:25 EDT, Grok)
+
+- **Tag fixes on the newly filed downloads** (Imani approved 18:07: "Apply all 99 fixes, then I'll rescan"; proposal `new-downloads-20261029/tag-audit/tag-fix-proposals-20261029.csv`). 88 files written via apply_new_music_intake_plan.py (mutation engine): Genre on 65, Grouping terms added on 73 (Clean 52, Edit/Remix from filename). 88/88 read back independently, 0 mismatches. Energy, Year and Artist untouched; database V2 / master.sqlite not touched; Serato closed throughout.
+- Skipped 11 of the 99 rows: 10 had only "Year unknown (needs lookup)" or "confirm by ear" notes (not fixes); 1 .mp4 (dj redtail – Jukin' This Christmas, blank Artist/Title) because no writer supports .mp4.
+- Backup: T5 `2026-10-29-tag-fixes/<folder>/` (12 per-folder manifests, PASS). _Serato_ snapshot reused 11x; it changed once mid-run so a new full copy is at `2026-10-29-tag-fixes/House/_Serato_`. Undo logs: `new-downloads-20261029/tag-audit/apply/tagfix-*-undo-20261029-*.jsonl`.
+- **Rescan in Serato:** Holiday/Xmas, R&b/CLEAN, R&b/REMIXES & EDITS/R&B, Rock/CLEAN, Pop/CLEAN, Hip Hop/Clean, Jersey Club/baltimore_club_music, Jersey Club/REMIXES & EDITS/Jersey Club, House/REMIXES & EDITS/House, House/REMIXES & EDITS/Tech House, Bass, Bass/REMIXES & EDITS/Miami Bass, Ballroom/REMIXES & EDITS/Ballroom, Ghettotech/REMIXES & EDITS/Ghettotech, New Orleans Bounce/REMIXES & EDITS/Bounce, Baile.
+- Still open: 27 blank Years (need lookup), soul redrums carrying pool Year 2026, SAYNT KAY / Club South / GREEDY GIRLZZ / mik genre for Imani.
+
+## Earlier (2026-10-29 18:00 EDT, Grok)
 
 - **More downloads filed** (Imani approved 17:51 and 17:59), all `mv -n`, verified at destination and gone from source, 0 skipped/failed, tags untouched, Serato closed, locks taken and released.
   - Plan b (2): DJ GAY-Z – Tinashe Nasty → Ballroom/REMIXES & EDITS/Ballroom; MOVELTRAXX – Ron Mercy Tryna Twerk → Bass. Log `move-log-b-175200.json`, undo `undo-move-b-175200.sh`.
