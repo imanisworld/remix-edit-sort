@@ -76,3 +76,42 @@ class BatchTests(unittest.TestCase):
         self.assertEqual((tmp / "database V2").read_bytes(), data)  # live untouched
         with self.assertRaises(t.DateAddedError):
             t.simulate(p, tmp, tmp / "database V2")
+
+
+class ApplyTests(unittest.TestCase):
+    """apply() end to end with a stub engine (regression: NameError 'after' on batch apply)."""
+    def test_batch_apply_writes_and_logs_undo(self):
+        import contextlib, json, shutil
+        tmp = Path(tempfile.mkdtemp())
+        data = db(otrk("Users/a/x.mp3", 1775177187), otrk("Users/a/y.mp3", 1775177187))
+        (tmp / "database V2").write_bytes(data)
+        plan, _ = t.make_batch_plan(tmp / "database V2", [("Users/a/x.mp3", 1499225906, ""), ("Users/a/y.mp3", 1499225907, "")])
+        p = tmp / "plan.json"; p.write_text(json.dumps(plan))
+        (tmp / "bk").mkdir(); shutil.copy(tmp / "database V2", tmp / "bk" / "database V2")
+
+        class Txn:
+            def on_rollback(self, fn): pass
+            def mark_mutated(self): pass
+            def record(self, **kw): self.rec = kw
+
+        class Engine:
+            def __init__(self, *a, **k): pass
+            def start(self, *a): pass
+            def finish(self, *a): pass
+            @contextlib.contextmanager
+            def item(self, *a, **k): yield Txn()
+
+        orig = t.mutation_engine.MutationEngine
+        t.mutation_engine.MutationEngine = Engine
+        try:
+            r = t.apply(p, tmp, {}, tmp / "bk", tmp, "test", None)
+        finally:
+            t.mutation_engine.MutationEngine = orig
+        self.assertEqual(r["changed"], 2)
+        new = (tmp / "database V2").read_bytes()
+        self.assertEqual(len(new), len(data))
+        for path, ep in (("Users/a/x.mp3", 1499225906), ("Users/a/y.mp3", 1499225907)):
+            self.assertEqual(t.read_values(new, t.track_fields(new, path)[0]), {"tadd": ep, "uadd": ep})
+        undo = json.loads(Path(r["undo_log"]).read_text().splitlines()[0])
+        self.assertEqual(undo["length"], len(data))
+        self.assertEqual(undo["tracks"], 2)

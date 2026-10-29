@@ -287,7 +287,8 @@ def apply(plan_path: Path, serato_dir: Path, manifest: dict, backup: Path, out_d
         txn.on_rollback(lambda: mutation_engine.restore_from_backup(backup_copy, db, plan["sha256"]))
         write_db_bytes(db, proposed)
         txn.mark_mutated()
-        check = verify_result(before, db.read_bytes(), plan)
+        after = db.read_bytes()
+        check = verify_result(before, after, plan)
         diff = check["bytes_changed"]
         record = {"database": str(db), "backup": str(backup_copy), "portable_id": item["portable_id"] if len(plan["items"]) == 1 else f"{len(plan['items'])} tracks",
                   "tracks": len(plan["items"]),
