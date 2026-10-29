@@ -110,6 +110,24 @@ class CrateTests(unittest.TestCase):
         self.assertEqual(undo.returncode, 0, undo.stdout + undo.stderr)
         self.assertEqual(self.target.read_bytes(), before_t)
 
+    def test_smartcrates_only_backup_applies_and_whole_folder_manifest_mismatch_refused(self):
+        plan = self.tmp / "plan.json"
+        run(TOOL, "--crate", self.target, "--rule", "9:cond_con_str:r&b", "--match", "all", "--out", plan)
+        sc = self.serato / "SmartCrates"
+        backup = fixtures.mirror_backup(sc, self.tmp / "bk-sc")
+        manifest = fixtures.passing_manifest(sc, backup, self.tmp / "m-sc.json")
+        common = ["--plan", plan, "--serato-dir", self.serato, "--backup", backup, "--backup-manifest", manifest,
+                  "--out-dir", self.tmp / "out", "--apply", "--lock-folder", self.lock, "--session", "s"]
+        wrong = run(TOOL, *common)
+        self.assertNotEqual(wrong.returncode, 0)
+        res = run(TOOL, *common, "--smartcrates-only-backup")
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+        self.assertEqual(E.parse(self.target.read_bytes())["rules"], [{"op": "cond_con_str", "field": 9, "value": "r&b"}])
+        before = (backup / self.target.name).read_bytes()
+        undo = run(TOOL, "--undo", json.loads(res.stdout)["undo_log"], "--lock-folder", self.lock, "--session", "s")
+        self.assertEqual(undo.returncode, 0, undo.stdout + undo.stderr)
+        self.assertEqual(self.target.read_bytes(), before)
+
     def test_stale_plan_refused(self):
         plan = self.tmp / "plan.json"
         run(TOOL, "--crate", self.target, "--rule", "9:cond_con_str:r&b", "--match", "all", "--out", plan)
