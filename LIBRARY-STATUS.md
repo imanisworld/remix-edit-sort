@@ -2,7 +2,16 @@
 
 Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRARY-LAYOUT.md`, Claude's Oct 15 wrap-up in `CLAUDE-HANDOFF-2026-10-15.md`.
 
-## Now (2026-10-29 07:40 EDT, Grok)
+## Now (2026-10-29 16:35 EDT, Grok)
+
+- **Date added RESTORED for 22,524 tracks** in `_Serato_/database V2` (Imani confirmed the Pharrell test shows 2017 in Serato). Each track's tadd/uadd set to its earlier file creation date; only those date fields changed (266,105 bytes), all 22,524 read back OK, Pharrell still 2017-07-04. master.sqlite NOT written (SHA unchanged). Excluded: custom folders, outside the Music folder, backup copies, Pharrell, 4 tracks not in database V2 (Amapiano: Bunda, Oops Away, Rock your Boat, Osu Riddim).
+  - database V2 had changed when Serato quit after her rescan, so the plan was rebuilt against the new file (`batch-plan-v2.json`): same 22,524 tracks, same old dates; dry run on a copy clean.
+  - The first apply crashed (tool bug, NameError) and rolled back automatically, live file unchanged. Fixed in #134 (with a regression test; CI green), then re-applied.
+  - Backup: T5 `2026-10-29-date-added-restore` (`files/database V2` + full `_Serato_`, PASS). Undo: `date-added-restore-20261029/restore-date-added-undo-20261029-162858.jsonl` (undo refuses if Serato has rewrote database V2 since).
+  - UNVERIFIED: whether Serato 4.0.1 keeps these dates (master.sqlite still has the old ones). Open Serato and check; re-read database V2 + master.sqlite after.
+- **Moved-tracks audit (read-only):** `moved-audit-20261029/audit-output-20261029.txt`. 352 old→new pairs linked; 0 play counts, cues, keys, BPMs or beatgrid locks lost; 13 tracks lost 1 crate membership each (all a Soca crate with a garbled name, "Brown Skin (Dance Remix) by India.Arie…"); 2 Reggae colors differ. 0 broken crate entries (5,582 checked). database V2 has 98 entries whose file is missing (22 have a known new path); master.sqlite 241 missing (22 known). 4,767 logged moves were later undone (files back at their old paths).
+
+## Earlier (2026-10-29 07:40 EDT, Grok)
 
 - **Clean Funk smart crate rebuilt** (Burn≫Clean Funk): match ALL, Genre contains "funk" AND Grouping contains "Clean" (was ANY, value "Clean Funk"). edit_smart_crate.py, SmartCrates-only backup (local `clean-funk-20261029/backup-SmartCrates` + T5 `2026-10-29-clean-funk-crate`, PASS). Undo: `clean-funk-20261029/clean-funk-smart-crate-undo-20261029-071322.jsonl`. Library count now 100.
 - **Grouping "Clean" written to 4 tracks** in Events/LIKE SUGAR ON MY TONGUE/FUNK (CLEAN)/Funk & Soul (Gap Band Humpin' x2, Zapp Dance Floor x2). One-off Events exception approved by Imani; only these 4. Files were ID3v2.2 (mutagen can't save 2.2) and are now ID3v2.3 (approved; audio and Serato frames verified unchanged; old RVAD volume frame dropped). Backup T5 `2026-10-29-clean-funk-grouping` (4 files + full `_Serato_`, PASS). Undo: `clean-funk-20261029/clean-funk-grouping-undo-20261029-073448.jsonl`. **Rescan that folder in Serato** → crate becomes 104.
