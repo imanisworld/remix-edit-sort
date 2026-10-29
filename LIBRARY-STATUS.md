@@ -2,7 +2,13 @@
 
 Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRARY-LAYOUT.md`, Claude's Oct 15 wrap-up in `CLAUDE-HANDOFF-2026-10-15.md`.
 
-## Now (2026-10-16 15:20 EDT, Grok)
+## Now (2026-10-29 07:40 EDT, Grok)
+
+- **Clean Funk smart crate rebuilt** (Burn≫Clean Funk): match ALL, Genre contains "funk" AND Grouping contains "Clean" (was ANY, value "Clean Funk"). edit_smart_crate.py, SmartCrates-only backup (local `clean-funk-20261029/backup-SmartCrates` + T5 `2026-10-29-clean-funk-crate`, PASS). Undo: `clean-funk-20261029/clean-funk-smart-crate-undo-20261029-071322.jsonl`. Library count now 100.
+- **Grouping "Clean" written to 4 tracks** in Events/LIKE SUGAR ON MY TONGUE/FUNK (CLEAN)/Funk & Soul (Gap Band Humpin' x2, Zapp Dance Floor x2). One-off Events exception approved by Imani; only these 4. Files were ID3v2.2 (mutagen can't save 2.2) and are now ID3v2.3 (approved; audio and Serato frames verified unchanged; old RVAD volume frame dropped). Backup T5 `2026-10-29-clean-funk-grouping` (4 files + full `_Serato_`, PASS). Undo: `clean-funk-20261029/clean-funk-grouping-undo-20261029-073448.jsonl`. **Rescan that folder in Serato** → crate becomes 104.
+- **Date added investigation (read-only):** no Serato copy has a date before 2025-09-13 (library rebuild); 2026 dates mostly 2026-06-06 (12,402) and 2026-04-02 (2,761), before this project. Our tag writes/rescans changed 0-2 dates. Moves/renames re-dated some tracks (~30 confirmed). Plan-only restore tool merged (#130, `build_date_added_restore_plan.py`): 24,894 tracks have a file creation date >30 days earlier. Preview: `date-added-20261029/preview/`. NOTHING applied; no safe write path proven yet (Serato 4.0.1 keeps date added in master.sqlite, which we never write; database V2 writes may be ignored or overwritten — needs a one-track test with approval).
+
+## Earlier (2026-10-16 15:20 EDT, Grok)
 
 - **Serato is OPEN** for Imani's isolated rescan test (4 copies in ~/Music/RESCAN-TEST; backup T5 `2026-10-16-rescan-test-pre`, both Serato folders, PASS). No music, tag or Serato writes until she closes it and reports.
 - Claude job 3 DONE and verified read-only by Grok: 762 moved; database V2, crates, root.sqlite and master.sqlite repointed, 0 old paths left (282 only in play history).
