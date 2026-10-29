@@ -108,7 +108,34 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-LOCKS_DIR = REPO_ROOT / ".locks"
+
+
+def resolve_shared_locks_dir(repo_root: Path = REPO_ROOT) -> Path:
+    """Return the ONE .locks/ directory shared by every checkout of this repo.
+
+    Linked worktrees each have their own working tree, so ``repo_root/.locks``
+    would give every worktree a private lock list that other agents can't
+    see. Resolve the git common dir instead (the main checkout's ``.git``)
+    and use ``<main checkout>/.locks``. Falls back to ``repo_root/.locks``
+    only when this is not a git checkout (e.g. an exported copy) or the
+    common dir is a bare repository.
+    """
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(repo_root), "rev-parse", "--path-format=absolute", "--git-common-dir"],
+            capture_output=True, text=True, timeout=10, check=True,
+        ).stdout.strip()
+    except (OSError, subprocess.SubprocessError):
+        return repo_root / ".locks"
+    if not out:
+        return repo_root / ".locks"
+    common = Path(out).resolve()
+    if common.name != ".git":
+        return repo_root / ".locks"
+    return common.parent / ".locks"
+
+
+LOCKS_DIR = resolve_shared_locks_dir()
 
 
 class CorruptLock(Exception):
