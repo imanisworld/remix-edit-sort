@@ -2,7 +2,15 @@
 
 Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRARY-LAYOUT.md`, Claude's Oct 15 wrap-up in `CLAUDE-HANDOFF-2026-10-15.md`.
 
-## Now (2026-10-29 17:45 EDT, Grok)
+## Now (2026-10-29 18:00 EDT, Grok)
+
+- **More downloads filed** (Imani approved 17:51 and 17:59), all `mv -n`, verified at destination and gone from source, 0 skipped/failed, tags untouched, Serato closed, locks taken and released.
+  - Plan b (2): DJ GAY-Z – Tinashe Nasty → Ballroom/REMIXES & EDITS/Ballroom; MOVELTRAXX – Ron Mercy Tryna Twerk → Bass. Log `move-log-b-175200.json`, undo `undo-move-b-175200.sh`.
+  - Plan c (12): 8 clean soul/R&B (Minnie Riperton, Emotions, Aretha, Linda Lyndell, Marlena Shaw, Ruby Andrews, Freda Payne, Nina Simone) → R&b/CLEAN; JENNIE Miami Bass edit → Bass/REMIXES & EDITS/Miami Bass; FS GREEN Beyoncé Club Tool → Jersey Club/baltimore_club_music; C-Sick House – Majid Jordan → House/REMIXES & EDITS/House; Ron Mercy Twerk Sum → Bass. Log `move-log-c-175900.json`, undo `undo-move-c-175900.sh`.
+  - Left in ~/Downloads: DJ GAY-Z – Right Now (likely duplicate of the crate copy), Dennis Blaze Erotic City (exact duplicate), DJ Young Brown – With You (uncertain).
+  - **Rescan**: R&b, Bass, Jersey Club, House, Ballroom, NEW MUSIC DOWNLOADS - MUSIC TO MOVE.
+
+## Earlier (2026-10-29 17:45 EDT, Grok)
 
 - **New downloads filed** (Imani approved the plan 17:44): 188 files moved with `mv -n`, 188/188 verified at destination and gone from source, 0 skipped, 0 failed, no deletes, tags untouched, Serato closed, folder locks taken and released. 20 from the 24 SoundCloud artist folders in ~/Downloads, 168 from NEW MUSIC DOWNLOADS - MUSIC TO MOVE. 109 Christmas → Holiday/Xmas; 9 Baltimore club → Jersey Club/baltimore_club_music; dirty house → House/DIRTY; rest into existing genre/REMIXES & EDITS folders. 1,018 uncertain files left in MUSIC TO MOVE / Downloads. Plan, log and undo in `new-downloads-20261029/` (`move-log-174432.json`, `undo-move-174432.sh`). **Rescan needed** in Serato for the destination folders.
 
