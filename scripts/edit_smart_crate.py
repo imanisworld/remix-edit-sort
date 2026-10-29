@@ -174,17 +174,21 @@ def load_and_validate(plan_path: Path, serato_dir: Path) -> list[dict]:
     return plan["items"]
 
 
-def apply(plan_path: Path, serato_dir: Path, manifest: dict, backup: Path, out_dir: Path, label: str, heartbeat) -> dict:
+def apply(plan_path: Path, serato_dir: Path, manifest: dict, backup: Path, out_dir: Path, label: str, heartbeat,
+          backup_root: Path | None = None) -> dict:
+    """backup_root is the folder the backup manifest covers: _Serato_ by default,
+    or _Serato_/SmartCrates when only the crate folder was backed up."""
     items = load_and_validate(plan_path, serato_dir)
+    backup_root = (backup_root or serato_dir).resolve()
     stamp = datetime.now().astimezone().strftime("%Y%m%d-%H%M%S")
     undo_path = out_dir / f"{label}-smart-crate-undo-{stamp}.jsonl"
     engine = mutation_engine.MutationEngine(out_dir / f"{label}-recovery-{stamp}.jsonl", heartbeat, manifest,
-                                            serato_dir, label)
+                                            backup_root, label)
     engine.start({"plan": str(plan_path), "items": len(items)})
     done = []
     for index, item in enumerate(items, start=1):
         crate = Path(item["crate"]).resolve()
-        backup_copy = backup / crate.relative_to(serato_dir.resolve())
+        backup_copy = backup / crate.relative_to(backup_root)
         with engine.item(index, kind=mutation_engine.SMART_CRATE, source=crate, expected_sha256=item["sha256"],
                          backup_path=backup_copy, extra_intent={"proposed": item["proposed"]}) as txn:
             before = crate.read_bytes()
@@ -257,6 +261,9 @@ def main() -> None:
     ap.add_argument("--backup-manifest", type=Path)
     ap.add_argument("--out-dir", type=Path)
     ap.add_argument("--label", default="smart-crate")
+    ap.add_argument("--smartcrates-only-backup", action="store_true",
+                    help="the backup and manifest cover only _Serato_/SmartCrates (crate files are the only thing "
+                         "this tool writes), not the whole _Serato_ folder")
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--undo", type=Path)
     ap.add_argument("--lock-folder", default="Serato")
@@ -283,9 +290,11 @@ def main() -> None:
         if a.plan and a.apply:
             if not (a.backup and a.backup_manifest and a.session):
                 raise CrateError("--apply needs --backup, --backup-manifest and --session")
+            root = a.serato_dir / "SmartCrates" if a.smartcrates_only_backup else a.serato_dir
             hb, manifest = mutation_engine.run_preflight(lock_folder=a.lock_folder, session=a.session,
-                                                         manifest_path=a.backup_manifest, source_root=a.serato_dir)
-            apply(a.plan, a.serato_dir, manifest, a.backup, a.out_dir or a.plan.resolve().parent, a.label, hb)
+                                                         manifest_path=a.backup_manifest, source_root=root)
+            apply(a.plan, a.serato_dir, manifest, a.backup, a.out_dir or a.plan.resolve().parent, a.label, hb,
+                  backup_root=root)
             return
         if a.plan:
             print(json.dumps({"mode": "dry-run", "items": len(load_and_validate(a.plan, a.serato_dir)),
