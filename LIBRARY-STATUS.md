@@ -2,7 +2,16 @@
 
 Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRARY-LAYOUT.md`, Claude's Oct 15 wrap-up in `CLAUDE-HANDOFF-2026-10-15.md`.
 
-## Now (2026-10-29 16:35 EDT, Grok)
+## Now (2026-10-29 16:53 EDT, Grok)
+
+- **Date added survived a Serato open/quit:** database V2 byte-identical to post-apply (c6f29f2e), 22,524/22,524 still at the restored date; Imani saw Pharrell 2017, Think About Me 2018, Say So 2023 in Serato. master.sqlite NOT updated by Serato (unchanged since 16:13; 22,523 still old date, 1 other) — Serato shows the database V2 dates.
+- **Spring pool: 10 tracks filed** (Imani approved via Set Prep). Copied to ~/Downloads/spring-pool-staging-20261029, sha256 verified, `mv -n` (no overwrite), verified at destination; staging empty. NO tag writes (genre proposals not applied; Sharon Jones year untouched).
+  - Disco/CLEAN/Disco: Central Line – Walking Into Sunshine (Larry Levan 12"), Diana Ross – Love Hangover [Clean], People's Choice – Do It Anyway You Wanna.
+  - Funk/CLEAN/Funk & Soul: Evelyn Champagne King – I'm In Love (Clean), Parliament – Give Up The Funk (Clean), Rufus & Chaka Khan – Do You Love What You Feel (Clean) (both versions kept; Extended stays in Events), Temptations – I Can't Get Next To You [Clean], Otis Redding – Dock Of The Bay (FLAC), Sharon Jones & The Dap-Kings – How Long Do I Have To Wait For You.
+  - NEW MUSIC DOWNLOADS - MUSIC TO MOVE: Lakeside – Fantastic Voyage (Main) (clean status unknown).
+  - **Rescan in Serato:** Funk/CLEAN/Funk & Soul, Disco/CLEAN/Disco, NEW MUSIC DOWNLOADS - MUSIC TO MOVE.
+
+## Earlier (2026-10-29 16:35 EDT, Grok)
 
 - **Date added RESTORED for 22,524 tracks** in `_Serato_/database V2` (Imani confirmed the Pharrell test shows 2017 in Serato). Each track's tadd/uadd set to its earlier file creation date; only those date fields changed (266,105 bytes), all 22,524 read back OK, Pharrell still 2017-07-04. master.sqlite NOT written (SHA unchanged). Excluded: custom folders, outside the Music folder, backup copies, Pharrell, 4 tracks not in database V2 (Amapiano: Bunda, Oops Away, Rock your Boat, Osu Riddim).
   - database V2 had changed when Serato quit after her rescan, so the plan was rebuilt against the new file (`batch-plan-v2.json`): same 22,524 tracks, same old dates; dry run on a copy clean.
