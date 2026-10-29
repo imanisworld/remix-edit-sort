@@ -87,10 +87,14 @@ HIDDEN_GROUPING_LABEL = "hidden_grouping_label"
 # Rewrite the rules of one named Serato smart crate (_Serato_/SmartCrates/*.scrate).
 # See edit_smart_crate.py.
 SMART_CRATE = "smart_crate"
+# Change one track's date-added fields (tadd text + uadd uint32) inside
+# _Serato_/database V2, same byte length, nothing else. See set_serato_date_added.py.
+DATE_ADDED = "date_added"
 
 MUTATION_CLASSES = frozenset({
     RELOCATE, GENRE, GROUPING, ARTIST_TITLE, YEAR_BPM, DELETE, METADATA,
     SERATO_PATHS, FOLDER_RENAME, HIDDEN_GROUPING_LABEL, SMART_CRATE,
+    DATE_ADDED,
 })
 
 # Names that carry no library content and that Finder may create at any time.
