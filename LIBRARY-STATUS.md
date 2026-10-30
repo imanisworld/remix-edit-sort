@@ -2,6 +2,15 @@
 
 Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRARY-LAYOUT.md`, Claude's Oct 15 wrap-up in `CLAUDE-HANDOFF-2026-10-15.md`.
 
+## Now (Oct 30, 7:25 PM EDT, Grok) — new downloads filed
+Imani approved 19:12 ("lift the hold and file the ones with clear genres"; DJ Tools to the DJ Tools folder; split album/dated folders by genre). Serato closed; folder locks taken and released.
+- **Genre tags** (via apply_genre_refinement_plan.py / mutation_engine): 76 respelled to canonical (Hip-Hop 71, R&B 5, incl. Nu Disco→Disco) — 68 + 8 over two runs (first run interrupted by a connection drop after 8; recover showed the 9th not started, second run finished it), audio and Serato frames unchanged.
+- **Moved 309** from NEW MUSIC DOWNLOADS with `mv -n`, 309/309 verified, 0 skipped, no deletes: Hip Hop/DIRTY 155, Juke 36, R&b/DIRTY 26, DJ Tools, Scratch Beats, break beats 25, Hip Hop/CLEAN 17, Electronic 9, R&b/CLEAN 6, Reggae 6, Pop/CLEAN 4, House 4, Dancehall 3, Reggaeton 3, Latin 3, Afrobeats 2, Pop/DIRTY 2, Country 2, Jazz 2, Disco 1, Jersey Club 1, neo soul 1, Drum & Bass 1. 81 of them are under 320 kbps (list `low-bitrate-filed.csv`).
+- **Held 285** for Imani (`held.csv`): unknown genre 148, Clean/Dirty by ear 62, possible duplicate 46, multi-genre "confirm genre" 21, genre with no folder (Deep House, Funk & Soul, Miami Bass, New Wave, Bounce) 8.
+- 45 broken artist/title tags: fixes DRAFTED only, not written.
+- Backup + undo on T5: `/Volumes/T5 EVO/DJ-backups/2026-10-30-newdl-file/` (run/UNDO-README.txt; undo moves first, then genre).
+- **Rescan in Serato:** NEW MUSIC DOWNLOADS - MUSIC TO MOVE, Hip Hop, R&b, Pop, Juke, DJ Tools, Scratch Beats, break beats, Electronic, Reggae, House, Dancehall, Reggaeton, Latin, Afrobeats, Country, Jazz, Disco, Jersey Club, neo soul, Drum & Bass.
+
 ## Now (Oct 30, 3:42 PM EDT, Grok)
 Crate restructure built in Subcrates (Serato closed; backup `~/Documents/DJ-library-project-20260825/crate-build-20261030/backup-154203`; undo `crate-build-20261030/undo.sh`).
 - Gig parents with numbered sections + 9 Bench: Spring 75th 10-31 (8 sections, 175 + 15 bench), Halloween S&S 10-31 (4 sections, 83 + 15), Inna Space 11-01 (7 sections, 55 + 15, from v3 paths). Track sets match the old v2/v3 crates exactly.
