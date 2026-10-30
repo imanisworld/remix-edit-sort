@@ -2,7 +2,16 @@
 
 Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRARY-LAYOUT.md`, Claude's Oct 15 wrap-up in `CLAUDE-HANDOFF-2026-10-15.md`.
 
-## Now (2026-10-29 22:15 EDT, Grok)
+## Now (2026-10-29 22:20 EDT, Grok)
+
+- **Last Downloads leftovers** (Imani 22:13). mv -n, sha256 verified, Serato closed. Log/undo: `new-downloads-20261029/move-log-final-2215.json`, `undo-move-final-2215.sh`.
+  - DJ GAY-Z – Right Now: **not** a copy (Downloads = 320k, 8.4 MB; library Ballroom copy = 128k; audio differs). Left in ~/Downloads/DJ GAY-Z. The Downloads one is the better-quality file.
+  - Anita Baker – Caught Up In The Rapture (Dennis Blaze Tech House Remix) .mp4 pair: same audio (all mdat chunks identical). Kept one → `R&b/` root (no Clean/Dirty label); the "(M4A · 160k)" copy → ~/.Trash. Note: a 320k MP3 of the same remix is already in House/REMIXES & EDITS/Tech House.
+  - DJ Young Brown – Lil Wayne With You (Pitched Up): from MUSIC TO MOVE/Downloads 10-29 check → MUSIC TO MOVE/_NEEDS CHECK/ (unsorted).
+  - Dennis Blaze – Erotic City (Downloads/Dennis Blaze): still there, awaiting delete (same audio as library copy).
+- **Rescan:** R&b, NEW MUSIC DOWNLOADS - MUSIC TO MOVE/_NEEDS CHECK.
+
+## Earlier (2026-10-29 22:15 EDT, Grok)
 
 - **New regular crate "No Vocals – Test"** (Imani approved 22:12, "do the other crate changes while its closed"). 126 tracks: 39 "likely instrumental" (title says Instrumental/Dub/Inst/Beats/Tool) first, then 87 "possible, check by ear" (Byron the Aquarius, Mr Fingers, Kerri Chandler, Frankie Knuckles instrumentals, deep_house folder). Skipped Kaytranada/R&B edits, obvious vocal classics, Lounge, Events. Source `instrumental-house-candidates-20261029.csv`. Crate file only: no file moves/tags, database V2 and master.sqlite untouched, Serato closed. All 126 paths verified on disk. Local Subcrates copy + undo (`undo.sh` removes the new crate) in `no-vocals-crate-20261029/`. Imani: open Serato, listen and prune.
 
