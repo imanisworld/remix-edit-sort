@@ -33,6 +33,7 @@ import os
 from collections import Counter, defaultdict
 from pathlib import Path
 
+from mutagen import File as MutagenFile
 from mutagen.flac import FLAC
 from mutagen.id3 import ID3, ID3NoHeaderError
 from mutagen.mp4 import MP4
@@ -42,6 +43,51 @@ from build_version_genre_plan import classify_grouping, load_genre_rules
 AUDIO_EXTS = {".mp3", ".flac", ".m4a"}
 PLACEHOLDER_GENRES = {"", "other", "unknown", "n/a"}
 BACKLOG_MARKERS = ("needs check", "genre needs check")
+# Store "catch-all" genre strings that hide whether a track is R&B or rap.
+CATCH_ALL_GENRES = {"rap/hip-hop/r&b/rock/pop", "hip-hop/rap", "r&b/hip-hop", "hip-hop / r&b"}
+VIBE_PREFIX = "Vibe: "
+
+
+def load_vibe_rules(path: Path | None) -> dict:
+    """Optional Vibe rules: {"vibes": [...], "rules": [{"vibe", "artist_contains", "filename_contains"}]}."""
+    if path is None:
+        return {"vibes": [], "rules": []}
+    data = json.loads(path.read_text(encoding="utf-8"))
+    allowed = set(data.get("vibes", []))
+    for rule in data.get("rules", []):
+        if rule.get("vibe") not in allowed:
+            raise SystemExit(f"vibe rule uses a name not in the vibes list: {rule.get('vibe')!r}")
+    return data
+
+
+def propose_vibe(artist: str, filename: str, grouping: list[str], vibe_rules: dict) -> tuple[str | None, str | None]:
+    """Return (vibe, review_reason). Only proposes when exactly one rule matches and no Vibe is set."""
+    if not vibe_rules.get("rules"):
+        return None, None
+    if any(term.startswith(VIBE_PREFIX) for term in grouping):
+        return None, None
+    hay_artist, hay_file = artist.casefold(), filename.casefold()
+    hits = sorted({
+        rule["vibe"] for rule in vibe_rules["rules"]
+        if any(k.casefold() in hay_artist for k in rule.get("artist_contains", []))
+        or any(k.casefold() in hay_file for k in rule.get("filename_contains", []))
+    })
+    if len(hits) == 1:
+        return hits[0], None
+    if len(hits) > 1:
+        return None, f"vibe rules disagree: {hits}"
+    return None, None
+
+
+def read_artist(path: Path) -> str:
+    try:
+        audio = MutagenFile(path, easy=True)
+    except Exception:
+        return ""
+    if not audio:
+        return ""
+    values = audio.get("artist") or audio.get("albumartist") or []
+    return str(values[0]) if values else ""
 
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
@@ -155,11 +201,14 @@ def main() -> None:
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--skip-duplicate-check", action="store_true",
                          help="Skip the whole-library hash scan (faster, no duplicate info)")
+    parser.add_argument("--vibe-rules", type=Path, default=None,
+                         help="Optional JSON of Vibe grouping rules; proposes 'Vibe: <name>' terms (append-only)")
     args = parser.parse_args()
 
     root = args.root.resolve()
     library_root = args.library_root.resolve()
     metadata_rules = load_genre_rules(None)
+    vibe_rules = load_vibe_rules(args.vibe_rules)
     try:
         root.relative_to(library_root)
     except ValueError as exc:
@@ -208,6 +257,13 @@ def main() -> None:
         grouping_analysis = classify_grouping(path.name, "", grouping, metadata_rules)
         terms_to_add = grouping_analysis["add_terms"]
         review_reasons.extend(grouping_analysis["review_reasons"])
+        if genre.strip().lower() in CATCH_ALL_GENRES:
+            review_reasons.append(f"catch-all store genre {genre!r}: pick R&B or Hip-Hop")
+        vibe, vibe_reason = propose_vibe(read_artist(path), path.name, grouping, vibe_rules)
+        if vibe_reason:
+            review_reasons.append(vibe_reason)
+        if vibe and f"{VIBE_PREFIX}{vibe}" not in terms_to_add:
+            terms_to_add = [*terms_to_add, f"{VIBE_PREFIX}{vibe}"]
         if terms_to_add:
             fix["grouping_fix"] = {"add_terms": terms_to_add, "existing": grouping}
 
@@ -246,6 +302,7 @@ def main() -> None:
             "genre_requires_unanimous_sibling_consensus": True,
             "clean_dirty_only_from_explicit_filename_label": True,
             "duplicates_never_auto_deleted": True,
+            "vibe_only_from_single_matching_rule": True,
         },
         "counts": {
             "scanned": len(all_files),

@@ -1,0 +1,8 @@
+{
+  "_note": "Proposal only. Imani edits this list; the intake survey appends 'Vibe: <name>' to Grouping only when exactly one rule matches and the file has no Vibe yet.",
+  "vibes": ["Hazy Rap", "Bounce", "Sango Swing", "Soulful House", "Women R&B", "Blog-Era", "Forgotten Gems"],
+  "rules": [
+    {"vibe": "Bounce", "artist_contains": ["Kaytranada"], "filename_contains": ["kaytranada remix", "kaytranada edit"]},
+    {"vibe": "Sango Swing", "artist_contains": ["Sango", "Monte Booker"], "filename_contains": ["sango remix"]}
+  ]
+}
