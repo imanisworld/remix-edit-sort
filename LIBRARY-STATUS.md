@@ -2,7 +2,11 @@
 
 Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRARY-LAYOUT.md`, Claude's Oct 15 wrap-up in `CLAUDE-HANDOFF-2026-10-15.md`.
 
-## Now (2026-10-29 22:50 EDT, Grok)
+## Now (2026-10-30 15:35 EDT, Grok)
+
+- **No Vocals – Test crate cleanup** (Imani approved 15:31; crate membership only, no file/tag changes; Serato closed). Removed 45: 26 likely vocal (19 "Clean" pool versions + 7 vocal dubs/mashups), 17 off-style (juke/footwork, techno/acid, peak-energy, UK garage, funk, ballroom, interlude), 2 duplicate Byron the Aquarius copies (kept House/byron_the_aquarius-*). Added Ambassadors Of Swing – Feeling Good (Lucas SmoothTouch Dub) (320k). 129 → 85. Sub-320k tracks were kept on purpose. Backup/undo: `no-vocals-crate-20261030/` (undo.sh, removed-paths.json).
+
+## Earlier (2026-10-29 22:50 EDT, Grok)
 
 - **Glenn Underground – Glennstrumentals 2** (Imani approved 22:47): 3 MP3s (Headed East, Honey Due, Life Into; 320k, 2016) unzipped from ~/Downloads/Local Talk, moved to `House/INSTRUMENTALS/` (mv -n, sha256 verified), Genre → House (intake tool, read back). Appended to `No Vocals – Test` (126 → 129; existing tracks unchanged). Zip + cover.jpg left in Downloads. T5 backup `2026-10-29-glenn/`; logs/undo `new-downloads-20261029/batch-glenn/`.
 - **Rescan:** House/INSTRUMENTALS.
