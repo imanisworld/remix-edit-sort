@@ -2,6 +2,13 @@
 
 Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRARY-LAYOUT.md`, Claude's Oct 15 wrap-up in `CLAUDE-HANDOFF-2026-10-15.md`.
 
+## Now (Oct 30, 7:50 PM EDT, Grok) — new-download fixes (Imani 19:37 "yes and ok fix")
+Serato closed; locks taken and released; backup + undo on T5 `2026-10-30-newdl-fix/` (run/UNDO-README.txt: undo renames/moves first, then the 6 artist/title undo logs).
+- **8 no-folder tracks filed into existing folders (no new folders)** with `mv -n`: Ministry Every Day Is Halloween → Rock/CLEAN/Nu Wave; 2 Funk & Soul (Dirty) → Funk/DIRTY; Drake/Gilla Janice STFU Miami Bass → Bass/miami_bass; 3 Deep House → House (1) and House/REMIXES & EDITS (2); Kyle Davis Will U Forgive Me (Nola Bounce) → New Orleans Bounce.
+- **Tag fixes: 39 approved rows applied.** 15 Artist/Title writes via apply_artist_title_plan.py / mutation_engine (audio + Serato frames unchanged; Troye Sivan WAV already correct), incl. Isaiah Rashad & Doechii – Wat U Sed (Caedit LaMarr) (~/Downloads); 28 filename cleanups (genre/promo text removed) with `mv -n`. 7 rows still need Imani (uploader-handle artists or no artist/title).
+- **Rescan (7:38 PM ask):** 7 more unfiled files found, all HELD: 4 DJ Nativesun Retro Refix (~/Downloads, no genre, 250-274 kbps; GMFU looks like a duplicate of the copy in Downloads 10-29 check), 3 new Sean Dream (genres "almadura"/"soulduro" not known).
+- **Rescan in Serato:** NEW MUSIC DOWNLOADS - MUSIC TO MOVE, Hip Hop, R&b, Electronic, Reggaeton, Juke, DJ Tools, Scratch Beats, break beats, Rock, Funk, Bass, House, New Orleans Bounce.
+
 ## Now (Oct 30, 7:25 PM EDT, Grok) — new downloads filed
 Imani approved 19:12 ("lift the hold and file the ones with clear genres"; DJ Tools to the DJ Tools folder; split album/dated folders by genre). Serato closed; folder locks taken and released.
 - **Genre tags** (via apply_genre_refinement_plan.py / mutation_engine): 76 respelled to canonical (Hip-Hop 71, R&B 5, incl. Nu Disco→Disco) — 68 + 8 over two runs (first run interrupted by a connection drop after 8; recover showed the 9th not started, second run finished it), audio and Serato frames unchanged.
