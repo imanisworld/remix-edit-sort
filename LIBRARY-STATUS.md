@@ -2,7 +2,18 @@
 
 Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRARY-LAYOUT.md`, Claude's Oct 15 wrap-up in `CLAUDE-HANDOFF-2026-10-15.md`.
 
-## Now (2026-10-29 22:20 EDT, Grok)
+## Now (2026-10-29 22:45 EDT, Grok)
+
+- **New Downloads batch (Imani approved 22:28).** Serato closed; T5 backups `/Volumes/T5 EVO/DJ-backups/2026-10-29-downloads-2230/`; mv -n + sha256 verified; logs/undo in `new-downloads-20261029/batch-2230/` (move-log.json, undo-move.sh, at-/intake- undo jsonl).
+  - Atjazz – Fox Tooth (Atjazz Galaxy Aart Dub) → `House/REMIXES & EDITS/House/`; Artist/Title fixed, Genre House, Grouping Remix.
+  - Byron The Aquarius, Brandon Markell Holmes – Baddest Behavior (Dam Swindle Remix) → `House/REMIXES & EDITS/House/`; Artist/Title fixed, Grouping Remix. Identical "(1)" copy → ~/.Trash.
+  - Byron The Aquarius – Baddest Behavior (feat. Brandon Markell Holmes) → `House/`; Artist/Title fixed.
+  - Larry Heard – Missing You (Origin Vrsn) → `House/`; Artist/Title fixed.
+  - Schnecke Linde – mycelium°dub (53-min mix) left in ~/Downloads per Imani.
+- **New crate `Inna Space Pairings`** (18 tracks, 9 song→house pairs; crate only). Backup/undo: `inna-space-pairings-20261029/`. Kerri Chandler – Return 2 Acid is the single match and lives in `Techno/`, not House.
+- **Rescan:** House, House/REMIXES & EDITS/House.
+
+## Earlier (2026-10-29 22:20 EDT, Grok)
 
 - **Last Downloads leftovers** (Imani 22:13). mv -n, sha256 verified, Serato closed. Log/undo: `new-downloads-20261029/move-log-final-2215.json`, `undo-move-final-2215.sh`.
   - DJ GAY-Z – Right Now: **not** a copy (Downloads = 320k, 8.4 MB; library Ballroom copy = 128k; audio differs). Left in ~/Downloads/DJ GAY-Z. The Downloads one is the better-quality file.
