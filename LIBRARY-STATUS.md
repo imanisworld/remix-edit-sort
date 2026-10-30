@@ -8,7 +8,7 @@ Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRAR
   - DJ GAY-Z – Right Now: **not** a copy (Downloads = 320k, 8.4 MB; library Ballroom copy = 128k; audio differs). Left in ~/Downloads/DJ GAY-Z. The Downloads one is the better-quality file.
   - Anita Baker – Caught Up In The Rapture (Dennis Blaze Tech House Remix) .mp4 pair: same audio (all mdat chunks identical). Kept one → `R&b/` root (no Clean/Dirty label); the "(M4A · 160k)" copy → ~/.Trash. Note: a 320k MP3 of the same remix is already in House/REMIXES & EDITS/Tech House.
   - DJ Young Brown – Lil Wayne With You (Pitched Up): from MUSIC TO MOVE/Downloads 10-29 check → MUSIC TO MOVE/_NEEDS CHECK/ (unsorted).
-  - Dennis Blaze – Erotic City (Downloads/Dennis Blaze): still there, awaiting delete (same audio as library copy).
+  - Dennis Blaze – Erotic City duplicate: no longer in ~/Downloads/Dennis Blaze (folder now empty; removed earlier, not by this run).
 - **Rescan:** R&b, NEW MUSIC DOWNLOADS - MUSIC TO MOVE/_NEEDS CHECK.
 
 ## Earlier (2026-10-29 22:15 EDT, Grok)
