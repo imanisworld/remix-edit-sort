@@ -2,7 +2,15 @@
 
 Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRARY-LAYOUT.md`, Claude's Oct 15 wrap-up in `CLAUDE-HANDOFF-2026-10-15.md`.
 
-## Now (2026-10-30 15:35 EDT, Grok)
+## Now (Oct 30, 3:42 PM EDT, Grok)
+Crate restructure built in Subcrates (Serato closed; backup `~/Documents/DJ-library-project-20260825/crate-build-20261030/backup-154203`; undo `crate-build-20261030/undo.sh`).
+- Gig parents with numbered sections + 9 Bench: Spring 75th 10-31 (8 sections, 175 + 15 bench), Halloween S&S 10-31 (4 sections, 83 + 15), Inna Space 11-01 (7 sections, 55 + 15, from v3 paths). Track sets match the old v2/v3 crates exactly.
+- Evergreen: Line Dances 35, Sing-Alongs 32; Crossover Classics (+ 50-70+), Clean Hits, Club Tools are empty placeholders waiting on Imani's picks.
+- Archive: Spring 75th 10-31, Spring 75th 10-31 v2, Halloween S&S 10-31 v2/v3, Inna Space 11-01 v2 (renamed under Archive%%, not deleted).
+- No Vocals – Test: removed the Luther vs Shake It Off mashup intro (85 -> 84).
+- Playable smart crate NOT built: only Genre/Grouping/BPM/Date-added rule codes are confirmed; needs a check in Serato's UI.
+
+## Earlier (2026-10-30 15:35 EDT, Grok)
 
 - **No Vocals – Test crate cleanup** (Imani approved 15:31; crate membership only, no file/tag changes; Serato closed). Removed 45: 26 likely vocal (19 "Clean" pool versions + 7 vocal dubs/mashups), 17 off-style (juke/footwork, techno/acid, peak-energy, UK garage, funk, ballroom, interlude), 2 duplicate Byron the Aquarius copies (kept House/byron_the_aquarius-*). Added Ambassadors Of Swing – Feeling Good (Lucas SmoothTouch Dub) (320k). 129 → 85. Sub-320k tracks were kept on purpose. Backup/undo: `no-vocals-crate-20261030/` (undo.sh, removed-paths.json).
 
