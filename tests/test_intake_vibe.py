@@ -7,10 +7,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from survey_new_music_intake import load_vibe_rules, propose_vibe  # noqa: E402
 
 RULES = {
-    "vibes": ["Bounce", "Sango Swing"],
+    "vibes": ["Bounce", "Bouncy Chill"],
     "rules": [
         {"vibe": "Bounce", "artist_contains": ["Kaytranada"]},
-        {"vibe": "Sango Swing", "artist_contains": ["Sango"]},
+        {"vibe": "Bouncy Chill", "artist_contains": ["Sango"]},
     ],
 }
 
