@@ -2,7 +2,11 @@
 
 Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRARY-LAYOUT.md`, Claude's Oct 15 wrap-up in `CLAUDE-HANDOFF-2026-10-15.md`.
 
-## Now (2026-10-29 18:25 EDT, Grok)
+## Now (2026-10-29 22:15 EDT, Grok)
+
+- **New regular crate "No Vocals – Test"** (Imani approved 22:12, "do the other crate changes while its closed"). 126 tracks: 39 "likely instrumental" (title says Instrumental/Dub/Inst/Beats/Tool) first, then 87 "possible, check by ear" (Byron the Aquarius, Mr Fingers, Kerri Chandler, Frankie Knuckles instrumentals, deep_house folder). Skipped Kaytranada/R&B edits, obvious vocal classics, Lounge, Events. Source `instrumental-house-candidates-20261029.csv`. Crate file only: no file moves/tags, database V2 and master.sqlite untouched, Serato closed. All 126 paths verified on disk. Local Subcrates copy + undo (`undo.sh` removes the new crate) in `no-vocals-crate-20261029/`. Imani: open Serato, listen and prune.
+
+## Earlier (2026-10-29 18:25 EDT, Grok)
 
 - **Tag fixes on the newly filed downloads** (Imani approved 18:07: "Apply all 99 fixes, then I'll rescan"; proposal `new-downloads-20261029/tag-audit/tag-fix-proposals-20261029.csv`). 88 files written via apply_new_music_intake_plan.py (mutation engine): Genre on 65, Grouping terms added on 72 (Clean 52, Edit/Remix from filename). 88/88 read back independently, 0 mismatches. Energy, Year and Artist untouched; database V2 / master.sqlite not touched; Serato closed throughout.
 - Skipped 11 of the 99 rows: 10 had only "Year unknown (needs lookup)" or "confirm by ear" notes (not fixes); 1 .mp4 (dj redtail – Jukin' This Christmas, blank Artist/Title) because no writer supports .mp4.
