@@ -2,7 +2,12 @@
 
 Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRARY-LAYOUT.md`, Claude's Oct 15 wrap-up in `CLAUDE-HANDOFF-2026-10-15.md`.
 
-## Now (2026-10-29 22:45 EDT, Grok)
+## Now (2026-10-29 22:50 EDT, Grok)
+
+- **Glenn Underground – Glennstrumentals 2** (Imani approved 22:47): 3 MP3s (Headed East, Honey Due, Life Into; 320k, 2016) unzipped from ~/Downloads/Local Talk, moved to `House/INSTRUMENTALS/` (mv -n, sha256 verified), Genre → House (intake tool, read back). Appended to `No Vocals – Test` (126 → 129; existing tracks unchanged). Zip + cover.jpg left in Downloads. T5 backup `2026-10-29-glenn/`; logs/undo `new-downloads-20261029/batch-glenn/`.
+- **Rescan:** House/INSTRUMENTALS.
+
+## Earlier (2026-10-29 22:45 EDT, Grok)
 
 - **New Downloads batch (Imani approved 22:28).** Serato closed; T5 backups `/Volumes/T5 EVO/DJ-backups/2026-10-29-downloads-2230/`; mv -n + sha256 verified; logs/undo in `new-downloads-20261029/batch-2230/` (move-log.json, undo-move.sh, at-/intake- undo jsonl).
   - Atjazz – Fox Tooth (Atjazz Galaxy Aart Dub) → `House/REMIXES & EDITS/House/`; Artist/Title fixed, Genre House, Grouping Remix.
