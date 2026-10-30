@@ -9,6 +9,7 @@ Imani approved 19:12 ("lift the hold and file the ones with clear genres"; DJ To
 - **Held 285** for Imani (`held.csv`): unknown genre 148, Clean/Dirty by ear 62, possible duplicate 46, multi-genre "confirm genre" 21, genre with no folder (Deep House, Funk & Soul, Miami Bass, New Wave, Bounce) 8.
 - 45 broken artist/title tags: fixes DRAFTED only, not written.
 - Backup + undo on T5: `/Volumes/T5 EVO/DJ-backups/2026-10-30-newdl-file/` (run/UNDO-README.txt; undo moves first, then genre).
+- **7:33 PM "downloaded a few more"**: 3 new files in ~/Downloads since the 7:11 survey, all HELD, nothing written or moved: Cadeem LaMarr – Wat U Sed (Caedit) (no genre tag; artist/title fix drafted), Bastian Bell – Poetic Justice (Afrobaile) (no genre; likely duplicate of Baile/Bastian Bell, BASTIAN BELL AFROBAILE - POETIC JUSTICE.mp3), Sean Dream – Inevitable (sabor almadura) (genre tag "almadura" not a known genre).
 - **Rescan in Serato:** NEW MUSIC DOWNLOADS - MUSIC TO MOVE, Hip Hop, R&b, Pop, Juke, DJ Tools, Scratch Beats, break beats, Electronic, Reggae, House, Dancehall, Reggaeton, Latin, Afrobeats, Country, Jazz, Disco, Jersey Club, neo soul, Drum & Bass.
 
 ## Now (Oct 30, 3:42 PM EDT, Grok)
