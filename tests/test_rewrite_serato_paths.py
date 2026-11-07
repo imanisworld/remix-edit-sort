@@ -350,6 +350,331 @@ class SeratoRewriteWorkflowTests(unittest.TestCase):
         self.assertEqual(post["rewrite_verification"]["status"], "FAIL")
 
 
+class RawPtrkRewriteTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.serato = self.root / "_Serato_"
+        (self.serato / "Subcrates").mkdir(parents=True)
+        self.alias = "/Users/dj/Music/Ghetto Supastar.mp3"
+        self.canonical = self.alias[1:]
+        (self.serato / "database V2").write_bytes(
+            tlv("vrsn", text("2.0"))
+            + otrk(tlv("pfil", text(self.alias)))
+            + otrk(tlv("pfil", text(self.canonical)))
+        )
+        self.crate = self.serato / "Subcrates" / "fIX BITRATE.crate"
+        self.original_crate = tlv("vrsn", text("1.0")) + b"".join(
+            otrk(tlv("ptrk", text(self.alias))) for _ in range(412)
+        )
+        self.crate.write_bytes(self.original_crate)
+        self.spec = {
+            "rewrites": [
+                {
+                    "crate": "Subcrates/fIX BITRATE.crate",
+                    "record_index": 289,
+                    "outer_record_index": 289,
+                    "field_index": 0,
+                    "from": self.alias,
+                    "to": self.canonical,
+                }
+            ]
+        }
+
+    def make_manifest(self):
+        backup = self.root / "backup"
+        shutil.copytree(self.serato, backup)
+        manifest = backup_manifest.build_manifest(self.serato, backup)
+        self.assertEqual(manifest["status"], "PASS", manifest["problems"])
+        return manifest, backup
+
+    def make_explicit_manifest(self):
+        backup_root = self.root / "explicit-backup-root"
+        backup_root.mkdir()
+        concrete = self.root / "deduped-copy.crate"
+        concrete.write_bytes(self.original_crate)
+        manifest = backup_manifest.build_explicit_paths_manifest(
+            self.serato,
+            backup_root,
+            [
+                {
+                    "path": "Subcrates/fIX BITRATE.crate",
+                    "backup_path": str(concrete),
+                    "backup_mode": "existing-hash-copy",
+                }
+            ],
+        )
+        self.assertEqual(manifest["status"], "PASS", manifest["problems"])
+        return manifest, concrete
+
+    def test_preview_rewrites_one_of_412_duplicates_without_collapsing(self):
+        plan = rewrite.build_raw_ptrk_preview(self.serato, self.spec)
+
+        self.assertEqual(plan["summary"]["crates_changed"], 1)
+        self.assertEqual(plan["summary"]["occurrences_changed"], 1)
+        item = plan["files"][0]
+        self.assertEqual(len(item["source_occurrences"]), 412)
+        self.assertEqual(len(item["proposed_occurrences"]), 412)
+        self.assertEqual(
+            item["proposed_occurrences"][288]["path"], self.canonical
+        )
+        self.assertEqual(
+            sum(
+                occurrence["path"] == self.alias
+                for occurrence in item["proposed_occurrences"]
+            ),
+            411,
+        )
+        change = item["rewrites"][0]
+        self.assertEqual(change["from"], self.alias)
+        self.assertEqual(change["to"], self.canonical)
+        self.assertNotEqual(change["old_ptrk_tlv_hex"], change["new_ptrk_tlv_hex"])
+        self.assertEqual(self.crate.read_bytes(), self.original_crate)
+
+    def test_apply_uses_one_engine_item_and_preserves_database(self):
+        plan = rewrite.build_raw_ptrk_preview(self.serato, self.spec)
+        manifest, backup = self.make_manifest()
+        heartbeat = FakeHeartbeat()
+        database_before = (self.serato / "database V2").read_bytes()
+
+        result = rewrite.apply_raw_ptrk_plan(
+            plan=plan,
+            serato_dir=self.serato,
+            manifest=manifest,
+            heartbeat=heartbeat,
+            journal_path=self.root / "raw-journal.jsonl",
+            post_check_path=self.root / "raw-post-check.json",
+            result_path=self.root / "raw-result.json",
+        )
+
+        self.assertEqual(result["status"], "PASS")
+        self.assertEqual(result["crates_changed"], 1)
+        self.assertEqual(result["occurrences_changed"], 1)
+        self.assertEqual(heartbeat.beats, 1)
+        occurrences = checker.parse_crate_occurrences(self.crate)
+        self.assertEqual(len(occurrences), 412)
+        self.assertEqual(
+            sum(item["path"] == self.canonical for item in occurrences), 1
+        )
+        self.assertEqual(
+            (self.serato / "database V2").read_bytes(), database_before
+        )
+        self.assertEqual(
+            (backup / "Subcrates" / "fIX BITRATE.crate").read_bytes(),
+            self.original_crate,
+        )
+
+    def test_post_check_failure_rolls_crate_back(self):
+        plan = rewrite.build_raw_ptrk_preview(self.serato, self.spec)
+        manifest, concrete = self.make_explicit_manifest()
+
+        with mock.patch.object(
+            rewrite,
+            "raw_ptrk_post_check",
+            side_effect=rewrite.SeratoRewriteError("synthetic raw failure"),
+        ):
+            with self.assertRaises(rewrite.SeratoRewriteError):
+                rewrite.apply_raw_ptrk_plan(
+                    plan=plan,
+                    serato_dir=self.serato,
+                    manifest=manifest,
+                    heartbeat=FakeHeartbeat(),
+                    journal_path=self.root / "rollback-journal.jsonl",
+                    post_check_path=self.root / "rollback-post-check.json",
+                    result_path=self.root / "rollback-result.json",
+                )
+
+        self.assertEqual(self.crate.read_bytes(), self.original_crate)
+        self.assertEqual(concrete.read_bytes(), self.original_crate)
+        result = json.loads(
+            (self.root / "rollback-result.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(result["status"], "ROLLED_BACK")
+
+    def test_item_rollback_failure_is_reported_partial(self):
+        plan = rewrite.build_raw_ptrk_preview(self.serato, self.spec)
+        manifest, _ = self.make_manifest()
+        source_occurrences = plan["files"][0]["source_occurrences"]
+        expected_occurrences = plan["files"][0]["proposed_occurrences"]
+
+        with (
+            mock.patch.object(
+                rewrite,
+                "path_occurrence_manifest",
+                side_effect=[
+                    source_occurrences,
+                    expected_occurrences,
+                    expected_occurrences,
+                    RuntimeError("synthetic verification failure"),
+                ],
+            ),
+            mock.patch.object(
+                mutation_engine,
+                "restore_from_backup",
+                side_effect=OSError("synthetic restore failure"),
+            ),
+        ):
+            with self.assertRaisesRegex(
+                rewrite.SeratoRewriteError, "PARTIAL"
+            ):
+                rewrite.apply_raw_ptrk_plan(
+                    plan=plan,
+                    serato_dir=self.serato,
+                    manifest=manifest,
+                    heartbeat=FakeHeartbeat(),
+                    journal_path=self.root / "partial-journal.jsonl",
+                    post_check_path=self.root / "partial-post-check.json",
+                    result_path=self.root / "partial-result.json",
+                )
+
+        result = json.loads(
+            (self.root / "partial-result.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(result["status"], "PARTIAL")
+        self.assertEqual(
+            result["crates_left_rewritten"],
+            ["Subcrates/fIX BITRATE.crate"],
+        )
+
+    def test_completion_journal_failure_is_reported_partial(self):
+        plan = rewrite.build_raw_ptrk_preview(self.serato, self.spec)
+        manifest, _ = self.make_manifest()
+        original_append = mutation_engine.RecoveryJournal.append
+
+        def fail_completion(journal, record):
+            if record.get("type") == "completed":
+                raise OSError("synthetic completion WAL failure")
+            return original_append(journal, record)
+
+        with mock.patch.object(
+            mutation_engine.RecoveryJournal,
+            "append",
+            autospec=True,
+            side_effect=fail_completion,
+        ):
+            with self.assertRaisesRegex(
+                rewrite.SeratoRewriteError, "PARTIAL"
+            ):
+                rewrite.apply_raw_ptrk_plan(
+                    plan=plan,
+                    serato_dir=self.serato,
+                    manifest=manifest,
+                    heartbeat=FakeHeartbeat(),
+                    journal_path=self.root / "wal-failure-journal.jsonl",
+                    post_check_path=self.root / "wal-failure-post.json",
+                    result_path=self.root / "wal-failure-result.json",
+                )
+
+        result = json.loads(
+            (self.root / "wal-failure-result.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(result["status"], "PARTIAL")
+        self.assertEqual(
+            result["crates_left_rewritten"],
+            ["Subcrates/fIX BITRATE.crate"],
+        )
+
+    def test_noop_and_non_leading_slash_only_changes_are_refused(self):
+        for old, new in (
+            (self.canonical, self.canonical),
+            (self.canonical, "Users/dj/Music/Other.mp3"),
+            (self.alias, "Users/dj/Music/Other.mp3"),
+            ("//" + self.canonical, self.canonical),
+        ):
+            spec = {
+                "rewrites": [
+                    {
+                        **self.spec["rewrites"][0],
+                        "from": old,
+                        "to": new,
+                    }
+                ]
+            }
+            with self.subTest(old=old, new=new):
+                with self.assertRaisesRegex(
+                    rewrite.SeratoRewriteError, "one leading slash"
+                ):
+                    rewrite.normalize_raw_ptrk_spec(spec)
+
+    def test_occurrence_mismatch_and_hash_drift_are_refused(self):
+        mismatched = json.loads(json.dumps(self.spec))
+        mismatched["rewrites"][0]["record_index"] = 288
+        with self.assertRaisesRegex(
+            rewrite.SeratoRewriteError, "do not match"
+        ):
+            rewrite.build_raw_ptrk_preview(self.serato, mismatched)
+
+        plan = rewrite.build_raw_ptrk_preview(self.serato, self.spec)
+        self.crate.write_bytes(self.original_crate + tlv("vrsn", text("drift")))
+        manifest, _ = self.make_manifest()
+        with self.assertRaisesRegex(
+            rewrite.SeratoRewriteError, "changed since preview"
+        ):
+            rewrite.apply_raw_ptrk_plan(
+                plan=plan,
+                serato_dir=self.serato,
+                manifest=manifest,
+                heartbeat=FakeHeartbeat(),
+                journal_path=self.root / "drift-journal.jsonl",
+                post_check_path=self.root / "drift-post-check.json",
+                result_path=self.root / "drift-result.json",
+            )
+
+    def test_serialized_plan_tampering_is_refused(self):
+        plan = rewrite.build_raw_ptrk_preview(self.serato, self.spec)
+        plan_path = self.root / "raw-plan.json"
+        rewrite.write_json(plan_path, plan)
+        rewrite.load_and_validate_raw_ptrk_plan(plan_path, self.serato)
+
+        variants = []
+        missing_file = json.loads(json.dumps(plan))
+        missing_file["files"] = []
+        variants.append(missing_file)
+        changed_tlv = json.loads(json.dumps(plan))
+        changed_tlv["files"][0]["rewrites"][0]["old_ptrk_tlv_hex"] = "00"
+        variants.append(changed_tlv)
+        changed_summary = json.loads(json.dumps(plan))
+        changed_summary["summary"]["occurrences_changed"] = 2
+        variants.append(changed_summary)
+        missing_rewrite = json.loads(json.dumps(plan))
+        missing_rewrite["rewrites"] = []
+        variants.append(missing_rewrite)
+
+        for index, variant in enumerate(variants):
+            with self.subTest(index=index):
+                rewrite.write_json(plan_path, variant)
+                with self.assertRaises(rewrite.SeratoRewriteError):
+                    rewrite.load_and_validate_raw_ptrk_plan(
+                        plan_path, self.serato
+                    )
+
+    def test_apply_boundary_refuses_approval_field_tampering(self):
+        plan = rewrite.build_raw_ptrk_preview(self.serato, self.spec)
+        manifest, _ = self.make_manifest()
+        for field, value in (
+            ("mode", "apply"),
+            ("approval_required", False),
+        ):
+            tampered = json.loads(json.dumps(plan))
+            tampered[field] = value
+            with self.subTest(field=field):
+                with self.assertRaisesRegex(
+                    rewrite.SeratoRewriteError, "type/version/mode"
+                ):
+                    rewrite.apply_raw_ptrk_plan(
+                        plan=tampered,
+                        serato_dir=self.serato,
+                        manifest=manifest,
+                        heartbeat=FakeHeartbeat(),
+                        journal_path=self.root / f"{field}-journal.jsonl",
+                        post_check_path=self.root / f"{field}-post.json",
+                        result_path=self.root / f"{field}-result.json",
+                    )
+
+
 class SeratoClosedGuardTests(unittest.TestCase):
     def test_only_a_serato_app_bundle_executable_counts_as_running(self):
         listing = [
