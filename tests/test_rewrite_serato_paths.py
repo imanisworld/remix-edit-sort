@@ -151,8 +151,29 @@ class SeratoRewriteWorkflowTests(unittest.TestCase):
         self.assertEqual(plan["summary"]["crate_references_changed"], 1)
         self.assertEqual(plan["files"][0]["rewrites"][0]["from"], self.old_stored)
         self.assertEqual(plan["files"][0]["rewrites"][0]["to"], self.new_stored)
+        self.assertEqual(plan["database_record_manifest"]["source_record_count"], 2)
+        self.assertEqual(plan["database_record_manifest"]["proposed_record_count"], 2)
+        self.assertEqual(
+            [record["record_index"] for record in plan["database_record_manifest"]["proposed_records"]],
+            [1, 2],
+        )
         self.assertEqual((self.serato / "database V2").read_bytes(), self.original_database)
         self.assertEqual((self.serato / "Subcrates" / "Set.crate").read_bytes(), self.original_crate)
+
+    def test_crates_only_preview_tolerates_untouched_database_alias_record(self):
+        database = self.serato / "database V2"
+        alias = "/" + str(self.library / "Alias.mp3").lstrip("/")
+        database.write_bytes(
+            database.read_bytes() + otrk(tlv("pfil", text(alias)))
+        )
+
+        plan = rewrite.build_preview(self.serato, self.rules, crates_only=True)
+
+        self.assertTrue(plan["crates_only"])
+        self.assertEqual(
+            plan["database_record_manifest"]["source_records"][-1]["paths"][0]["path"],
+            alias,
+        )
 
     def test_plan_validation_refuses_new_or_changed_crates(self):
         _, plan_path = self.write_plan()
@@ -205,6 +226,10 @@ class SeratoRewriteWorkflowTests(unittest.TestCase):
         post = json.loads(post_check.read_text(encoding="utf-8"))
         self.assertEqual(post["rewrite_verification"]["status"], "PASS")
         self.assertEqual(post["rewrite_verification"]["unresolved_rewritten_targets"], [])
+        self.assertEqual(post["database_record_preservation"]["status"], "PASS")
+        self.assertEqual(post["database_record_preservation"]["record_count"], 2)
+        self.assertEqual(post["canonical_crate_occurrences"]["status"], "PASS")
+        self.assertEqual(post["canonical_crate_occurrences"]["verified_count"], 1)
         self.assertTrue(mutation_engine.recover(journal)["clean"])
         self.assertEqual(json.loads(result_path.read_text(encoding="utf-8"))["status"], "PASS")
 
@@ -232,6 +257,35 @@ class SeratoRewriteWorkflowTests(unittest.TestCase):
         recovery = mutation_engine.recover(journal)
         self.assertTrue(recovery["clean"], recovery)
 
+    def test_post_check_exception_is_written_before_rollback(self):
+        plan, _ = self.write_plan()
+        manifest, _ = self.make_manifest()
+        post_check = self.root / "failed-post-check.json"
+        result_path = self.root / "failed-result.json"
+
+        with mock.patch.object(
+            rewrite,
+            "run_post_check",
+            side_effect=SystemExit("synthetic post-check failure"),
+        ):
+            with self.assertRaises(rewrite.SeratoRewriteError):
+                rewrite.apply_rewrite_plan(
+                    plan=plan,
+                    serato_dir=self.serato,
+                    library_root=self.library,
+                    manifest=manifest,
+                    heartbeat=FakeHeartbeat(),
+                    journal_path=self.root / "post-failure-recovery.jsonl",
+                    post_check_path=post_check,
+                    result_path=result_path,
+                )
+
+        evidence = json.loads(post_check.read_text(encoding="utf-8"))
+        self.assertEqual(evidence["status"], "FAIL")
+        self.assertIn("synthetic post-check failure", evidence["error"])
+        self.assertEqual((self.serato / "database V2").read_bytes(), self.original_database)
+        self.assertEqual((self.serato / "Subcrates" / "Set.crate").read_bytes(), self.original_crate)
+
     def test_post_check_detects_non_path_serato_drift(self):
         plan, _ = self.write_plan()
         for item in plan["files"]:
@@ -246,6 +300,53 @@ class SeratoRewriteWorkflowTests(unittest.TestCase):
         post = rewrite.run_post_check(self.serato, self.library, plan)
         self.assertEqual(post["source_integrity"]["status"], "FAIL")
         self.assertEqual(post["source_integrity"]["hash_mismatch"], ["database V2"])
+        self.assertEqual(post["rewrite_verification"]["status"], "FAIL")
+
+    def test_post_check_detects_collapsed_database_record(self):
+        plan, _ = self.write_plan()
+        for item in plan["files"]:
+            source = self.serato / item["path"]
+            proposed, _ = rewrite.rewrite_serato_bytes(
+                source.read_bytes(), item["path"], plan["renames"]
+            )
+            source.write_bytes(proposed)
+        database = self.serato / "database V2"
+        records = rewrite.parse_tlv_strict(database.read_bytes(), "database V2")
+        database.write_bytes(
+            b"".join(rewrite.encode_tlv(tag, value) for tag, value in records[:-1])
+        )
+
+        post = rewrite.run_post_check(self.serato, self.library, plan)
+
+        preservation = post["database_record_preservation"]
+        self.assertEqual(preservation["status"], "FAIL")
+        self.assertEqual(preservation["expected_record_count"], 2)
+        self.assertEqual(preservation["record_count"], 1)
+        self.assertEqual(post["rewrite_verification"]["status"], "FAIL")
+
+    def test_post_check_rejects_noncanonical_pointer_left_in_changed_crate(self):
+        crate_path = self.serato / "Subcrates" / "Set.crate"
+        alias = "/" + self.new_stored
+        plan = rewrite.build_preview(self.serato, self.rules)
+        for item in plan["files"]:
+            source = self.serato / item["path"]
+            proposed, _ = rewrite.rewrite_serato_bytes(
+                source.read_bytes(), item["path"], plan["renames"]
+            )
+            source.write_bytes(proposed)
+        crate_path.write_bytes(
+            crate_path.read_bytes() + otrk(tlv("ptrk", text(alias)))
+        )
+
+        post = rewrite.run_post_check(self.serato, self.library, plan)
+
+        crate_check = post["canonical_crate_occurrences"]
+        self.assertEqual(crate_check["status"], "FAIL")
+        self.assertEqual(len(crate_check["noncanonical_occurrences"]), 1)
+        self.assertEqual(
+            crate_check["noncanonical_occurrences"][0]["path"],
+            alias,
+        )
         self.assertEqual(post["rewrite_verification"]["status"], "FAIL")
 
 

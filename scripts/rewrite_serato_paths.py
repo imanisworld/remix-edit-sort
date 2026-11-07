@@ -45,7 +45,7 @@ import lock_guard
 import mutation_engine
 
 PLAN_TYPE = "serato-path-rewrite"
-PLAN_VERSION = 1
+PLAN_VERSION = 2
 DATABASE_NAME = "database V2"
 CRATE_GLOB = "Subcrates/**/*.crate"
 SMART_CRATE_GLOB = "SmartCrates/**/*.scrate"
@@ -306,7 +306,12 @@ def encode_tlv(tag: str, value: bytes) -> bytes:
     return tag.encode("ascii") + struct.pack(">I", len(value)) + value
 
 
-def _decode_path_value(value: bytes, context: str) -> tuple[str, str]:
+def _decode_path_value(
+    value: bytes,
+    context: str,
+    *,
+    allow_noncanonical: bool = False,
+) -> tuple[str, str]:
     if len(value) % 2:
         raise SeratoRewriteError(f"{context}: UTF-16BE path has an odd byte length")
     try:
@@ -318,7 +323,7 @@ def _decode_path_value(value: bytes, context: str) -> tuple[str, str]:
     terminator = "\x00" * terminator_length
     if not path:
         raise SeratoRewriteError(f"{context}: empty Serato path")
-    if path.startswith("/"):
+    if path.startswith("/") and not allow_noncanonical:
         raise SeratoRewriteError(
             f"{context}: stored path unexpectedly has a leading slash: {path!r}"
         )
@@ -454,6 +459,77 @@ def database_collisions(data: bytes, changes: list[dict]) -> list[str]:
     return sorted(set(collisions))
 
 
+def database_record_manifest(data: bytes) -> dict:
+    """Ordered V2 record identities, including duplicate ``pfil`` records."""
+    records = []
+    record_index = 0
+    for outer_record_index, (tag, value) in enumerate(
+        parse_tlv_strict(data, DATABASE_NAME)
+    ):
+        if tag != "otrk":
+            continue
+        record_index += 1
+        inner = parse_tlv_strict(
+            value, f"{DATABASE_NAME}:otrk[{record_index}]"
+        )
+        paths = []
+        non_path_fields = []
+        for field_index, (inner_tag, inner_value) in enumerate(inner):
+            if inner_tag == "pfil":
+                path, _ = _decode_path_value(
+                    inner_value,
+                    f"{DATABASE_NAME}:otrk[{record_index}].pfil",
+                    allow_noncanonical=True,
+                )
+                paths.append({"field_index": field_index, "path": path})
+            else:
+                non_path_fields.append(encode_tlv(inner_tag, inner_value))
+        records.append(
+            {
+                "record_index": record_index,
+                "outer_record_index": outer_record_index,
+                "paths": paths,
+                "non_path_identity_sha256": sha256_bytes(
+                    b"".join(non_path_fields)
+                ),
+            }
+        )
+    return {"record_count": len(records), "records": records}
+
+
+def path_occurrence_manifest(data: bytes, relative_path: str) -> list[dict]:
+    """Ordered path fields in one database/crate binary."""
+    target_field = _field_for(relative_path)
+    occurrences = []
+    record_index = 0
+    for outer_record_index, (tag, value) in enumerate(
+        parse_tlv_strict(data, relative_path)
+    ):
+        if tag != "otrk":
+            continue
+        record_index += 1
+        for field_index, (inner_tag, inner_value) in enumerate(
+            parse_tlv_strict(
+                value, f"{relative_path}:otrk[{record_index}]"
+            )
+        ):
+            if inner_tag != target_field:
+                continue
+            stored_path, _ = _decode_path_value(
+                inner_value,
+                f"{relative_path}:otrk[{record_index}].{target_field}",
+            )
+            occurrences.append(
+                {
+                    "record_index": record_index,
+                    "outer_record_index": outer_record_index,
+                    "field_index": field_index,
+                    "path": stored_path,
+                }
+            )
+    return occurrences
+
+
 def build_preview(serato_dir: Path, rules: list[dict], *, crates_only: bool = False) -> dict:
     """Build a read-only plan bound to every database/crate source hash.
 
@@ -464,6 +540,7 @@ def build_preview(serato_dir: Path, rules: list[dict], *, crates_only: bool = Fa
     serato_dir = Path(serato_dir).resolve()
     inventory = []
     changed_files = []
+    database_manifest = None
     rule_counts: Counter[int] = Counter()
     field_counts: Counter[str] = Counter()
 
@@ -482,6 +559,39 @@ def build_preview(serato_dir: Path, rules: list[dict], *, crates_only: bool = Fa
                     "(prune the stale twins instead, or preview with --crates-only): "
                     + ", ".join(repr(path) for path in collisions[:5])
                 )
+        if relative == DATABASE_NAME:
+            source_manifest = database_record_manifest(original)
+            proposed_manifest = database_record_manifest(rewritten)
+            source_identities = [
+                (
+                    record["record_index"],
+                    record["outer_record_index"],
+                    record["non_path_identity_sha256"],
+                )
+                for record in source_manifest["records"]
+            ]
+            proposed_identities = [
+                (
+                    record["record_index"],
+                    record["outer_record_index"],
+                    record["non_path_identity_sha256"],
+                )
+                for record in proposed_manifest["records"]
+            ]
+            if (
+                source_manifest["record_count"]
+                != proposed_manifest["record_count"]
+                or source_identities != proposed_identities
+            ):
+                raise SeratoRewriteError(
+                    "database V2 rewrite changed record count or non-path identity"
+                )
+            database_manifest = {
+                "source_record_count": source_manifest["record_count"],
+                "proposed_record_count": proposed_manifest["record_count"],
+                "source_records": source_manifest["records"],
+                "proposed_records": proposed_manifest["records"],
+            }
         inventory.append({
             "path": relative,
             "bytes": len(original),
@@ -492,14 +602,22 @@ def build_preview(serato_dir: Path, rules: list[dict], *, crates_only: bool = Fa
         for change in changes:
             rule_counts[change["rule_source_index"]] += 1
             field_counts[change["field"]] += 1
-        changed_files.append({
+        changed_file = {
             "path": relative,
             "source_sha256": sha256_bytes(original),
             "proposed_sha256": sha256_bytes(rewritten),
             "source_bytes": len(original),
             "proposed_bytes": len(rewritten),
             "rewrites": changes,
-        })
+        }
+        if relative != DATABASE_NAME:
+            changed_file["source_path_occurrences"] = path_occurrence_manifest(
+                original, relative
+            )
+            changed_file["proposed_path_occurrences"] = path_occurrence_manifest(
+                rewritten, relative
+            )
+        changed_files.append(changed_file)
 
     normalized_rules = [dict(rule) for rule in rules]
     used = set(rule_counts)
@@ -537,6 +655,7 @@ def build_preview(serato_dir: Path, rules: list[dict], *, crates_only: bool = Fa
         "serato_dir": str(serato_dir),
         "rename_map_sha256": sha256_bytes(_canonical_json(normalized_rules)),
         "renames": normalized_rules,
+        "database_record_manifest": database_manifest,
         "source_inventory": inventory,
         "files": changed_files,
         "summary": summary,
@@ -616,7 +735,14 @@ def load_and_validate_plan(
     # changed AND unchanged crates, exact occurrence diffs, proposed hashes,
     # and summary counts rather than trusting editable plan fields.
     rebuilt = build_preview(serato_dir, rules, crates_only=bool(plan.get("crates_only")))
-    for field in ("renames", "rename_map_sha256", "source_inventory", "files", "summary"):
+    for field in (
+        "renames",
+        "rename_map_sha256",
+        "database_record_manifest",
+        "source_inventory",
+        "files",
+        "summary",
+    ):
         if rebuilt[field] != plan.get(field):
             raise SeratoRewriteError(
                 f"plan field {field!r} no longer matches current Serato sources; rebuild preview"
@@ -692,7 +818,11 @@ def _all_stored_paths(serato_dir: Path, *, include_database: bool = True) -> lis
                 continue
             for inner_tag, inner_value in parse_tlv_strict(value, f"{relative}:otrk"):
                 if inner_tag == target_field:
-                    stored, _ = _decode_path_value(inner_value, f"{relative}:{target_field}")
+                    stored, _ = _decode_path_value(
+                        inner_value,
+                        f"{relative}:{target_field}",
+                        allow_noncanonical=True,
+                    )
                     paths.append(stored)
     return paths
 
@@ -745,6 +875,93 @@ def run_post_check(
             "PASS" if not added_sources and not removed_sources and not changed_sources else "FAIL"
         ),
     }
+    current_database_manifest = database_record_manifest(
+        (serato_dir / DATABASE_NAME).read_bytes()
+    )
+    expected_database_manifest = plan["database_record_manifest"]
+    expected_records = expected_database_manifest["proposed_records"]
+    current_records = current_database_manifest["records"]
+    database_record_preservation = {
+        "expected_record_count": expected_database_manifest[
+            "proposed_record_count"
+        ],
+        "record_count": current_database_manifest["record_count"],
+        "identity_or_path_mismatches": [
+            {
+                "position": position,
+                "expected": expected,
+                "actual": actual,
+            }
+            for position, (expected, actual) in enumerate(
+                zip(expected_records, current_records), start=1
+            )
+            if expected != actual
+        ],
+    }
+    if len(expected_records) != len(current_records):
+        database_record_preservation["unpaired_expected_records"] = (
+            expected_records[len(current_records):]
+        )
+        database_record_preservation["unpaired_actual_records"] = (
+            current_records[len(expected_records):]
+        )
+    database_record_preservation["status"] = (
+        "PASS"
+        if (
+            database_record_preservation["expected_record_count"]
+            == database_record_preservation["record_count"]
+            and not database_record_preservation["identity_or_path_mismatches"]
+        )
+        else "FAIL"
+    )
+
+    changed_crates = [
+        item
+        for item in plan["files"]
+        if item["path"] != DATABASE_NAME
+    ]
+    crate_mismatches = []
+    noncanonical_occurrences = []
+    verified_count = 0
+    for item in changed_crates:
+        crate_path = serato_dir / item["path"]
+        actual = [
+            {
+                "record_index": occurrence["record_index"],
+                "outer_record_index": occurrence["outer_record_index"],
+                "field_index": occurrence["ptrk_field_index"],
+                "path": occurrence["path"],
+            }
+            for occurrence in check_serato_crate_paths.parse_crate_occurrences(
+                crate_path
+            )
+        ]
+        expected = item["proposed_path_occurrences"]
+        verified_count += len(expected)
+        if actual != expected:
+            crate_mismatches.append(
+                {
+                    "path": item["path"],
+                    "expected_occurrences": expected,
+                    "actual_occurrences": actual,
+                }
+            )
+        for occurrence in actual:
+            if occurrence["path"] != occurrence["path"].lstrip("/"):
+                noncanonical_occurrences.append(
+                    {"crate_file": item["path"], **occurrence}
+                )
+    canonical_crate_occurrences = {
+        "changed_crate_count": len(changed_crates),
+        "verified_count": verified_count,
+        "occurrence_mismatches": crate_mismatches,
+        "noncanonical_occurrences": noncanonical_occurrences,
+        "status": (
+            "PASS"
+            if not crate_mismatches and not noncanonical_occurrences
+            else "FAIL"
+        ),
+    }
     used_rules = {
         change["rule_source_index"]
         for item in plan["files"] for change in item["rewrites"]
@@ -764,6 +981,8 @@ def run_post_check(
                 and not nonliteral_directories
                 and not remaining_mapped_sources
                 and source_integrity["status"] == "PASS"
+                and database_record_preservation["status"] == "PASS"
+                and canonical_crate_occurrences["status"] == "PASS"
             )
             else "FAIL"
         ),
@@ -771,6 +990,8 @@ def run_post_check(
     return {
         "checker": audit,
         "source_integrity": source_integrity,
+        "database_record_preservation": database_record_preservation,
+        "canonical_crate_occurrences": canonical_crate_occurrences,
         "rewrite_verification": rewrite_verification,
     }
 
@@ -906,7 +1127,20 @@ def apply_rewrite_plan(
     completed = []
     try:
         _apply_prepared(engine, prepared, manifest, plan, completed)
-        post_check = run_post_check(serato_dir, library_root, plan)
+        try:
+            post_check = run_post_check(serato_dir, library_root, plan)
+        except BaseException as post_check_error:
+            write_json(
+                post_check_path,
+                {
+                    "status": "FAIL",
+                    "error": (
+                        f"{type(post_check_error).__name__}: "
+                        f"{post_check_error}"
+                    ),
+                },
+            )
+            raise
         write_json(post_check_path, post_check)
         if post_check["rewrite_verification"]["status"] != "PASS":
             raise SeratoRewriteError(f"Serato post-check failed; inspect {post_check_path}")

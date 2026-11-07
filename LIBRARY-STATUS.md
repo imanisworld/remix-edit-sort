@@ -2,6 +2,13 @@
 
 Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRARY-LAYOUT.md`, Claude's Oct 15 wrap-up in `CLAUDE-HANDOFF-2026-10-15.md`.
 
+## Now (Nov 7, 2026, Cursor cloud) — duplicate-aware Serato validation
+
+- **Code only; no live library or Serato data touched.** `check_serato_crate_paths.py` now preserves every ordered `pfil`/`ptrk` occurrence, reports exact and logical alias groups, duplicate cardinality, noncanonical crate pointers, and sparse-alias references.
+- Added read-only `audit_serato_metadata_parity.py`: immutable/query-only SQLite inspection with sidecar/drift refusal, occurrence-level crate ↔ every V2 record ↔ every master/root asset row ↔ file Artist/Title/BPM/bitrate comparison, and explicit missing/invalid counterpart evidence. It contains no writer.
+- `rewrite_serato_paths.py` plan/post-checks now pin database V2 record count, ordered path occurrences, and non-path identity; verify every occurrence in each changed crate against the exact proposed canonical manifest; reject surviving/reappearing aliases; and persist post-check failure evidence before rollback.
+- Focused tests cover sparse leading-slash aliases, duplicate records, multiple path fields in one record, metadata/bitrate parity, immutable SQLite sidecars and source drift, canonical crate occurrences, record collapse, rollback evidence, and UTF-16 path terminators.
+
 ## Now (Oct 30, 7:50 PM EDT, Grok) — new-download fixes (Imani 19:37 "yes and ok fix")
 Serato closed; locks taken and released; backup + undo on T5 `2026-10-30-newdl-fix/` (run/UNDO-README.txt: undo renames/moves first, then the 6 artist/title undo logs).
 - **8 no-folder tracks filed into existing folders (no new folders)** with `mv -n`: Ministry Every Day Is Halloween → Rock/CLEAN/Nu Wave; 2 Funk & Soul (Dirty) → Funk/DIRTY; Drake/Gilla Janice STFU Miami Bass → Bass/miami_bass; 3 Deep House → House (1) and House/REMIXES & EDITS (2); Kyle Davis Will U Forgive Me (Nola Bounce) → New Orleans Bounce.

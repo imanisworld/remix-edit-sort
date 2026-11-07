@@ -44,7 +44,7 @@ import argparse
 import json
 import struct
 import sys
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 
 DEFAULT_SERATO_DIR = Path("/Users/djb.a.e/Music/_Serato_")
@@ -77,37 +77,102 @@ def decode_text(value: bytes) -> str:
     return value.decode("utf-16-be", errors="replace")
 
 
+def decode_stored_path(value: bytes) -> tuple[str, int]:
+    decoded = decode_text(value)
+    terminator_length = len(decoded) - len(decoded.rstrip("\x00"))
+    path = decoded[:-terminator_length] if terminator_length else decoded
+    return path, terminator_length
+
+
+DATABASE_METADATA_FIELDS = {
+    "tsng": "title",
+    "tart": "artist",
+    "tgen": "genre",
+    "tbpm": "bpm",
+    "tbit": "bitrate",
+}
+
+
+def logical_path(serato_path: str) -> str:
+    """Identity used only to relate leading-slash aliases to canonical paths."""
+    return serato_path.lstrip("/")
+
+
 def parse_database(path: Path) -> list[dict]:
-    """Every `otrk` record in database V2, as {path, title, artist, genre}."""
+    """Every ordered `otrk`/`pfil` occurrence in database V2."""
     data = path.read_bytes()
     tracks = []
-    for tag, value in parse_tlv(data):
+    record_index = 0
+    for outer_record_index, (tag, value) in enumerate(parse_tlv(data)):
         if tag != "otrk":
             continue
-        fields = {t: v for t, v in parse_tlv(value)}
-        pfil = fields.get("pfil")
-        if pfil is None:
+        record_index += 1
+        fields = parse_tlv(value)
+        path_fields = [
+            (field_index, field_value)
+            for field_index, (field_tag, field_value) in enumerate(fields)
+            if field_tag == "pfil"
+        ]
+        if not path_fields:
             continue
-        tracks.append({
-            "path": decode_text(pfil),
-            "title": decode_text(fields["tsng"]) if "tsng" in fields else None,
-            "artist": decode_text(fields["tart"]) if "tart" in fields else None,
-            "genre": decode_text(fields["tgen"]) if "tgen" in fields else None,
-        })
+        decoded_fields = {
+            DATABASE_METADATA_FIELDS[field_tag]: decode_text(field_value)
+            for field_tag, field_value in fields
+            if field_tag in DATABASE_METADATA_FIELDS
+        }
+        metadata = {
+            name: decoded_fields.get(name)
+            for name in DATABASE_METADATA_FIELDS.values()
+        }
+        for field_index, field_value in path_fields:
+            stored_path, terminator_length = decode_stored_path(field_value)
+            tracks.append(
+                {
+                    "record_index": record_index,
+                    "outer_record_index": outer_record_index,
+                    "pfil_field_index": field_index,
+                    "path_terminator_length": terminator_length,
+                    "path": stored_path,
+                    "logical_path": logical_path(stored_path),
+                    "is_canonical_path": stored_path == logical_path(stored_path),
+                    **metadata,
+                    "metadata_populated_count": sum(
+                        value not in (None, "") for value in metadata.values()
+                    ),
+                }
+            )
     return tracks
+
+
+def parse_crate_occurrences(path: Path) -> list[dict]:
+    """Every ordered `otrk`/`ptrk` occurrence in one crate file."""
+    data = path.read_bytes()
+    occurrences = []
+    record_index = 0
+    for outer_record_index, (tag, value) in enumerate(parse_tlv(data)):
+        if tag != "otrk":
+            continue
+        record_index += 1
+        for field_index, (inner_tag, inner_value) in enumerate(parse_tlv(value)):
+            if inner_tag == "ptrk":
+                stored_path, terminator_length = decode_stored_path(inner_value)
+                occurrences.append(
+                    {
+                        "record_index": record_index,
+                        "outer_record_index": outer_record_index,
+                        "ptrk_field_index": field_index,
+                        "path_terminator_length": terminator_length,
+                        "path": stored_path,
+                        "logical_path": logical_path(stored_path),
+                        "is_canonical_path": stored_path == logical_path(stored_path),
+                    }
+                )
+    return occurrences
 
 
 def parse_crate(path: Path) -> list[str]:
     """Every `ptrk` path referenced by one .crate file."""
-    data = path.read_bytes()
-    paths = []
-    for tag, value in parse_tlv(data):
-        if tag != "otrk":
-            continue
-        for inner_tag, inner_value in parse_tlv(value):
-            if inner_tag == "ptrk":
-                paths.append(decode_text(inner_value))
-    return paths
+    return [item["path"] for item in parse_crate_occurrences(path)]
 
 
 def resolve(serato_path: str) -> Path:
@@ -137,42 +202,84 @@ def audit(serato_dir: Path, library_root: Path) -> dict:
 
     db_tracks = parse_database(db_path)
     crate_paths: dict[str, list[str]] = {}
+    crate_occurrences = []
     for folder, pattern, prefix in (("Subcrates", "*.crate", ""), ("SmartCrates", "*.scrate", "smart:")):
         crates_dir = serato_dir / folder
         if not crates_dir.is_dir():
             continue
         for crate_file in sorted(crates_dir.rglob(pattern)):
             name = str(crate_file.relative_to(crates_dir).with_suffix(""))
-            crate_paths[prefix + name] = parse_crate(crate_file)
+            crate_name = prefix + name
+            occurrences = parse_crate_occurrences(crate_file)
+            for occurrence in occurrences:
+                crate_occurrences.append(
+                    {
+                        **occurrence,
+                        "crate": crate_name,
+                        "crate_file": str(crate_file),
+                    }
+                )
+            crate_paths[crate_name] = [item["path"] for item in occurrences]
 
     filename_index = build_filename_index(library_root)
 
-    # One record per unique referenced path, noting every crate (if any)
-    # that also references it, so a broken crate entry is traceable.
-    by_path: dict[str, dict] = {}
+    database_by_path: dict[str, list[dict]] = defaultdict(list)
     for track in db_tracks:
-        by_path[track["path"]] = {
-            "path": track["path"],
-            "title": track["title"],
-            "artist": track["artist"],
-            "genre": track["genre"],
-            "in_database": True,
-            "crates": [],
-        }
-    for crate_name, paths in crate_paths.items():
-        for path_str in paths:
-            entry = by_path.setdefault(path_str, {
-                "path": path_str, "title": None, "artist": None, "genre": None,
-                "in_database": False, "crates": [],
-            })
-            entry["crates"].append(crate_name)
+        database_by_path[track["path"]].append(track)
+    crates_by_path: dict[str, list[dict]] = defaultdict(list)
+    for occurrence in crate_occurrences:
+        crates_by_path[occurrence["path"]].append(occurrence)
+
+    exact_paths = sorted(set(database_by_path) | set(crates_by_path))
+    exact_path_groups = []
+    for path_str in exact_paths:
+        records = database_by_path[path_str]
+        occurrences = crates_by_path[path_str]
+        first = records[0] if records else {}
+        exact_path_groups.append(
+            {
+                "path": path_str,
+                "logical_path": logical_path(path_str),
+                "title": first.get("title"),
+                "artist": first.get("artist"),
+                "genre": first.get("genre"),
+                "in_database": bool(records),
+                "crates": [item["crate"] for item in occurrences],
+                "database_record_count": len(records),
+                "crate_reference_count": len(occurrences),
+                "database_records": records,
+                "crate_occurrences": occurrences,
+            }
+        )
+
+    logical_groups: dict[str, list[dict]] = defaultdict(list)
+    for group in exact_path_groups:
+        logical_groups[group["logical_path"]].append(group)
+    logical_alias_groups = []
+    for path_str, groups in sorted(logical_groups.items()):
+        if len(groups) < 2:
+            continue
+        logical_alias_groups.append(
+            {
+                "logical_path": path_str,
+                "exact_paths": sorted(group["path"] for group in groups),
+                "database_record_count": sum(
+                    group["database_record_count"] for group in groups
+                ),
+                "crate_reference_count": sum(
+                    group["crate_reference_count"] for group in groups
+                ),
+                "groups": groups,
+            }
+        )
 
     resolved = []
     moved_likely = []
     moved_ambiguous = []
     missing = []
 
-    for path_str, entry in by_path.items():
+    for entry in exact_path_groups:
+        path_str = entry["path"]
         absolute = resolve(path_str)
         if absolute.is_file():
             resolved.append(entry)
@@ -187,13 +294,67 @@ def audit(serato_dir: Path, library_root: Path) -> dict:
         else:
             missing.append(entry)
 
+    noncanonical_crate_references = [
+        item for item in crate_occurrences if not item["is_canonical_path"]
+    ]
+    sparse_alias_references = []
+    for occurrence in noncanonical_crate_references:
+        exact_records = database_by_path[occurrence["path"]]
+        canonical_records = database_by_path[occurrence["logical_path"]]
+        exact_score = max(
+            (record["metadata_populated_count"] for record in exact_records),
+            default=-1,
+        )
+        canonical_score = max(
+            (record["metadata_populated_count"] for record in canonical_records),
+            default=-1,
+        )
+        if canonical_records and exact_score < canonical_score:
+            sparse_alias_references.append(
+                {
+                    **occurrence,
+                    "exact_database_record_count": len(exact_records),
+                    "canonical_database_record_count": len(canonical_records),
+                    "exact_metadata_populated_count": exact_score,
+                    "canonical_metadata_populated_count": canonical_score,
+                }
+            )
+
+    database_counts = Counter(record["path"] for record in db_tracks)
+    logical_database_counts = Counter(record["logical_path"] for record in db_tracks)
+    crate_counts = Counter(
+        (item["crate"], item["path"]) for item in crate_occurrences
+    )
+    logical_crate_counts = Counter(
+        (item["crate"], item["logical_path"]) for item in crate_occurrences
+    )
+
     return {
         "serato_dir": str(serato_dir),
         "library_root": str(library_root),
         "database_track_count": len(db_tracks),
         "crate_count": len(crate_paths),
         "crate_reference_count": sum(len(v) for v in crate_paths.values()),
-        "unique_paths_checked": len(by_path),
+        "unique_paths_checked": len(exact_path_groups),
+        "database_record_count": len(db_tracks),
+        "database_exact_duplicate_record_count": sum(
+            count - 1 for count in database_counts.values() if count > 1
+        ),
+        "database_duplicate_record_count": sum(
+            count - 1 for count in logical_database_counts.values() if count > 1
+        ),
+        "crate_duplicate_reference_count": sum(
+            count - 1 for count in crate_counts.values() if count > 1
+        ),
+        "crate_logical_duplicate_reference_count": sum(
+            count - 1 for count in logical_crate_counts.values() if count > 1
+        ),
+        "database_records": db_tracks,
+        "crate_occurrences": crate_occurrences,
+        "exact_path_groups": exact_path_groups,
+        "logical_alias_groups": logical_alias_groups,
+        "noncanonical_crate_references": noncanonical_crate_references,
+        "sparse_alias_references": sparse_alias_references,
         "resolved_count": len(resolved),
         "moved_likely_count": len(moved_likely),
         "moved_ambiguous_count": len(moved_ambiguous),
@@ -214,7 +375,20 @@ def main() -> int:
     report = audit(args.serato_dir, args.library_root)
 
     print(f"database V2: {report['database_track_count']} tracks")
+    print(
+        "  duplicate logical records: "
+        f"{report['database_duplicate_record_count']} "
+        f"({report['database_exact_duplicate_record_count']} exact-path)"
+    )
     print(f"crates: {report['crate_count']} ({report['crate_reference_count']} track references)")
+    print(
+        "  duplicate references: "
+        f"{report['crate_duplicate_reference_count']} exact / "
+        f"{report['crate_logical_duplicate_reference_count']} logical "
+        "(within one crate); "
+        f"noncanonical: {len(report['noncanonical_crate_references'])}; "
+        f"sparse aliases: {len(report['sparse_alias_references'])}"
+    )
     print(f"unique paths checked: {report['unique_paths_checked']}")
     print(f"  resolved:         {report['resolved_count']}")
     print(f"  probably moved:   {report['moved_likely_count']}  (exactly one same-named file found elsewhere)")
