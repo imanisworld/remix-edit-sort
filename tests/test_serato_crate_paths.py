@@ -60,6 +60,69 @@ class DatabaseAndCrateParsingTests(unittest.TestCase):
             paths = checker.parse_crate(crate_path)
         self.assertEqual(paths, ["Users/x/Music/A.mp3", "Users/x/Music/B.mp3"])
 
+    def test_path_terminators_are_normalized_but_reported(self):
+        stored = "Users/x/Music/A.mp3"
+        crate = otrk(tlv("ptrk", text(stored + "\x00\x00")))
+        with tempfile.TemporaryDirectory() as tmp:
+            crate_path = Path(tmp) / "Test.crate"
+            crate_path.write_bytes(crate)
+
+            occurrences = checker.parse_crate_occurrences(crate_path)
+
+        self.assertEqual(occurrences[0]["path"], stored)
+        self.assertEqual(occurrences[0]["path_terminator_length"], 2)
+
+    def test_preserves_duplicate_database_and_crate_occurrences(self):
+        alias = "/Users/x/Music/Song.mp3"
+        canonical = alias.lstrip("/")
+        database = (
+            tlv("vrsn", text("2.0"))
+            + otrk(tlv("pfil", text(alias)))
+            + otrk(
+                tlv("pfil", text(canonical))
+                + tlv("tsng", text("Song"))
+                + tlv("tart", text("Artist"))
+                + tlv("tbpm", text("100.00"))
+                + tlv("tbit", text("320.0kbps"))
+            )
+        )
+        crate = (
+            tlv("vrsn", text("1.0"))
+            + otrk(tlv("ptrk", text(alias)))
+            + otrk(tlv("ptrk", text(alias)))
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            database_path = root / "database V2"
+            crate_path = root / "Set.crate"
+            database_path.write_bytes(database)
+            crate_path.write_bytes(crate)
+
+            records = checker.parse_database(database_path)
+            occurrences = checker.parse_crate_occurrences(crate_path)
+
+        self.assertEqual([record["record_index"] for record in records], [1, 2])
+        self.assertEqual([record["path"] for record in records], [alias, canonical])
+        self.assertEqual(records[0]["metadata_populated_count"], 0)
+        self.assertEqual(records[1]["metadata_populated_count"], 4)
+        self.assertEqual([item["record_index"] for item in occurrences], [1, 2])
+        self.assertEqual([item["path"] for item in occurrences], [alias, alias])
+
+    def test_preserves_every_pfil_occurrence_inside_one_record(self):
+        first = "Users/x/Music/First.mp3"
+        second = "Users/x/Music/Second.mp3"
+        database = otrk(tlv("pfil", text(first)) + tlv("pfil", text(second)))
+        with tempfile.TemporaryDirectory() as tmp:
+            database_path = Path(tmp) / "database V2"
+            database_path.write_bytes(database)
+
+            records = checker.parse_database(database_path)
+
+        self.assertEqual(len(records), 2)
+        self.assertEqual([record["record_index"] for record in records], [1, 1])
+        self.assertEqual([record["pfil_field_index"] for record in records], [0, 1])
+        self.assertEqual([record["path"] for record in records], [first, second])
+
     def test_resolve_prepends_leading_slash(self):
         self.assertEqual(checker.resolve("Users/x/Music/Song.mp3"), Path("/Users/x/Music/Song.mp3"))
 
@@ -153,6 +216,36 @@ class AuditCategorizationTests(unittest.TestCase):
 
         after = (self.serato_dir / "database V2").read_bytes()
         self.assertEqual(before, after)
+
+    def test_alias_and_canonical_records_are_reported_without_collapsing(self):
+        track = self.library / "Song.mp3"
+        track.write_bytes(b"x")
+        canonical = str(track).lstrip("/")
+        alias = "/" + canonical
+        database = (
+            tlv("vrsn", text("2.0"))
+            + otrk(tlv("pfil", text(alias)))
+            + otrk(
+                tlv("pfil", text(canonical))
+                + tlv("tsng", text("Song"))
+                + tlv("tart", text("Artist"))
+            )
+        )
+        (self.serato_dir / "database V2").write_bytes(database)
+        self.write_crate("Alias", [alias, alias])
+
+        report = checker.audit(self.serato_dir, self.library)
+
+        self.assertEqual(len(report["database_records"]), 2)
+        self.assertEqual(len(report["crate_occurrences"]), 2)
+        self.assertEqual(report["database_duplicate_record_count"], 1)
+        self.assertEqual(report["crate_duplicate_reference_count"], 1)
+        self.assertEqual(len(report["logical_alias_groups"]), 1)
+        alias_group = report["logical_alias_groups"][0]
+        self.assertEqual(alias_group["exact_paths"], [alias, canonical])
+        self.assertEqual(alias_group["database_record_count"], 2)
+        self.assertEqual(len(report["noncanonical_crate_references"]), 2)
+        self.assertEqual(len(report["sparse_alias_references"]), 2)
 
 
 if __name__ == "__main__":
