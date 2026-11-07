@@ -2,6 +2,13 @@
 
 Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRARY-LAYOUT.md`, Claude's Oct 15 wrap-up in `CLAUDE-HANDOFF-2026-10-15.md`.
 
+## Repo tooling (2026-11-07, Cursor cloud) — Artist identification proposals
+- Added a read-only blank Artist/Title proposal pipeline: `scripts/build_artist_identification_plan.py`.
+- Strict filename parsing creates review candidates only; it never approves filename evidence. Exact-hash rows are reported without pretending identical bytes can carry different embedded tags. Optional local `fpcalc`/Chromaprint corroboration is explicit and fail-closed; no network or credentials are required.
+- Outputs JSON + review CSV, with complete/unsupported/`Imani Drops` rows in a separate outside-scope CSV. The proposal mode is deliberately incompatible with the existing apply script.
+- No apply/promotion path was added. Any eventual human-approved subset must use the existing `apply_artist_title_plan.py` schema and all mutation-engine, PASS-backup, lock, heartbeat, verification, rollback, and undo gates.
+- Repository tooling/tests/docs only; no library files, tags, paths, or Serato data were touched.
+
 ## Now (Oct 30, 7:50 PM EDT, Grok) — new-download fixes (Imani 19:37 "yes and ok fix")
 Serato closed; locks taken and released; backup + undo on T5 `2026-10-30-newdl-fix/` (run/UNDO-README.txt: undo renames/moves first, then the 6 artist/title undo logs).
 - **8 no-folder tracks filed into existing folders (no new folders)** with `mv -n`: Ministry Every Day Is Halloween → Rock/CLEAN/Nu Wave; 2 Funk & Soul (Dirty) → Funk/DIRTY; Drake/Gilla Janice STFU Miami Bass → Bass/miami_bass; 3 Deep House → House (1) and House/REMIXES & EDITS (2); Kyle Davis Will U Forgive Me (Nola Bounce) → New Orleans Bounce.

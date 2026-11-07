@@ -96,6 +96,7 @@ they do not fabricate or trust an unverified restore path.
 | `apply_plan.py` | disabled-legacy | Hard-disabled. Read-only `--report` only. |
 | `merge_events_duplicates.py` | disabled-legacy | Hard-disabled completed one-off. |
 | `standardize_names.py` | preview-only | Proposes filename/Artist/Title cleanups. Applies nothing. |
+| `build_artist_identification_plan.py` | preview-only | Audits blank Artist/Title, emits review-only candidates and optional local Chromaprint corroboration. Its output is deliberately not apply-compatible. |
 | `reclassify.py` | preview-only | Proposes genre-folder moves. Applies nothing. |
 
 Every module under `scripts/` declares its own `SAFETY_CLASSIFICATION`.
