@@ -2,6 +2,26 @@
 
 Short handoff. Details live in `GROK-DJ-LIBRARY-LOG.md`, layout rules in `LIBRARY-LAYOUT.md`, Claude's Oct 15 wrap-up in `CLAUDE-HANDOFF-2026-10-15.md`.
 
+## Now (Nov 7, 3:39 PM EST, Cursor) — stale crate ptrk aliases repaired
+Imani explicitly approved the final 412-occurrence pointer-only gate with “go”.
+Serato stayed closed. Commit `02d600e` from PR #160 applied only exact regular
+crate `ptrk` values `/Users/...` → `Users/...` through
+`mutation_engine.py`: `Saints Night 11-07` 232, `Sunday Service S&S 11-08`
+177, `FIX NAME␛␛2fartist` 1, `Fix bpm` 1, `fIX BITRATE` 1.
+- Fresh exact-scope backup manifest + full `_Serato_` snapshot: PASS.
+- Disposable APFS canary: PASS before live apply.
+- Live result: 5 crates / 412 replacements PASS; all 12,188 crate pointer
+  occurrences retained identity, order, cardinality and duplicates.
+- Full snapshot comparison: exactly those 5 of 1,298 `_Serato_` files changed;
+  the other 1,293 were byte-identical.
+- `database V2`, `master.sqlite`, `root.sqlite`, audio tags, Smart Crates and
+  Ghetto Supastar bitrate were unchanged.
+- WAL recovery is clean (5/5 settled, no torn/in-flight/rollback failures);
+  owned `Serato` lock released after terminal verification.
+- Evidence: `~/Music/DJ-Music/artifacts/codex-crate-pointer-pr160-20261107/`
+  (`live-apply-result.json`, `live-apply-post-check.json`,
+  `live-apply-journal.jsonl`, fresh backup manifest and snapshot).
+
 ## Now (Oct 30, 7:50 PM EDT, Grok) — new-download fixes (Imani 19:37 "yes and ok fix")
 Serato closed; locks taken and released; backup + undo on T5 `2026-10-30-newdl-fix/` (run/UNDO-README.txt: undo renames/moves first, then the 6 artist/title undo logs).
 - **8 no-folder tracks filed into existing folders (no new folders)** with `mv -n`: Ministry Every Day Is Halloween → Rock/CLEAN/Nu Wave; 2 Funk & Soul (Dirty) → Funk/DIRTY; Drake/Gilla Janice STFU Miami Bass → Bass/miami_bass; 3 Deep House → House (1) and House/REMIXES & EDITS (2); Kyle Davis Will U Forgive Me (Nola Bounce) → New Orleans Bounce.
