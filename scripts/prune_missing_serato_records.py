@@ -53,7 +53,8 @@ from __future__ import annotations
 
 SAFETY_CLASSIFICATION = "engine-user"
 # Both helpers run only inside a mutation_engine item transaction.
-ENGINE_MUTATION_HELPERS = ("_delete_sqlite_rows", "_replace_database_v2")
+# The third helper is strictly for emergency restoration of already committed items.
+ENGINE_MUTATION_HELPERS = ("_delete_sqlite_rows", "_replace_database_v2", "_restore_prune_completed")
 
 import argparse
 import hashlib
@@ -362,11 +363,18 @@ def _plan_add(conn, stale_ca_id, cid, twin_id, next_order) -> dict | str:
 
 
 def _membership_decision(conn, rowid, path, astore_rows, cls, add_live=False, next_order=None,
-                         drop_smart=False, twin_map=None) -> dict:
+                         drop_smart=False, twin_map=None, keeper=None) -> dict:
     name = path.rsplit("/", 1)[-1]
-    twins = [(r, p) for r, p in astore_rows if r != rowid and _name(p) == _name(path) and cls.exists(p)]
+    if keeper is not None:
+        # --keeper-map: an approved keep/remove pair names the live record by exact path,
+        # even when its file name differs (e.g. "Honey (NC).mp3" -> "Honey.mp3").
+        twins = [(r, p) for r, p in astore_rows if r != rowid and _fold(p) == _fold(keeper) and cls.exists(p)]
+    else:
+        twins = [(r, p) for r, p in astore_rows if r != rowid and _name(p) == _name(path) and cls.exists(p)]
     out = {"live_twin_rowids": [r for r, _ in twins], "live_twin_paths": [p for _, p in twins]}
-    if twin_map and path in twin_map:
+    if keeper is not None:
+        out["twin_chosen_by"] = "keeper map"
+    elif twin_map and path in twin_map:
         # The approved move map says where this old path went: only that live
         # record may inherit its crates, even when it is the only same-name one.
         chosen = [(r, p) for r, p in twins if _fold(p) == _fold(twin_map[path])]
@@ -447,7 +455,12 @@ def load_twin_map(path) -> dict | None:
 
 def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], prefix: str | None,
                drop_stale_memberships: bool = False, add_live_memberships: bool = False,
-               drop_stale_smart_memberships: bool = False, twin_map: dict | None = None) -> dict:
+               drop_stale_smart_memberships: bool = False, twin_map: dict | None = None,
+               keeper_map: dict | None = None) -> dict:
+    if keeper_map is not None and not drop_stale_memberships:
+        raise PruneError("--keeper-map needs --drop-stale-memberships")
+    if keeper_map is not None and not keeper_map:
+        raise PruneError("--keeper-map is empty")
     if drop_stale_smart_memberships and not drop_stale_memberships:
         raise PruneError("--drop-stale-smart-memberships needs --drop-stale-memberships")
     if add_live_memberships and not drop_stale_memberships:
@@ -465,6 +478,8 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
     dbv2_rows = []
     for idx, path in recs:
         if not path or not _in_scope(path, scope, lib_stored):
+            continue
+        if keeper_map is not None and path not in keeper_map:
             continue
         c = cls.classify(path, store)
         if c == "present":
@@ -498,23 +513,30 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
             for rowid, path in assets:
                 if not isinstance(path, str) or not _in_scope(path, scope, lib_stored):
                     continue
+                if keeper_map is not None and path not in keeper_map:
+                    continue
                 c = cls.classify(path, astore)
                 if c == "present":
                     continue
                 mem = _asset_memberships(conn, deps, rowid)
                 crate_mem = {k: v for k, v in mem.items() if "container" in k}
                 action = "remove" if c in REMOVABLE else "hold"; reason = c
+                keeper = keeper_map.get(path) if keeper_map is not None else None
+                if keeper is not None:
+                    # explicit approved pair: removable only when the kept file exists and has a record
+                    action = "remove" if (keeper in astore and cls.exists(keeper)) else "hold"
+                    reason = f"{c}; keeper map" if action == "remove" else f"{c}; held: keeper {keeper!r} missing or unrecorded"
                 drop = None; decision = None
-                why = cls.twin_hold_reason(path, astore, twin_map) if c == "live_twin" else None
+                why = cls.twin_hold_reason(path, astore, twin_map) if (c == "live_twin" and keeper is None) else None
                 if why:
                     action, reason = "hold", f"{c}; held: {why}"
                 if action == "remove" and crate_mem:
                     action, reason = "hold", f"{c}; still in a Serato container {crate_mem}"
-                    if drop_stale_memberships and c == "live_twin":
+                    if drop_stale_memberships and (c == "live_twin" or keeper is not None):
                         order_snapshot = dict(next_order)
                         decision = _membership_decision(conn, rowid, path, astore_rows, cls,
                                                         add_live_memberships, next_order,
-                                                        drop_stale_smart_memberships, twin_map)
+                                                        drop_stale_smart_memberships, twin_map, keeper)
                         if not decision["ok"]:
                             next_order.clear(); next_order.update(order_snapshot)  # held rows reserve no positions
                         resolved = len(decision.get("containers", []))
@@ -570,6 +592,7 @@ def build_plan(serato_dir: Path, library_root: Path, databases: list[Path], pref
         "add_live_memberships": bool(add_live_memberships),
         "drop_stale_smart_memberships": bool(drop_stale_smart_memberships),
         "twin_map": dict(sorted((twin_map or {}).items())),
+        "keeper_map": dict(sorted(keeper_map.items())) if keeper_map is not None else None,
         "database_v2": dbv2_entry, "sqlite": db_entries, "summary": dict(sorted(summary.items())),
     }
 
@@ -585,7 +608,8 @@ def load_and_validate_plan(plan_path: Path, serato_dir, library_root, databases)
         raise PruneError("not a prune plan")
     rebuilt = build_plan(serato_dir, library_root, databases, plan.get("prefix"),
                          bool(plan.get("drop_stale_memberships")), bool(plan.get("add_live_memberships")),
-                       bool(plan.get("drop_stale_smart_memberships")), plan.get("twin_map") or None)
+                       bool(plan.get("drop_stale_smart_memberships")), plan.get("twin_map") or None,
+                         plan.get("keeper_map"))
     if _comparable(rebuilt) != _comparable(plan):
         raise PruneError("plan no longer matches current Serato files; rebuild the dry run")
     return plan
@@ -683,9 +707,9 @@ def _verify_sqlite(database: Path, entry: dict) -> dict:
 
 
 def post_check(serato_dir, library_root, databases, prefix, drop_stale_memberships=False, add_live=False,
-               drop_smart=False, twin_map=None) -> dict:
+               drop_smart=False, twin_map=None, keeper_map=None) -> dict:
     again = build_plan(serato_dir, library_root, databases, prefix, drop_stale_memberships, add_live, drop_smart,
-                       twin_map)
+                       twin_map, keeper_map)
     remaining = again["summary"].get("database_v2_remove", 0) + sum(
         again["summary"].get(f"{Path(d).name}_remove", 0) for d in databases)
     held = sum(1 for r in again["database_v2"]["records"] if r["action"] == "hold") + sum(
@@ -694,73 +718,129 @@ def post_check(serato_dir, library_root, databases, prefix, drop_stale_membershi
             "held_remaining": held, "summary": again["summary"]}
 
 
+def _restore_prune_completed(txn, target: Path, backup: Path, before: str, after: str, is_sqlite: bool) -> None:
+    """Recover a committed store without overwriting concurrent changes."""
+    target = Path(target)
+    if sr.sha256_file(target) != after:
+        raise PruneError(f"{target.name}: changed since apply; manual verified restore required")
+    if is_sqlite:
+        # A non-empty SQLite WAL can replay mutations over a restored backup.
+        sq.require_quiescent(target)
+    # The rollback itself must be write-ahead journaled as a mutation item.
+    txn.mark_mutated()
+    if is_sqlite:
+        for side in sq.sidecar_paths(target).values():
+            if side.exists():
+                side.rename(side.with_name(f"{side.name}.discarded-{os.getpid()}"))
+    mutation_engine.restore_from_backup(Path(backup), target, before)
+    if sr.sha256_file(target) != before:
+        raise mutation_engine.MutationVerificationError(f"{target.name}: rollback hash mismatch")
+
+
 def apply_plan(*, plan, serato_dir, library_root, databases, serato_manifest, sqlite_manifest,
                heartbeat, journal_path, result_path, process_lister=None) -> dict:
     sr.require_serato_closed(process_lister)
     serato_dir = Path(serato_dir).resolve(); databases = {Path(d).name: Path(d).resolve() for d in databases}
     completed = []
-    entry = plan["database_v2"]
-    remove_idx = {r["outer_index"] for r in entry["records"] if r["action"] == "remove"}
-    if remove_idx:
-        engine = mutation_engine.MutationEngine(Path(journal_path), heartbeat, serato_manifest, serato_dir, PLAN_TYPE)
-        engine.start({"plan_type": PLAN_TYPE, "store": "database V2", "records": len(remove_idx)})
-        source = serato_dir / sr.DATABASE_NAME
-        new = prune_dbv2_bytes(source.read_bytes(), remove_idx)
-        if sr.sha256_bytes(new) != entry["proposed_sha256"]:
-            raise PruneError("database V2 drifted immediately before apply")
-        with engine.item(1, kind=mutation_engine.SERATO_PATHS, source=source,
-                         expected_sha256=entry["source_sha256"],
-                         extra_intent={"relative_path": sr.DATABASE_NAME, "records_removed": len(remove_idx)}) as txn:
-            backup = Path(txn.intent["backup_path"])
-            txn.on_rollback(lambda: mutation_engine.restore_from_backup(backup, source, entry["source_sha256"]))
-            _replace_database_v2(txn, source, new, entry["source_sha256"])
-            if sr.sha256_file(source) != entry["proposed_sha256"]:
-                raise mutation_engine.MutationVerificationError("database V2 post-write hash mismatch")
-            gone = {r["path"] for r in entry["records"] if r["action"] == "remove"}
-            if gone & {p for _, p in _dbv2_records(source.read_bytes()) if p}:
-                raise mutation_engine.MutationVerificationError("pruned database V2 path still present")
-            txn.record(relative_path=sr.DATABASE_NAME, after_sha256=entry["proposed_sha256"])
-        engine.finish({"records_removed": len(remove_idx)})
-        completed.append({"store": sr.DATABASE_NAME, "removed": len(remove_idx),
-                          "before_sha256": entry["source_sha256"], "after_sha256": entry["proposed_sha256"]})
-    sql_entries = [e for e in plan["sqlite"] if any(r["action"] == "remove" for r in e["rows"])]
-    if sql_entries:
-        library_dir = Path(sql_entries[0]["path"]).parent
-        engine = mutation_engine.MutationEngine(Path(f"{journal_path}.sqlite.jsonl"), heartbeat,
-                                                sqlite_manifest, library_dir, PLAN_TYPE)
-        engine.start({"plan_type": PLAN_TYPE, "store": "sqlite", "databases": [e["name"] for e in sql_entries]})
-        for i, e in enumerate(sql_entries, start=1):
-            database = databases[e["name"]]
-            rows = [r for r in e["rows"] if r["action"] == "remove"]
-            with engine.item(i, kind=mutation_engine.SERATO_PATHS, source=database, expected_sha256=e["sha256"],
-                             extra_intent={"relative_path": e["name"], "rows_removed": len(rows)}) as txn:
+    rollback_stack = []
+    try:
+        entry = plan["database_v2"]
+        remove_idx = {r["outer_index"] for r in entry["records"] if r["action"] == "remove"}
+        if remove_idx:
+            engine = mutation_engine.MutationEngine(Path(journal_path), heartbeat, serato_manifest, serato_dir, PLAN_TYPE)
+            engine.start({"plan_type": PLAN_TYPE, "store": "database V2", "records": len(remove_idx)})
+            source = serato_dir / sr.DATABASE_NAME
+            new = prune_dbv2_bytes(source.read_bytes(), remove_idx)
+            if sr.sha256_bytes(new) != entry["proposed_sha256"]:
+                raise PruneError("database V2 drifted immediately before apply")
+            with engine.item(1, kind=mutation_engine.SERATO_PATHS, source=source,
+                             expected_sha256=entry["source_sha256"],
+                             extra_intent={"relative_path": sr.DATABASE_NAME, "records_removed": len(remove_idx)}) as txn:
                 backup = Path(txn.intent["backup_path"])
+                txn.on_rollback(lambda: mutation_engine.restore_from_backup(backup, source, entry["source_sha256"]))
+                _replace_database_v2(txn, source, new, entry["source_sha256"])
+                if sr.sha256_file(source) != entry["proposed_sha256"]:
+                    raise mutation_engine.MutationVerificationError("database V2 post-write hash mismatch")
+                gone = {r["path"] for r in entry["records"] if r["action"] == "remove"}
+                if gone & {p for _, p in _dbv2_records(source.read_bytes()) if p}:
+                    raise mutation_engine.MutationVerificationError("pruned database V2 path still present")
+                txn.record(relative_path=sr.DATABASE_NAME, after_sha256=entry["proposed_sha256"])
+            # Roll back even if finish(), the next store or the final check fails.
+            rollback_stack.append((source, backup, entry["source_sha256"], entry["proposed_sha256"], False))
+            engine.finish({"records_removed": len(remove_idx)})
+            completed.append({"store": sr.DATABASE_NAME, "removed": len(remove_idx),
+                              "before_sha256": entry["source_sha256"], "after_sha256": entry["proposed_sha256"]})
+        sql_entries = [e for e in plan["sqlite"] if any(r["action"] == "remove" for r in e["rows"])]
+        if sql_entries:
+            library_dir = Path(sql_entries[0]["path"]).parent
+            engine = mutation_engine.MutationEngine(Path(f"{journal_path}.sqlite.jsonl"), heartbeat,
+                                                    sqlite_manifest, library_dir, PLAN_TYPE)
+            engine.start({"plan_type": PLAN_TYPE, "store": "sqlite", "databases": [e["name"] for e in sql_entries]})
+            for i, e in enumerate(sql_entries, start=1):
+                database = databases[e["name"]]
+                rows = [r for r in e["rows"] if r["action"] == "remove"]
+                with engine.item(i, kind=mutation_engine.SERATO_PATHS, source=database, expected_sha256=e["sha256"],
+                                 extra_intent={"relative_path": e["name"], "rows_removed": len(rows)}) as txn:
+                    backup = Path(txn.intent["backup_path"])
 
-                def restore(database=database, backup=backup, expected=e["sha256"]):
-                    for side in sq.sidecar_paths(database).values():
-                        if side.exists():
-                            side.rename(side.with_name(f"{side.name}.discarded-{os.getpid()}"))
-                    mutation_engine.restore_from_backup(backup, database, expected)
-                txn.on_rollback(restore)
-                sq.require_quiescent(database)
-                _delete_sqlite_rows(txn, database, rows)
-                ver = _verify_sqlite(database, e)
-                after = sr.sha256_file(database)
-                txn.record(relative_path=e["name"], after_sha256=after, rows_removed=len(rows))
-            completed.append({"store": e["name"], "removed": len(rows), "before_sha256": e["sha256"],
-                              "after_sha256": after, **ver})
-        engine.finish({"databases": len(sql_entries)})
-    if not completed:
-        raise PruneError("plan has nothing to remove")
-    check = post_check(serato_dir, library_root, list(databases.values()), plan.get("prefix"),
-                       bool(plan.get("drop_stale_memberships")), bool(plan.get("add_live_memberships")),
-                       bool(plan.get("drop_stale_smart_memberships")), plan.get("twin_map") or None)
-    result = {"status": check["status"], "plan_type": PLAN_TYPE, "completed": completed,
-              "post_check": check, "journal": str(journal_path)}
-    sr.write_json(result_path, result)
-    if check["status"] != "PASS":
-        raise PruneError(f"post-check failed; see {result_path}")
-    return result
+                    def restore(database=database, backup=backup, expected=e["sha256"]):
+                        for side in sq.sidecar_paths(database).values():
+                            if side.exists():
+                                side.rename(side.with_name(f"{side.name}.discarded-{os.getpid()}"))
+                        mutation_engine.restore_from_backup(backup, database, expected)
+                    txn.on_rollback(restore)
+                    sq.require_quiescent(database)
+                    _delete_sqlite_rows(txn, database, rows)
+                    ver = _verify_sqlite(database, e)
+                    after = sr.sha256_file(database)
+                    txn.record(relative_path=e["name"], after_sha256=after, rows_removed=len(rows))
+                rollback_stack.append((database, backup, e["sha256"], after, True))
+                completed.append({"store": e["name"], "removed": len(rows), "before_sha256": e["sha256"],
+                                  "after_sha256": after, **ver})
+            engine.finish({"databases": len(sql_entries)})
+        if not completed:
+            raise PruneError("plan has nothing to remove")
+        check = post_check(serato_dir, library_root, list(databases.values()), plan.get("prefix"),
+                           bool(plan.get("drop_stale_memberships")), bool(plan.get("add_live_memberships")),
+                           bool(plan.get("drop_stale_smart_memberships")), plan.get("twin_map") or None,
+                           plan.get("keeper_map"))
+        result = {"status": check["status"], "plan_type": PLAN_TYPE, "completed": completed,
+                  "post_check": check, "journal": str(journal_path)}
+        sr.write_json(result_path, result)
+        if check["status"] != "PASS":
+            raise PruneError(f"post-check failed; see {result_path}")
+        return result
+
+    except BaseException as exc:
+        # Earlier engine items have already committed. Recover every completed
+        # store in reverse order; the active item owns its own rollback handler.
+        failures = []
+        for i, (target, backup, before, after, is_sqlite) in enumerate(reversed(rollback_stack), start=1):
+            try:
+                heartbeat.beat(force=True)
+                manifest = sqlite_manifest if is_sqlite else serato_manifest
+                recovery = mutation_engine.MutationEngine(
+                    Path(f"{journal_path}.rollback-{i}.jsonl"), heartbeat, manifest,
+                    Path(target).parent, PLAN_TYPE + "-rollback")
+                recovery.start({"recover_store": str(target), "apply_journal": str(journal_path)})
+                with recovery.item(1, kind=mutation_engine.SERATO_PATHS, source=target,
+                                   expected_sha256=after, require_backup=False,
+                                   extra_intent={"restore_backup": str(backup)}) as txn:
+                    _restore_prune_completed(txn, target, backup, before, after, is_sqlite)
+                    txn.record(restored_sha256=before)
+                recovery.finish({"restored_store": str(target)})
+            except BaseException as rollback_exc:  # noqa: BLE001
+                failures.append({"store": str(target), "error": f"{type(rollback_exc).__name__}: {rollback_exc}"})
+        state = "PARTIAL" if failures else "ROLLED_BACK"
+        sr.write_json(Path(f"{journal_path}.rollback.json"),
+                      {"status": state, "completed_stores": len(rollback_stack),
+                       "errors": failures, "original_error": f"{type(exc).__name__}: {exc}"})
+        if failures:
+            sr.write_json(result_path, {"status": "PARTIAL", "rollback_errors": failures,
+                                        "action_required": "DO NOT OPEN SERATO; restore from verified backups.",
+                                        "journal": str(journal_path)})
+            raise PruneError(f"PARTIAL Serato cleanup; DO NOT OPEN SERATO. See {journal_path}.rollback.json") from exc
+        raise
 
 
 def undo(*, journal_path: Path, serato_dir, databases, serato_manifest, sqlite_manifest, heartbeat,
@@ -829,6 +909,10 @@ def main() -> int:
     ap.add_argument("--twin-map", type=Path,
                     help="composed move map (compose_serato_rename_map.py --out): when a stale row's file name has "
                          "several live copies, use the copy this map says the old path became")
+    ap.add_argument("--keeper-map", type=Path,
+                    help="approved keep/remove pairs ([{from: removed path, to: kept path}]): ONLY these stale paths "
+                         "are considered; each may be removed with its memberships (needs --drop-stale-memberships) "
+                         "when the kept file exists and has its own record, even if the file names differ")
     ap.add_argument("--add-live-memberships", action="store_true",
                     help="with --drop-stale-memberships: first add the live twin to each normal (non-smart) crate "
                          "it is missing from, appended at the end; smart crates are reported, never inserted into")
@@ -838,7 +922,8 @@ def main() -> int:
             if not a.out:
                 raise PruneError("dry run needs --out")
             plan = build_plan(a.serato_dir, a.library_root, a.sqlite_db, a.prefix, a.drop_stale_memberships,
-                              a.add_live_memberships, a.drop_stale_smart_memberships, load_twin_map(a.twin_map))
+                              a.add_live_memberships, a.drop_stale_smart_memberships, load_twin_map(a.twin_map),
+                              load_twin_map(a.keeper_map) if a.keeper_map else None)
             sr.write_json(a.out, plan)
             print(json.dumps({"status": "DRY-RUN", **plan["summary"], "plan": str(a.out)}, indent=2))
             return 0

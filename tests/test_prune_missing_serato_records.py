@@ -5,6 +5,7 @@ import sqlite3
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -137,6 +138,59 @@ class ApplyTests(PruneCase):
         self.assertEqual(c.execute("SELECT portable_id FROM history_entry").fetchall(), [(self.gone,)])
         self.assertEqual(c.execute("PRAGMA integrity_check").fetchall(), [("ok",)]); c.close()
         self.assertTrue(mutation_engine.recover(self.tmp / "j.jsonl")["clean"])
+
+    def test_failed_final_postcheck_restores_all_three_stores(self):
+        plan = self.plan(); sm, qm = self.manifests()
+        before = {p: sha(p) for p in [self.serato / "database V2", *self.dbs]}
+        with patch.object(prune, "post_check", return_value={"status": "FAIL", "removable_remaining": 1}):
+            with self.assertRaises(prune.PruneError):
+                self.apply(plan, sm, qm)
+        self.assertEqual(before, {p: sha(p) for p in before})
+        record = json.loads((self.tmp / "j.jsonl.rollback.json").read_text())
+        self.assertEqual(record["status"], "ROLLED_BACK")
+        self.assertEqual(record["completed_stores"], 3)
+        self.assertEqual(record["errors"], [])
+
+    def test_postcheck_exception_restores_committed_stores(self):
+        plan = self.plan(); sm, qm = self.manifests()
+        before = {p: sha(p) for p in [self.serato / "database V2", *self.dbs]}
+        with patch.object(prune, "post_check", side_effect=RuntimeError("injected verification exception")):
+            with self.assertRaisesRegex(RuntimeError, "injected verification exception"):
+                self.apply(plan, sm, qm)
+        self.assertEqual(before, {p: sha(p) for p in before})
+        record = json.loads((self.tmp / "j.jsonl.rollback.json").read_text())
+        self.assertEqual(record["status"], "ROLLED_BACK")
+        self.assertEqual(record["errors"], [])
+
+    def test_failure_in_second_sqlite_recovers_prior_commits(self):
+        plan = self.plan(); sm, qm = self.manifests()
+        before = {p: sha(p) for p in [self.serato / "database V2", *self.dbs]}
+        real_delete = prune._delete_sqlite_rows
+        count = [0]
+
+        def fail_second(*args):
+            count[0] += 1
+            if count[0] == 2:
+                raise mutation_engine.MutationVerificationError("injected second-database failure")
+            return real_delete(*args)
+
+        with patch.object(prune, "_delete_sqlite_rows", side_effect=fail_second):
+            with self.assertRaises(mutation_engine.MutationVerificationError):
+                self.apply(plan, sm, qm)
+        self.assertEqual(count[0], 2)
+        self.assertEqual(before, {p: sha(p) for p in before})
+        record = json.loads((self.tmp / "j.jsonl.rollback.json").read_text())
+        self.assertEqual(record["status"], "ROLLED_BACK")
+
+    def test_rollback_failure_is_explicit_partial(self):
+        plan = self.plan(); sm, qm = self.manifests()
+        with patch.object(prune, "post_check", return_value={"status": "FAIL", "removable_remaining": 1}):
+            with patch.object(prune, "_restore_prune_completed", side_effect=OSError("injected recovery failure")):
+                with self.assertRaisesRegex(prune.PruneError, "PARTIAL Serato cleanup"):
+                    self.apply(plan, sm, qm)
+        record = json.loads((self.tmp / "r.json").read_text())
+        self.assertEqual(record["status"], "PARTIAL")
+        self.assertIn("DO NOT OPEN SERATO", record["action_required"])
 
     def test_running_serato_refused_and_nothing_changes(self):
         plan = self.plan(); sm, qm = self.manifests()
@@ -465,6 +519,53 @@ class MembershipCase(unittest.TestCase):
         self.assertEqual(r["action"], "hold")
         for live in (self.live_a, stored(extra)):
             self.assertIn(repr(live), r["reason"])
+
+
+class KeeperMapTests(MembershipCase):
+    """--keeper-map: explicit approved pairs, only those paths, keeper may have a different file name."""
+
+    def kplan(self, km, add=False, flag=True):
+        return prune.build_plan(self.serato, self.music, self.dbs, None, flag, add, False, None, km)
+
+    def test_only_mapped_paths_are_considered(self):
+        plan = self.kplan({self.gone: self.live_a})
+        for name in ("master.sqlite", "root.sqlite"):
+            rows = self.rows(plan, name)
+            self.assertEqual(set(rows), {self.gone})  # stale_a / stale_b untouched
+            r = rows[self.gone]
+            self.assertEqual(r["action"], "remove", r["reason"])
+            self.assertEqual(r["membership_check"]["live_twin_paths"], [self.live_a])
+            self.assertEqual(len(r["drop_container_asset_ids"]), 1)
+        self.assertEqual(plan["summary"]["database_v2_remove"], 0)
+
+    def test_keeper_missing_from_crate_needs_add_flag(self):
+        km = {self.stale_b: self.live_b}
+        self.assertEqual(self.rows(self.kplan(km), "root.sqlite")[self.stale_b]["action"], "hold")
+        r = self.rows(self.kplan(km, add=True), "root.sqlite")[self.stale_b]
+        self.assertEqual(r["action"], "remove", r["reason"])
+        self.assertEqual(len(r["membership_check"]["adds"]), 1)
+
+    def test_keeper_without_file_holds(self):
+        r = self.rows(self.kplan({self.gone: stored(self.music / "Afrobeat/nope.mp3")}), "master.sqlite")[self.gone]
+        self.assertEqual(r["action"], "hold")
+        self.assertNotIn("drop_container_asset_ids", r)
+
+    def test_requires_drop_flag_and_nonempty(self):
+        with self.assertRaises(prune.PruneError):
+            self.kplan({self.gone: self.live_a}, flag=False)
+        with self.assertRaises(prune.PruneError):
+            self.kplan({})
+
+    def test_apply_removes_row_and_membership_only(self):
+        plan = self.kplan({self.gone: self.live_a})
+        before = {d: self.memberships(d) for d in self.dbs}
+        res, _, _ = self.apply(plan)
+        for d in self.dbs:
+            c = sqlite3.connect(f"file:{d}?immutable=1", uri=True)
+            paths = {p for (p,) in c.execute("SELECT portable_id FROM asset")}; c.close()
+            self.assertNotIn(self.gone, paths)
+            self.assertTrue({self.live_a, self.stale_a, self.stale_b, self.live_b} <= paths)
+            self.assertEqual(len(self.memberships(d)), len(before[d]) - 1)
 
 
 class SameNameSafetyTests(unittest.TestCase):
