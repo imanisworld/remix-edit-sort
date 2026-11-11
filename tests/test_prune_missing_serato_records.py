@@ -553,3 +553,56 @@ class UndoSafetyTests(PruneCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class OnlyPathsTests(PruneCase):
+    """--only-paths: the cleanup touches exactly the listed deleted files."""
+
+    def only_plan(self, rels, prefix=None):
+        return prune.build_plan(self.serato, self.music, self.dbs, prefix, only_paths=rels)
+
+    def test_only_listed_missing_paths_are_planned(self):
+        plan = self.only_plan(["Afrobeat/deleted.mp3"])
+        dbv2 = {r["path"] for r in plan["database_v2"]["records"]}
+        self.assertEqual(dbv2, {self.gone})
+        for e in plan["sqlite"]:
+            self.assertEqual({r["path"] for r in e["rows"]}, {self.gone})
+        self.assertEqual(plan["summary"]["only_paths_listed"], 1)
+        self.assertEqual(plan["summary"]["only_paths_without_any_record"], 0)
+
+    def test_listed_path_that_still_exists_is_refused(self):
+        with self.assertRaises(prune.PruneError):
+            self.only_plan(["Afrobeat/deleted.mp3", "Afrobeat/b.mp3"])
+
+    def test_listed_path_without_record_is_reported(self):
+        plan = self.only_plan(["Afrobeat/deleted.mp3", "Afrobeat/never-indexed.mp3"])
+        self.assertEqual(plan["summary"]["only_paths_without_any_record"], 1)
+        self.assertTrue(plan["only_paths_without_any_record"][0].endswith("afrobeat/never-indexed.mp3"))
+
+    def test_absolute_or_parent_entries_refused(self):
+        for bad in (["/etc/x.mp3"], ["../x.mp3"]):
+            with self.assertRaises(prune.PruneError):
+                self.only_plan(bad)
+
+    def test_load_only_paths_rejects_empty_and_duplicates(self):
+        f = self.tmp / "only.txt"
+        f.write_text("\n", encoding="utf-8")
+        with self.assertRaises(prune.PruneError):
+            prune.load_only_paths(f)
+        f.write_text("Pop/a.mp3\nPop/A.mp3\n", encoding="utf-8")
+        with self.assertRaises(prune.PruneError):
+            prune.load_only_paths(f)
+        f.write_text("/Pop/a.mp3\nPop/b.mp3\n", encoding="utf-8")
+        self.assertEqual(prune.load_only_paths(f), ["Pop/a.mp3", "Pop/b.mp3"])
+
+    def test_plan_round_trips_and_apply_touches_only_listed(self):
+        plan = self.only_plan(["Afrobeat/deleted.mp3"])
+        path = self.tmp / "plan.json"; path.write_text(json.dumps(plan), encoding="utf-8")
+        prune.load_and_validate_plan(path, self.serato, self.music, self.dbs)
+        sm, qm = self.manifests()
+        res = self.apply(plan, sm, qm)
+        self.assertEqual(res["status"], "PASS")
+        self.assertNotIn(self.gone, self.dbv2_paths())
+        for p in (self.twin, self.moved, self.crated, self.outside):
+            self.assertIn(p, self.dbv2_paths())
+        self.assertIn(self.twin, self.assets(self.master))
